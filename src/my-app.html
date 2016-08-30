@@ -462,7 +462,7 @@
       _pageChanged:function(page) {
         // load page import on demand.
         this.importHref(
-          this.resolveUrl('pages/'+this.category+'/' + page +'/'+page+'.html'), null, null, false);
+          this.resolveUrl('pages/'+this.category+'/' + page +'/'+page+'.html'), null, null, true);
         if(page.slice(0,3)==="def" || page.slice(0,2)==="ad" || page==="su-create"){
           //drawer and rest of page not rendering properly after being hidden and switching pages...
           //this.$.suDrawer.hidden=true;
