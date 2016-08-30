@@ -18,7 +18,8 @@
   "src/pages/care-plan/su-profile/su-profile.html",
   "src/pages/care-plan/su-risk/su-risk.html",
   "src/pages/default/def-login/def-login.html",
-  "src/pages/default/def-home/def-home.html"
+  "src/pages/default/def-home/def-home.html",
+  "src/pages/test/test-test/test-test.html"
   ],
   "sourceGlobs": [
    "src/**/*",
