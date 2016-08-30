@@ -149,24 +149,6 @@
               error-message="Please enter a valid first name.">
             </paper-input>
 
-            <guuey-date-input
-              route="/homes/{{home}}/patients/{{patient}}/personalProfile/dob"
-              label="Date of Birth"
-              tabindex="3"
-              required
-              auto-validate
-              error-message="Please enter a date by clicking on tapping/clicking on this field.">
-            </guuey-date-input>
-
-            <guuey-date-input
-              route="/homes/{{home}}/patients/{{patient}}/personalProfile/dateAssessed"
-              label="Date Assessed"
-              tabindex="5"
-              required
-              auto-validate
-              error-message="Please enter a date by clicking on tapping/clicking on this field.">
-            </guuey-date-input>
-
             <paper-input
               label="Last Name"
               value="{{profileData.lName}}"
@@ -177,6 +159,15 @@
               error-message="Please enter a valid last name.">
             </paper-input>
 
+            <guuey-date-input
+              route="/homes/{{home}}/patients/{{patient}}/personalProfile/dob"
+              label="Date of Birth"
+              tabindex="3"
+              required
+              auto-validate
+              error-message="Please enter a date by clicking on tapping/clicking on this field.">
+            </guuey-date-input>
+
             <paper-input
               label="Preferred Mode of Adress"
               value="{{profileData.preferredName}}"
@@ -185,6 +176,16 @@
               pattern="[a-zA-Z\.\s]*"
               error-message="Mode of address cannot contain numbers or special characters.">
             </paper-input>
+
+            <guuey-date-input
+              route="/homes/{{home}}/patients/{{patient}}/personalProfile/dateAssessed"
+              label="Date Assessed"
+              tabindex="5"
+              required
+              auto-validate
+              error-message="Please enter a date by clicking on tapping/clicking on this field.">
+            </guuey-date-input>
+
             <!--more validation???? address? or what???-->
             <paper-input
               label="Where Assessed"
@@ -216,17 +217,6 @@
               error-message="Please enter or select a partnership status without any special characters."
               tabindex="7">
             </vaadin-combo-box>
-            <vaadin-combo-box
-              allow-custom-value
-              label="Ethnicity"
-              items="[[ethnicities]]"
-              value="{{profileData.ethnicity}}"
-              required
-              auto-valdate
-              pattern="[a-zA-Z\s]*"
-              error-message="Please enter an ethnicity without special characters."
-              tabindex="9">
-            </vaadin-combo-box>
 
             <vaadin-combo-box
               allow-custom-value
@@ -238,6 +228,18 @@
               pattern="[a-zA-Z\s]*"
               error-message="Please enter a religion without special characters."
               tabindex="8">
+            </vaadin-combo-box>
+
+            <vaadin-combo-box
+              allow-custom-value
+              label="Ethnicity"
+              items="[[ethnicities]]"
+              value="{{profileData.ethnicity}}"
+              required
+              auto-valdate
+              pattern="[a-zA-Z\s]*"
+              error-message="Please enter an ethnicity without special characters."
+              tabindex="9">
             </vaadin-combo-box>
 
             <vaadin-combo-box
@@ -271,15 +273,6 @@
               pattern="[a-zA-Z\.\s]*"
               error-message="Please enter a valid name.">
             </paper-input>
-            <paper-input
-              label="Address"
-              value="{{nextOfKinData.address}}"
-              tabindex="13"
-              required
-              auto-validate
-              pattern="[a-zA-Z\d\s\-\,\#\.\+]+"
-              error-message="Please enter a valid address">
-            </paper-input>
 
             <vaadin-combo-box
               allow-custom-value
@@ -292,6 +285,17 @@
               pattern="[a-zA-Z\.\s]*"
               error-message="Please enter the relationship to the service user.">
             </vaadin-combo-box>
+
+            <paper-input
+              label="Address"
+              value="{{nextOfKinData.address}}"
+              tabindex="13"
+              required
+              auto-validate
+              pattern="[a-zA-Z\d\s\-\,\#\.\+]+"
+              error-message="Please enter a valid address">
+            </paper-input>
+
             <paper-input
               label="Telephone"
               value="{{nextOfKinData.phone}}"
@@ -322,15 +326,6 @@
               error-message="Please enter a valid name.">
             </paper-input>
 
-            <paper-input
-              label="Address"
-              value="{{secondContactNameData.address}}"
-              tabindex="17"
-              auto-validate
-              pattern="[a-zA-Z\d\s\-\,\#\.\+]+"
-              error-message="Please enter a valid address">
-            </paper-input>
-
             <vaadin-combo-box
               allow-custom-value
               label="Relationship"
@@ -341,6 +336,15 @@
               pattern="[a-zA-Z\.\s]*"
               error-message="Please enter the relationship to the service user.">
             </vaadin-combo-box>
+
+            <paper-input
+              label="Address"
+              value="{{secondContactNameData.address}}"
+              tabindex="17"
+              auto-validate
+              pattern="[a-zA-Z\d\s\-\,\#\.\+]+"
+              error-message="Please enter a valid address">
+            </paper-input>
 
             <paper-input
               label="Telephone"
@@ -379,6 +383,7 @@
               pattern="[a-zA-Z\d\s\-\,\#\.\+]+"
               error-message="Please enter a valid address">
             </paper-input>
+
             <paper-input
               label="Telephone"
               value="{{consultantPsychiatristData.phone}}"
@@ -454,6 +459,7 @@
               pattern="[a-zA-Z\d\s\-\,\#\.\+]+"
               error-message="Please enter a valid address">
             </paper-input>
+
             <paper-input
               label="Telephone"
               value="{{socialWorkerReferrerData.phone}}"
@@ -491,6 +497,7 @@
               pattern="[a-zA-Z\d\s\-\,\#\.\+]+"
               error-message="Please enter a valid address">
             </paper-input>
+
             <paper-input
               label="Telephone"
               value="{{cpnData.phone}}"
@@ -529,6 +536,7 @@
               pattern="[a-zA-Z\d\s\-\,\#\.\+]+"
               error-message="Please enter a valid address">
             </paper-input>
+            
             <paper-input
               label="Telephone"
               value="{{ministerOfReligionData.phone}}"

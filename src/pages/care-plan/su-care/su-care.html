@@ -95,6 +95,7 @@
         --guuey-list-float:var(--guuey-list-float-right);
       }
       .mainContainer{
+        padding-top:20px;
         position:relative;
       }
       .mainFab{
@@ -146,7 +147,7 @@
         home="{{home}}"
         patient="{{patient}}">
       </su-header>
-      
+
       <div class="mainContainer">
         <!--fab to add a custom field/input-->
         <paper-fab
@@ -223,7 +224,7 @@
 
               </div>
             </div>
-          </div>
+
             <div class="app-grid">
               <paper-input
                 class="agreement"
@@ -231,7 +232,7 @@
                 value="{{agreeData.swName}}"
                 required
                 auto-validate
-                pattern="[a-zA-S\s\.]*"
+                pattern="[a-zA-Z\s\.]*"
                 error-message="Please enter a staff name without special characters">
               </paper-input>
 
@@ -248,6 +249,8 @@
 
               </div>
             </div>
+
+          </div>
         </paper-card>
 
     <guuey-text-input

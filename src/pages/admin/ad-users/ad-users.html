@@ -332,7 +332,7 @@
       ],
       createNewUser:function(){
         this.fire("createNewUser", this.newAccount);
-        this.newAccount=null;
+        this.newAccount={};
       },
       userOptions:function(e){
         this.$.userDB.path="/homes/"+this.home+"/users/"+e.model.user.$key;

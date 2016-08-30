@@ -84,8 +84,8 @@
         right:var(--main-fab-right);
       }
       .mainContainer{
+        padding-top:20px;
         position:relative;
-        width:100%;
       }
       .guuey-button{
         background-color:#41847d;
@@ -106,20 +106,28 @@
       <div class="mainContainer">
 
         <!--absolute positioned button to add a new risk-->
-        <paper-fab
-          class="mainFab"
-          icon="icons:add"
-          on-tap="addRisk"
-          hidden="{{riskSelected}}">
-        </paper-fab>
+        <span hidden="{{riskSelected}}">
+
+          <paper-fab
+            class="mainFab"
+            icon="icons:add"
+            on-tap="addRisk"
+            hidden="{{riskSelected}}">
+          </paper-fab>
+
+        </span>
 
         <!--absolute positioned button to finsh adding a new risk assessment and close the add view-->
-        <paper-fab
-          class="mainFab"
-          icon="icons:check"
-          on-tap="finishRisk"
-          hidden="{{!riskSelected}}">
-        </paper-fab>
+        <span hidden="{{!riskSelected}}">
+
+          <paper-fab
+            class="mainFab"
+            icon="icons:check"
+            on-tap="finishRisk"
+            hidden="{{!riskSelected}}">
+          </paper-fab>
+
+        </span>
 
         <div class="app-grid" has-aspect-ratio>
 

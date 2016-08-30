@@ -341,7 +341,7 @@
           home: e.detail.home,
         };
         if(e.detail.patients){
-          userDB.data.patients=e.detail.patients;
+          this.$.userDB.data.patients=e.detail.patients;
         };
 
         this.$.userDB.save('/homes/'+this.home+'/users', e.detail.userUID)
