@@ -536,7 +536,7 @@
               pattern="[a-zA-Z\d\s\-\,\#\.\+]+"
               error-message="Please enter a valid address">
             </paper-input>
-            
+
             <paper-input
               label="Telephone"
               value="{{ministerOfReligionData.phone}}"
@@ -932,8 +932,6 @@
         var contacts = this.$.contactsQuery.data;
         for(x in patient){
           if(x !="image"){
-            console.log(typeof x);
-            console.log("STUFF");
             printable.document.write("<p>"+this.convertToPrintText(x)+": "+patient[x]+"<br /></p>");
           }
         };
