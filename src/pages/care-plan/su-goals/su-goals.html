@@ -263,21 +263,28 @@
       <!--repeat each goal that currently is set-->
       <div class="mainContainer">
 
-        <!--absolute positioned button to finsh adding a new goal and close the add view-->
-        <paper-fab
-          class="mainFab"
-          icon="icons:check"
-          on-tap="finishGoal"
-          hidden="{{!goalSelected}}">
-        </paper-fab>
+        <span hidden="{{!goalSelected}}">
 
-        <!--absolute positioned button to add a new goal-->
-        <paper-fab
-          class="mainFab"
-          icon="icons:add"
-          on-tap="addGoal"
-          hidden="{{goalSelected}}">
-        </paper-fab>
+          <!--absolute positioned button to finsh adding a new goal and close the add view-->
+          <paper-fab
+            class="mainFab"
+            icon="icons:check"
+            on-tap="finishGoal">
+          </paper-fab>
+
+        </span>
+
+        <span hidden="{{goalSelected}}">
+
+          <!--absolute positioned button to add a new goal-->
+          <paper-fab
+            class="mainFab"
+            icon="icons:add"
+            on-tap="addGoal"
+            hidden="{{goalSelected}}">
+          </paper-fab>
+
+        </span>
 
         <div hidden="{{goalSelected}}">
           <!--default placeholder if user has not put any goals in yet...-->

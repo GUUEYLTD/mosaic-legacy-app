@@ -76,6 +76,17 @@
           error-message="Please enter a valid first name.">
         </paper-input>
 
+        <paper-input
+          label="Last Name"
+          type="text"
+          value="{{data.lName}}"
+          tabindex="2"
+          required
+          auto-validate
+          pattern="[a-zA-Z]*"
+          error-message="Please enter a valid last name.">
+        </paper-input>
+
         <guuey-date-input
           label="Date of Birth"
           route="/homes/{{home}}/patients/{{patient}}/personalProfile/dob"
@@ -85,6 +96,16 @@
           error-message="Please enter a date by clicking on tapping/clicking on this field.">
         </guuey-date-input>
 
+        <paper-input
+          label="Preferred Mode of Address"
+          type="text"
+          value="{{data.preferredName}}"
+          tabindex="4"
+          auto-validate
+          pattern="[a-zA-Z\.\s]*"
+          error-message="Mode of address cannot contain numbers or special characters.">
+        </paper-input>
+
         <guuey-date-input
           label="Date of Assessment"
           route="/homes/{{home}}/patients/{{patient}}/personalProfile/dateAssessed"
@@ -93,6 +114,16 @@
           auto-validate
           error-message="Please enter a date by clicking on tapping/clicking on this field.">
         </guuey-date-input>
+
+        <paper-input
+          label="Where Assessed"
+          type="text"
+          value="{{data.whereAssessed}}"
+          tabindex="6"
+          required
+          auto-validate
+          error-message="Please enter the location of service user assessment.">
+        </paper-input>
 
         <vaadin-combo-box
           allow-custom-value
@@ -108,49 +139,6 @@
 
         <vaadin-combo-box
           allow-custom-value
-          label="Ethnicity"
-          items="[[ethnicities]]"
-          value="{{data.ethnicity}}"
-          tabindex="9"
-          required
-          auto-valdate
-          pattern="[a-zA-Z\s]*"
-          error-message="Please enter an ethnicity without special characters.">
-        </vaadin-combo-box>
-
-        <paper-input
-          label="Last Name"
-          type="text"
-          value="{{data.lName}}"
-          tabindex="2"
-          required
-          auto-validate
-          pattern="[a-zA-Z]*"
-          error-message="Please enter a valid last name.">
-        </paper-input>
-
-        <paper-input
-          label="Preferred Mode of Address"
-          type="text"
-          value="{{data.preferredName}}"
-          tabindex="4"
-          auto-validate
-          pattern="[a-zA-Z\.\s]*"
-          error-message="Mode of address cannot contain numbers or special characters.">
-        </paper-input>
-
-        <paper-input
-          label="Where Assessed"
-          type="text"
-          value="{{data.whereAssessed}}"
-          tabindex="6"
-          required
-          auto-validate
-          error-message="Please enter the location of service user assessment.">
-        </paper-input>
-
-        <vaadin-combo-box
-          allow-custom-value
           label="Religion"
           items="[[religions]]"
           value="{{data.religion}}"
@@ -159,6 +147,18 @@
           auto-validate
           pattern="[a-zA-Z\s]*"
           error-message="Please enter a religion without special characters.">
+        </vaadin-combo-box>
+
+        <vaadin-combo-box
+          allow-custom-value
+          label="Ethnicity"
+          items="[[ethnicities]]"
+          value="{{data.ethnicity}}"
+          tabindex="9"
+          required
+          auto-valdate
+          pattern="[a-zA-Z\s]*"
+          error-message="Please enter an ethnicity without special characters.">
         </vaadin-combo-box>
 
         <vaadin-combo-box
