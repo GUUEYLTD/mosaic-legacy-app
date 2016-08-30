@@ -1,0 +1,237 @@
+<!--takes as arguments:
+used to dynamically display tables that update and reflect to the database location specified
+tableroute(string)
+  where to save the table entries in the database
+tableinputs(array)
+  an array of inputs for the table needs to be declared in the parent element
+category(string)
+  the category of the inputs that are being declared
+label(string)
+  label to put in the heading area above the table
+label2(string)
+  second label to put in the heading area above the table
+patient(string)
+  required in order for the element to know where to save/get checkbox entries
+home(string)
+  required in order for the element to know where to save/get checkbox entries
+-->
+
+<link rel="import" href="dependencies.html" />
+
+<dom-module id="guuey-table">
+
+  <template>
+    <firebase-document
+      id="mainTableDB"
+      app-name="main"
+      data="{{mainTableData}}"
+      path="{{tableroute}}">
+    </firebase-document>
+    <firebase-document
+      id="tableDB"
+      app-name="main"
+      data="{{tableData}}">
+    </firebase-document>
+
+    <iron-media-query
+      query="(max-width:1660px)"
+      query-matches="{{query1660}}">
+    </iron-media-query>
+    <style>
+      .sectionHeading{
+        background-color:#42c6ff;
+        width:100%;
+      }
+      .sectionHeadingText{
+        font-size: 24px;
+        color:#FFFFFF;
+      }
+      .subHeadingText{
+        color:#FFFFFF;
+      }
+      .container{
+        padding:16px;
+      }
+      .tableScrollLabel{
+        font-weight:bold;
+        text-transform:uppercase;
+        margin-bottom:0px;
+        padding-bottom:0px;
+        font-size:10px;
+        padding-left:20px;
+        color:var(--table-scroll-lable-color);
+      }
+      .tableContainer{
+        height:auto;
+        overflow:var(--table-overflow);
+      }
+      paper-card{
+        width:90%;
+        margin:20px 5% 20px 5%;
+      }
+      table{
+        background-color:var(--table-background-color);
+      }
+      tbody{
+        display:var(--tbody-display);
+      }
+      thead tr{
+        position:var(--thead-tr-position);
+        display:var(--thead-tr-display);
+      }
+      td{
+        width:var(--thead-tr-td-width);
+      }
+      th{
+        text-align:left;
+      }
+      td,th{
+
+      }
+      td,th{
+        min-width:var(--td-th-min-width);
+      }
+      td,th:last-of-type{
+        width:var(--td-th-last-width);
+      }
+    </style>
+
+    <paper-card>
+      <div class="sectionHeading">
+        <div class="container">
+          <p class="sectionHeadingText">
+            {{label}}
+          </p>
+          <p class="subHeadingText">
+            {{label2}}
+          </p>
+        </div>
+      </div>
+      <div class="container tableContainer">
+        <p class="tableScrollLabel">
+          swipe left scrolls table
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>{{category}}</th>
+              <th>Daily</th>
+              <th>Weekly</th>
+              <th>Bi-weekly</th>
+              <th>Monthy</th>
+              <th>Commments</th>
+            </tr>
+          </thead>
+          <tbody>
+              <template is="dom-repeat" items="{{tableinputs}}" as="rowdata">
+                <!--see element for details-->
+                  <guuey-table-row
+                    rowdata="{{rowdata}}"
+                    tableroute="{{tableroute}}/{{rowdata}}"
+                    home="{{home}}"
+                    patient="{{patient}}">
+                  </guuey-table-row>
+                  <br />
+              </template>
+          </tbody>
+        </table>
+      </div>
+    </paper-card>
+  </template>
+
+  <script>
+
+    Polymer({
+      is:'guuey-table',
+      properties:{
+        page:{
+          type:String
+        },
+        patient:{
+          type:String
+        },
+        label:{
+          type:String
+        },
+        label2:{
+          type:String
+        },
+        tableinputs:{
+          type:Array
+        },
+        tableroute:{
+          type:String
+        },
+        mainTableData:{
+          type:Object,
+          reflectToAttribute:true
+        },
+        category:{
+          type:String
+        }
+      },
+      observers:[
+        "editQuery(query1660)"
+      ],
+      checkboxChanged:function(e){
+        this.$.tableDB.path=null;
+        this.$.tableDB.data=null;
+
+        if(e.target.checked===true){
+          this.$.tableDB.data=true;
+          var path=this.tableroute+"/"+e.target.id;
+          this.$.tableDB.save(path,e.target.value)
+            .then(function(){
+              //something to do when complete
+            });
+        } else {
+          this.$.tableDB.data=null;
+          var path=this.tableroute+"/"+e.target.id;
+          this.$.tableDB.save(path,e.target.value)
+            .then(function(){
+              //something to do when complete
+            });
+        }
+      },
+      toggleDialog:function(e){
+        var section=e.model.item;
+        this.$.tableDB.path=null;
+        this.$.tableDB.data=null;
+        this.$.tableDB.path=this.tableroute+"/"+section
+        this.$.tableComment.toggle();
+
+      },
+      tableDataLoc:function(value, section){
+        var path=this.tableroute+"/"+section+"/"+value;
+        this.$.mainTableDB.getStoredValue(path)
+          .then(function(returnValue){
+            return returnValue;
+          });
+      },
+      editQuery:function(query1660){
+        if(query1660){
+          this.customStyle["--table-scroll-lable-color"]="inherit";
+          this.customStyle["--table-overflow"]="scroll";
+          this.customStyle["--tbody-display"]="block";
+          this.customStyle["--thead-tr-position"]="relative";
+          this.customStyle["--thead-tr-display"]="block";
+          this.customStyle["--thead-tr-td-width"]="150px";
+          this.customStyle["--td-th-min-width"]="150px";
+          this.customStyle["--td-th-last-width"]="150px";
+          this.updateStyles();
+        } else {
+          this.customStyle["--table-scroll-lable-color"]="transparent";
+          this.customStyle["--table-overflow"]="unset";
+          this.customStyle["--tbody-display"]="block";
+          this.customStyle["--thead-tr-position"]="relative";
+          this.customStyle["--thead-tr-display"]="block";
+          this.customStyle["--thead-tr-td-width"]="150px";
+          this.customStyle["--td-th-min-width"]="150px";
+          this.customStyle["--td-th-last-width"]="150px";
+          this.updateStyles();
+        }
+      }
+    });
+
+  </script>
+</dom-module>

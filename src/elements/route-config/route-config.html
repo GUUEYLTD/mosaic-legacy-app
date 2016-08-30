@@ -1,0 +1,65 @@
+<!--might use later if i can get it to pass page and id info to other elements-->
+<link rel="import" href="../../../bower_components/polymer/polymer.html" />
+<link rel="import" href="../../../bower_components/app-route/app-location.html" />
+<link rel="import" href="../../../bower_components/app-route/app-route.html" />
+<dom-module id="route-config">
+
+  <template>
+
+    <app-location route="{{route}}"></app-location>
+
+    <app-route
+      route="{{route}}"
+      pattern="/:page"
+      data="{{routeData}}"
+      tail="{{subroute}}">
+    </app-route>
+
+    <app-route
+      route="{{subroute}}"
+      pattern="/:patientID"
+      data="{{subRouteData}}">
+    </app-route>
+
+  </template>
+
+  <script>
+
+    Polymer({
+      is:"route-config",
+      properties:{
+        page:{
+          type:String,
+          reflectToAttribute:true,
+          observer:'_pageChanged'
+        },
+        patientID:{
+          type:String,
+          reflectToAttribute:true,
+          observer:'_patientIDChanged'
+        },
+      },
+      observers: [
+        '_routePageChanged(routeData.page)',
+        '_subRouteChanged(subRouteData.patientID)',
+      ],
+
+      _routePageChanged:function(page) {
+        this.page = page || 'home';
+      },
+      _subRouteChanged:function(patientID){
+        this.patientID = patientID || '';
+      },
+      _pageChanged:function(page) {
+        // load page import on demand.
+        this.importHref(
+          this.resolveUrl('../../pages/service-user-' + page + '.html'), null, null, true);
+      },
+      _patientIDChanged:function(patientID){
+        this.patientID=this.subRouteData.patientID||'';
+      },
+    });
+
+  </script>
+
+</dom-module>

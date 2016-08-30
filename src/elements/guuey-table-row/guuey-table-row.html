@@ -1,0 +1,177 @@
+<!--
+used to write a row to of checkbox options in the guuey-table
+arguments:
+rowdata(string)
+  the name of the row and where to save the data to
+tableroute(string)
+  the location in the database that the row should sync to
+home(string)
+  used to determine database paths REQUIRED
+patient
+  used to determine database paths REQUIRED
+-->
+<link rel="import" href="dependencies.html" />
+<dom-module id="guuey-table-row">
+
+  <template>
+    <firebase-document
+      id="mainTableDB"
+      app-name="main"
+      data="{{mainTableData}}"
+      path="{{tableroute}}">
+    </firebase-document>
+    <firebase-document
+      id="tableDB"
+      app-name="main"
+      data="{{tableData}}">
+    </firebase-document>
+
+    <iron-media-query
+      query="(max-width:1660px)"
+      query-matches="{{query1660}}">
+    </iron-media-query>
+
+    <style>
+      custom-row{
+        display:table-row;
+
+      }
+      custom-cell{
+        display:table-cell;
+        width:var(--thead-tr-td-width);
+      }
+      custom-cell{
+        min-width:var(--td-th-min-width);
+
+      }
+      custom-cell:last-of-type{
+        width:var(--td-th-last-width);
+      }
+      .comment{
+        max-width:200px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+    </style>
+    <!--dialogue that works to add comments to a table row-->
+    <paper-dialog id="tableComment">
+      <h2>Add/update Comment</h2>
+      <paper-input label="comment" value="{{tableData.comment}}"></paper-input>
+    </paper-dialog>
+
+    <custom-row>
+      <custom-cell>{{rowdata}}</custom-cell>
+
+      <custom-cell>
+        <paper-checkbox
+          id="{{rowdata}}"
+          on-change="checkboxChanged"
+          value="daily"
+          checked="{{mainTableData.daily}}">
+        </paper-checkbox>
+      </custom-cell>
+
+      <custom-cell>
+        <paper-checkbox
+          id="{{rowdata}}"
+          on-change="checkboxChanged"
+          value="weekly"
+          checked="{{mainTableData.weekly}}">
+        </paper-checkbox>
+      </custom-cell>
+
+      <custom-cell>
+        <paper-checkbox
+          id="{{rowdata}}"
+          on-change="checkboxChanged"
+          value="biWeekly"
+          checked="{{mainTableData.biWeekly}}">
+        </paper-checkbox>
+      </custom-cell>
+
+      <custom-cell>
+        <paper-checkbox
+          id="{{rowdata}}"
+          on-change="checkboxChanged"
+          value="monthly"
+          checked="{{mainTableData.monthly}}">
+        </paper-checkbox>
+      </custom-cell>
+
+      <custom-cell class="comment">
+        <paper-icon-button
+          id="{{rowdata}}"
+          on-tap="toggleDialog"
+          icon="communication:comment">
+        </paper-icon-button>
+        {{mainTableData.comment}}
+      </custom-cell>
+    </custom-row>
+  </template>
+
+  <script>
+
+    Polymer({
+      is:'guuey-table-row',
+      properties:{
+        page:{
+          type:String
+        },
+        home:{
+          type:String
+        },
+        patient:{
+          type:String
+        },
+        rowdata:{
+          type:String
+        },
+        tableroute:{
+          type:String
+        },
+        mainTableData:{
+          type:Object,
+        },
+      },
+      observers:[
+        "editQuery(query1660)"
+      ],
+      checkboxChanged:function(e){
+        this.$.tableDB.path=null;
+        this.$.tableDB.data=null;
+
+        if(e.target.checked===true){
+          this.$.tableDB.data=true;
+          var path=this.tableroute;
+          this.$.tableDB.save(path,e.target.value)
+            .then(function(){
+              //something to do when complete
+            });
+        } else {
+          this.$.tableDB.data=null;
+          var path=this.tableroute;
+          this.$.tableDB.save(path,e.target.value)
+            .then(function(){
+              //something to do when complete
+            });
+        }
+      },
+      toggleDialog:function(e){
+        this.$.tableDB.path=null;
+        this.$.tableDB.data=null;
+        this.$.tableDB.path=this.tableroute;
+        this.$.tableComment.toggle();
+
+      },
+      editQuery:function(query1660){
+        if(query1660){
+
+        } else {
+
+        };
+      }
+    });
+
+  </script>
+</dom-module>

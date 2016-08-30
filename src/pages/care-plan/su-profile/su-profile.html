@@ -1,0 +1,979 @@
+<link rel="import" href="../../../../bower_components/polymer/polymer.html" />
+<link rel="import" href="../../../../bower_components/polymerfire/firebase-document.html" />
+<link rel="import" href="../../../../bower_components/paper-card/paper-card.html" />
+<link rel="import" href="../../../elements/su-header/su-header.html" />
+<link rel="import" href="../../../../bower_components/iron-icon/iron-icon.html" />
+<link rel="import" href="../../../../bower_components/iron-icons/iron-icons.html" />
+<link rel="import" href="../../../../bower_components/iron-icons/social-icons.html" />
+<link rel="import" href="../../../../bower_components/iron-icons/communication-icons.html" />
+<link rel="import" href="../../../../bower_components/paper-input/paper-input.html" />
+<link rel="import" href="../../../../bower_components/vaadin-combo-box/vaadin-combo-box.html" />
+<link rel="import" href="../../../elements/guuey-date-input/guuey-date-input.html" />
+<link rel="import" href="../../../../bower_components/app-layout/app-grid/app-grid-style.html" />
+<link rel="import" href="../../../../bower_components/iron-media-query/iron-media-query.html" />
+
+<dom-module id="su-profile">
+
+  <template>
+    <firebase-document
+      id="profileDB"
+      path="/homes/{{home}}/patients/{{patient}}/personalProfile"
+      data="{{profileData}}"
+      app-name="main">
+    </firebase-document>
+    <firebase-document
+      id="contactsQuery"
+      path="/homes/{{home}}/patients/{{patient}}/contacts"
+      data="{{contactsData}}"
+      app-name="main">
+    </firebase-document>
+    <!--incredibly stupid???? change later-->
+    <firebase-document
+      id="nextofKinDB"
+      path="/homes/{{home}}/patients/{{patient}}/contacts/nextOfKin"
+      data="{{nextOfKinData}}"
+      app-name="main">
+    </firebase-document>
+    <firebase-document
+      id="secondContactNameDB"
+      path="/homes/{{home}}/patients/{{patient}}/contacts/secondContactName"
+      data="{{secondContactNameData}}"
+      app-name="main">
+    </firebase-document>
+    <firebase-document
+      id="consultantPsychiatristDB"
+      path="/homes/{{home}}/patients/{{patient}}/contacts/consultantPsychiatrist"
+      data="{{consultantPsychiatristData}}"
+      app-name="main">
+    </firebase-document>
+    <firebase-document
+      id="generalPractitionerDB"
+      path="/homes/{{home}}/patients/{{patient}}/contacts/generalPractitioner"
+      data="{{generalPractitionerData}}"
+      app-name="main">
+    </firebase-document>
+    <firebase-document
+      id="socialWorkerReferrerDB"
+      path="/homes/{{home}}/patients/{{patient}}/contacts/socialWorkerReferrer"
+      data="{{socialWorkerReferrerData}}"
+      app-name="main">
+    </firebase-document>
+    <firebase-document
+      id="cpnDB"
+      path="/homes/{{home}}/patients/{{patient}}/contacts/cpn"
+      data="{{cpnData}}"
+      app-name="main">
+    </firebase-document>
+    <firebase-document
+      id="ministerOfReligionDB"
+      path="/homes/{{home}}/patients/{{patient}}/contacts/ministerOfReligion"
+      data="{{ministerOfReligionData}}"
+      app-name="main">
+    </firebase-document>
+
+    <iron-media-query
+      query="(max-width:900px)"
+      query-matches="{{query900}}">
+    </iron-media-query>
+
+    <style include="app-grid-style">
+      :host{
+        --app-grid-columns:2;
+        --app-grid-expandible-item-columns:2;
+        --app-grid-item-height:100px;
+      }
+      paper-card{
+        width:80%;
+        margin:-50px 10% 50px 10%;
+      }
+      .divider{
+        width:100%;
+        height:1px;
+        margin-top:25px;
+        margin-bottom:25px;
+        background-color:#e0e0e0;
+        display:inline-block;
+      }
+      iron-icon{
+        opacity:.54;
+        width:10%;
+        margin:50px 0px 0px 0px;
+        position:absolute;
+        top:0px;
+        bottom:0px;
+      }
+      .customContainer{
+        width:90%;
+        padding:0px 5% 20px 5%;
+        margin:0px;
+      }
+      .inputContainer{
+          width:90%;
+          margin:0px;
+          float:right;
+      }
+      paper-input, guuey-date-input, vaadin-combo-box{
+        padding:20px;
+      }
+      .sectionContainer{
+        position:relative;
+      }
+    </style>
+
+    <paper-card elevation="3">
+      <su-header
+        page="Personal Profile"
+        patient="{{patient}}"
+        home="{{home}}"
+        lastname="{{profileData.lName}}"
+        firstname="{{profileData.fName}}"
+        setimage>
+      </su-header>
+
+      <div class="customContainer">
+        <div class="divider">
+
+        </div>
+        <div class="sectionContainer">
+          <iron-icon icon="social:person-outline"></iron-icon>
+
+          <div class="inputContainer app-grid">
+
+            <paper-input
+              label="First Name"
+              value="{{profileData.fName}}"
+              tabindex="1"
+              required
+              auto-validate
+              pattern="[a-zA-Z]*"
+              error-message="Please enter a valid first name.">
+            </paper-input>
+
+            <guuey-date-input
+              route="/homes/{{home}}/patients/{{patient}}/personalProfile/dob"
+              label="Date of Birth"
+              tabindex="3"
+              required
+              auto-validate
+              error-message="Please enter a date by clicking on tapping/clicking on this field.">
+            </guuey-date-input>
+
+            <guuey-date-input
+              route="/homes/{{home}}/patients/{{patient}}/personalProfile/dateAssessed"
+              label="Date Assessed"
+              tabindex="5"
+              required
+              auto-validate
+              error-message="Please enter a date by clicking on tapping/clicking on this field.">
+            </guuey-date-input>
+
+            <paper-input
+              label="Last Name"
+              value="{{profileData.lName}}"
+              tabindex="2"
+              required
+              auto-validate
+              pattern="[a-zA-Z]*"
+              error-message="Please enter a valid last name.">
+            </paper-input>
+
+            <paper-input
+              label="Preferred Mode of Adress"
+              value="{{profileData.preferredName}}"
+              tabindex="4"
+              auto-validate
+              pattern="[a-zA-Z\.\s]*"
+              error-message="Mode of address cannot contain numbers or special characters.">
+            </paper-input>
+            <!--more validation???? address? or what???-->
+            <paper-input
+              label="Where Assessed"
+              value="{{profileData.whereAssessed}}"
+              tabindex="6"
+              required
+              auto-validate
+              error-message="Please enter the location of service user assessment.">
+            </paper-input>
+
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="sectionContainer">
+
+          <iron-icon icon="icons:assignment"></iron-icon>
+
+          <div class="inputContainer app-grid">
+            <vaadin-combo-box
+              allow-custom-value
+              label="Partership Status"
+              items="[[parterShipStatuses]]"
+              value="{{profileData.partnership}}"
+              required
+              auto-validate
+              pattern="[a-zA-Z\s]*"
+              error-message="Please enter or select a partnership status without any special characters."
+              tabindex="7">
+            </vaadin-combo-box>
+            <vaadin-combo-box
+              allow-custom-value
+              label="Ethnicity"
+              items="[[ethnicities]]"
+              value="{{profileData.ethnicity}}"
+              required
+              auto-valdate
+              pattern="[a-zA-Z\s]*"
+              error-message="Please enter an ethnicity without special characters."
+              tabindex="9">
+            </vaadin-combo-box>
+
+            <vaadin-combo-box
+              allow-custom-value
+              label="Religion"
+              items="[[religions]]"
+              value="{{profileData.religion}}"
+              required
+              auto-validate
+              pattern="[a-zA-Z\s]*"
+              error-message="Please enter a religion without special characters."
+              tabindex="8">
+            </vaadin-combo-box>
+
+            <vaadin-combo-box
+              allow-custom-value
+              label="Nationality"
+              items="[[nationalities]]"
+              value="{{profileData.nationality}}"
+              required
+              auto-validate
+              pattern="[a-zA-Z\s]*"
+              error-message="Please enter a nationality without special characters."
+              tabindex="10">
+            </vaadin-combo-box>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="sectionContainer">
+
+          <iron-icon icon="communication:phone"></iron-icon>
+
+          <div class="inputContainer app-grid">
+
+            <paper-input
+              label="Next of Kin"
+              value="{{nextOfKinData.name}}"
+              tabindex="11"
+              required
+              auto-validate
+              pattern="[a-zA-Z\.\s]*"
+              error-message="Please enter a valid name.">
+            </paper-input>
+            <paper-input
+              label="Address"
+              value="{{nextOfKinData.address}}"
+              tabindex="13"
+              required
+              auto-validate
+              pattern="[a-zA-Z\d\s\-\,\#\.\+]+"
+              error-message="Please enter a valid address">
+            </paper-input>
+
+            <vaadin-combo-box
+              allow-custom-value
+              label="Relationship"
+              items="[[relationships]]"
+              value="{{nextOfKinData.relationship}}"
+              tabindex="12"
+              required
+              auto-validate
+              pattern="[a-zA-Z\.\s]*"
+              error-message="Please enter the relationship to the service user.">
+            </vaadin-combo-box>
+            <paper-input
+              label="Telephone"
+              value="{{nextOfKinData.phone}}"
+              tabindex="14"
+              required
+              auto-validate
+              pattern="\+?\(?\d{2,4}\)?[\d\s-]{3,}"
+              error-message="Please enter a valid phone Number.">
+            </paper-input>
+
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="sectionContainer">
+
+          <iron-icon icon="communication:phone"></iron-icon>
+
+          <div class="inputContainer app-grid">
+
+            <paper-input
+              label="Second Contact Name"
+              value="{{secondContactNameData.name}}"
+              tabindex="15"
+              auto-validate
+              pattern="[a-zA-Z\.\s]*"
+              error-message="Please enter a valid name.">
+            </paper-input>
+
+            <paper-input
+              label="Address"
+              value="{{secondContactNameData.address}}"
+              tabindex="17"
+              auto-validate
+              pattern="[a-zA-Z\d\s\-\,\#\.\+]+"
+              error-message="Please enter a valid address">
+            </paper-input>
+
+            <vaadin-combo-box
+              allow-custom-value
+              label="Relationship"
+              items="[[relationships]]"
+              value="{{secondContactNameData.relationship}}"
+              tabindex="16"
+              auto-validate
+              pattern="[a-zA-Z\.\s]*"
+              error-message="Please enter the relationship to the service user.">
+            </vaadin-combo-box>
+
+            <paper-input
+              label="Telephone"
+              value="{{secondContactNameData.phone}}"
+              tabindex="18"
+              auto-validate
+              pattern="\+?\(?\d{2,4}\)?[\d\s-]{3,}"
+              error-message="Please enter a valid phone Number.">
+            </paper-input>
+
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="sectionContainer">
+
+          <iron-icon icon="communication:contact-mail"></iron-icon>
+
+          <div class="inputContainer app-grid">
+
+            <paper-input
+              label="Consultant Psychiatrist"
+              value="{{consultantPsychiatristData.name}}"
+              tabindex="19"
+              auto-validate
+              pattern="[a-zA-Z\.\s]*"
+              error-message="Please enter a valid name.">
+            </paper-input>
+
+            <paper-input
+              label="Address"
+              value="{{consultantPsychiatristData.address}}"
+              tabindex="20"
+              auto-validate
+              pattern="[a-zA-Z\d\s\-\,\#\.\+]+"
+              error-message="Please enter a valid address">
+            </paper-input>
+            <paper-input
+              label="Telephone"
+              value="{{consultantPsychiatristData.phone}}"
+              tabindex="21"
+              auto-validate
+              pattern="\+?\(?\d{2,4}\)?[\d\s-]{3,}"
+              error-message="Please enter a valid phone Number.">
+            </paper-input>
+
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="sectionContainer">
+
+          <iron-icon icon="communication:contact-mail"></iron-icon>
+
+          <div class="inputContainer app-grid">
+
+            <paper-input
+              label="General Practitioner"
+              value="{{generalPractitionerData.name}}"
+              tabindex="22"
+              auto-validate
+              pattern="[a-zA-Z\.\s]*"
+              error-message="Please enter a valid name.">
+            </paper-input>
+
+            <paper-input
+              label="Address"
+              value="{{generalPractitionerData.address}}"
+              tabindex="23"
+              auto-validate
+              pattern="[a-zA-Z\d\s\-\,\#\.\+]+"
+              error-message="Please enter a valid address">
+            </paper-input>
+
+            <paper-input
+              label="Telephone"
+              value="{{generalPractitionerData.phone}}"
+              tabindex="24"
+              auto-validate
+              pattern="\+?\(?\d{2,4}\)?[\d\s-]{3,}"
+              error-message="Please enter a valid phone Number.">
+            </paper-input>
+
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="sectionContainer">
+
+          <iron-icon icon="communication:contact-mail"></iron-icon>
+
+          <div class="inputContainer app-grid">
+
+            <paper-input
+              label="Social Worker/Referrer"
+              value="{{socialWorkerReferrerData.name}}"
+              tabindex="25"
+              auto-validate
+              pattern="[a-zA-Z\.\s]*"
+              error-message="Please enter a valid name.">
+            </paper-input>
+
+            <paper-input
+              label="Address"
+              value="{{socialWorkerReferrerData.address}}"
+              tabindex="26"
+              auto-validate
+              pattern="[a-zA-Z\d\s\-\,\#\.\+]+"
+              error-message="Please enter a valid address">
+            </paper-input>
+            <paper-input
+              label="Telephone"
+              value="{{socialWorkerReferrerData.phone}}"
+              tabindex="27"
+              auto-validate
+              pattern="\+?\(?\d{2,4}\)?[\d\s-]{3,}"
+              error-message="Please enter a valid phone Number.">
+            </paper-input>
+
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="sectionContainer">
+
+          <iron-icon icon="communication:contact-mail"></iron-icon>
+
+          <div class="inputContainer app-grid">
+
+            <paper-input
+              label="Community Psychiatric Nurse (CPN)"
+              value="{{cpnData.name}}"
+              tabindex="28"
+              auto-validate
+              pattern="[a-zA-Z\.\s]*"
+              error-message="Please enter a valid name.">
+            </paper-input>
+
+            <paper-input
+              label="Address"
+              value="{{cpnData.address}}"
+              tabindex="29"
+              auto-validate
+              pattern="[a-zA-Z\d\s\-\,\#\.\+]+"
+              error-message="Please enter a valid address">
+            </paper-input>
+            <paper-input
+              label="Telephone"
+              value="{{cpnData.phone}}"
+              tabindex="30"
+              auto-validate
+              pattern="\+?\(?\d{2,4}\)?[\d\s-]{3,}"
+              error-message="Please enter a valid phone Number.">
+            </paper-input>
+
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+
+        <div class="sectionContainer">
+
+          <iron-icon icon="communication:contact-mail"></iron-icon>
+
+          <div class="inputContainer app-grid">
+
+            <paper-input
+              label="Minister of Religion"
+              value="{{ministerOfReligionData.name}}"
+              tabindex="31"
+              auto-validate
+              pattern="[a-zA-Z\.\s]*"
+              error-message="Please enter a valid name.">
+            </paper-input>
+
+            <paper-input
+              label="Address"
+              value="{{ministerOfReligionData.address}}"
+              tabindex="32"
+              auto-validate
+              pattern="[a-zA-Z\d\s\-\,\#\.\+]+"
+              error-message="Please enter a valid address">
+            </paper-input>
+            <paper-input
+              label="Telephone"
+              value="{{ministerOfReligionData.phone}}"
+              tabindex="33"
+              auto-validate
+              pattern="\+?\(?\d{2,4}\)?[\d\s-]{3,}"
+              error-message="Please enter a valid phone Number.">
+            </paper-input>
+
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+      </div>
+    </paper-card>
+
+  </template>
+  <script>
+
+    Polymer({
+
+      is: 'su-profile',
+      ready:function(){
+        this.addEventListener('print', this.print);
+      },
+      properties:{
+        page:{
+          type:String,
+        },
+        patient:{
+          type:String,
+        },
+        home:{
+          type:String,
+        },
+        date:{
+          observer:"_dateChanged"
+        },
+        //list of dropdown values for vaadin boxes... put in db???
+        religions:{
+          type:Array,
+          value:[
+            'Christian',
+            'Islam',
+            'Atheist',
+            'Unaffiliated',
+            'Hinduist',
+            'Buddhist',
+            'Jewish'
+          ]
+        },
+        parterShipStatuses:{
+          type:Array,
+          value:[
+            'Single',
+            'Married',
+            'Divorced',
+            'Complicated'
+          ]
+        },
+        ethnicities:{
+          type:Array,
+          value:[
+            'Albanian',
+            'Arab',
+            'Armenian',
+            'Assyrian',
+            'Azerbaijani',
+            'Balochi',
+            'Bamar',
+            'Basque',
+            'Bengali',
+            'Berber',
+            'Bihari',
+            'Bosniak',
+            'Brahui',
+            'Bulgarian',
+            'Catalan',
+            'Chuvash',
+            'Circassian',
+            'Congolese',
+            'Croat',
+            'Czech',
+            'Dane',
+            'Dutch',
+            'English',
+            'Estonian',
+            'Faroese',
+            'Finn',
+            'French',
+            'Gagauz',
+            'Galician',
+            'German',
+            'Greek',
+            'Georgian',
+            'Gujarati',
+            'Han Chinese',
+            'Hindustani',
+            'Hui',
+            'Hungarian',
+            'Icelander',
+            'Irish',
+            'Italian',
+            'Japanese',
+            'Javanese',
+            'Jew',
+            'Lebanese',
+            'Macedonian',
+            'Malayali',
+            'Kannada',
+            'Kazakh',
+            'Korean',
+            'Kurd',
+            'Kyrgyz',
+            'Malay',
+            'Marathi',
+            'Norwegian',
+            'Laz',
+            'Manchu',
+            'Moldovan',
+            'Mongol',
+            'Nepali',
+            'Pashtun',
+            'Oromo',
+            'Persian',
+            'Pole',
+            'Portuguese',
+            'Punjabi',
+            'Romanian',
+            'Romani',
+            'Russian',
+            'Scottish',
+            'Serb',
+            'Sindhi',
+            'Sinhalese',
+            'Slovak',
+            'Slovene',
+            'Spaniard',
+            'Sundanese',
+            'Swede',
+            'Tamil',
+            'Telugu',
+            'Thai',
+            'Tibetan',
+            'Tuareg',
+            'Turk',
+            'Turkmen',
+            'Ukrainian',
+            'Uyghur',
+            'Vietnamese',
+            'Volga Tatar',
+            'Welsh',
+            'Zhuang',
+          ]
+        },
+        nationalities:{
+          type:Array,
+          value:[
+            'Afghan',
+            'Albanian',
+            'Algerian',
+            'American',
+            'Andorran',
+            'Angolan',
+            'Antiguans',
+            'Argentinean',
+            'Armenian',
+            'Australian',
+            'Austrian',
+            'Azerbaijani',
+            'Bahamian',
+            'Bahraini',
+            'Bangladeshi',
+            'Barbadian',
+            'Barbudans',
+            'Batswana',
+            'Belarusian',
+            'Belgian',
+            'Belizean',
+            'Beninese',
+            'Bhutanese',
+            'Bolivian',
+            'Bosnian',
+            'Brazilian',
+            'British',
+            'Bruneian',
+            'Bulgarian',
+            'Burkinabe',
+            'Burmese',
+            'Burundian',
+            'Cambodian',
+            'Cameroonian',
+            'Canadian',
+            'Cape Verdean',
+            'Central African',
+            'Chadian',
+            'Chilean',
+            'Chinese',
+            'Colombian',
+            'Comoran',
+            'Congolese',
+            'Congolese',
+            'Costa Rican',
+            'Croatian',
+            'Cuban',
+            'Cypriot',
+            'Czech',
+            'Danish',
+            'Djibouti',
+            'Dominican',
+            'Dominican',
+            'Dutch',
+            'Dutchman',
+            'Dutchwoman',
+            'East Timorese',
+            'Ecuadorean',
+            'Egyptian',
+            'Emirian',
+            'Equatorial Guinean',
+            'Eritrean',
+            'Estonian',
+            'Ethiopian',
+            'Fijian',
+            'Filipino',
+            'Finnish',
+            'French',
+            'Gabonese',
+            'Gambian',
+            'Georgian',
+            'German',
+            'Ghanaian',
+            'Greek',
+            'Grenadian',
+            'Guatemalan',
+            'Guinea-Bissauan',
+            'Guinean',
+            'Guyanese',
+            'Haitian',
+            'Herzegovinian',
+            'Honduran',
+            'Hungarian',
+            'I-Kiribati',
+            'Icelander',
+            'Indian',
+            'Indonesian',
+            'Iranian',
+            'Iraqi',
+            'Irish',
+            'Israeli',
+            'Italian',
+            'Ivorian',
+            'Jamaican',
+            'Japanese',
+            'Jordanian',
+            'Kazakhstani',
+            'Kenyan',
+            'Kittian and Nevisian',
+            'Kuwaiti',
+            'Kyrgyz',
+            'Laotian',
+            'Latvian',
+            'Lebanese',
+            'Liberian',
+            'Libyan',
+            'Liechtensteiner',
+            'Lithuanian',
+            'Luxembourger',
+            'Macedonian',
+            'Malagasy',
+            'Malawian',
+            'Malaysian',
+            'Maldivan',
+            'Malian',
+            'Maltese',
+            'Marshallese',
+            'Mauritanian',
+            'Mauritian',
+            'Mexican',
+            'Micronesian',
+            'Moldovan',
+            'Monacan',
+            'Mongolian',
+            'Moroccan',
+            'Mosotho',
+            'Motswana',
+            'Mozambican',
+            'Namibian',
+            'Nauruan',
+            'Nepalese',
+            'Netherlander',
+            'New Zealander',
+            'Ni-Vanuatu',
+            'Nicaraguan',
+            'Nigerian',
+            'Nigerien',
+            'North Korean',
+            'Northern Irish',
+            'Norwegian',
+            'Omani',
+            'Pakistani',
+            'Palauan',
+            'Panamanian',
+            'Papua New Guinean',
+            'Paraguayan',
+            'Peruvian',
+            'Polish',
+            'Portuguese',
+            'Qatari',
+            'Romanian',
+            'Russian',
+            'Rwandan',
+            'Saint Lucian',
+            'Salvadoran',
+            'Samoan',
+            'San Marinese',
+            'Sao Tomean',
+            'Saudi',
+            'Scottish',
+            'Senegalese',
+            'Serbian',
+            'Seychellois',
+            'Sierra Leonean',
+            'Singaporean',
+            'Slovakian',
+            'Slovenian',
+            'Solomon Islander',
+            'Somali',
+            'South African',
+            'South Korean',
+            'Spanish',
+            'Sri Lankan',
+            'Sudanese',
+            'Surinamer',
+            'Swazi',
+            'Swedish',
+            'Swiss',
+            'Syrian',
+            'Taiwanese',
+            'Tajik',
+            'Tanzanian',
+            'Thai',
+            'Togolese',
+            'Tongan',
+            'Trinidadian or Tobagonian',
+            'Tunisian',
+            'Turkish',
+            'Tuvaluan',
+            'Ugandan',
+            'Ukrainian',
+            'Uruguayan',
+            'Uzbekistani',
+            'Venezuelan',
+            'Vietnamese',
+            'Welsh',
+            'Welsh',
+            'Yemenite',
+            'Zambian',
+            'Zimbabwean',
+
+          ]
+        },
+        relationships:{
+          type:Array,
+          value:[
+            'Father',
+            'Mother',
+            'Brother',
+            'Sister',
+            'Aunt',
+            'Uncle',
+            'Grandfather',
+            'Grandmother',
+            'Grandson',
+            'Granddaughter',
+            'Nephew',
+            'Neice',
+            'Cousin',
+            'Husband',
+            'Wife',
+          ]
+        }
+      },
+      observers:[
+        "editquery900(query900)"
+      ],
+      print:function(e){
+        var printable=window.open("","printable");
+        printable.document.write("<html><head>");
+        printable.document.write("</head><body>");
+        printable.document.write("<div style='width:100% padding:5%;'>");
+        var patient = this.profileData;
+        var contacts = this.$.contactsQuery.data;
+        for(x in patient){
+          if(x !="image"){
+            console.log(typeof x);
+            console.log("STUFF");
+            printable.document.write("<p>"+this.convertToPrintText(x)+": "+patient[x]+"<br /></p>");
+          }
+        };
+        for(x in contacts){
+          printable.document.write("<p>"+this.convertToPrintText(x)+": "+contacts[x].name+"<br /></p>");
+          printable.document.write("<p>"+this.convertToPrintText(x)+": "+contacts[x].address+"<br /></p>");
+          printable.document.write("<p>"+this.convertToPrintText(x)+": "+contacts[x].phone+"<br /></p>");
+        };
+        printable.document.write();
+        printable.document.write("</body></html>");
+        printable.document.write("</div>");
+        printable.print();
+        printable.close();
+      },
+      //convert db keys to regular with spaces
+      convertToPrintText:function(camelCase){
+        if (camelCase == null || camelCase == "") {
+          return camelCase;
+        }
+
+        camelCase = camelCase.trim();
+        var newText = "";
+        for (var i = 0; i < camelCase.length; i++) {
+          if (/[A-Z]/.test(camelCase[i])
+              && i != 0
+              && /[a-z]/.test(camelCase[i-1])) {
+            newText += " ";
+          }
+          if (i == 0 && /[a-z]/.test(camelCase[i]))
+          {
+            newText += camelCase[i].toUpperCase();
+          } else {
+            newText += camelCase[i];
+          }
+        }
+        return newText;
+      },
+      editquery900(query900){
+        if(query900){
+          this.customStyle["--app-grid-columns"]="1";
+          this.updateStyles();
+        } else {
+          this.customStyle["--app-grid-columns"]="2";
+          this.updateStyles();
+        }
+      }
+    });
+
+  </script>
+
+</dom-module>

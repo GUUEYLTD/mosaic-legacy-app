@@ -1,139 +1,551 @@
-<!--
-@license
-Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
-
-<link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="../bower_components/app-layout/app-drawer/app-drawer.html">
-<link rel="import" href="../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
-<link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
-<link rel="import" href="../bower_components/app-layout/app-header-layout/app-header-layout.html">
-<link rel="import" href="../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
-<link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
-<link rel="import" href="../bower_components/app-route/app-location.html">
-<link rel="import" href="../bower_components/app-route/app-route.html">
-<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
-<link rel="import" href="../bower_components/iron-selector/iron-selector.html">
-<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="my-icons.html">
+<link rel="import" href="my-app-dependencies.html" />
 
 <dom-module id="my-app">
-  <template>
-    <style>
-      :host {
-        --app-primary-color: #4285f4;
-        --app-secondary-color: black;
 
+  <template>
+    <!--firebase app and auth config-->
+    <firebase-app
+      name="main"
+      auth-domain="careplan-c2677.firebaseapp.com"
+      database-url="https://careplan-c2677.firebaseio.com"
+      api-key="AIzaSyBdtmHIV_7epC0OBiXkTNoqrGRspA58Epc">
+    </firebase-app>
+    <!--SECONDARY APP FOR GETTING AROUND USER AUTO SIGN IN WHEN CREATING A NEW USER-->
+    <firebase-app
+      name="user2"
+      auth-domain="careplan-c2677.firebaseapp.com"
+      database-url="https://careplan-c2677.firebaseio.com"
+      api-key="AIzaSyBdtmHIV_7epC0OBiXkTNoqrGRspA58Epc">
+    </firebase-app>
+    <firebase-auth
+      id="auth"
+      app-name="main"
+      user="{{user}}"
+      signed-in="{{signedIn}}"
+      status-known="{{statusKnown}}"
+      on-error="handleError">
+    </firebase-auth>
+    <!--NEED TO PUT THIS SOMEWHERE ELSE LATER ONLY USED TO CREATE NEW USERS-->
+    <firebase-auth
+      id="createUser"
+      app-name="user2"
+      >
+    </firebase-auth>
+    <!--MOVE THIS WHEN REFACTORING CODE DOES NOT BELONG HERE!-->
+    <firebase-document
+      id="userDB"
+      app-name="main">
+    </firebase-document>
+    <!--SAME AS ABOVE MOVE LATER USED TO GET PROFILE INFO FOR SIDEBAR-->
+    <firebase-document
+      path="/homes/{{home}}/details"
+      data="{{careHomeProfile}}"
+      app-name="main">
+    </firebase-document>
+    <!--firebase doc to create new home... NEEDS TO GO ELSEWHERE LATER!-->
+    <firebase-document
+      id="homeDB"
+      app-name="main">
+    </firebase-document>
+    <firebase-document
+      id="userIndexDB"
+      app-name="main">
+    </firebase-document>
+    <!--routing config-->
+    <app-location id="location" route="{{route}}"></app-location>
+    <!--route to declare which home is being accessed-->
+    <app-route
+      route="{{route}}"
+      pattern="/:home"
+      data="{{homeData}}"
+      tail="{{catRoute}}">
+    </app-route>
+    <!--route for page dir (category of page)-->
+    <app-route
+      route="{{catRoute}}"
+      pattern="/:category"
+      data="{{catData}}"
+      tail="{{pageRoute}}">
+    </app-route>
+    <!--route for page name-->
+    <app-route
+      route="{{pageRoute}}"
+      pattern="/:page"
+      data="{{pageData}}"
+      tail="{{paramRoute}}">
+    </app-route>
+    <!--final param for multi use (patientid, careworkerid etc...)-->
+    <app-route
+      route="{{paramRoute}}"
+      pattern="/:param"
+      data="{{paramData}}">
+    </app-route>
+    <style include="app-grid-style">
+
+      :host {
         display: block;
+        --app-primary-color: #3d4ba8;
+        --app-secondary-color: black;
+        --app-grid-columns:5;
       }
 
       app-header {
-        color: #fff;
         background-color: var(--app-primary-color);
+        color: #fff;
       }
       app-header paper-icon-button {
         --paper-icon-button-ink-color: white;
+        padding:0;
+        margin:0;
       }
 
       .drawer-list {
         margin: 0 20px;
       }
-
       .drawer-list a {
         display: block;
-
         padding: 0 16px;
-
-        text-decoration: none;
-
-        color: var(--app-secondary-color);
-
         line-height: 40px;
+        text-decoration: none;
+        color: var(--app-secondary-color);
+        z-index:1;
       }
-
       .drawer-list a.iron-selected {
-        color: black;
-
+        color: #e51561;
         font-weight: bold;
+      }
+      .drawer-list a.subroute {
+        padding-left: 32px;
+      }
+      .headerBackground{
+        background-image:url("../../images/header-background.png");
+        width:100%;
+        z-index:-1;
+        height:100px;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size:cover;
+      }
+      .inherit {
+        color: inherit;
+        background-color: inherit;
+      }
+      #suDrawer{
+        text-align:left;
+      }
+      #notifyBadge{
+        height:10px;
+        width:10px;
+      }
+      .disabled{
+        color:#000000 !important;
+        opacity: .38 !important;
+      }
+      .buttonContainer{
+        text-align:center;
+      }
+      .toolbarButton{
+        width: 35px;
+        height: 35px;
+      }
+      a:hover {
+       cursor:pointer;
+      }
+      .logoutButton{
+        color:#e51561;
+      }
+      .customContainer{
+        margin-left:10px;
+      }
+      .menuLinksContainer{
+        margin-left:12px;
+      }
+      .backButton{
+        height:50px;
+        width:50px;
+        color:#FFFFFF;
+        margin-top:25px;
+      }
+      #mainToolbar{
       }
     </style>
 
-    <app-location route="{{route}}"></app-location>
-    <app-route
-        route="{{route}}"
-        pattern="/:page"
-        data="{{routeData}}"
-        tail="{{subroute}}"></app-route>
-
     <app-drawer-layout fullbleed>
-      <!-- Drawer content -->
-      <app-drawer>
-        <app-toolbar>Menu</app-toolbar>
-        <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
-          <a name="view1" href="/view1">View One</a>
-          <a name="view2" href="/view2">View Two</a>
-          <a name="view3" href="/view3">View Three</a>
-        </iron-selector>
-      </app-drawer>
 
       <!-- Main content -->
-      <app-header-layout has-scrolling-region>
+      <app-header-layout>
 
         <app-header condenses reveals effects="waterfall">
-          <app-toolbar>
-            <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
-            <div main-title>My App</div>
-          </app-toolbar>
-        </app-header>
+          <template is="dom-if" if="{{loginPageInactive(page)}}">
+            <app-toolbar class="app-grid">
 
-        <iron-pages
-            selected="[[page]]"
-            attr-for-selected="name"
-            fallback-selection="view404"
-            role="main">
-          <my-view1 name="view1"></my-view1>
-          <my-view2 name="view2"></my-view2>
-          <my-view3 name="view3"></my-view3>
-          <my-view404 name="view404"></my-view404>
+              <span class="buttonContainer">
+                <paper-icon-button class="toolbarButton" icon="menu" on-tap="toggleDrawer"></paper-icon-button>
+              </span>
+              <span class="buttonContainer">
+                <paper-icon-button class="toolbarButton" icon="icons:home" on-tap="goHome"></paper-icon-button>
+              </span>
+              <span class="buttonContainer">
+                <paper-icon-button class="toolbarButton notifyButton" id="notify" icon="social:notifications"></paper-icon-button>
+                <paper-badge id="notifyBadge" for="notify" label="4"></paper-badge>
+              </span>
+              <span class="buttonContainer">
+                <paper-icon-button class="toolbarButton" icon="icons:search" on-tap="search"></paper-icon-button>
+              </span>
+              <span class="buttonContainer">
+                <paper-icon-button class="toolbarButton logoutButton" on-tap="logout" icon="icons:account-circle"></paper-icon-button>
+              </span>
+
+            </app-toolbar>
+          </template>
+        </app-header>
+        <div class="headerBackground">
+          <paper-icon-button class="backButton" icon="hardware:keyboard-backspace" on-tap="goBack"></paper-icon-button>
+        </div>
+        <!--page templates are loded in here inside iron pages-->
+        <iron-pages role="main" selected="[[page]]" attr-for-selected="name">
+          <!--custom pages built for the app names attached in order to know which to display according to route-->
+          <!--page selected style only shows when the drawer item has been clicked twice need to fix this..-->
+          <!--login page-->
+          <def-login page="{{page}}" name="def-login"></def-login>
+          <!--default page-->
+          <def-home page={{page}} home="{{home}}" name="def-home" signed-in="[[signedIn]]"></def-home>
+          <!--other pages for care plan-->
+          <su-home page="{{page}}" patient="{{param}}" home="{{home}}" name="su-home"></su-home>
+          <su-profile page="{{page}}" patient="{{param}}" home="{{home}}" name="su-profile"></su-profile>
+          <su-care page="{{page}}" patient="{{param}}" home="{{home}}" name="su-care"></su-care>
+          <su-goals page="{{page}}" patient="{{param}}" home="{{home}}" name="su-goals"></su-goals>
+          <!--add in user in order to log the uid for version control and logging-->
+          <su-medical page="{{page}}" patient="{{param}}" home="{{home}}" user="{{user}}" name="su-medical"></su-medical>
+          <!--add in user in order to log the uid for version control and logging-->
+          <su-medication page="{{page}}" patient="{{param}}" home="{{home}}" user="{{user}}" name="su-medication"></su-medication>
+          <su-pre page="{{page}}" patient="{{param}}" home="{{home}}" name="su-pre"></su-pre>
+          <su-profile page="{{page}}" patient="{{param}}" home="{{home}}" name="su-profile"></su-profile>
+          <!--add in user in order to log the uid for version control and logging-->
+          <su-risk page="{{page}}" patient="{{param}}" home="{{home}}" user="{{user}}" name="su-risk"></su-risk>
+          <su-create page="{{page}}" patient="{{param}}" home="{{home}}" name="su-create"></su-create>
+          <su-care-review page="{{page}}" patient="{{param}}" home="{{home}}" name="su-care-review"></su-care-review>
+
+          <!--pages for admin-->
+          <ad-dash page="{{page}}" admin-id="{{param}}" home="{{home}}" name="ad-dash"></ad-dash>
+          <ad-profile page="{{page}}" admin-id="{{param}}" home="{{home}}" name="ad-profile"></ad-profile>
+          <ad-payment page="{{page}}" admin-id="{{param}}" home="{{home}}" name="ad-payment"></ad-payment>
+          <ad-users page="{{page}}" admin-id="{{param}}" user={{user}} home="{{home}}" name="ad-users"></ad-users>
+          <ad-user page="{{page}}" uid="{{param}}" user={{user}} home="{{home}}" name="ad-user"></ad-user>
+          <ad-settings page="{{page}}" admin-id="{{param}}" home="{{home}}" name="ad-settings"></ad-settings>
+          <ad-support page="{{page}}" admin-id="{{params}}" home="{{home}}" name="ad-support"></ad-support>
+          <!--test page for whatever-->
+          <test-test page="{{page}}" patient="{{param}}" home="{{home}}" name="test-test"></test-test>
         </iron-pages>
+
       </app-header-layout>
+        <!--admin drawer that contains admin account info and functions-->
+        <admin-drawer id="adminDrawer" home="{{home}}" admin="{{param}}" email="{{user.email}}" opened="{{opened}}"></admin-drawer>
+        <!--second drawer to contain target info links (company service user etc...) link up to db later-->
+        <app-drawer align="right" id="suDrawer" swipe-open>
+          <div class="customContainer" style="height: 100%; overflow: auto;">
+            <app-toolbar>Company Details</app-toolbar>
+            <paper-listbox>
+              <paper-item>
+                <paper-item-body two-line>
+                  <div secondary>Company Name</div>
+                  <div>{{careHomeProfile.name}}</div>
+                </paper-item-body>
+              </paper-item>
+              <paper-item>
+                <paper-item-body two-line>
+                  <div secondary>Number of Service Users</div>
+                  <div>12</div>
+                </paper-item-body>
+              </paper-item>
+              <paper-item>
+                <paper-item-body two-line>
+                  <div secondary>Notifications</div>
+                  <div>4</div>
+                </paper-item-body>
+              </paper-item>
+            </paper-listbox>
+            <div class="divider">
+
+            </div>
+            <div class="menuLinksContainer">
+              <template is="dom-if" if="{{_patientSelected(category, param)}}">
+                <iron-selector selected="{{page}}" attr-for-selected="name" class="drawer-list" role="navigation">
+                  <a name="su-profile" href="/{{home}}/care-plan/su-profile/{{param}}">Personal Profile<a>
+                  <a name="su-pre" href="/{{home}}/care-plan/su-pre/{{param}}">Pre-Admission Assessment</a>
+                  <a name="su-care" href="/{{home}}/care-plan/su-care/{{param}}">Care Plan</a>
+                  <a name="su-care-review" href="/{{home}}/care-plan/su-care-review/{{param}}">Care Plan Review</a>
+                  <a name="su-medical" href="/{{home}}/care-plan/su-medical/{{param}}">Medical Assessment</a>
+                  <a name="su-medication" href="/{{home}}/care-plan/su-medication/{{param}}">Medication Outline</a>
+                  <a name="su-risk" on-tap="setPage">Risk Assessment</a>
+                  <a name="su-goals" on-tap="setPage">Personal Goals</a>
+                </iron-selector>
+              </template>
+              <template is="dom-if" if="{{!_patientSelected(category, param)}}">
+                <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
+                  <a class="disabled">Pre-Admission Assessment</a>
+                  <a class="disabled">Personal Profile<a>
+                  <a class="disabled">Care Plan</a>
+                  <a class="disabled">Care Plan Review</a>
+                  <a class="disabled">Medical Assessment</a>
+                  <a class="disabled">Medication Outline</a>
+                  <a class="disabled">Risk Assessment</a>
+                  <a class="disabled">Personal Goals</a>
+                </iron-selector>
+              </template>
+            </div>
+          </div>
+        </app-drawer>
     </app-drawer-layout>
+
   </template>
 
   <script>
-    Polymer({
-      is: 'my-app',
 
-      properties: {
-        page: {
-          type: String,
-          reflectToAttribute: true,
-          observer: '_pageChanged'
+    Polymer({
+
+      is:'my-app',
+      //event listener for user creation
+      ready:function(){
+        this.addEventListener('createNewUser', this.createNewUser);
+        this.addEventListener('saveNewUser', this.saveNewUser);
+        this.addEventListener('createNewAccount', this.createNewAccount);
+        this.addEventListener('signInRedirect', this.signInRedirect);
+        this.addEventListener('addUserToHomeIndex', this.addUserToHomeIndex);
+        this.addEventListener('addUserToIndex', this.addUserToIndex);
+        this.addEventListener('emailSignIn',this.emailSignIn);
+      },
+      //create new service user for an already existing home
+      createNewUser:function(e){
+        this.$.createUser.createUserWithEmailAndPassword(e.detail.username, e.detail.password)
+          .then(function(user){
+            var userEntry={
+              userUID:user.uid,
+              username:user.email,
+              role:e.detail.role,
+              home:this.home,
+            };
+            //patients and role
+            if(e.detail.patients){
+              userEntry.patients=e.detail.patients;
+            };
+            this.$.createUser.signOut();
+            this.fire("saveNewUser", userEntry);
+          }.bind(this));
+      },
+      //save the new user to the db... probably should put into other function.... (createNewSU)
+      saveNewUser:function(e){
+        this.$.userDB.path=null;
+        this.$.userDB.data={
+          email: e.detail.username,
+          role: e.detail.role,
+          home: e.detail.home,
+        };
+        if(e.detail.patients){
+          userDB.data.patients=e.detail.patients;
+        };
+
+        this.$.userDB.save('/homes/'+this.home+'/users', e.detail.userUID)
+          .then(function(){
+            var indexData={
+              home:e.detail.home,
+              userUID:e.detail.userUID
+            };
+            this.fire('addUserToIndex',indexData);
+          }.bind(this));
+      },
+      //add the user to the admin user index in the home
+      addUserToIndex:function(e){
+        this.$.userIndexDB.path=null;
+        this.$.userIndexDB.data.home=e.detail.home;
+        this.$.userIndexDB.save('/userIndex', e.detail.userUID);
+      },
+      //function to create new user for new home
+      createNewAccount:function(e){
+        //create new user for new home
+        this.$.auth.createUserWithEmailAndPassword(e.detail.username, e.detail.password)
+          .then(function(user){
+            this.$.homeDB.path=null;
+            this.$.homeDB.data={
+              details:{
+                name:e.detail.home
+              },
+              users:{}
+            };
+            this.$.homeDB.save('/homes',null)
+              .then(function(){
+                var homePath = '/homes';
+                var homeUID = this.$.homeDB.path.slice(homePath.length+1);
+                this.$.userDB.path=null;
+                this.$.userDB.data={
+                  role:'admin',
+                  home:homeUID,
+                  email:e.detail.username
+                };
+                this.$.userDB.save('/homes/'+homeUID+'/users', user.uid)
+                  .then(function(){
+                    this.$.userIndexDB.path=null;
+                    this.$.userIndexDB.data={
+                      home:homeUID
+                    };
+                    this.$.userIndexDB.save('/userIndex',user.uid)
+                      .then(function(){
+                        window.location="/"+homeUID+"/default/def-home";
+                      });
+                  }.bind(this));
+              }.bind(this));
+          }.bind(this));
+      },
+
+      properties:{
+        home:{
+          type:String,
+          reflectToAttribute:true,
+          observer:'_homeChanged',
+          value:'default',
+        },
+        category:{
+          type:String,
+          reflectToAttribute:true,
+          observer:'_catChanged',
+          value:'default',
+        },
+        page:{
+          type:String,
+          reflectToAttribute:true,
+          observer:'_pageChanged',
+        },
+        param:{
+          type:String,
+          reflectToAttribute:true,
+          observer:'_paramChanged'
+        },
+        login:{
+          type:Object,
+        },
+        company: {
+          name:"Beecholme Adult Care",
+          userCount:"12",
+          notifications:"4"
+        },
+      },
+      //routing config
+      observers: [
+        '_homeRouteChanged(homeData.home)',
+        '_catRouteChanged(catData.category)',
+        '_pageRouteChanged(pageData.page)',
+        '_paramRouteChanged(paramData.param)',
+        '_authKnown(statusKnown)',
+      ],
+      _homeRouteChanged:function(home){
+        this.home=home || 'default';
+      },
+      _catRouteChanged:function(category){
+        this.category=category || 'default';
+      },
+      _pageRouteChanged:function(page) {
+          this.page=page || 'def-home';
+      },
+      _paramRouteChanged:function(param){
+        this.param = param || '';
+      },
+      _homeChanged:function(home){
+        if(home!='default'){
+          this.home=this.homeData.home;
         }
       },
-
-      observers: [
-        '_routePageChanged(routeData.page)'
-      ],
-
-      _routePageChanged: function(page) {
-        this.page = page || 'view1';
+      _catChanged:function(cat){
+        //make an exception for the default category 'default' if not default track changes to cat
+        if(cat!='default'){
+          this.category=this.catData.category;
+        }
       },
-
-      _pageChanged: function(page) {
-        // Load page import on demand. Show 404 page if fails
-        var resolvedPageUrl = this.resolveUrl('my-' + page + '.html');
-        this.importHref(resolvedPageUrl, null, this._showPage404, true);
+      _pageChanged:function(page) {
+        // load page import on demand.
+        this.importHref(
+          this.resolveUrl('pages/'+this.category+'/' + page +'/'+page+'.html'), null, null, false);
+        if(page.slice(0,3)==="def" || page.slice(0,2)==="ad" || page==="su-create"){
+          //drawer and rest of page not rendering properly after being hidden and switching pages...
+          //this.$.suDrawer.hidden=true;
+        } else {
+          //this.$.suDrawer.hidden=false;
+        }
       },
-
-      _showPage404: function() {
-        this.page = 'view404';
+      _paramChanged:function(param){
+        this.param=this.paramData.param || '';
+      },
+      //workaround for toggle-drawer bug
+      toggleDrawer:function(){
+        this.$.adminDrawer.opened=!this.$.adminDrawer.opened;
+      },
+      //login stuff
+      login:function(){
+        this.$.auth.signInWithPopup()
+          .then(function(){
+            //put code in here to route from login...
+          }.bind(this));
+      },
+      //sign in that redirects based on user uid and user index with homes attached
+      emailSignIn:function(e){
+        this.$.auth.signInWithEmailAndPassword(e.detail.username, e.detail.password)
+          .then(function(user){
+            this.$.userIndexDB.getStoredValue("/userIndex/"+user.uid+"/home")
+              .then(function(value){
+                window.location="/"+value+"/default/def-home";
+              }.bind(this))
+            //this.fire('signInRedirect');
+          }.bind(this));
+      },
+      logout:function(){
+        this.$.auth.signOut();
+        window.location="/default/default/def-login";
+      },
+      //other stuff
+      handleError:function(error){
+      },
+      _patientSelected:function(category, param){
+        if((this.category==="care-plan" || "test") && this.param){
+          return true;
+        } else {
+          return false;
+        };
+      },
+      loginPageInactive:function(page){
+        if(page!="def-login"){
+          return true;
+        };
+      },
+      goHome:function(){
+        window.location="/"+this.home+"/default/def-home";
+      },
+      setPage:function(e){
+        window.location="/"+this.home+"/care-plan/"+e.target.name+"/"+this.param;
+      },
+      goBack:function(){
+        window.history.back();
+      },
+      _authKnown:function(known){
+        if(known===true){
+          if(!this.$.auth.user && this.$.location.path!="/default/default/def-login"){
+            window.location="/default/default/def-login";
+          } else {
+            this.$.userIndexDB.getStoredValue("/userIndex/"+this.user.uid+"/home")
+              .then(function(value){
+                this.set('homeData.home', value);
+              }.bind(this))
+          };
+        };
+      },
+      _computeDrawerHidden:function(page){
+        console.log(page.slice(0,3));
+        if(page.slice(0,3)==="def" || page.slice(0,2)==="ad" || page==="su-create"){
+          return true;
+        } else {
+          return false;
+        }
       }
     });
+
   </script>
+
 </dom-module>

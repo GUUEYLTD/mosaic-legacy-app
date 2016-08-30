@@ -1,0 +1,104 @@
+<link rel="import" href="dependencies.html" />
+<dom-module id="add-medication">
+
+  <template>
+    <firebase-document
+    id="newMedDB"
+    app-name="main">
+    </firebase-document>
+    <style>
+      paper-card{
+        padding:20px;
+      }
+    </style>
+
+      <simple-dialog id="modalAlert" backdrop modal role="alertdialog">
+        <paper-card>
+          <h2>Add Medication</h2>
+          <paper-input label="Medication Name" value="{{newMed.medicine}}"></paper-input>
+          <paper-dropdown-menu label="Method">
+            <paper-listbox attr-for-selected="value" selected={{newMed.method}} class="dropdown-content">
+              <paper-item value="Oral">Oral</paper-item>
+              <paper-item value="Topic">Topic</paper-item>
+              <paper-item value="Injection">Injection</paper-item>
+              <paper-item value="Nasal">Nasal</paper-item>
+            </paper-listbox>
+          </paper-dropdown-menu>
+          <paper-input label="dosage" value="{{newMed.dosage}}"></paper-input>
+          <paper-dropdown-menu label="Time">
+            <paper-listbox selected="{{newMed.time}}" class="dropdown-content">
+              <paper-item>00:00</paper-item>
+              <paper-item>01:00</paper-item>
+              <paper-item>02:00</paper-item>
+              <paper-item>04:00</paper-item>
+              <paper-item>05:00</paper-item>
+              <paper-item>06:00</paper-item>
+              <paper-item>07:00</paper-item>
+              <paper-item>08:00</paper-item>
+              <paper-item>09:00</paper-item>
+              <paper-item>10:00</paper-item>
+              <paper-item>11:00</paper-item>
+              <paper-item>12:00</paper-item>
+              <paper-item>13:00</paper-item>
+              <paper-item>14:00</paper-item>
+              <paper-item>15:00</paper-item>
+              <paper-item>16:00</paper-item>
+              <paper-item>17:00</paper-item>
+              <paper-item>18:00</paper-item>
+              <paper-item>19:00</paper-item>
+              <paper-item>20:00</paper-item>
+              <paper-item>21:00</paper-item>
+              <paper-item>22:00</paper-item>
+              <paper-item>23:00</paper-item>
+              <paper-item>24:00</paper-item>
+
+            </paper-listbox>
+          </paper-dropdown-menu>
+
+          <div class="buttons">
+            <paper-button dialog-dismiss>Cancel</paper-button>
+            <paper-button dialog-confirm on-tap="saveMed">Save</paper-button>
+          </div>
+        </paper-card>
+      </simple-dialog>
+  </template>
+
+  <script>
+
+    Polymer({
+      is:'add-medication',
+      properties:{
+        newMed:{
+          type:Object,
+          value:{
+            time:{
+              type:String,
+            }
+          }
+      },
+      generalTime:{
+        type:String,
+        computed:'computeTime(newMed.time)'
+      },
+      home:{
+        type:String,
+      },
+      patient:{
+        type:String,
+      },
+    },
+    saveMed:function(){
+      this.newMed.generalTime=this.generalTime;
+      this.fire("addMedication", this.newMed);
+      this.fire("endNewMed");
+    },
+    computeTime:function(time){
+
+
+      return 'evening';
+    },
+    behaviors:[Polymer.PaperDialogBehavior]
+  });
+
+  </script>
+</dom-module>

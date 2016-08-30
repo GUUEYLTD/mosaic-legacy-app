@@ -1,0 +1,139 @@
+<link rel="import" href="../mdl-style/mdl-style.html" />
+<link rel="import" href="../mdl-js/mdl-js.html" />
+<link rel="import" href="../my-elements.html" />
+<dom-module id="medication-table">
+
+  <template>
+    <style include="mdl-style">
+      table{
+        width:100%;
+        padding:20px;
+      }
+      paper-card{
+        width:90%;
+        margin:20px 5% 20px 5%;
+      }
+    </style>
+
+    <paper-card>
+
+      <h3>Morning</h3>
+      <table class="mdl-data-table mdl-js-data-table">
+        <thead>
+          <tr>
+            <th class="mdl-data-table__cell--non-numeric">Medication</th>
+            <th class="mdl-data-table__cell--non-numeric">Route</th>
+            <th class="mdl-data-table__cell--non-numeric">Dosage</th>
+            <th class="mdl-data-table__cell--non-numeric">Time</th>
+            <th class="mdl-data-table__cell--non-numeric">Taken</th>
+          </tr>
+        </thead>
+        <tbody>
+          <template is="dom-repeat" items="{{meds}}">
+            <tr>
+              <td class="mdl-data-table__cell--non-numeric">{{item.medicine}}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{item.method}}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{item.dosage}}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{item.time}}</td>
+              <td class="mdl-data-table__cell--non-numeric">
+                <paper-checkbox value="{{item.taken}}" checked="{{item.taken}}"></paper-checkbox>
+              </td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+      <h3>Afternoon</h3>
+      <table class="mdl-data-table mdl-js-data-table">
+        <thead>
+          <tr>
+            <th class="mdl-data-table__cell--non-numeric">Medication</th>
+            <th class="mdl-data-table__cell--non-numeric">Route</th>
+            <th class="mdl-data-table__cell--non-numeric">Dosage</th>
+            <th class="mdl-data-table__cell--non-numeric">Time</th>
+            <th class="mdl-data-table__cell--non-numeric">Taken</th>
+          </tr>
+        </thead>
+        <tbody>
+          <template is="dom-repeat" items="{{medData.afternoon}}">
+            <td class="mdl-data-table__cell--non-numeric">{{item.medicine}}</td>
+            <td class="mdl-data-table__cell--non-numeric">{{item.method}}</td>
+            <td class="mdl-data-table__cell--non-numeric">{{item.dosage}}</td>
+            <td class="mdl-data-table__cell--non-numeric">{{item.time}}</td>
+            <td class="mdl-data-table__cell--non-numeric">
+              <paper-checkbox></paper-checkbox>
+            </td>
+          </template>
+        </tbody>
+      </table>
+      <h3>Evening</h3>
+      <table class="mdl-data-table mdl-js-data-table">
+        <thead>
+          <tr>
+            <th class="mdl-data-table__cell--non-numeric">Medication</th>
+            <th class="mdl-data-table__cell--non-numeric">Route</th>
+            <th class="mdl-data-table__cell--non-numeric">Dosage</th>
+            <th class="mdl-data-table__cell--non-numeric">Time</th>
+            <th class="mdl-data-table__cell--non-numeric">Taken</th>
+
+          </tr>
+        </thead>
+        <tbody>
+          <template is="dom-repeat" items="{{medData.evening}}">
+            <td class="mdl-data-table__cell--non-numeric">{{item.medicine}}</td>
+            <td class="mdl-data-table__cell--non-numeric">{{item.method}}</td>
+            <td class="mdl-data-table__cell--non-numeric">{{item.dosage}}</td>
+            <td class="mdl-data-table__cell--non-numeric">{{item.time}}</td>
+            <td class="mdl-data-table__cell--non-numeric">
+              <paper-checkbox></paper-checkbox>
+            </td>
+          </template>
+        </tbody>
+      </table>
+      <h3>Night</h3>
+      <table class="mdl-data-table mdl-js-data-table">
+        <thead>
+          <tr>
+            <th class="mdl-data-table__cell--non-numeric">Medication</th>
+            <th class="mdl-data-table__cell--non-numeric">Route</th>
+            <th class="mdl-data-table__cell--non-numeric">Dosage</th>
+            <th class="mdl-data-table__cell--non-numeric">Time</th>
+            <th class="mdl-data-table__cell--non-numeric">Taken</th>
+          </tr>
+        </thead>
+        <tbody>
+          <template is="dom-repeat" items="{{medData.night}}">
+            <td class="mdl-data-table__cell--non-numeric">{{item.medicine}}</td>
+            <td class="mdl-data-table__cell--non-numeric">{{item.method}}</td>
+            <td class="mdl-data-table__cell--non-numeric">{{item.dosage}}</td>
+            <td class="mdl-data-table__cell--non-numeric">{{item.time}}</td>
+            <td class="mdl-data-table__cell--non-numeric">
+              <paper-checkbox></paper-checkbox>
+            </td>
+          </template>
+        </tbody>
+      </table>
+
+    </paper-card>
+
+  </template>
+
+  <script>
+
+    Polymer({
+      is:'medication-table',
+      properties:{
+        tableDisplay:{
+          type:String,
+          value:'morning'
+        },
+        meds:{
+          type:Object
+        }
+      },
+      checkboxChanged:function(e){
+
+      }
+    });
+
+  </script>
+</dom-module>

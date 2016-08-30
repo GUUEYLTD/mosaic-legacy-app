@@ -1,0 +1,152 @@
+<!--
+a simple element for text input that is styled to guuey specs
+arguments:
+route(string)
+  location to save in database REQUIRED
+label(string)
+  the main text that will show in the heading area
+label2(string)
+  the description text to go under the main text
+fieldDisabled(boolean)
+  parameter to allow external setting to editable
+-->
+<link rel="import" href="dependencies.html" />
+<dom-module id="guuey-custom-text-input">
+  <template>
+    <firebase-document
+      id="guueyInputDB"
+      app-name="main"
+      data="{{inputData}}"
+      path="{{route}}">
+    </firebase-document>
+
+    <iron-media-query
+      query="max-width:1400px"
+      query-matches="{{query1400}}">
+    </iron-media-query>
+
+    <style include="app-grid-style">
+      :host{
+        --app-grid-columns:10;
+        --app-grid-expandible-item-columns:9;
+        --app-grid-item-height:20%;
+      }
+      .sectionHeading{
+        background-color:#7e57c2;
+        width:100%;
+      }
+      .sectionHeadingText{
+        font-size: 24px;
+        color:#FFFFFF;
+        margin:0px;
+        padding:20px;
+      }
+      .subHeadingText{
+        color:#FFFFFF;
+        margin:0px;
+        padding:20px;
+      }
+      .inputWrapper{
+        padding:16px;
+      }
+      paper-card{
+        width:90%;
+        margin:20px 5% 20px 5%;
+      }
+      .toggleButton{
+        padding-top:50px;
+      }
+      .labelEdit{
+        --paper-input-container-color:#FFFFFF;
+        --paper-input-container-input-color:#FFFFFF;
+        --paper-input-container-focus-color:#FFFFFF;
+        padding:20px;
+      }
+      .contentColumn{
+        width:100%;
+        @apply(--app-grid-expandible-item);
+      }
+      .editColumn{
+        width:100%;
+      }
+    </style>
+    <paper-card elevation="3">
+      <div class="sectionHeading">
+        <span hidden="{{!editDisabled}}">
+          <p class="sectionHeadingText">
+            {{label}}
+          </p>
+          <p class="subHeadingText">
+            {{label2}}
+          </p>
+        </span>
+        <span hidden="{{editDisabled}}">
+          <paper-input class="labelEdit" label="name" value="{{inputData.label}}"></paper-input>
+          <paper-input class="labelEdit" label="description" value="{{inputData.label2}}"></paper-input>
+        </span>
+      </div>
+      <div class="app-grid">
+        <div class="contentColumn">
+          <div class="inputWrapper">
+            <paper-textarea
+              label="Please fill in this form"
+              value="{{inputData.info}}">
+            </paper-textarea>
+          </div>
+        </div>
+        <div class="editColumn">
+          <span hidden="{{!editDisabled}}">
+            <paper-button on-tap="toggleEdit">edit</paper-button>
+            <paper-button on-tap="deleteCustom">delete</paper-button>
+          </span>
+          <span hidden="{{editDisabled}}">
+            <paper-button on-tap="toggleEdit">save</paper-button>
+          </span>
+        </div>
+      </div>
+    </paper-card>
+  </template>
+
+  <script>
+
+    Polymer({
+      is:'guuey-custom-text-input',
+      properties:{
+        route:{
+          type:String,
+        },
+        label:{
+          type:String,
+        },
+        label2:{
+          type:String,
+        },
+        editDisabled:{
+          type:Boolean,
+          value:true
+        }
+      },
+      observers:[
+        "editQuery(query1400)"
+      ],
+      toggleEdit:function(){
+        this.editDisabled=!this.editDisabled;
+      },
+      deleteCustom:function(e){
+        this.$.guueyInputDB.destroy();
+      },
+      editQuery:function(query1400){
+        if(query1400){
+          this.customStyle["--app-grid-columns"]="1";
+          this.customStyle["--edit-column--padding-top"]="20px";
+          this.updateStyles();
+        } else {
+          this.customStyle["--app-grid-columns"]="10";
+          this.customStyle["--edit-column--padding-top"]="unset";
+          this.updateStyles();
+        }
+      }
+    });
+
+  </script>
+</dom-module>

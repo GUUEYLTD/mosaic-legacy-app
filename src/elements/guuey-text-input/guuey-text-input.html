@@ -1,0 +1,92 @@
+<!--
+a simple element for text input that is styled to guuey specs
+arguments:
+route(string)
+  location to save in database REQUIRED
+label(string)
+  the main text that will show in the heading area
+label2(string)
+  the description text to go under the main text
+fieldDisabled(boolean)
+  parameter to allow external setting to editable
+-->
+<link rel="import" href="dependencies.html" />
+<dom-module id="guuey-text-input">
+  <template>
+    <firebase-document
+      id="guueyInputDB"
+      app-name="main"
+      data="{{inputData}}"
+      path="{{route}}">
+    </firebase-document>
+    <style include="materialize-style"></style>
+    <style>
+      .sectionHeading{
+        background-color:#42c6ff;
+        width:100%;
+        margin:0px !important;
+        padding:0px;
+      }
+      .sectionHeadingText{
+        font-size: 24px;
+        color:#FFFFFF;
+        margin:0px;
+        padding:20px;
+      }
+      .subHeadingText{
+        color:#FFFFFF;
+        margin:0px;
+        padding:20px;
+      }
+      .inputWrapper{
+        padding:16px;
+      }
+      paper-card{
+        width:90%;
+        margin:20px 5% 20px 5%;
+      }
+      .toggleButton{
+        padding-top:50px;
+      }
+    </style>
+    <paper-card elevation="3">
+      <div class="sectionHeading">
+        <p class="sectionHeadingText">
+          {{label}}
+        </p>
+        <p class="subHeadingText">
+          {{label2}}
+        </p>
+      </div>
+      <div class="row">
+        <div class="col s12">
+          <div class="inputWrapper">
+            <paper-textarea
+              label="Please fill in this form"
+              value="{{inputData.info}}">
+            </paper-textarea>
+          </div>
+        </div>
+      </div>
+    </paper-card>
+  </template>
+
+  <script>
+
+    Polymer({
+      is:'guuey-text-input',
+      properties:{
+        route:{
+          type:String,
+        },
+        label:{
+          type:String,
+        },
+        label2:{
+          type:String,
+        }
+      }
+    });
+
+  </script>
+</dom-module>

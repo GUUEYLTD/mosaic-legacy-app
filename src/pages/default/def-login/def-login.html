@@ -1,0 +1,223 @@
+<!--link in all elements for entire project... divide up into smaller pieces later-->
+<link rel="import" href="dependencies.html" />
+<dom-module id="def-login">
+
+  <template>
+
+    <iron-media-query
+      query="(max-width:400px)"
+      query-matches="{{query400}}">
+    </iron-media-query>
+    <style include="app-grid-style">
+      :host {
+        display: block;
+        background-color:#2fc19e;
+        position:fixed;
+        width:100%;
+        height:100%;
+        top:0px;
+        left:0px;
+        --app-grid-columns:2;
+        --app-grid-expandible-item-columns: 2;
+        --app-grid-item-height:10%;
+      }
+      paper-button{
+        margin:0px;
+      }
+      .loginBox{
+        width:50%;
+        margin:10% 25% 0% 25%;
+      }
+      .registerBox{
+        margin:10% 25% 0% 25%;
+        background-color:#7e57c2;
+        color:#FFFFFF;
+      }
+      .loginHeader{
+        color:#2fc19e;
+        text-transform:uppercase;
+        font-size:24px;
+        font-weight:bold;
+        text-align:center;
+
+      }
+      .loginHeader p{
+        padding:0;
+        margin:0;
+        padding-top:10px;
+
+      }
+      .loginButton{
+        background-color:#41847d;
+        color:#FFFFFF;
+
+        @apply(--app-grid-expandible-item);
+      }
+      .toggleToRegister{
+
+        background-color:#41847d;
+        color:#FFFFFF;
+      }
+      .toggleToRegister:hover{
+        background-color:#7e57c2;
+        color:#FFFFFF;
+      }
+      .registerHeader{
+        posix
+        color:#FFFFFF;
+        text-transform:uppercase;
+        font-size:24px;
+        font-weight:bold;
+        text-align:center;
+      }
+      .registerHeader p{
+        padding:0;
+        margin:0;
+        padding-top:10px;
+      }
+      .registerButton{
+        background-color:#41847d;
+        color:#FFFFFF;
+        @apply(--app-grid-expandible-item);
+      }
+      .toggleToLogin{
+        background-color:#41847d;
+        color:#FFFFFF;
+      }
+      .toggleToLogin:hover{
+        background-color:#FFFFFF;
+        color:#2fc19e;
+      }
+      .registerInput{
+        --paper-input-container-color:#FFFFFF;
+        --paper-input-container-focus-color:#2fc19e;
+        --paper-input-container-input-color:#2fc19e;
+        @apply(--app-grid-expandible-item);
+        margin:-5% 10% 5% 10%;
+      }
+      .registerInput:first-of-type{
+        margin:0% 10% 5% 10%;
+      }
+      .loginInput{
+        --paper-input-container-focus-color:#7e57c2;
+        --paper-input-container-input-color:#7e57c2;
+        @apply(--app-grid-expandible-item);
+        margin:-5% 10% 5% 10%;
+      }
+      .loginInput:first-of-type{
+        margin:0% 10% 5% 10%;
+      }
+    </style>
+    <template is="dom-if" if="{{registerSelected(state)}}">
+      <paper-card
+        elevation="3"
+        class="app-grid registerBox">
+
+        <div class="registerHeader">
+          <p>
+            register
+          </p>
+        </div>
+
+        <paper-button class="toggleToLogin" on-tap="toggleState">Login</paper-button>
+        <paper-input class="registerInput" label="care home name" value="{{newAccount.home}}"></paper-input>
+        <paper-input class="registerInput" label="email" value="{{newAccount.username}}"></paper-input>
+        <paper-input class="registerInput" label="password" type="password" value="{{newAccount.password}}"></paper-input>
+        <paper-button class="registerButton" on-tap="createNewAccount">Create an Account</paper-button>
+
+      </paper-card>
+    </template>
+
+    <template is="dom-if" if="{{loginSelected(state)}}">
+
+      <paper-card
+        elevation="3"
+        class="app-grid loginBox">
+
+        <div class="loginHeader">
+          <p>
+            log in
+          </p>
+        </div>
+
+        <paper-button class="toggleToRegister" on-tap="toggleState">Register</paper-button>
+        <paper-input class="loginInput" label="username" value="{{username}}"></paper-input>
+        <paper-input class="loginInput" type="password" label="password" value="{{password}}"></paper-input>
+        <paper-button class="loginButton" on-tap="emailSignIn">Login</paper-button>
+
+      </paper-card>
+
+    </template>
+
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is: 'def-login',
+      properties:{
+        page:{
+          type:String,
+        },
+        home:{
+          type:String,
+        },
+        signedIn:{
+          type:Boolean,
+        },
+        newAccount:{
+          type:Object,
+          value:{},
+        },
+        state:{
+          type:String,
+          value:'login'
+        }
+      },
+      observers:[
+        "queryEdit(query400)"
+      ],
+      createNewAccount:function(){
+        this.fire('createNewAccount',this.newAccount);
+      },
+      //computed binding to show correct card
+      registerSelected:function(state){
+        if(state==="register"){
+          return true;
+        };
+      },
+      //computed binding to show correct card
+      loginSelected:function(state){
+        if(state==="login"){
+          return true;
+        };
+      },
+      toggleState:function(){
+        if(this.state==="login"){
+          this.state="register";
+        } else {
+          this.state="login";
+        };
+      },
+      emailSignIn:function(){
+        var details={
+          username:this.username,
+          password:this.password
+        };
+        this.fire('emailSignIn',details);
+      },
+      queryEdit:function(query400){
+        if(query400){
+          this.customStyle["--app-grid-columns"]="1";
+          this.updateStyles();
+        } else {
+          this.customStyle["--app-grid-columns"]="2";
+          this.updateStyles();
+        };
+      }
+    });
+
+  </script>
+
+</dom-module>

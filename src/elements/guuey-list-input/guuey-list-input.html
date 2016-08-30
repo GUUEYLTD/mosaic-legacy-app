@@ -1,0 +1,229 @@
+<!--
+a simple element for list of text input that is styled to guuey specs
+arguments:
+home(string)
+  REQUIRED the home that the list is being saved to in DB
+patient(string)
+  REQUIRED the patient that the list is being saved to in DB
+listRoute(string)
+  REQUIRED the db path where the child list entries will be written to
+route(string)
+  location to save in database REQUIRED
+label(string)
+  the main text that will show in the heading area
+label2(string)
+  the description text to go under the main text
+-->
+<link rel="import" href="dependencies.html" />
+<dom-module id="guuey-list-input">
+  <template>
+    <!--db for adding and updating sections of the care plan data-->
+    <firebase-document
+      app-name="main"
+      id="sectionDB"
+      data="{{sectionData}}">
+    </firebase-document>
+    <!--query for custom properties that have not been predefined-->
+    <firebase-query
+      id="careAndSuppPropQuery"
+      app-name="main"
+      data="{{careAndSuppPropQuery}}"
+      path={{listroute}}>
+    </firebase-query>
+
+    <iron-media-query
+      query="(max-width:1600px)"
+      query-matches="{{query1600}}">
+    </iron-media-query>
+
+    <iron-media-query
+      query="(max-width:1400px)"
+      query-matches="{{query1400}}">
+    </iron-media-query>
+
+    <iron-media-query
+      query="(max-width:1200px)"
+      query-matches="{{query1200}}">
+    </iron-media-query>
+
+    <iron-media-query
+      query="(max-width:1000px)"
+      query-matches="{{query1000}}">
+    </iron-media-query>
+
+    <iron-media-query
+      query="(max-width:800px)"
+      query-matches="{{query800}}">
+    </iron-media-query>
+
+    <iron-media-query
+      query="(max-width:600px)"
+      query-matches="{{query600}}">
+    </iron-media-query>
+
+    <style>
+      .sectionHeading{
+        background-color:#42c6ff;
+        width:100%;
+        min-height:200px;
+        min-height:var(--guuey-list-min-header-height);
+      }
+      .sectionHeadingText{
+        font-size: 24px;
+        color:#FFFFFF;
+        margin:0px;
+        padding:20px;
+        font-size:var(--heading-font-size);
+      }
+      .subHeadingText{
+        color:#FFFFFF;
+        margin:0px;
+        padding:20px;
+        font-size:var(--sub-heading-font-size);
+      }
+      .customContainer{
+        padding:16px;
+      }
+      paper-card{
+        width:90%;
+        margin:0px 5% 20px 5%;
+      }
+      paper-card{
+        width: var(--guuey-list-width);
+        float: var(--guuey-list-float);
+        min-height:var(--guuey-list-min-height);
+      }
+    </style>
+    <paper-card>
+      <div class="sectionHeading">
+        <div class="customContainer">
+          <p class="sectionHeadingText">{{label}}</p>
+          <p class="subHeadingText">{{label2}}</p>
+        </div>
+      </div>
+      <div class="customContainer">
+        <template is="dom-if" if="{{editingEnabled}}">
+
+            <template is="dom-repeat" items="{{careAndSuppPropQuery}}">
+              <div class="row">
+                <div class="col s10">
+                  <paper-textarea value="{{item.proposal}}"></paper-textarea>
+                </div>
+                <div class="col s2">
+                  <paper-button style="padding-top:40px;" on-tap="deleteProp">delete</paper-button>
+                </div>
+              </div>
+
+            </template>
+            <paper-button on-tap="enabledEdit">stop editing</paper-button> <paper-button disabled on-tap="addSection" data-args="careAndSuppProp">add</paper-button>
+
+        </template>
+        <template is="dom-if" if="{{!editingEnabled}}">
+
+            <template is="dom-repeat" items="{{careAndSuppPropQuery}}">
+
+                <paper-textarea value="{{item.proposal}}"></paper-textarea>
+
+            </template>
+
+            <paper-button on-tap="enabledEdit">edit</paper-button> <paper-button on-tap="addSection" data-args="careAndSuppProp">add</paper-button>
+
+        </template>
+
+        <template is="dom-if" if="[[careAndSuppProp]]">
+          <paper-textarea label="proposal" value="{{sectionData.proposal}}"></paper-textarea>
+        </template>
+      </div>
+    </paper-card>
+  </template>
+
+  <script>
+
+    Polymer({
+      is:'guuey-list-input',
+      ready:function(){
+        this.addEventListener('newSectionReady', this.newSectionReady);
+      },
+      properties:{
+        route:{
+          type:String,
+        },
+        label:{
+          type:String,
+        },
+        label2:{
+          type:String,
+        },
+        page:{
+          type:String,
+        },
+        patient:{
+          type:String,
+        },
+        listroute:{
+          type:String,
+        },
+        editingEnabled:{
+          type:Boolean,
+          value:false
+        }
+      },
+      observers:[
+        "editQuery(query1600, query1400, query1200, query1000, query800, query600)"
+      ],
+      //function to save new db entry for each section with uid
+      addSection:function(e){
+        this.$.sectionDB.path=null;
+        this.$.sectionDB.data={};
+        var section=e.target.getAttribute('data-args');
+        this.$.sectionDB.save(this.listroute, null)
+          .then(function(){
+            var key=this.$.sectionDB.path.slice(this.listroute.length+1);
+            sectionAndKey={
+              key:key,
+              section:section
+            };
+            this.fire('newSectionReady', sectionAndKey);
+          }.bind(this));
+      },
+      newSectionReady:function(e){
+        this.$.sectionDB.data={};
+        this[e.detail.section]=true;
+
+      },
+      enabledEdit:function(){
+        this.editingEnabled=!this.editingEnabled;
+      },
+      deleteProp:function(e){
+        var path=this.listroute+"/"+e.model.item.$key;
+        this.$.sectionDB.setStoredValue(path, null);
+      },
+      editQuery:function(query1600, query1400, query1200, query1000, query800, query600){
+        if(query600){
+          this.customStyle["--heading-font-size"]="12px";
+          this.updateStyles();
+        } else if(query800){
+          this.customStyle["--heading-font-size"]="14px";
+          this.updateStyles();
+        } else if(query1000){
+          this.customStyle["--heading-font-size"]="16px";
+          this.updateStyles();
+        } else if(query1200){
+          this.customStyle["--heading-font-size"]="18px";
+          this.updateStyles();
+        } else if(query1400){
+          this.customStyle["--heading-font-size"]="20px";
+          this.updateStyles();
+        } else if(query1600){
+          this.customStyle["--heading-font-size"]="22px";
+          this.updateStyles();
+        } else {
+          this.customStyle["--heading-font-size"]="24px";
+
+          this.updateStyles();
+        }
+      }
+    });
+
+  </script>
+</dom-module>

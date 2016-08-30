@@ -1,0 +1,876 @@
+<link rel="import" href="dependencies.html" />
+<dom-module id="su-goals">
+
+  <template>
+
+    <!-- db query to find all goals for a patient-->
+    <firebase-query
+      id="goalsDB"
+      app-name="main"
+      path="homes/{{home}}/patients/{{patient}}/personalGoals"
+      data="{{goalsData}}">
+    </firebase-query>
+    <!--db to create new goal for a patient-->
+    <firebase-document
+      id="goalDB"
+      app-name="main"
+      data="{{goalData}}">
+    </firebase-document>
+    <firebase-query
+      id="stepsDB"
+      app-name="main"
+      data="{{stepsData}}">
+    </firebase-query>
+    <firebase-document
+      id="stepDB"
+      app-name="main"
+      data="{{stepData}}">
+    </firebase-document>
+    <!--print db-->
+    <firebase-document
+      id="printDB"
+      app-name="main"
+      path="homes/{{home}}/patients/{{patient}}/personalGoals">
+    </firebase-document>
+
+    <!--media query workaround for shadow dom-->
+    <iron-media-query
+      query="(max-width:1200px)"
+      query-matches="{{query1200}}">
+    </iron-media-query>
+    <iron-media-query
+      query="(max-width:850px)"
+      query-matches="{{query850}}">
+    </iron-media-query>
+    <iron-media-query
+      query="(max-width:950px)"
+      query-matches="{{query950}}">
+    </iron-media-query>
+    <iron-media-query
+      query="(max-width:640px)"
+      query-matches="{{query640}}">
+    </iron-media-query>
+
+    <style include="app-grid-style">
+      :host{
+        --app-grid-columns:3;
+        --app-grid-item-height:150%;
+      }
+
+      .goalLabel{
+        width:25%;
+        position:absolute;
+        bottom:10px;
+        left:10px;
+        padding:0px;
+        margin:0px;
+        font-weight:bold;
+        color:#FFFFFF;
+        font-size:20px;
+      }
+      .goalMore{
+        position:absolute;
+        top:10px;
+        right:10px;
+        color:#FFFFFF;
+
+      }
+      .goalBox{
+        margin:20px;
+      }
+      .goalHeading{
+        width:100%;
+        height:40%;
+        margin-bottom:4%;
+        position:relative;
+        background-repeat:no-repeat;
+        background-size:cover;
+        background-position:bottom right;
+      }
+      .goalDescription{
+        text-align:center;
+        font-size:18px;
+        height:38%;
+        margin:4%;
+        overflow:hidden;
+      }
+      .goalSteps:{
+        width:100%;
+        height:10%;
+        margin:4%;
+      }
+      .goalStepsText{
+        position:absolute;
+        bottom:10%;
+        right:5%;
+      }
+      .stepsFab{
+        position:absolute;
+        bottom:10%;
+        left:5%;
+      }
+      .mainFab{
+        position:absolute;
+        right:-25px;
+        top:-25px;
+        z-index:1;
+        position:var(--main-fab-position);
+        bottom:var(--main-fab-bottom);
+        top:var(--main-fab-top);
+        right:var(--main-fab-right);
+      }
+      .goalDetails{
+        width:90%;
+        margin:20px 5% 20px 5%;
+      }
+      .detailBar{
+        background-color:#E0E0E0;
+        width:100%;
+        background-repeat:no-repeat;
+        background-size:auto 100%;
+        background-position:bottom left;
+        margin: 0px 0 20px 0;
+      }
+      .inputContainer{
+        padding:20px;
+      }
+      .detailBarInput{
+        width:50%;
+        padding:0% 25% 20px 25%;
+        --paper-input-container-color:#4DB6AC;
+        --paper-input-container-input-color:#4DB6AC;
+        padding:var(--detail-bar-padding);
+      }
+      .descriptionContainer{
+        margin-top:20px;
+      }
+      .descriptionContainer paper-input{
+        width:50%;
+        padding:0% 25% 20px 25%;
+        --paper-input-container-color:#FFFFFF;
+        --paper-input-container-input-color:#FFFFFF;
+        padding:var(--description-container-padding);
+      }
+      .detailDescription{
+        background-color:#4DB6AC;
+        width:100%;
+        background-repeat:no-repeat;
+        background-size:auto 100%;
+        background-position:bottom left;
+        margin: 0px 0 20px 0;
+      }
+      .mainCard{
+        position:absolute;
+        width:80%;
+        margin:-50px 10% 50px 10%;
+      }
+      .mainContainer{
+        position:relative;
+      }
+      .guuey-button{
+        background-color:#41847d;
+        color:#FFFFFF;
+        width:60%;
+        margin: 20px 20% 20px 20%;
+      }
+      .editButton{
+        margin-top:-20px;
+      }
+      #goalModal{
+        margin:0;
+      }
+      .tableScrollLabel{
+        font-weight:bold;
+        text-transform:uppercase;
+        margin-bottom:0px;
+        padding-bottom:0px;
+        font-size:10px;
+        padding-left:20px;
+        color:var(--table-scroll-lable-color);
+      }
+      .tableContainer{
+        padding:20px;
+        height:auto;
+        overflow:var(--table-overflow);
+      }
+      .tableContainer table{
+        padding:20px;
+        width:100%;
+      }
+      table{
+        background-color:var(--table-background-color);
+      }
+      tbody{
+        display:var(--tbody-display);
+      }
+      thead tr{
+        position:var(--thead-tr-position);
+        display:var(--thead-tr-display);
+      }
+      td{
+        width:var(--thead-tr-td-width);
+      }
+      th{
+        text-align:left;
+      }
+      td,th{
+
+      }
+      td,th{
+        min-width:var(--td-th-min-width);
+      }
+      td,th:last-of-type{
+        width:var(--td-th-last-width);
+      }
+    </style>
+
+    <!--dialogue that works to add labels for custom text input area-->
+    <paper-dialog horizontal-align="left" vertical-align="top" id="goalModal">
+      <paper-button on-tap="editGoal">edit</paper-button>
+      <br />
+      <paper-button on-tap="deleteGoal">delete</paper-button>
+    </paper-dialog>
+
+    <!--dialogue that works to add comments to a table row-->
+    <paper-dialog id="stepModal">
+      <h2>Add/update Step</h2>
+      <paper-input
+        label="describe the step"
+        value="{{stepData.description}}"
+        required
+        auto-validate
+        pattern="[a-zA-Z\s\.\!\d]*"
+        error-message="Please describe the step.">
+      </paper-input>
+      <paper-input
+        label="step number"
+        value="{{stepData.order}}"
+        required
+        auto-validate
+        pattern="\d{1,1}"
+        error-message="Please enter a step from 1 to 9">
+      </paper-input>
+    </paper-dialog>
+
+    <paper-card class="mainCard" elevation="3">
+
+      <su-header
+        page="Personal Goals"
+        patient="{{patient}}"
+        home="{{home}}">
+      </su-header>
+
+      <!--repeat each goal that currently is set-->
+      <div class="mainContainer">
+
+        <!--absolute positioned button to finsh adding a new goal and close the add view-->
+        <paper-fab
+          class="mainFab"
+          icon="icons:check"
+          on-tap="finishGoal"
+          hidden="{{!goalSelected}}">
+        </paper-fab>
+
+        <!--absolute positioned button to add a new goal-->
+        <paper-fab
+          class="mainFab"
+          icon="icons:add"
+          on-tap="addGoal"
+          hidden="{{goalSelected}}">
+        </paper-fab>
+
+        <div hidden="{{goalSelected}}">
+          <!--default placeholder if user has not put any goals in yet...-->
+          <!--
+          <div hidden="{{queryCount}}">
+            <div class="col s4">
+              <paper-card elevation="3" class="goalBox">
+                <div style="background-image:url(../../../../images/other.png)" class="goalHeading">
+                  <p class="goalLabel">
+                    Your Goals Here
+                  </p>
+                </div>
+                <div class="goalDescription">
+                    You can add preset goal categories or custom goal categories when pressing the "+" button on the top right of the screen.
+                </div>
+                <paper-icon-button
+                  icon="icons:more-vert"
+                  class="goalMore"
+                  on-tap="toggleEditModal"
+                  disabled>
+                </paper-icon-button>
+
+                <div class="goalSteps">
+
+                  <div class="stepsFab">
+                    <paper-fab label="0"></paper-fab>
+                  </div>
+
+                  <p class="goalStepsText">
+                    STEPS
+                  </p>
+
+                </div>
+
+              </paper-card>
+            </div>
+
+            <div class="col s4">
+              <paper-card elevation="3" class="goalBox">
+                <div style="background-image:url(../../../../images/other.png)" class="goalHeading">
+                  <p class="goalLabel">
+                    Goal Category Name
+                  </p>
+                </div>
+                <div class="goalDescription">
+                    A brief description of the service user's goal.
+                </div>
+                <paper-icon-button
+                  icon="icons:more-vert"
+                  class="goalMore"
+                  on-tap="toggleEditModal"
+                  disabled>
+                </paper-icon-button>
+
+                <div class="goalSteps">
+
+                  <div class="stepsFab">
+                    <paper-fab label="0"></paper-fab>
+                  </div>
+
+                  <p class="goalStepsText">
+                    STEPS
+                  </p>
+
+                </div>
+
+              </paper-card>
+            </div>
+
+            <div class="col s4">
+              <paper-card elevation="3" class="goalBox">
+                <div style="background-image:url(../../../../images/other.png)" class="goalHeading">
+                  <p class="goalLabel">
+                    Making A Goal
+                  </p>
+                </div>
+                <div class="goalDescription">
+                    Making a goal is very easy. Just click the button above.
+                </div>
+                <paper-icon-button
+                  icon="icons:more-vert"
+                  class="goalMore"
+                  on-tap="toggleEditModal"
+                  disabled>
+                </paper-icon-button>
+
+                <div class="goalSteps">
+
+                  <div class="stepsFab">
+                    <paper-fab label="0"></paper-fab>
+                  </div>
+
+                  <p class="goalStepsText">
+                    STEPS
+                  </p>
+
+                </div>
+
+              </paper-card>
+            </div>
+
+          </div>
+          -->
+          <div class="app-grid" has-aspect-ratio>
+
+            <template id="goalRepeat" is="dom-repeat" items="{{goalsData}}" as="goal">
+              {{_computeQueryCount(goal)}}
+
+              <div class="goalBoxContainer">
+
+                <paper-card elevation="3" class="goalBox">
+
+                  <div style="background-image:url(../../../../{{_computeGoalImage(goal.category)}})" class="goalHeading">
+                    <p class="goalLabel">
+                      {{goal.category}}
+                    </p>
+                  </div>
+
+                  <div class="goalDescription">
+                      {{goal.description}}
+                  </div>
+
+                  <paper-icon-button
+                    icon="icons:more-vert"
+                    class="goalMore"
+                    on-tap="toggleEditModal">
+                  </paper-icon-button>
+
+                  <div class="goalSteps">
+
+                      <paper-fab
+                        label="{{_computeSteps(goal.steps)}}"
+                        class="stepsFab">
+                      </paper-fab>
+
+                    <p class="goalStepsText">
+                      STEPS
+                    </p>
+
+                  </div>
+
+                </paper-card>
+
+              </div>
+
+            </template>
+
+          </div>
+
+        </div>
+
+      </div>
+      <div hidden="{{!goalSelected}}">
+
+        <div class="detailBar"
+          style="background-image:url(../../../../{{_computeGoalImage(goalData.category)}})">
+            <vaadin-combo-box
+              allow-custom-value
+              label="Category"
+              items="[[goalTypes]]"
+              value="{{goalData.category}}"
+              class="detailBarInput">
+            </vaadin-combo-box>
+        </div>
+
+        <div class="inputContainer">
+
+          <guuey-date-input
+            route="homes/{{home}}/patients/{{patient}}/personalGoals/{{goalUID}}/startDate"
+            label="Start Date">
+          </guuey-date-input>
+
+          <guuey-date-input
+            route="homes/{{home}}/patients/{{patient}}/personalGoals/{{goalUID}}/finishDate"
+            label="Estimated Finish Date">
+          </guuey-date-input>
+
+          <paper-input
+            label="coordinator"
+            value="{{goalData.coordinator}}"
+            required
+            auto-validate
+            pattern="[a-zA-Z\s\.]*"
+            error-message="Please enter a coordinator name.">
+          </paper-input>
+
+        </div>
+
+        <div
+        class="detailDescription"
+        style="background-image:url(../../../../images/target_goals.png">
+          <div class="descriptionContainer">
+            <paper-input
+              label="Goal Description"
+              value="{{goalData.description}}"
+              required
+              auto-validate
+              pattern="[a-zA-Z\s\.\d]*"
+              error-message="Please enter a description without special characters.">
+            </paper-input>
+          </div>
+        </div>
+
+        <div class="tableContainer">
+
+          <p class="tableScrollLabel">
+            swipe left scrolls table
+          </p>
+
+          <table>
+            <thead>
+              <tr>
+                <th>
+                  Step #
+                </th>
+                <th>
+                  Description
+                </th>
+                <th>
+                  Completed?
+                </th>
+                <th>
+                  Edit
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <template
+                is="dom-repeat"
+                items="{{stepsData}}"
+                as="step"
+                sort="_sortSteps"
+                observe="order">
+                <tr>
+                  <td>
+                    <center>
+                      <paper-fab label="{{step.order}}"></paper-fab>
+                    </center>
+                  </td>
+                  <td>
+                    {{step.description}}
+                  </td>
+                  <td>
+                    <paper-checkbox
+                      checked="{{step.completed}}">
+                    </paper-checkbox>
+                  </td>
+                  <td>
+                    <paper-icon-button icon="editor:border-color" class="editButton" on-tap="editStep">edit</paper-icon-button>
+                  </td>
+                </tr>
+              </template>
+              <tr>
+                <td>
+                  <center>
+                    <paper-fab icon="icons:add" on-tap="addStep"></paper-fab>
+                  </center>
+                </td>
+                <td>
+                  Add a new step.
+                </td>
+                <td>
+                  <paper-checkbox disabled checked></paper-checkbox>
+                </td>
+                <td>
+                  <paper-icon-button disabled icon="editor:border-color" class="editButton" on-tap="editStep">edit</paper-icon-button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+        </div>
+
+      </div>
+
+    </paper-card>
+
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is: 'su-goals',
+      ready:function(){
+        this.addEventListener("print", this.print);
+      },
+      properties:{
+        page:{
+          type:String
+        },
+        patient:{
+          type:String
+        },
+        home:{
+          type:String
+        },
+        goalSelected:{
+          type:Boolean,
+          value:false
+        },
+        goalUID:{
+          type:String
+        },
+        goalTypes:{
+          type:Array,
+          value:[
+            "Accommodation",
+            "Finance And Budget",
+            "Social Skills",
+            "Medical Treatment",
+            "Mental Health",
+            "Other"
+          ]
+        },
+
+      },
+      observers:[
+        "editQuery(query1200, query850, query950, query640)"
+      ],
+      addGoal:function(){
+        this.$.goalDB.path=null;
+        this.$.goalDB.data={};
+        var path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals";
+        this.$.goalDB.save(path, null)
+          .then(function(){
+            //save new goal uid for paths to db for new steps and querying steps
+            this.goalUID=this.$.goalDB.path.slice(path.length+2);
+            //set the db path to query steps as they are created
+            this.$.stepsDB.path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalUID+"/steps";
+            this.goalSelected=true;
+          }.bind(this));
+      },
+      editGoal:function(e){
+         this.$.goalDB.path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalUID;
+         this.$.stepsDB.path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalUID+"/steps";
+         this.goalSelected=true;
+         this.$.goalModal.toggle();
+      },
+      deleteGoal:function(e){
+        var path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalUID;
+        this.$.goalDB.setStoredValue(path, null);
+        this.$.goalModal.toggle();
+      },
+      finishGoal:function(e){
+        this.goalSelected=false;
+      },
+      addStep:function(){
+        this.$.stepDB.path=null;
+        this.$.stepDB.data={};
+        var path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalUID+"/steps";
+        this.$.stepDB.save(path, null)
+          .then(function(){
+            var stepUID=this.$.stepDB.path.slice(path.length+2);
+            this.$.stepModal.toggle();
+          }.bind(this));
+      },
+      editStep:function(e){
+        var stepID = e.model.step.$key;
+        this.$.stepDB.path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalUID+"/steps/"+stepID;
+        this.$.stepModal.toggle();
+      },
+      //function to sort steps based on order
+      _sortSteps:function(a, b){
+        if (a.order === b.order) return 0;
+        return a.order < b.order ? -1 : 1;
+      },
+      _computeSteps:function(steps){
+        var stepCount=0;
+        for(x in steps){
+          stepCount++;
+        }
+        return stepCount;
+      },
+      _computeGoalImage:function(cat){
+        switch(cat) {
+          case "Accommodation":
+              return "images/accommodation.png"
+              break;
+          case "Finance And Budget":
+              return "images/financeAndBudget.png"
+              break;
+          case "Social Skills":
+              return "images/socialSkills.png"
+              break;
+          case "Medical Treatment":
+              return "images/medicalTreatment.png"
+              break;
+          case "Mental Health":
+              return "images/mentalHealth.png"
+              break;
+          default:
+              return "images/other.png"
+        };
+      },
+      toggleEditModal:function(e){
+        this.$.goalModal.positionTarget = e.target;
+        this.goalUID = e.model.goal.$key;
+        this.$.goalModal.toggle();
+      },
+
+      _computeQueryCount:function(goal){
+        if(!this.queryCount){
+          this.queryCount=0;
+        };
+        this.queryCount++;
+      },
+      print:function(e){
+        var printData=this.$.printDB.data;
+        var printable=window.open("","printable");
+        printable.document.write("<html><head>");
+        printable.document.write("</head><body>");
+        printable.document.write("<div style='width:100% padding:5%;'>");
+        for(x in printData){
+          var goal=printData[x];
+          printable.document.write("<p style='font-weight:bold;'>Goal</p>");
+          for(y in goal){
+            var goalProp=goal[y];
+            if(y!="steps"){
+              printable.document.write("<p>"+y+": "+goalProp+"</p>");
+            };
+            if(y==="steps"){
+              for(z in goalProp){
+                var steps=goalProp[z];
+                printable.document.write("<p style='font-weight:bold;'>Goal Step</p>");
+                for(xx in steps){
+                  var stepProp=steps[xx];
+                  printable.document.write("<p>"+this.convertToPrintText(xx)+": "+stepProp+"</p>");
+                };
+              };
+            };
+          };
+        };
+        printable.document.write("</body></html>");
+        printable.document.write("</div>");
+        printable.print();
+        printable.close();
+
+      },
+      convertToPrintText:function(camelCase){
+        if (camelCase == null || camelCase == "") {
+          return camelCase;
+        }
+
+        camelCase = camelCase.trim();
+        var newText = "";
+        for (var i = 0; i < camelCase.length; i++) {
+          if (/[A-Z]/.test(camelCase[i])
+              && i != 0
+              && /[a-z]/.test(camelCase[i-1])) {
+            newText += " ";
+          }
+          if (i == 0 && /[a-z]/.test(camelCase[i]))
+          {
+            newText += camelCase[i].toUpperCase();
+          } else {
+            newText += camelCase[i];
+          }
+        }
+        return newText;
+      },
+      editQuery:function(query1200, query850, query950, query640){
+        if(query640){
+          //column style
+          this.customStyle["--app-grid-columns"]="1";
+
+          //fab style
+          this.customStyle["--main-fab-position"]="fixed";
+          this.customStyle["--main-fab-top"]="unset";
+          this.customStyle["--main-fab-bottom"]="5%";
+          this.customStyle["--main-fab-right"]="5%";
+
+          //table style
+          this.customStyle["--table-scroll-lable-color"]="inherit";
+          this.customStyle["--table-overflow"]="scroll";
+          this.customStyle["--tbody-display"]="block";
+          this.customStyle["--thead-tr-position"]="relative";
+          this.customStyle["--thead-tr-display"]="block";
+          this.customStyle["--thead-tr-td-width"]="150px";
+          this.customStyle["--td-th-min-width"]="150px";
+          this.customStyle["--td-th-last-width"]="150px";
+
+          //description and detail bar padding
+          this.customStyle["--detail-bar-padding"]="0% 10% 20px 40%";
+          this.customStyle["--description-container-padding"]="0% 10% 20px 40%";
+
+          this.updateStyles();
+        } else if(query850){
+          //column style
+          this.customStyle["--app-grid-columns"]="1";
+
+          //fab style
+          this.customStyle["--main-fab-position"]="absolute";
+          this.customStyle["--main-fab-top"]="-25px";
+          this.customStyle["--main-fab-right"]="-25px";
+          this.customStyle["--main-fab-bottom"]="unset";
+
+          //table style
+          this.customStyle["--table-scroll-lable-color"]="inherit";
+          this.customStyle["--table-overflow"]="scroll";
+          this.customStyle["--tbody-display"]="block";
+          this.customStyle["--thead-tr-position"]="relative";
+          this.customStyle["--thead-tr-display"]="block";
+          this.customStyle["--thead-tr-td-width"]="150px";
+          this.customStyle["--td-th-min-width"]="150px";
+          this.customStyle["--td-th-last-width"]="150px";
+
+          //description and detail bar padding
+          this.customStyle["--detail-bar-padding"]="0% 10% 20px 40%";
+          this.customStyle["--description-container-padding"]="0% 10% 20px 40%";
+
+          this.updateStyles();
+        } else if(query950){
+          //column style
+          this.customStyle["--app-grid-columns"]="1";
+
+          //fab style
+          this.customStyle["--main-fab-position"]="absolute";
+          this.customStyle["--main-fab-top"]="-25px";
+          this.customStyle["--main-fab-right"]="-25px";
+          this.customStyle["--main-fab-bottom"]="unset";
+
+          //table style
+          this.customStyle["--table-scroll-lable-color"]="inherit";
+          this.customStyle["--table-overflow"]="scroll";
+          this.customStyle["--tbody-display"]="block";
+          this.customStyle["--thead-tr-position"]="relative";
+          this.customStyle["--thead-tr-display"]="block";
+          this.customStyle["--thead-tr-td-width"]="150px";
+          this.customStyle["--td-th-min-width"]="150px";
+          this.customStyle["--td-th-last-width"]="150px";
+
+          //description and detail bar padding
+          this.customStyle["--detail-bar-padding"]="0% 25% 20px 25%";
+          this.customStyle["--description-container-padding"]="0% 25% 20px 25%";
+
+          this.updateStyles();
+        } else if(query1200){
+          //column style
+          this.customStyle["--app-grid-columns"]="2";
+
+          //fab style
+          this.customStyle["--main-fab-position"]="absolute";
+          this.customStyle["--main-fab-top"]="-25px";
+          this.customStyle["--main-fab-right"]="-25px";
+          this.customStyle["--main-fab-bottom"]="unset";
+
+          //table style
+          this.customStyle["--table-scroll-lable-color"]="transparent";
+          this.customStyle["--table-overflow"]="unset";
+          this.customStyle["--tbody-display"]="table-row-group";
+          this.customStyle["--thead-tr-position"]="unset";
+          this.customStyle["--thead-tr-display"]="table-row";
+          this.customStyle["--thead-tr-td-width"]="unset";
+          this.customStyle["--td-th-min-width"]="unset";
+          this.customStyle["--td-th-last-width"]="unset";
+
+          //description and detail bar padding
+          this.customStyle["--detail-bar-padding"]="0% 25% 20px 25%";
+          this.customStyle["--description-container-padding"]="0% 25% 20px 25%";
+
+          this.updateStyles();
+        } else {
+          //column style
+          this.customStyle["--app-grid-columns"]="3";
+
+          //fab style
+          this.customStyle["--main-fab-position"]="absolute";
+          this.customStyle["--main-fab-top"]="-25px";
+          this.customStyle["--main-fab-right"]="-25px";
+          this.customStyle["--main-fab-bottom"]="unset";
+
+          //table style
+          this.customStyle["--table-scroll-lable-color"]="transparent";
+          this.customStyle["--table-overflow"]="unset";
+          this.customStyle["--tbody-display"]="table-row-group";
+          this.customStyle["--thead-tr-position"]="unset";
+          this.customStyle["--thead-tr-display"]="table-row";
+          this.customStyle["--thead-tr-td-width"]="unset";
+          this.customStyle["--td-th-min-width"]="unset";
+          this.customStyle["--td-th-last-width"]="unset";
+
+          //description and detail bar padding
+          this.customStyle["--detail-bar-padding"]="0% 25% 20px 25%";
+          this.customStyle["--description-container-padding"]="0% 25% 20px 25%";
+
+          this.updateStyles();
+
+
+        };
+      }
+    });
+
+  </script>
+
+</dom-module>

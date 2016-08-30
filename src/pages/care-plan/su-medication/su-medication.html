@@ -1,0 +1,792 @@
+<link rel="import" href="dependencies.html" />
+
+<dom-module id="su-medication">
+
+  <template>
+    <firebase-document
+      id="medDB"
+      app-name="main">
+    </firebase-document>
+    <firebase-document
+      id="medsDB"
+      path="homes/{{home}}/patients/{{patient}}/medicationOutline"
+      data="{{medsData}}"
+      app-name="main">
+    </firebase-document>
+
+    <iron-media-query
+      query="(max-width:1000px)"
+      query-matches="{{query1000}}">
+    </iron-media-query>
+
+    <iron-media-query
+      query="(max-width:640px)"
+      query-matches="{{query640}}">
+    </iron-media-query>
+
+    <style include="paper-time-picker-dialog-style"></style>
+    <style include="app-grid-style">
+      :host{
+
+      }
+      paper-card{
+        width:80%;
+        margin:-50px 10% 50px 10%;
+        position:absolute;
+      }
+      .mainFab{
+        position:absolute;
+        right:-25px;
+        top:-25px;
+        z-index:1;
+        position:var(--main-fab-position);
+        bottom:var(--main-fab-bottom);
+        top:var(--main-fab-top);
+        right:var(--main-fab-right);
+      }
+      .timeChunkMorning{
+          background-image:url(../../../../images/morning.png);
+      }
+      .timeChunkAfternoon{
+          background-image:url(../../../../images/afternoon.png);
+      }
+      .timeChunkEvening{
+          background-image:url(../../../../images/evening.png);
+      }
+      .timeChunkNight{
+          background-image:url(../../../../images/night.png);
+      }
+      .timeChunkBar{
+        background-color:#E0E0E0;
+        width:100%;
+        margin:20px 0 20px 0;
+        padding:30px;
+        color:#009688;
+        background-repeat:no-repeat;
+        background-size:40px 40px;
+        background-position:20px;
+      }
+      .tableScrollLabel{
+        font-weight:bold;
+        text-transform:uppercase;
+        margin-bottom:0px;
+        padding-bottom:0px;
+        font-size:10px;
+        padding-left:20px;
+        color:var(--table-scroll-lable-color);
+      }
+      .tableContainer{
+        padding:20px;
+        height:auto;
+        overflow:var(--table-overflow);
+      }
+      .tableContainer table{
+        padding:20px;
+        width:100%;
+        background-color:var(--table-background-color);
+      }
+      tbody{
+        display:var(--tbody-display);
+      }
+      thead tr{
+        position:var(--thead-tr-position);
+        display:var(--thead-tr-display);
+      }
+      td{
+        width:var(--thead-tr-td-width);
+      }
+      th{
+        text-align:left;
+      }
+      td,th{
+
+      }
+      td,th{
+        min-width:var(--td-th-min-width);
+      }
+      td,th:last-of-type{
+        width:var(--td-th-last-width);
+      }
+      .mainContainer{
+        position:relative;
+      }
+      .buttons{
+        text-align:center;
+      }
+      .buttons *{
+        width:50%;
+      }
+      .timeSection{
+        text-align:center;
+      }
+      .timeSection *{
+        width:50%;
+      }
+    </style>
+
+    <paper-dialog id="medModal" class="paper-time-picker-dialog">
+
+        <h2>Add Medication</h2>
+
+        <paper-input
+          label="Medication Name"
+          value="{{newMed.medicine}}"
+          required
+          auto-validate
+          pattern="[a-zA-Z\s]*"
+          error-message="Please enter a valid medicine name.">
+        </paper-input>
+
+        <vaadin-combo-box
+          allow-custom-status
+          label="Method"
+          value="{{newMed.method}}"
+          items="[[medMethods]]"
+          required
+          auto-validate
+          error-message="Please select a method.">
+        </vaadin-combo-box>
+        <!--need units of meds-->
+        <paper-input
+          label="dosage"
+          value="{{newMed.dosage}}"
+          required
+          auto-validate
+          pattern="\d{1,4}[a-zA-Z\s]*"
+          error-message="Please enter in the following format: (number) (units).">
+        </paper-input>
+
+        <div class="timeSection">
+
+          <span>
+            Time: {{newMed.time}}
+          </span>
+
+          <paper-button on-tap="timeDialog">edit time</paper-button>
+
+        </div>
+
+        <div class="buttons">
+          <paper-button dialog-dismiss>Cancel</paper-button>
+          <paper-button on-tap="saveMed">Save</paper-button>
+        </div>
+
+    </paper-dialog>
+
+    <paper-dialog id="editMedModal">
+
+      <h2>Edit Medication</h2>
+
+      <paper-input
+        label="Medication Name"
+        value="{{newMedEdit.medicine}}"
+        equired
+        auto-validate
+        pattern="[a-zA-Z\s]*"
+        error-message="Please enter a valid medicine name.">
+      </paper-input>
+
+      <vaadin-combo-box
+        allow-custom-status
+        label="Method"
+        value="{{newMedEdit.method}}"
+        items="[[medMethods]]"
+        required
+        auto-validate
+        error-message="Please select a method.">
+      </vaadin-combo-box>
+
+      <paper-input
+        label="dosage"
+        value="{{newMedEdit.dosage}}"
+        required
+        auto-validate
+        pattern="\d{1,4}[a-zA-Z\s]*"
+        error-message="Please enter in the following format: (number) (units).">
+      </paper-input>
+
+      <div class="timeSection">
+
+        <span>
+          Time: {{newMedEdit.time}}
+        </span>
+
+        <paper-button on-tap="editTimeDialog">edit time</paper-button>
+
+      </div>
+
+      <div class="buttons">
+        <paper-button dialog-dismiss>Cancel</paper-button>
+        <paper-button on-tap="saveEditMed">Save</paper-button>
+      </div>
+
+    </paper-dialog>
+
+    <paper-dialog id="timeDialog" class="paper-time-picker-dialog">
+
+      <paper-time-picker
+        id="timePicker"
+        time="{{newMed.time}}">
+      </paper-time-picker>
+
+      <div class="buttons">
+        <paper-button dialog-dismiss>Cancel</paper-button>
+        <paper-button dialog-dismiss>Save Changes</paper-button>
+      </div>
+
+    </paper-dialog>
+
+    <paper-dialog id="editTimeDialog" class="paper-time-picker-dialog">
+
+      <paper-time-picker
+        id="editTimePicker"
+        time="{{newMedEdit.time}}">
+      </paper-time-picker>
+
+      <div class="buttons">
+        <paper-button dialog-dismiss>Cancel</paper-button>
+        <paper-button dialog-dismiss>Save Changes</paper-button>
+      </div>
+
+    </paper-dialog>
+
+    <paper-card>
+      <su-header
+      page="Medication Outline"
+      home="{{home}}"
+      patient="{{patient}}">
+      </su-header>
+
+      <div class="mainContainer">
+
+        <paper-fab
+          class="mainFab"
+          icon="add"
+          on-tap="startNewMed">
+        </paper-fab>
+
+        <paper-button class="timeChunkBar timeChunkMorning" on-tap="toggleMorning">morning</paper-button>
+        <iron-collapse id="morning" opened>
+          <div class="tableContainer">
+
+            <p class="tableScrollLabel">
+              swipe left scrolls table
+            </p>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>
+                    Medication
+                  </th>
+                  <th>
+                    Method
+                  </th>
+                  <th>
+                    Dosage
+                  </th>
+                  <th>
+                    Time
+                  </th>
+                  <th>
+                    Edit
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <template
+                  is="dom-repeat"
+                  items="{{_computeMedList(medsData)}}"
+                  as="med"
+                  filter="filterMorning"
+                  observe="timeChunk">
+                  <tr>
+                    <td>
+                      [[med.medicine]]
+                    </td>
+                    <td>
+                      [[med.method]]
+                    </td>
+                    <td>
+                      [[med.dosage]]
+                    </td>
+                    <td>
+                      [[med.time]]
+                    </td>
+                    <td>
+                      <paper-icon-button on-tap="editMed" icon="editor:editor:mode-edit"></paper-icon-button>
+                    </td>
+                  </tr>
+
+                </template>
+              </tbody>
+            </table>
+
+          </div>
+
+        </iron-collapse>
+
+        <paper-button class="timeChunkBar timeChunkAfternoon" on-tap="toggleAfternoon">afternoon</paper-button>
+        <iron-collapse id="afternoon">
+
+          <div class="tableContainer">
+
+            <p class="tableScrollLabel">
+              swipe left scrolls table
+            </p>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>
+                    Medication
+                  </th>
+                  <th>
+                    Method
+                  </th>
+                  <th>
+                    Dosage
+                  </th>
+                  <th>
+                    Time
+                  </th>
+                  <th>
+                    Edit
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <template
+                  is="dom-repeat"
+                  items="{{_computeMedList(medsData)}}"
+                  as="med"
+                  filter="filterAfternoon"
+                  observe="timeChunk">
+                  <tr>
+                    <td>
+                      [[med.medicine]]
+                    </td>
+                    <td>
+                      [[med.method]]
+                    </td>
+                    <td>
+                      [[med.dosage]]
+                    </td>
+                    <td>
+                      [[med.time]]
+                    </td>
+                    <td>
+                      <paper-icon-button on-tap="editMed" icon="editor:editor:mode-edit"></paper-icon-button>
+                    </td>
+                  </tr>
+
+                </template>
+              </tbody>
+            </table>
+
+          </div>
+
+        </iron-collapse>
+
+        <paper-button class="timeChunkBar timeChunkEvening" on-tap="toggleEvening">evening</paper-button>
+        <iron-collapse id="evening">
+
+          <div class="tableContainer">
+
+            <p class="tableScrollLabel">
+              swipe left scrolls table
+            </p>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>
+                    Medication
+                  </th>
+                  <th>
+                    Method
+                  </th>
+                  <th>
+                    Dosage
+                  </th>
+                  <th>
+                    Time
+                  </th>
+                  <th>
+                    Edit
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <template
+                  is="dom-repeat"
+                  items="{{_computeMedList(medsData)}}"
+                  as="med"
+                  filter="filterEvening"
+                  observe="timeChunk">
+                  <tr>
+                    <td>
+                      [[med.medicine]]
+                    </td>
+                    <td>
+                      [[med.method]]
+                    </td>
+                    <td>
+                      [[med.dosage]]
+                    </td>
+                    <td>
+                      [[med.time]]
+                    </td>
+                    <td>
+                      <paper-icon-button on-tap="editMed" icon="editor:editor:mode-edit"></paper-icon-button>
+                    </td>
+                  </tr>
+
+                </template>
+              </tbody>
+            </table>
+
+          </div>
+
+        </iron-collapse>
+
+        <paper-button class="timeChunkBar timeChunkNight" on-tap="toggleNight">night</paper-button>
+        <iron-collapse id="night">
+
+          <div class="tableContainer">
+
+            <p class="tableScrollLabel">
+              swipe left scrolls table
+            </p>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>
+                    Medication
+                  </th>
+                  <th>
+                    Method
+                  </th>
+                  <th>
+                    Dosage
+                  </th>
+                  <th>
+                    Time
+                  </th>
+                  <th>
+                    Edit
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <template
+                  is="dom-repeat"
+                  items="{{_computeMedList(medsData)}}"
+                  as="med"
+                  filter="filterNight"
+                  observe="timeChunk">
+                  <tr>
+                    <td>
+                      [[med.medicine]]
+                    </td>
+                    <td>
+                      [[med.method]]
+                    </td>
+                    <td>
+                      [[med.dosage]]
+                    </td>
+                    <td>
+                      [[med.time]]
+                    </td>
+                    <td>
+                      <paper-icon-button on-tap="editMed" icon="editor:editor:mode-edit"></paper-icon-button>
+                    </td>
+                  </tr>
+
+                </template>
+              </tbody>
+            </table>
+
+          </div>
+
+        </iron-collapse>
+
+      </div>
+
+    </paper-card>
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is: 'su-medication',
+      ready:function(){
+        this.addEventListener("print", this.print);
+      },
+      properties:{
+        page:{
+          type:String,
+        },
+        home:{
+          type:String,
+        },
+        patient:{
+          type:String,
+        },
+        medMethods:{
+          type:String,
+          value:[
+            "Oral",
+            "Topic",
+            "Injection",
+            "Nasal"
+          ]
+        },
+        newMed:{
+          type:Object,
+          value:{}
+        },
+      },
+      timeTarget:{
+        type:Object
+      },
+      observers:[
+        "newTime(timeTarget.time, timeTarget.$key)",
+        "setTime(newMed.time)",
+        "setTimeEdit(newMedEdit.time)",
+        "editQuery(query1000, query640)"
+      ],
+      startNewMed:function(){
+        this.$.medModal.toggle();
+        this.hideSaveMed=false;
+      },
+      toggleTime:function(e){
+        this.$.timeDialog.toggle();
+        this.timeTarget=e.model.med;
+      },
+      editMed:function(e){
+        this.newMedEdit=e.model.med;
+        this.$.editMedModal.toggle();
+
+      },
+      saveEditMed:function(){
+        this.$.medDB.path=null;
+        var editPath=this.newMedEdit.parent;
+        this.newMedEdit.parent=null;
+        this.$.medDB.data.med=this.newMedEdit;
+        this.$.medDB.data.log={};
+        this.$.medDB.data.log.user=this.user.uid;
+        this.$.medDB.data.log.time=Date.now();
+        this.$.medDB.save("homes/"+this.home+"/patients/"+this.patient+"/medicationOutline/"+editPath, null);
+        this.$.editMedModal.toggle();
+        this.newMedEdit={};
+        this.hideEditingMed=true;
+      },
+      saveMed:function(e){
+        this.$.medDB.path=null;
+        this.$.medDB.data={};
+        this.$.medDB.save("homes/"+this.home+"/patients/"+this.patient+"/medicationOutline", null)
+          .then(function(){
+            this.$.medDB.data.med=this.newMed;
+            this.$.medDB.data.log={};
+            this.$.medDB.data.log.user=this.user.uid;
+            this.$.medDB.data.log.time=Date.now();
+            this.$.medDB.save(this.$.medDB.path, null)
+              .then(function(){
+                this.newMed={};
+              }.bind(this));
+          }.bind(this));
+        this.$.medModal.toggle();
+        this.hideSaveMed=true;
+      },
+      newTime:function(time){
+        this.newMed.time=time;
+        this.newMed.timeChunk=this.convertTime(rawTime);
+      },
+      setTime:function(time){
+        var rawTime=this.$.timePicker.rawValue;
+        var timeChunk=this.convertTime(rawTime);
+        this.newMed.timeChunk=timeChunk;
+      },
+      setTimeEdit:function(time){
+        var rawTime=this.$.editTimePicker.rawValue;
+        var timeChunk=this.convertTime(rawTime);
+        this.newMedEdit.timeChunk=timeChunk;
+      },
+      toggleMorning:function(){
+        this.$.morning.toggle();
+      },
+      toggleAfternoon:function(){
+        this.$.afternoon.toggle();
+      },
+      toggleEvening:function(){
+        this.$.evening.toggle();
+      },
+      toggleNight:function(){
+        this.$.night.toggle();
+      },
+      filterMorning:function(item){
+        return item.timeChunk==="morning";
+      },
+      filterAfternoon:function(item){
+        return item.timeChunk==="afternoon";
+      },
+      filterEvening:function(item){
+        return item.timeChunk==="evening";
+      },
+      filterNight:function(item){
+        return item.timeChunk==="night";
+      },
+      convertTime:function(rawTime){
+        if(rawTime>=60*5 && rawTime<60*12){
+          return "morning";
+        } else if(rawTime>=60*12 && rawTime<60*17){
+          return "afternoon";
+        } else if(rawTime>=60*17 && rawTime<60*21){
+          return "evening"
+        } else {
+          return "night";
+        };
+      },
+      print:function(e){
+        var printData=this.$.medsDB.data;
+        var printable=window.open("","printable");
+        printable.document.write("<html><head>");
+        printable.document.write("</head><body>");
+        printable.document.write("<div style='width:100% padding:5%;'>");
+        printable.document.write("<p style='font-weight:bold;'>Medication List and History</p>");
+        for(x in printData){
+          var med=printData[x];
+          for(y in med){
+            var medHistory=med[y];
+            var date=medHistory.log.time;
+            var formattedDate=new Date(date);yy
+            var printDate=formattedDate.getDay()+"."+formattedDate.getMonth()+"."+formattedDate.getFullYear();
+            printable.document.write("<p style='font-weight:bold;'>"+formattedDate+"</p>");
+            printable.document.write("<ul>");
+            for(z in medHistory.med){
+              printable.document.write("<li>"+this.convertToPrintText(z)+": "+medHistory.med[z]+"</li>");
+            };
+            printable.document.write("</ul>");
+          };
+        };
+        printable.document.write("</body></html>");
+        printable.document.write("</div>");
+        printable.print();
+        printable.close();
+      },
+      convertToPrintText:function(camelCase){
+        if (camelCase == null || camelCase == "") {
+          return camelCase;
+        }
+
+        camelCase = camelCase.trim();
+        var newText = "";
+        for (var i = 0; i < camelCase.length; i++) {
+          if (/[A-Z]/.test(camelCase[i])
+              && i != 0
+              && /[a-z]/.test(camelCase[i-1])) {
+            newText += " ";
+          }
+          if (i == 0 && /[a-z]/.test(camelCase[i]))
+          {
+            newText += camelCase[i].toUpperCase();
+          } else {
+            newText += camelCase[i];
+          }
+        }
+        return newText;
+      },
+      _computeMedList:function(meds){
+        //return the most recent sub doc from medication docs
+        var currentMedList=[];
+        var now = Date.now();
+        for(x in meds){
+          var med=meds[x];
+          var medCandidate=null;
+          for(y in med){
+            var medHistory=med[y];
+            if(medHistory.log){
+              medTime = medHistory.log.time;
+              if(medCandidate!=null){
+                if(medCandidate.log.time<medTime){
+                  medCandidate=medHistory;
+                };
+              } else {
+                medCandidate=medHistory;
+              };
+            };
+          };
+          medCandidate=medCandidate.med;
+          medCandidate.parent=x;
+          currentMedList.push(medCandidate);
+        };
+        return currentMedList;
+      },
+      editQuery:function(query1000, query640){
+        if(query640){
+          //table style
+          this.customStyle["--table-scroll-lable-color"]="inherit";
+          this.customStyle["--table-overflow"]="scroll";
+          this.customStyle["--tbody-display"]="block";
+          this.customStyle["--thead-tr-position"]="relative";
+          this.customStyle["--thead-tr-display"]="block";
+          this.customStyle["--thead-tr-td-width"]="150px";
+          this.customStyle["--td-th-min-width"]="150px";
+          this.customStyle["--td-th-last-width"]="150px";
+
+          //fab styles
+          this.customStyle["--main-fab-position"]="fixed";
+          this.customStyle["--main-fab-top"]="unset";
+          this.customStyle["--main-fab-bottom"]="5%";
+          this.customStyle["--main-fab-right"]="5%";
+          this.updateStyles();
+        } else if(query1000){
+
+          //table style
+          this.customStyle["--table-scroll-lable-color"]="inherit";
+          this.customStyle["--table-overflow"]="scroll";
+          this.customStyle["--tbody-display"]="block";
+          this.customStyle["--thead-tr-position"]="relative";
+          this.customStyle["--thead-tr-display"]="block";
+          this.customStyle["--thead-tr-td-width"]="150px";
+          this.customStyle["--td-th-min-width"]="150px";
+          this.customStyle["--td-th-last-width"]="150px";
+
+          //fab styles
+          this.customStyle["--main-fab-position"]="absolute";
+          this.customStyle["--main-fab-top"]="-25px";
+          this.customStyle["--main-fab-bottom"]="unset";
+          this.customStyle["--main-fab-right"]="-25px";
+          this.updateStyles();
+        } else {
+          this.customStyle["--table-scroll-lable-color"]="transparent";
+          this.customStyle["--table-overflow"]="unset";
+          this.customStyle["--tbody-display"]="table-row-group";
+          this.customStyle["--thead-tr-position"]="unset";
+          this.customStyle["--thead-tr-display"]="table-row";
+          this.customStyle["--thead-tr-td-width"]="unset";
+          this.customStyle["--td-th-min-width"]="unset";
+          this.customStyle["--td-th-last-width"]="unset";
+
+          //fab styles
+          this.customStyle["--main-fab-position"]="absolute";
+          this.customStyle["--main-fab-top"]="-25px";
+          this.customStyle["--main-fab-bottom"]="unset";
+          this.customStyle["--main-fab-right"]="-25px";
+          this.updateStyles();
+        };
+      },
+      editTimeDialog:function(){
+        this.$.editTimeDialog.toggle();
+      },
+      timeDialog:function(){
+        this.$.timeDialog.toggle();
+      }
+  });
+
+  </script>
+
+</dom-module>

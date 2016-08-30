@@ -1,0 +1,133 @@
+<link rel="import" href="dependencies.html" />
+<dom-module id="admin-drawer">
+
+  <template>
+
+    <style>
+      app-header {
+        background-color: var(--app-primary-color);
+        color: #fff;
+      }
+      app-header paper-icon-button {
+        --paper-icon-button-ink-color: white;
+      }
+      app-drawer{
+        color:#303030
+      }
+
+      .drawer-list {
+        margin: 0 20px;
+      }
+      .drawer-list a {
+        display: block;
+        padding: 0 16px;
+        line-height: 40px;
+        text-decoration: none;
+        color: var(--app-secondary-color);
+        text-decoration:none;
+      }
+      .drawer-list a .iron-selected {
+        color: pink;
+        font-weight: bold;
+      }
+      .drawer-list a .subroute {
+        padding-left: 32px;
+      }
+      app-toolbar{
+        background-color:#fad100;
+        min-height:100px;
+      }
+      paper-listbox a{
+        text-decoration:none;
+        color:inherit;
+      }
+    </style>
+
+    <app-drawer id="adminDrawer" position="left" opened="{{opened}}">
+      <app-toolbar>
+        {{email}}
+      </app-toolbar>
+      <paper-listbox>
+        <a on-tap="close" href="/{{home}}/admin/ad-dash/{{admin}}" tabindex="-1">
+          <paper-item>
+            <paper-icon-item>
+              <iron-icon icon="icons:dashboard" item-icon></iron-icon>
+              Dashboard
+            </paper-icon-item>
+          </paper-item>
+        </a>
+
+        <a on-tap="close" href="/{{home}}/admin/ad-profile/{{admin}}" tabindex="-1">
+          <paper-item>
+            <paper-icon-item>
+              <iron-icon icon="social:location-city" item-icon></iron-icon>
+              Company Profile
+            </paper-icon-item>
+          </paper-item>
+        </a>
+
+        <a on-tap="close" href="/{{home}}/admin/ad-payment/{{admin}}" tabindex="-1">
+          <paper-item>
+            <paper-icon-item>
+              <iron-icon icon="icons:payment" item-icon></iron-icon>
+              Payment
+            </paper-icon-item>
+          </paper-item>
+        </a>
+
+        <a on-tap="close" href="/{{home}}/admin/ad-users/{{admin}}" tabindex="-1">
+          <paper-item>
+            <paper-icon-item>
+              <iron-icon icon="social:group" item-icon></iron-icon>
+              Users
+            </paper-icon-item>
+          </paper-item>
+        </a>
+
+        <a on-tap="close" href="/{{home}}/admin/ad-settings/{{admin}}" tabindex="-1">
+          <paper-item>
+            <paper-icon-item>
+              <iron-icon icon="icons:settings" item-icon></iron-icon>
+              Settings
+            </paper-icon-item>
+          </paper-item>
+        </a>
+
+        <a on-tap="close" href="/{{home}}/admin/ad-support/{{admin}}" tabindex="-1">
+          <paper-item>
+            <paper-icon-item>
+              <iron-icon icon="communication:live-help" item-icon></iron-icon>
+              Support
+            </paper-icon-item>
+          </paper-item>
+        </a>
+
+      </paper-listbox>
+    </app-drawer>
+
+  </template>
+
+  <script>
+
+    Polymer({
+      is:'admin-drawer',
+      properties:{
+        admin:{
+          type:String,
+        },
+        home:{
+          type:String,
+        },
+        opened:{
+          type:String,
+          value:false
+        }
+      },
+      close:function(){
+        this.$.adminDrawer.opened=false;
+      }
+    });
+
+  </script>
+
+</dom-module>

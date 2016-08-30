@@ -1,0 +1,364 @@
+<!--
+a header area element for the service users area...
+page=(string)
+  the current page that the user is on
+home(string)
+  the home uid in use REQUIRED
+patient(string)
+  the current patient in order to get name for the header
+  if no patient is declared then header will say "please select a patient"
+firstname(string)
+  used in place of home and patient can be put directly in
+lastname(string)
+  used in place of home and patient, can be put directly in
+base64(string)
+  base64 used for image source
+setimage(boolean)
+  set in order to allow the image to be set to something else
+  default is false
+-->
+<link rel="import" href="dependencies.html" />
+<dom-module id="su-header">
+
+  <template>
+    <!--firebase connection for the header info-->
+    <firebase-document
+      id="headerDB"
+      app-name="main"
+      path="/homes/{{home}}/patients/{{patient}}/personalProfile"
+      data="{{headerName}}">
+    </firebase-document>
+    <firebase-document
+      id="imageDB"
+      path="/homes/{{home}}/patients/{{patient}}/personalProfile/image"
+      data="{{image}}"
+      app-name="main">
+    </firebase-document>
+
+    <iron-media-query
+      query="(max-width:1600px)"
+      query-matches="{{query1600}}">
+    </iron-media-query>
+
+    <iron-media-query
+      query="(max-width:1400px)"
+      query-matches="{{query1400}}">
+    </iron-media-query>
+
+    <iron-media-query
+      query="(max-width:1200px)"
+      query-matches="{{query1200}}">
+    </iron-media-query>
+
+    <iron-media-query
+      query="(max-width:1000px)"
+      query-matches="{{query1000}}">
+    </iron-media-query>
+
+    <iron-media-query
+      query="(max-width:800px)"
+      query-matches="{{query800}}">
+    </iron-media-query>
+
+    <iron-media-query
+      query="(max-width:600px)"
+      query-matches="{{query600}}">
+    </iron-media-query>
+
+    <style include="app-grid-style"></style>
+    <style>
+      :host{
+        --app-grid-columns:10;
+        --app-grid-expandible-item-columns:9;
+      }
+      .pageHeader{
+        margin:0px !important;
+        padding: 0px 0px 0px 0px; !important;
+      }
+      .headerAvatar{
+        background-color:#9DDEF2;
+        background-color: var(--su-header-avatar-background-color);
+        height:150px;
+        width:20%;
+        height:var(--header-image-height);
+
+        margin:0px !important;
+        padding: 0px !important;
+        float:left;
+        position:relative;
+      }
+      .avatarHeaderDefault{
+        --iron-icon-height: 100px;
+        --iron-icon-width: 100px;
+        text-align:center;
+      }
+      .headerInfoRow{
+        height:150px;
+        height:var(--header-info-height);
+        width:80%;
+        margin:0px !important;
+        padding: 0px !important;
+        color:#FFFFFF;
+        color:var(--su-header-info-row-color);
+        padding-bottom:50px;
+        position:relative;
+        float:right;
+      }
+      .patientName{
+        background-color:#42beff;
+        background-color:var(--su-header-patient-name-background-color);
+        height:100px;
+        height:var(--patient-name-height);
+        width:100%;
+        margin:0 0 0 0 !important;
+        position:relative;
+      }
+      .pageName{
+        background-color:#00a7f8;
+        background-color:var(--su-header-page-name-background-color);
+        height:50px;
+        height:var(--page-name-height);
+        width:100%;
+        margin:0 0 0 0 !important;
+
+      }
+      .patientNameText{
+        font-size:36px;
+        font-size:var(--patient-name-font-size);
+        position:absolute;
+        bottom:5%;
+        left:5%;
+      }
+      .pageNameText{
+        font-size:16px;
+        font-size:var(--page-name-font-size);
+        position:absolute;
+        bottom:5%;
+        left:5%;
+      }
+      .imageButton{
+        position:absolute;
+        right:5%;
+        bottom:5%;
+        z-index:2;
+        opacity:.52;
+        padding:0;
+        margin:0;
+        height:20%;
+        width:20%;
+      }
+      .headerPrint{
+        opacity:.54;
+        position:absolute;
+        top:5%;
+        right:5%;
+      }
+      .headerProfileImage{
+        width:100%;
+        height:150px;
+        height:var(--header-image-height);
+
+        background-image:url(../../../images/defaultAvatar.png);
+        background-repeat:no-repeat;
+        background-size:cover;
+      }
+    </style>
+
+    <div class="pageHeader">
+      <div class="headerAvatar">
+
+        <iron-image
+          class="headerProfileImage"
+          sizing="cover"
+          preload
+          fade
+          src="{{image}}">
+        </iron-image>
+
+          <input
+            id="imageInput"
+            type="file"
+            on-change="_inputChanged"
+            hidden>
+          </input>
+
+          <paper-icon-button
+            id="imageButton"
+            class="imageButton"
+            on-tap="_onAddFilesClick"
+            icon="image:camera-alt"
+            hidden="{{!setimage}}">
+          </paper-icon-button>
+
+      </div>
+      <div class="headerInfoRow">
+        <div class="patientName">
+
+          <template is="dom-if" if="{{firstname}}">
+
+            <span class="patientNameText">
+              {{firstname}} {{lastname}}
+            </span>
+            <paper-icon-button
+              class="headerPrint"
+              icon="icons:print"
+              on-tap="print">
+            </paper-icon-button>
+
+          </template>
+
+          <template is="dom-if" if="{{_nofirstname(firstname)}}">
+
+            <span class="patientNameText">
+              {{_computeHeaderName(headerName.fName, headerName.lName)}}
+            </span>
+            <paper-icon-button
+              class="headerPrint"
+              icon="icons:print"
+              on-tap="print">
+            </paper-icon-button>
+          </template>
+
+        </div>
+        <div class="pageName">
+          <span class="pageNameText">
+            {{page}}
+          </span>
+        </div>
+      </div>
+    </div>
+    <div style="clear:both"></div>
+
+  </template>
+
+  <script>
+
+    Polymer({
+      is: 'su-header',
+      ready:function(){
+
+      },
+      properties:{
+        page:{
+          type:String
+        },
+        patient:{
+          type:String
+        },
+        home:{
+          type:String
+        },
+        headerName:{
+          type:Object,
+          observer:"_computeHeaderName"
+        },
+        setimage:{
+          type:Boolean,
+          value:false
+        },
+        firstname:{
+          type:String,
+          value:""
+        }
+      },
+      observers:[
+        "editQuery(query1600, query1400, query1200, query1000, query800, query600)"
+      ],
+      _computeHeaderName:function(fName, lName){
+          return fName+" "+lName;
+      },
+      _nofirstname:function(firstname){
+        if(firstname){
+          return false;
+        } else {
+          return true;
+        }
+      },
+      _inputChanged:function(e){
+        var reader= new FileReader();
+        var file=e.target.files[0];
+        reader.readAsDataURL(file);
+        reader.addEventListener("load", function () {
+          this.$.imageDB.setStoredValue("/homes/"+this.home+"/patients/"+this.patient+"/personalProfile/image", reader.result);
+        }.bind(this), false);
+      },
+      _onAddFilesClick: function(e) {
+        if (document.createEvent) {
+          this.$.imageInput.value = '';
+          this.$.imageInput.click();
+        }
+      },
+      print:function(e){
+        this.fire("print");
+      },
+      editQuery:function(query1600, query1400, query1200, query1000, query800, query600){
+        if(query600){
+          this.customStyle["--patient-name-font-size"]="12px";
+          this.customStyle["--page-name-font-size"]="12px";
+          this.customStyle["--header-image-height"]="75px";
+          this.customStyle["--header-image-width"]="75px";
+          this.customStyle["--header-info-height"]="75px";
+          this.customStyle["--patient-name-height"]="50px";
+          this.customStyle["--page-name-height"]="25px";
+          this.updateStyles();
+        } else if(query800){
+          this.customStyle["--page-name-font-size"]="16px";
+          this.customStyle["--patient-name-font-size"]="16px";
+          this.customStyle["--header-image-height"]="100px";
+          this.customStyle["--header-image-width"]="100px";
+          this.customStyle["--header-info-height"]="100px";
+          this.customStyle["--patient-name-height"]="66px";
+          this.customStyle["--page-name-height"]="34px";
+          this.updateStyles();
+        } else if(query1000){
+          this.customStyle["--page-name-font-size"]="16px";
+          this.customStyle["--patient-name-font-size"]="20px";
+          this.customStyle["--header-image-height"]="125px";
+          this.customStyle["--header-image-width"]="125px";
+          this.customStyle["--header-info-height"]="125px";
+          this.customStyle["--patient-name-height"]="82px";
+          this.customStyle["--page-name-height"]="43px";
+          this.updateStyles();
+        } else if(query1200){
+          this.customStyle["--page-name-font-size"]="16px";
+          this.customStyle["--patient-name-font-size"]="24px";
+          this.customStyle["--header-image-height"]="150px";
+          this.customStyle["--header-image-width"]="150px";
+          this.customStyle["--header-info-height"]="150px";
+          this.customStyle["--patient-name-height"]="100px";
+          this.customStyle["--page-name-height"]="50px";
+          this.updateStyles();
+        } else if(query1400){
+          this.customStyle["--page-name-font-size"]="16px";
+          this.customStyle["--patient-name-font-size"]="28px";
+          this.customStyle["--header-image-height"]="150px";
+          this.customStyle["--header-image-width"]="150px";
+          this.customStyle["--header-info-height"]="150px";
+          this.customStyle["--patient-name-height"]="100px";
+          this.customStyle["--page-name-height"]="50px";
+          this.updateStyles();
+        } else if(query1600){
+          this.customStyle["--page-name-font-size"]="16px";
+          this.customStyle["--patient-name-font-size"]="32px";
+          this.customStyle["--header-image-height"]="150px";
+          this.customStyle["--header-image-width"]="150px";
+          this.customStyle["--header-info-height"]="150px";
+          this.customStyle["--patient-name-height"]="100px";
+          this.customStyle["--page-name-height"]="50px";
+          this.updateStyles();
+        } else {
+          this.customStyle["--page-name-font-size"]="16px";
+          this.customStyle["--patient-name-font-size"]="36px";
+          this.customStyle["--header-image-height"]="150px";
+          this.customStyle["--header-image-width"]="150px";
+          this.customStyle["--header-info-height"]="150px";
+          this.customStyle["--patient-name-height"]="100px";
+          this.customStyle["--page-name-height"]="50px";
+          this.updateStyles();
+        }
+      }
+    });
+
+  </script>
+
+</dom-module>

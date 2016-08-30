@@ -1,0 +1,42 @@
+<link rel="import" href="dependencies.html" />
+
+<dom-module id="ad-dash">
+
+  <template>
+
+    <style include="materialize-style"></style>
+    <style>
+      .mainCard{
+        width:80%;
+        margin: -50px 10% 50px 10%;
+        padding-bottom:50px;
+        position:absolute;
+      }
+    paper-card{
+      min-height:800px;
+    }
+    </style>
+
+    <paper-card class="mainCard">
+      <admin-header
+        page="Dashboard"
+        icon="icons:dashboard">
+      </admin-header>
+      <div class="container">
+        <h1>Coming Soon!</h1>
+      </div>
+    </paper-card>
+
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is: 'ad-dash'
+
+    });
+
+  </script>
+
+</dom-module>

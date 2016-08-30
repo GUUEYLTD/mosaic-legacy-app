@@ -1,0 +1,244 @@
+<link rel="import" href="dependencies.html" />
+
+<dom-module id="ad-payment">
+
+  <template>
+    <firebase-document
+    id="careHomeProfileDB"
+    path="/homes/{{home}}/payment"
+    data="{{chPayments}}"
+    app-name="main">
+  </firebase-document>
+
+  <iron-media-query
+    query="(max-width:600px)"
+    query-matches="{{query600}}">
+  </iron-media-query>
+
+    <style include="app-grid-style">
+      :host{
+        --app-grid-columns:2;
+        --app-grid-item-height:100px;
+        --app-grid-expandible-item-columns:2;
+      }
+      .mainCard{
+        width:80%;
+        margin: -50px 10% 50px 10%;
+        padding-bottom:50px;
+        position:absolute;
+      }
+      .guuey-button{
+        background-color:#41847d;
+        color:#FFFFFF;
+      }
+      .container{
+        padding:20px;
+      }
+      paper-button{
+        padding:20px;
+      }
+      paper-input{
+        padding:20px;
+      }
+      .buttonWrapper{
+        padding:20px;
+      }
+      .buttonWrapper paper-button{
+        width:100%;
+        height:100%;
+      }
+      .tableScrollLabel{
+        font-weight:bold;
+        text-transform:uppercase;
+        margin-bottom:0px;
+        padding-bottom:0px;
+        font-size:10px;
+        color:var(--table-scroll-lable-color);
+      }
+      .tableContainer{
+        padding:20px;
+        height:auto;
+        overflow:var(--table-overflow);
+        @apply(--app-grid-expandible-item);
+      }
+      .tableContainer table{
+        width:100%;
+      }
+      table{
+        background-color:var(--table-background-color);
+      }
+      tbody{
+        display:var(--tbody-display);
+      }
+      thead tr{
+        position:var(--thead-tr-position);
+        display:var(--thead-tr-display);
+      }
+      td{
+        width:var(--thead-tr-td-width);
+      }
+      th{
+        text-align:left;
+      }
+      td,th{
+
+      }
+      td,th{
+        min-width:var(--td-th-min-width);
+      }
+      td,th:last-of-type{
+        width:var(--td-th-last-width);
+      }
+    </style>
+
+    <paper-card class="mainCard">
+      <admin-header
+        page="Payment"
+        icon="icons:payment">
+      </admin-header>
+      <div class="container app-grid">
+
+        <paper-input label="Subscription" value="Care Plan"></paper-input>
+
+        <paper-input label="Customer Number" value="456512"></paper-input>
+
+        <paper-input label="Activated" value="{{date}}"></paper-input>
+
+        <span class="buttonWrapper">
+          <paper-button class="guuey-button">edit membership</paper-button>
+        </span>
+
+        <paper-input label="Payment Method" value="Visa Card Ending in 9867"></paper-input>
+
+        <paper-input label="Payment Interval" value="Monthly"></paper-input>
+
+        <paper-input label="Next Billing Date" value="20 August, 2016"></paper-input>
+
+        <span class="buttonWrapper">
+          <paper-button class="guuey-button">edit payment</paper-button>
+        </span>
+
+        <span class="tableContainer">
+
+            <span class="tableScrollLabel">
+              swipe left scrolls table
+            </span>
+
+            <table id="billingTable">
+              <thead>
+                <tr>
+                  <th>
+                    Billing Date
+                  </th>
+                  <th>
+                    Payment
+                  </th>
+                  <th>
+                    Type
+                  </th>
+                  <th>
+                    Print
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    23 May 2015
+                  </td>
+                  <td>
+                    390,00 EUR
+                  </td>
+                  <td>
+                    Invoice
+                  </td>
+                  <td>
+                    <paper-icon-button icon="icons:print"></paper-icon-button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    23 June 2015
+                  </td>
+                  <td>
+                    390,00 EUR
+                  </td>
+                  <td>
+                    Invoice
+                  </td>
+                  <td>
+                    <paper-icon-button icon="icons:print"></paper-icon-button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    23 July 2015
+                  </td>
+                  <td>
+                    390,00 EUR
+                  </td>
+                  <td>
+                    Invoice
+                  </td>
+                  <td>
+                    <paper-icon-button icon="icons:print"></paper-icon-button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+        </span>
+      </div>
+      <div style="height:100px;">
+        <!--spacer-->
+      </div>
+    </paper-card>
+
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is: 'ad-payment',
+      properties:{
+        home:{
+          type:String,
+        },
+      date:{
+        type:String,
+        value:"today"
+      },
+    },
+    observers:[
+      "editQuery(query600)"
+    ],
+    editQuery:function(query600){
+      if(query600){
+        this.customStyle["--app-grid-columns"]="1";
+        this.customStyle["--table-scroll-lable-color"]="inherit";
+        this.customStyle["--table-overflow"]="scroll";
+        this.customStyle["--tbody-display"]="block";
+        this.customStyle["--thead-tr-position"]="relative";
+        this.customStyle["--thead-tr-display"]="block";
+        this.customStyle["--thead-tr-td-width"]="150px";
+        this.customStyle["--td-th-min-width"]="150px";
+        this.customStyle["--td-th-last-width"]="150px";
+        this.updateStyles();
+      } else {
+        this.customStyle["--app-grid-columns"]="2";
+        this.customStyle["--table-scroll-lable-color"]="transparent";
+        this.customStyle["--table-overflow"]="unset";
+        this.customStyle["--tbody-display"]="table-row-group";
+        this.customStyle["--thead-tr-position"]="unset";
+        this.customStyle["--thead-tr-display"]="table-row";
+        this.customStyle["--thead-tr-td-width"]="unset";
+        this.customStyle["--td-th-min-width"]="unset";
+        this.customStyle["--td-th-last-width"]="unset";
+        this.updateStyles();
+      };
+    }
+    });
+
+  </script>
+
+</dom-module>

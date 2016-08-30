@@ -1,0 +1,97 @@
+<!--
+simple admin header element
+icon(string)
+  name of icon to display on the top
+page(string)
+  name of the page to display
+-->
+<link rel="import" href="dependencies.html" />
+<dom-module id="admin-header">
+
+  <template>
+    <iron-media-query
+      query="(max-width:600px)"
+      query-matches="{{query600}}">
+    </iron-media-query>
+    <style include="app-grid-style"></style>
+    <style>
+      :host{
+        --app-grid-columns:10;
+        --app-grid-item-height:100px;
+        --app-grid-expandible-item-columns: 9;
+      }
+      .leftIcon{
+        text-align:center;
+      }
+      .header{
+        background-color:#fad100;
+        color:#FFFFFF;
+        padding: 25px 0px 25px 0px;
+      }
+      .pageName{
+        font-size:30px;
+        padding:inherit;
+        margin:0px;
+        text-transform:uppercase;
+        @apply(--app-grid-expandible-item);
+        text-align:var(--page-name-text-align);
+      }
+    </style>
+
+    <div class="header app-grid">
+
+      <iron-icon class="leftIcon" icon="{{icon}}"></iron-icon>
+
+      <p class="pageName">
+        {{page}}
+      </p>
+
+    </div>
+
+  </template>
+
+  <script>
+
+    Polymer({
+      is: 'admin-header',
+      ready:function(){
+
+      },
+      properties:{
+        page:{
+          type:String
+        },
+        patient:{
+          type:String
+        },
+        home:{
+          type:String
+        },
+
+        firstname:{
+          type:String
+        },
+        lastname:{
+          type:String
+        }
+      },
+      observers:[
+        "editQuery(query600)"
+      ],
+      editQuery:function(query600){
+        if(query600){
+          this.customStyle["--app-grid-columns"]="1";
+          this.customStyle["--page-name-text-align"]="center";
+          this.updateStyles();
+        } else {
+          this.customStyle["--app-grid-columns"]="10";
+          this.customStyle["--page-name-text-align"]="unset";
+          this.updateStyles();
+        };
+
+      }
+    });
+
+  </script>
+
+</dom-module>

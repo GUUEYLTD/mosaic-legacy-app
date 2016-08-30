@@ -1,0 +1,510 @@
+<link rel="import" href="dependencies.html" />
+<dom-module id="su-care-review">
+
+  <template>
+    <!--db for agreement section-->
+    <firebase-document
+      id="agreeDB"
+      app-name="main"
+      data="{{agreeData}}"
+      path="homes/{{home}}/patients/{{patient}}/carePlanReview/careReviewSummary">
+    </firebase-document>
+    <firebase-document
+      id="confirmDB"
+      app-name="main">
+    </firebase-document>
+
+    <!--query for custom fields-->
+    <firebase-query
+      path="/homes/{{home}}/patients/{{patient}}/carePlan/custom"
+      data="{{customDataQuery}}"
+      app-name="main">
+    </firebase-query>
+    <!--connection to set new fields in custom section-->
+    <firebase-document
+      id="customInput"
+      data="{{customData}}"
+      app-name="main">
+    </firebase-document>
+    <!-- db connection for printing-->
+    <firebase-document
+      id="printDB"
+      path="homes/{{home}}/patients/{{patient}}/carePlanReview"
+      app-name="main">
+    </firebase-document>
+
+    <iron-media-query
+      query="(max-width:640px)"
+      query-matches="{{query640}}">
+    </iron-media-query>
+
+    <style include="app-grid-style">
+      :host{
+        --app-grid-columns:2;
+        --app-grid-item-height:100px;
+        --app-grid-expandible-item-columns:2;
+      }
+      .sectionHeading{
+        background-color:#42c6ff;
+        width:100%;
+      }
+      .sectionHeadingText{
+        font-size: 24px;
+        color:#FFFFFF;
+      }
+      .subHeadingText{
+        color:#FFFFFF;
+      }
+      .container{
+        padding:20px;
+      }
+      .container paper-input,guuey-date-input,paper-button{
+        padding:20px;
+      }
+      .container .buttonContainer{
+        @apply(--app-grid-expandible-item);
+        text-align:right;
+      }
+      paper-card{
+        width:80%;
+        margin:-50px 10% 50px 10%;
+        position:absolute;
+      }
+      paper-card .agreement{
+        width:50%;
+        display:flex;
+        flex-direction:column;
+      }
+      .agreementRow{
+        display:flex;
+        flex-direction:row;
+      }
+      .smallHeader{
+        --guuey-list-min-header-height:50px;
+      }
+      .halfSizeLeft{
+        --guuey-list-width:var(--list-width-half);
+        --guuey-list-float:var(--guuey-list-float-left);
+      }
+      .halfSizeRight{
+        --guuey-list-width:var(--list-width-half);
+        --guuey-list-float:var(--guuey-list-float-right);
+      }
+      .inputLeft{
+        float:left;
+        width:40%;
+        min-height:100px;
+      }
+      .inputRight{
+        float:right;
+        width:40%;
+        min-height:100px;
+      }
+      .mainContainer{
+        position:relative;
+      }
+      .mainFab{
+        position:absolute;
+        right:-25px;
+        top:75px;
+        z-index:1;
+        position:var(--main-fab-position);
+        bottom:var(--main-fab-bottom);
+        top:var(--main-fab-top);
+        right:var(--main-fab-right);
+      }
+    </style>
+
+    <!--dialogue that works to add labels for custom text input area-->
+    <paper-dialog id="customSectionModal">
+      <h2>Add a New Section</h2>
+      <paper-input
+        label="Name the New Section"
+        value="{{customData.label}}"
+        required
+        auto-validate
+        error-message="Please name the custom section.">
+      </paper-input>
+      <paper-input
+        label="Describe the New Section"
+        value="{{customData.label2}}"
+        required
+        auto-validate
+        error-message="Please describe the custom section">
+      </paper-input>
+    </paper-dialog>
+
+        <paper-card>
+
+          <su-header
+            page="Care Plan Review"
+            home="{{home}}"
+            patient="{{patient}}">
+          </su-header>
+
+          <div class="mainContainer">
+
+            <paper-fab
+              class="mainFab"
+              icon="icons:add"
+              on-tap="createNewSection">
+            </paper-fab>
+
+            <template is="dom-repeat" items="{{customDataQuery}}" as="custom">
+              <guuey-custom-text-input
+                route="/homes/{{home}}/patients/{{patient}}/carePlan/custom/{{custom.$key}}"
+                label="{{custom.label}}"
+                label2="{{custom.label2}}"
+                >
+              </guuey-custom-text-input>
+            </template>
+
+            <guuey-list-input
+              class="smallHeader"
+              home="{{home}}"
+              patient="{{patient}}"
+              label="Areas of concern"
+              label2="Areas of concern are issues that are on-going or that staff and/or the service user have identified as problems that need to be worked on in order to achieve either short term, medium term, or long term goals."
+              listroute="homes/{{home}}/patients/{{patient}}/carePlanReview/areasOfConcern">
+            </guuey-list-input>
+
+            <guuey-list-input
+              class="smallHeader"
+              home="{{home}}"
+              patient="{{patient}}"
+              label="Short term goals"
+              listroute="homes/{{home}}/patients/{{patient}}/carePlanReview/shortTermGoals">
+            </guuey-list-input>
+
+            <guuey-list-input
+              class="smallHeader"
+              home="{{home}}"
+              patient="{{patient}}"
+              label="Medium term goals"
+              listroute="homes/{{home}}/patients/{{patient}}/carePlanReview/mediumTermGoals">
+            </guuey-list-input>
+
+            <guuey-list-input
+              class="smallHeader"
+              home="{{home}}"
+              patient="{{patient}}"
+              label="Long term goals"
+              listroute="homes/{{home}}/patients/{{patient}}/carePlanReview/longTermGoals">
+            </guuey-list-input>
+
+            <guuey-list-input
+              class="halfSizeLeft"
+              home="{{home}}"
+              patient="{{patient}}"
+              label="What service user will do to adress"
+              label2="i.e. agree to the following"
+              listroute="homes/{{home}}/patients/{{patient}}/carePlan/whatWillTheServiceUserDo">
+            </guuey-list-input>
+
+            <guuey-list-input
+              class="halfSizeRight"
+              home="{{home}}"
+              patient="{{patient}}"
+              label="Intervention by staff"
+              listroute="homes/{{home}}/patients/{{patient}}/carePlan/interventionByStaff">
+            </guuey-list-input>
+
+            <guuey-text-input
+              route="homes/{{home}}/patients/{{patient}}/carePlanReview/reviewSummary"
+              label="Review Summary"
+              label2="Include progress made from previous review i.e. areas of improvement from &quot; areas of concern&quot;">
+            </guuey-text-input>
+
+            <div class="container app-grid">
+
+              <paper-input
+                label="Service user's name"
+                value="{{agreeData.suName}}"
+                required
+                auto-validate
+                pattern="[a-zA-Z\s\.]*"
+                error-message="Please enter a name without special characters.">
+              </paper-input>
+
+              <guuey-date-input
+                route="homes/{{home}}/patients/{{patient}}/carePlanReview/careReviewSummary/suNameDate"
+                label="Date">
+              </guuey-date-input>
+
+              <div class="buttonContainer">
+                <paper-button hidden="{{agreeData.suConfirm}}" on-tap="suConfirm">CONFIRM</paper-button>
+
+                <paper-button hidden="{{!agreeData.suConfirm}}">CONFIRMED</paper-button>
+              </div>
+
+              <!--need to create a file input for this???-->
+              <paper-input
+                label="staff or key worker's agreement (if necessary)"
+                value="{{agreeData.staffAgreement}}"
+                required
+                auto-validate
+                pattern="[a-zA-z\s\.]*"
+                error-message="need to upload file">
+              </paper-input>
+
+              <guuey-date-input
+                route="homes/{{home}}/patients/{{patient}}/carePlanReview/careReviewSummary/staffAgreementDate"
+                label="Date">
+              </guuey-date-input>
+
+              <paper-input
+                label="Copy of agreement given to the service user?"
+                value="{{agreeData.agreementGiven}}"
+                required
+                auto-validate
+                pattern="[a-zA-Z\s\.]*"
+                error-message="Enter yes/no or comments. No special characters.">
+              </paper-input>
+
+              <guuey-date-input
+                route="homes/{{home}}/patients/{{patient}}/carePlanReview/careReviewSummary/agreementGivenDate"
+                label="Date">
+              </guuey-date-input>
+
+              <paper-input
+                label="Reason(s) why agreement not given to the service user"
+                value="{{agreeData.reasonAgreementNotGiven}}"
+                auto-validate
+                pattern="[a-zA-Z\s\.]"
+                error-message="Please explain with letters and periods only.">
+              </paper-input>
+
+              <guuey-date-input
+                route="homes/{{home}}/patients/{{patient}}/carePlanReview/careReviewSummary/nextReviewDate"
+                label="Next Review Date">
+              </guuey-date-input>
+
+              <div class="buttonContainer">
+
+                <paper-button hidden="{{agreeData.confirmAgreement}}" on-tap="cofirmAgreement">CONFIRM</paper-button>
+
+                <paper-button hidden="{{!agreeData.confirmAgreement}}">CONFIRMED</paper-button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </paper-card>
+
+  </template>
+
+  <script>
+
+    Polymer({
+      is: 'su-care-review',
+      ready:function(){
+        this.addEventListener("print", this.print);
+      },
+      properties:{
+        page:{
+          type:String,
+        },
+        patient:{
+          type:String,
+        },
+        home:{
+          type:String,
+        },
+        sectionData:{
+          type:Object,
+          value:{}
+        },
+        agreeData:{
+          type:Object,
+          value:{},
+          reflectToAttribute:true
+        },
+        //table inputs need to be declared here
+        wellBeingQuestionnaireInputs:{
+          type:Array,
+          value:[
+            'Bathing',
+            'Body Spray',
+            'Haircut',
+            'Beard shave',
+            'Public shave',
+            'Fingernails',
+            'Toenails',
+            'Changing clothes',
+            'Skin care'
+          ]
+        },
+      myHealthQuestionnaireInputs:{
+        type:Array,
+        value:[
+          'Dental',
+          'Weight',
+          'Skin care',
+          'Exercise',
+          'Diet',
+          'Blood Pressure',
+          'Open bowels',
+          'Emotions & Mood Changes'
+        ]
+      },
+      myRoomQuestionnaireInputs:{
+        type:Array,
+        value:[
+          'Laundry',
+          'Change bed sheets',
+          'Dust room',
+          'Hoovering or vaccuming',
+          'Cleaning sink',
+          'Ironing clothes',
+          'Changing socks',
+          'Cleaning shoes',
+          'Air freshening room'
+        ]
+      }
+      },
+      observers:[
+        "queryEdit(query640)"
+      ],
+      suConfirm:function(){
+        this.$.confirmDB.path=null;
+        this.$.confirmDB.data=true;
+        this.$.confirmDB.save("/homes/"+this.home+"/patients/"+this.patient+"/carePlanReview/careReviewSummary/",'suConfirm');
+      },
+      cofirmAgreement:function(){
+        this.$.confirmDB.path=null;
+        this.$.confirmDB.data=true;
+        this.$.confirmDB.save("/homes/"+this.home+"/patients/"+this.patient+"/carePlanReview/careReviewSummary/",'confirmAgreement');
+      },
+      createNewSection:function(){
+        this.$.customInput.path=null;
+        this.$.customInput.data={};
+        var path="/homes/"+this.home+"/patients/"+this.patient+"/carePlan/custom"
+        this.$.customInput.save(path, null)
+          .then(function(){
+            this.$.customSectionModal.toggle();
+          }.bind(this));
+      },
+      print:function(e){
+        var printable=window.open("","printable");
+        printable.document.write("<html><head>");
+        printable.document.write("</head><body>");
+        printable.document.write("<div style='width:100% padding:5%;'>");
+        var printData=this.$.printDB.data;
+        for(x in printData){
+          switch(x){
+            case "areasOfConcern":
+              printable.document.write("<p style='font-weight:bold;'>Areas of Concern</p>");
+              printable.document.write("<ol>");
+              var concerns=printData[x];
+              for(y in concerns){
+                printable.document.write("<li>"+concerns[y].proposal+"</li>");
+              }
+              printable.document.write("</ol>");
+              break;
+            case "careReviewSummary":
+            printable.document.write("<p style='font-weight:bold;'>Care Plan Review Summary</p>");
+              var summary=printData[x];
+              for(y in summary){
+                printable.document.write("<p>"+this.convertToPrintText(y)+": "+summary[y]+"</p>");
+              };
+              break;
+            case "longTermGoals":
+              printable.document.write("<p style='font-weight:bold;'>Long Term Goals</p>");
+              printable.document.write("<ol>");
+              var goals=printData[x];
+              for(y in goals){
+                printable.document.write("<li>"+goals[y].proposal+"</li>");
+              }
+              printable.document.write("</ol>");
+              break;
+            case "mediumTermGoals":
+              printable.document.write("<p style='font-weight:bold;'>Medium Term Goals</p>");
+              printable.document.write("<ol>");
+              var goals=printData[x];
+              for(y in goals){
+                printable.document.write("<li>"+goals[y].proposal+"</li>");
+              }
+              printable.document.write("</ol>");
+              break;
+            case "shortTermGoals":
+              printable.document.write("<p style='font-weight:bold;'>Short Term Goals</p>");
+              printable.document.write("<ol>");
+              var goals=printData[x];
+              for(y in goals){
+                printable.document.write("<li>"+goals[y].proposal+"</li>");
+              }
+              printable.document.write("</ol>");
+              break;
+            case "reviewSummary":
+              printable.document.write("<p style='font-weight:bold;'>Review Summary</p>");
+              printable.document.write("<p>Review Summary: "+printData[x].info+"</p>");
+              break;
+          };
+        };
+        printable.document.write("</body></html>");
+        printable.document.write("</div>");
+        printable.print();
+        printable.close();
+      },
+      convertToPrintText:function(camelCase){
+        if (camelCase == null || camelCase == "") {
+          return camelCase;
+        }
+
+        camelCase = camelCase.trim();
+        var newText = "";
+        for (var i = 0; i < camelCase.length; i++) {
+          if (/[A-Z]/.test(camelCase[i])
+              && i != 0
+              && /[a-z]/.test(camelCase[i-1])) {
+            newText += " ";
+          }
+          if (i == 0 && /[a-z]/.test(camelCase[i]))
+          {
+            newText += camelCase[i].toUpperCase();
+          } else {
+            newText += camelCase[i];
+          }
+        }
+        return newText;
+      },
+      queryEdit:function(query640){
+        if(query640){
+          //list styles
+          this.customStyle["--guuey-list-float-left"]="unset";
+          this.customStyle["--guuey-list-float-right"]="unset";
+          this.customStyle["--list-width-half"]="90%";
+
+          //column styles
+          this.customStyle["--app-grid-columns"]="1";
+
+          //fab styles
+          this.customStyle["--main-fab-position"]="fixed";
+          this.customStyle["--main-fab-top"]="unset";
+          this.customStyle["--main-fab-bottom"]="5%";
+          this.customStyle["--main-fab-right"]="5%";
+          this.updateStyles();
+        } else {
+          //list styles
+          this.customStyle["--guuey-list-float-left"]="left";
+          this.customStyle["--guuey-list-float-right"]="right";
+          this.customStyle["--list-width-half"]="40%";
+
+          //column styles
+          this.customStyle["--app-grid-columns"]="2";
+
+          //fab styles
+          this.customStyle["--main-fab-position"]="absolute";
+          this.customStyle["--main-fab-top"]="-25px";
+          this.customStyle["--main-fab-bottom"]="unset";
+          this.customStyle["--main-fab-right"]="-25px";
+          this.updateStyles();
+        }
+      }
+    });
+
+  </script>
+
+</dom-module>

@@ -1,0 +1,94 @@
+<!--
+a simple element for date input that pops up a calendar when tapped
+saves the calendar input to the text input area
+arguments:
+route(string)
+  location to save in database REQUIRED
+label(string)
+  the label on the text input to display
+-->
+<link rel="import" href="dependencies.html" />
+
+<dom-module id="guuey-date-input">
+  <template>
+    <firebase-document
+      id="dateDB"
+      app-name="main"
+      path="{{route}}"
+      data="{{dateData}}">
+    </firebase-document>
+    <style include="paper-date-picker-dialog-style"></style>
+    <style>
+      .sectionHeading{
+        background-color:#42c6ff;
+        width:100%;
+        margin:0px !important;
+        padding:0px;
+      }
+      .sectionHeadingText{
+        font-size: 24px;
+        color:#FFFFFF;
+        margin:0px;
+        padding:20px;
+      }
+      .subHeadingText{
+        color:#FFFFFF;
+        margin:0px;
+        padding:20px;
+      }
+      .inputWrapper{
+        padding:16px;
+      }
+      paper-card{
+        width:90%;
+        margin:20px 5% 20px 5%;
+      }
+      .toggleButton{
+        padding-top:50px;
+      }
+    </style>
+    <paper-dialog id="dateDialog" class="paper-date-picker-dialog">
+      <paper-date-picker id="paperDate" date={{date}}></paper-date-picker>
+    </paper-dialog>
+
+    <paper-input on-tap="enterDate" label="{{label}}" value="{{_computeDate(dateData)}}"></paper-input>
+
+  </template>
+
+  <script>
+
+    Polymer({
+      is:'guuey-date-input',
+      properties:{
+        route:{
+          type:String,
+        },
+        date:{
+          observer:"_dateChanged",
+          type:Object
+        },
+        label:{
+          type:String
+        }
+      },
+      enterDate:function(){
+        this.$.dateDialog.toggle();
+        this.dateEdit=true;
+      },
+      _dateChanged:function(){
+        if(this.dateEdit){
+          this.stringDate=this.date.toString();
+          this.$.dateDB.setStoredValue(this.route, this.stringDate);
+        }
+      },
+      _computeDate:function(date){
+        if(typeof date==="string"){
+          return date.slice(3,15);
+        } else {
+          return null;
+        };
+      }
+    });
+
+  </script>
+</dom-module>

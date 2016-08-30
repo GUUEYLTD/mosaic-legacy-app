@@ -1,0 +1,669 @@
+<link rel="import" href="dependencies.html" />
+
+<dom-module id="su-care">
+
+  <template>
+    <!--db for agreement section-->
+    <firebase-document
+      id="agreeDB"
+      app-name="main"
+      data="{{agreeData}}"
+      path="/homes/{{home}}/patients/{{patient}}/carePlan/statementOfServiceUser">
+    </firebase-document>
+    <firebase-document
+      id="formDB"
+      app-name="main">
+    </firebase-document>
+    <!--query for custom fields-->
+    <firebase-query
+      path="/homes/{{home}}/patients/{{patient}}/carePlan/custom"
+      data="{{customDataQuery}}"
+      app-name="main">
+    </firebase-query>
+    <!--connection to set new fields in custom section-->
+    <firebase-document
+      id="customInput"
+      data="{{customData}}"
+      app-name="main">
+    </firebase-document>
+    <!--db connection to get all care plan info for printing-->
+    <firebase-document
+      id="printDB"
+      path="/homes/{{home}}/patients/{{patient}}/carePlan"
+      app-name="main">
+    </firebase-document>
+
+    <iron-media-query
+      query="(max-width:640px)"
+      query-matches="{{query640}}">
+    </iron-media-query>
+
+    <iron-media-query
+      query="max-width:900px"
+      query-matches="{{query900}}">
+    </iron-media-query>
+
+    <iron-media-query
+      query="max-width:750px"
+      query-matches="{{query750}}">
+    </iron-media-query>
+
+    <iron-media-query
+      query="max-width:1100px"
+      query-matches="{{query1100}}">
+    </iron-media-query>
+
+    <style include="app-grid-style">
+      :host{
+        --app-grid-columns:5;
+        --app-grid-expandible-item-columns:2;
+        --app-grid-item-height:100px;
+      }
+      .sectionHeading{
+        background-color:#42c6ff;
+        width:100%;
+      }
+      .sectionHeadingText{
+        font-size: 24px;
+        color:#FFFFFF;
+      }
+      .subHeadingText{
+        color:#FFFFFF;
+      }
+      .container{
+        padding:16px;
+      }
+      paper-card{
+        width:80%;
+        margin:-50px 10% 50px 10%;
+      }
+      .subCard{
+          width:90%;
+          margin:20px 5% 20px 5%;
+      }
+      paper-card .agreement{
+        width:50%;
+        display:flex;
+        flex-direction:column;
+      }
+      .halfSizeLeft{
+        --guuey-list-width:var(--list-width-half);
+        --guuey-list-float:var(--guuey-list-float-left);
+      }
+      .halfSizeRight{
+        --guuey-list-width:var(--list-width-half);
+        --guuey-list-float:var(--guuey-list-float-right);
+      }
+      .mainContainer{
+        position:relative;
+      }
+      .mainFab{
+        position:absolute;
+        right:-25px;
+        top:-25px;
+        z-index:1;
+        position:var(--main-fab-position);
+        bottom:var(--main-fab-bottom);
+        top:var(--main-fab-top);
+        right:var(--main-fab-right);
+      }
+      .app-grid paper-input, guuey-date-input{
+        padding:20px;
+        @apply(--app-grid-expandible-item);
+      }
+      .agreeButtons{
+        text-align:center;
+      }
+      .agreeButtons paper-button{
+        height:100%;
+      }
+    </style>
+
+    <!--dialogue that works to add labels for custom text input area-->
+    <paper-dialog id="customSectionModal">
+      <h2>Add a New Section</h2>
+      <paper-input
+        label="Name the New Section"
+        value="{{customData.label}}"
+        required
+        auto-validate
+        error-message="Please name the custom section.">
+      </paper-input>
+      <paper-input
+        label="Describe the New Section"
+        value="{{customData.label2}}"
+        required
+        auto-validate
+        error-message="Please describe the custom section">
+      </paper-input>
+    </paper-dialog>
+
+    <!--start of organized section-->
+    <paper-card>
+
+      <su-header
+        page="Care Plan"
+        home="{{home}}"
+        patient="{{patient}}">
+      </su-header>
+      
+      <div class="mainContainer">
+        <!--fab to add a custom field/input-->
+        <paper-fab
+          class="mainFab"
+          icon="icons:add"
+          on-tap="createNewSection">
+        </paper-fab>
+
+        <template is="dom-repeat" items="{{customDataQuery}}" as="custom">
+          <guuey-custom-text-input
+            route="/homes/{{home}}/patients/{{patient}}/carePlan/custom/{{custom.$key}}"
+            label="{{custom.label}}"
+            label2="{{custom.label2}}">
+          </guuey-custom-text-input>
+        </template>
+
+        <guuey-list-input
+          home="{{home}}"
+          patient="{{patient}}"
+          label="Proposed Care & Support"
+          listroute="homes/{{home}}/patients/{{patient}}/carePlan/careAndSuppProp">
+        </guuey-list-input>
+
+        <!--statement of service user section-->
+        <paper-card elevation="3" class="subCard">
+          <div class="sectionHeading">
+            <div class="container">
+              <p class="sectionHeadingText">
+                Statement of Service User
+              </p>
+            </div>
+          </div>
+          <div class="container">
+            <p>
+              Please read this form carefully. I am aware that I have the right to change my mind at any time including after I have signed this form.
+            </p>
+            <br />
+            <p>
+              I agree to the care and support described on this document.
+            </p>
+            <br />
+            <p style="border:solid red 1px; padding:5px;">
+              I understand that I will have the opportunity to discuss any concerns regarding my care and support or medication, unless the urgency of my situation prevents this.
+
+              I agree to Beechholme Adult Care contacting my next of kin, closest relative or friend if I fall ill, have an accident or am taken into the hospital.
+            </p>
+            <br />
+            <p>
+              Please read this form carfully. I am aware that I have the right to change my mind at any time including after I have signed this form.
+
+              I agree to the care and support described in this document.
+            </p>
+            <div class="app-grid">
+              <paper-input
+                class="agreement"
+                label="Service User's Name"
+                value="{{agreeData.suName}}"
+                required
+                auto-validate
+                pattern="[a-zA-Z\s\.]*"
+                error-message="Please enter a name without special characters.">
+              </paper-input>
+
+              <guuey-date-input
+                route="/homes/{{home}}/patients/{{patient}}/carePlan/statementOfServiceUser/suDate"
+                label="Date">
+              </guuey-date-input>
+
+              <div class="agreeButtons">
+
+                <paper-button hidden="{{agreeData.suAgree}}" on-tap="suAgreeUpdate">AGREE</paper-button>
+
+                <paper-button hidden="{{!agreeData.suAgree}}">AGREED</paper-button>
+
+              </div>
+            </div>
+          </div>
+            <div class="app-grid">
+              <paper-input
+                class="agreement"
+                label="Care Home Staff Member"
+                value="{{agreeData.swName}}"
+                required
+                auto-validate
+                pattern="[a-zA-S\s\.]*"
+                error-message="Please enter a staff name without special characters">
+              </paper-input>
+
+              <guuey-date-input
+                route="/homes/{{home}}/patients/{{patient}}/carePlan/statementOfServiceUser/swDate"
+                label="Date">
+              </guuey-date-input>
+
+              <div class="agreeButtons">
+
+                <paper-button hidden="{{agreeData.swAgree}}" on-tap="swAgreeUpdate">AGREE</paper-button>
+
+                <paper-button hidden="{{!agreeData.swAgree}}">AGREED</paper-button>
+
+              </div>
+            </div>
+        </paper-card>
+
+    <guuey-text-input
+      route="homes/{{home}}/patients/{{patient}}/carePlan/aboutMeAndMyLife"
+      label="About me and my life"
+      label2="Fill in the information about where you were born, studied, lived etc.">
+    </guuey-text-input>
+    <guuey-text-input
+      route="homes/{{home}}/patients/{{patient}}/carePlan/myStrengthsAndAbilities"
+      label="My strengths and abilities"
+      label2="Name the activities that you are good at.">
+    </guuey-text-input>
+    <guuey-text-input
+      route="homes/{{home}}/patients/{{patient}}/carePlan/myHobbies"
+      label="My hobbies"
+      label2="Name the things you enjoy doing.">
+    </guuey-text-input>
+    <guuey-text-input
+      route="homes/{{home}}/patients/{{patient}}/carePlan/wellness"
+      label="Wellness"
+      label2="A description of an individual when they are well">
+    </guuey-text-input>
+    <guuey-text-input
+      route="homes/{{home}}/patients/{{patient}}/carePlan/dailyMaintenance"
+      label="Daily maintenance"
+      label2="List of things an individual needs to do weekly/daily to stay well. More specific than wellness box.">
+    </guuey-text-input>
+    <guuey-text-input
+      route="homes/{{home}}/patients/{{patient}}/carePlan/triggers"
+      label="Triggers"
+      label2="List of things an individual needs to do weekly/daily/monthly to stay well. More specific than wellness box.">
+    </guuey-text-input>
+    <guuey-text-input
+      route="homes/{{home}}/patients/{{patient}}/carePlan/crisisOrContingencyPlan"
+      label="Crisis or contigency plan"
+      label2="STILL NEED TEXT FOR THIS">
+    </guuey-text-input>
+
+  <guuey-table
+    tableroute="homes/{{home}}/patients/{{patient}}/carePlan/wellBeingQuestionnaire"
+    tableinputs="{{wellBeingQuestionnaireInputs}}"
+    category="Body Part"
+    label="Well being Questionnaire"
+    label2="Personal Health & Hygiene care"
+    patient="{{patient}}"
+    home="{{home}}"
+    >
+    <template is="dom-repeat" items="{{tableinputs}}" as="row">
+        <guuey-table-row
+          row="{{row}}"
+          tableroute="{{tableroute}}/{{row}}"
+          home="{{home}}"
+          patient="{{patient}}">
+        </guuey-table-row>
+    </template>
+  </guuey-table>
+
+  <guuey-table
+    tableroute="homes/{{home}}/patients/{{patient}}/carePlan/myHealthQuestionnaire"
+    tableinputs="{{myHealthQuestionnaireInputs}}"
+    category="Areas of concern"
+    label="My Health"
+    label2="Personal Health & Hygiene care"
+    patient="{{patient}}"
+    home="{{home}}"
+    >
+    <template is="dom-repeat" items="{{tableinputs}}" as="row">
+        <guuey-table-row
+          row="{{row}}"
+          tableroute="{{tableroute}}/{{row}}"
+          home="{{home}}"
+          patient="{{patient}}">
+        </guuey-table-row>
+    </template>
+  </guuey-table>
+
+  <guuey-table
+    tableroute="homes/{{home}}/patients/{{patient}}/carePlan/myRoomQuestionnaire"
+    tableinputs="{{myRoomQuestionnaireInputs}}"
+    category="Activity"
+    label="My room"
+    label2="Personal Health & Hygiene care"
+    patient="{{patient}}"
+    home="{{home}}"
+    >
+    <template is="dom-repeat" items="{{tableinputs}}" as="row">
+        <guuey-table-row
+          row="{{row}}"
+          tableroute="{{tableroute}}/{{row}}"
+          home="{{home}}"
+          patient="{{patient}}">
+        </guuey-table-row>
+    </template>
+  </guuey-table>
+
+  <guuey-list-input
+    class="halfSizeLeft"
+    home="{{home}}"
+    patient="{{patient}}"
+    label="What service will the service user do?"
+    label2="i.e. agree to the following"
+    listroute="homes/{{home}}/patients/{{patient}}/carePlan/whatWillTheServiceUserDo"
+    section="{{whatWillTheServiceUserDo}}">
+  </guuey-list-input>
+
+  <guuey-list-input
+    class="halfSizeRight"
+    home="{{home}}"
+    patient="{{patient}}"
+    label="Intervention by staff"
+    label2="what will the staff do?"
+    listroute="homes/{{home}}/patients/{{patient}}/carePlan/interventionByStaff"
+    section="{{interventionByStaff}}">
+  </guuey-list-input>
+
+      </div>
+
+    </paper-card>
+    <!--end-->
+
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is: 'su-care',
+      ready:function(){
+        this.addEventListener("print", this.print);
+      },
+      properties:{
+        page:{
+          type:String,
+        },
+        patient:{
+          type:String,
+        },
+        home:{
+          type:String,
+        },
+        //table inputs need to be declared here
+        wellBeingQuestionnaireInputs:{
+          type:Array,
+          value:[
+            'Bathing',
+            'Body Spray',
+            'Haircut',
+            'Beard shave',
+            'Pubic shave',
+            'Fingernails',
+            'Toenails',
+            'Changing clothes',
+            'Skin care'
+          ]
+        },
+      myHealthQuestionnaireInputs:{
+        type:Array,
+        value:[
+          'Dental',
+          'Weight',
+          'Skin care',
+          'Exercise',
+          'Diet',
+          'Blood Pressure',
+          'Open bowels',
+          'Emotions & Mood Changes'
+        ]
+      },
+      myRoomQuestionnaireInputs:{
+        type:Array,
+        value:[
+          'Laundry',
+          'Change bed sheets',
+          'Dust room',
+          'Hoovering or vaccuming',
+          'Cleaning sink',
+          'Ironing clothes',
+          'Changing socks',
+          'Cleaning shoes',
+          'Air freshening room'
+        ]
+      }
+      },
+      observers:[
+        "editQuery(query900, query750, query1100, query640)"
+      ],
+      suAgreeUpdate:function(e){
+        this.$.formDB.path=null;
+        this.$.formDB.data=true;
+        this.$.formDB.save("/homes/"+this.home+"/patients/"+this.patient+"/carePlan/statementOfServiceUser/","suAgree");
+      },
+      swAgreeUpdate:function(e){
+        this.$.formDB.path=null;
+        this.$.formDB.data=true;
+        this.$.formDB.save("/homes/"+this.home+"/patients/"+this.patient+"/carePlan/statementOfServiceUser/","swAgree");
+      },
+      createNewSection:function(){
+        this.$.customInput.path=null;
+        this.$.customInput.data={};
+        var path="/homes/"+this.home+"/patients/"+this.patient+"/carePlan/custom"
+        this.$.customInput.save(path, null)
+          .then(function(){
+            this.$.customSectionModal.toggle();
+          }.bind(this));
+      },
+      print:function(e){
+        var date="Thu Jul 14 2016 00:00:00 GMT+0200 (CEST)";
+        var printable=window.open("","printable", "height:=400, width=600");
+        printable.document.write("<html><head>");
+        printable.document.write("</head><body>");
+        printable.document.write("<div style='width:100% padding:5%;'>");
+        var printData=this.$.printDB.data;
+        for(x in printData){
+          switch(x) {
+            case "careAndSuppProp":
+              var proposal=printData[x];
+              printable.document.write("<p style='font-weight:bold'>Proposals:</p>");
+              printable.document.write("<ol>");
+              for(y in proposal){
+                printable.document.write("<li>"+proposal[y].proposal+"</li>");
+              };
+              printable.document.write("</ol>");
+              break;
+            case "interventionByStaff":
+              var proposal=printData[x];
+              printable.document.write("<p style='font-weight:bold'>Intervention By Staff Proposals:</p>");
+              printable.document.write("<ol>");
+              for(y in proposal){
+                printable.document.write("<li>"+proposal[y].proposal+"</li>");
+              };
+              printable.document.write("</ol>");
+              break;
+            case "myHealthQuestionnaire":
+              var healthData=printData[x];
+              for(y in healthData){
+                var healthSub=healthData[y];
+                for(z in healthSub){
+                  if(z!="comment"){
+                    printable.document.write("<p>"+y+": "+z+"</p>");
+                  };
+                  if(z==="comment"){
+                    printable.document.write("<p>Comment: "+healthSub[z]+"</p>");
+                  };
+                };
+              };
+              break;
+            case "myRoomQuestionnaire":
+              var roomData=printData[x];
+              for(y in roomData){
+                var roomSub=roomData[y];
+                for(z in roomSub){
+                  if(z!="comment"){
+                    printable.document.write("<p>"+y+": "+z+"</p>");
+                  };
+                  if(z==="comment"){
+                    printable.document.write("<p>Comment: "+roomSub[z]+"</p>");
+                  };
+                };
+              };
+              break;
+            case "wellBeingQuestionnaire":
+              var wellData=printData[x];
+              for(y in wellData){
+                var wellSub=wellData[y];
+                for(z in wellSub){
+                  if(z!="comment"){
+                    printable.document.write("<p>"+y+": "+z+"</p>");
+                  };
+                  if(z==="comment"){
+                    printable.document.write("<p>Comment: "+wellSub[z]+"</p>");
+                  };
+                };
+              };
+              break;
+            case "whatWillTheServiceUserDo":
+              var proposal=printData[x];
+              printable.document.write("<p style='font-weight:bold'>Service User Proposals:</p>");
+              printable.document.write("<ol>");
+              for(y in proposal){
+                printable.document.write("<li>"+proposal[y].proposal+"</li>");
+              };
+              printable.document.write("</ol>");
+              break;
+            case "statementOfServiceUser":
+              if(printData[x].suAgree && printData[x].swAgree){
+                printable.document.write("<p>Service User Agreed on :"+printData[x].suDate.slice(0,15)+"</p>");
+                printable.document.write("<p>Service Worker Agreed on :"+printData[x].swDate.slice(0,15)+"</p>");
+              } else if(printData[x].suAgree){
+                printable.document.write("<p>Service User Agreed on :"+printData[x].suDate.slice(0,15)+"</p>");
+                printable.document.write("<p>Service Worker has not Agreed</p>");
+              } else if(printData[x].swAgree){
+                printable.document.write("<p>Service User has not Agreed</p>");
+                printable.document.write("<p>Service Worker Agreed on :"+printData[x].swDate.slice(0,15)+"</p>");
+              } else {
+                printable.document.write("<p>Service User and Service Worker have not Agreed</p>");
+              };
+              break;
+            case "custom":
+              var custom=printData[x];
+              for(y in custom){
+                printable.document.write("<p>"+custom[y].label+"/"+custom[y].label2+" :"+custom[y].info+"</p>")
+              };
+              break;
+            default:
+              printable.document.write("<p>"+this.convertToPrintText(x)+": "+printData[x].info+"<br /></p>");
+              break;
+            };
+        };
+        printable.document.write("</body></html>");
+        printable.document.write("</div>");
+        printable.print();
+        printable.close();
+      },
+      convertToPrintText:function(camelCase){
+        if (camelCase == null || camelCase == "") {
+          return camelCase;
+        }
+
+        camelCase = camelCase.trim();
+        var newText = "";
+        for (var i = 0; i < camelCase.length; i++) {
+          if (/[A-Z]/.test(camelCase[i])
+              && i != 0
+              && /[a-z]/.test(camelCase[i-1])) {
+            newText += " ";
+          }
+          if (i == 0 && /[a-z]/.test(camelCase[i]))
+          {
+            newText += camelCase[i].toUpperCase();
+          } else {
+            newText += camelCase[i];
+          }
+        }
+        return newText;
+      },
+      editQuery:function(query900, query750, query1100, query640){
+        if(query640){
+          //list styles
+          this.customStyle["--guuey-list-float-left"]="unset";
+          this.customStyle["--guuey-list-float-right"]="unset";
+          this.customStyle["--list-width-half"]="90%";
+
+          //column styles
+          this.customStyle["--app-grid-columns"]="1";
+
+          //fab styles
+          this.customStyle["--main-fab-position"]="fixed";
+          this.customStyle["--main-fab-top"]="unset";
+          this.customStyle["--main-fab-bottom"]="5%";
+          this.customStyle["--main-fab-right"]="5%";
+          this.updateStyles();
+        }else if(query750){
+          //list styles
+          this.customStyle["--guuey-list-float-left"]="unset";
+          this.customStyle["--guuey-list-float-right"]="unset";
+          this.customStyle["--list-width-half"]="90%";
+
+          //column styles
+          this.customStyle["--app-grid-columns"]="1";
+
+          //fab styles
+          this.customStyle["--main-fab-position"]="absolute";
+          this.customStyle["--main-fab-top"]="-25px";
+          this.customStyle["--main-fab-bottom"]="unset";
+          this.customStyle["--main-fab-right"]="-25px";
+          this.updateStyles();
+        }else if(query900){
+          //list styles
+          this.customStyle["--guuey-list-float-left"]="unset";
+          this.customStyle["--guuey-list-float-right"]="unset";
+          this.customStyle["--list-width-half"]="90%";
+
+          //column styles
+          this.customStyle["--app-grid-columns"]="4";
+
+          //fab styles
+          this.customStyle["--main-fab-position"]="absolute";
+          this.customStyle["--main-fab-top"]="-25px";
+          this.customStyle["--main-fab-bottom"]="unset";
+          this.customStyle["--main-fab-right"]="-25px";
+          this.updateStyles();
+        } else if(query1100){
+          //list styles
+          this.customStyle["--guuey-list-float-left"]="unset";
+          this.customStyle["--guuey-list-float-right"]="unset";
+          this.customStyle["--list-width-half"]="90%";
+
+          //column styles
+          this.customStyle["--app-grid-columns"]="5";
+
+          //fab styles
+          this.customStyle["--main-fab-position"]="absolute";
+          this.customStyle["--main-fab-top"]="25px";
+          this.customStyle["--main-fab-bottom"]="unset";
+          this.customStyle["--main-fab-right"]="-25px";
+          this.updateStyles();
+
+        } else {
+          //list styles
+          this.customStyle["--guuey-list-float-left"]="left";
+          this.customStyle["--guuey-list-float-right"]="right";
+          this.customStyle["--list-width-half"]="40%";
+
+          //column styles
+          this.customStyle["--app-grid-columns"]="5";
+
+          //fab styles
+          this.customStyle["--main-fab-position"]="absolute";
+          this.customStyle["--main-fab-top"]="-25px";
+          this.customStyle["--main-fab-bottom"]="unset";
+          this.customStyle["--main-fab-right"]="-25px";
+          this.updateStyles();
+        };
+      }
+    });
+
+  </script>
+
+</dom-module>

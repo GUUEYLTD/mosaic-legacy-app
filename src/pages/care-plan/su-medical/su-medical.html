@@ -1,0 +1,79 @@
+<link rel="import" href="dependencies.html" />
+
+
+<dom-module id="su-medical">
+
+  <template>
+
+    <firebase-document
+      id="assDB"
+      path="/homes/{{home}}/patients/{{patient}}/medicalAssessment"
+      data="{{assData}}"
+      app-name="main">
+    </firebase-document>
+
+    <style include="materialize-style"></style>
+    <style>
+      paper-card{
+        width:80%;
+        margin:-50px 10% 50px 10%;
+      }
+    </style>
+
+      <paper-card elevation="3">
+        <su-header
+          page="Medical Assessment"
+          home="{{home}}"
+          patient="{{patient}}">
+        </su-header>
+        <center>
+          <h1>Coming Soon!</h1>
+        </center>
+      </paper-card>
+
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is: 'su-medical',
+      ready:function(){
+        this.addEventListener("print", this.print);
+      },
+      properties:{
+        patient:{
+          type:String
+        },
+        home:{
+          type:String
+        }
+      },
+      _inputChanged:function(e){
+        var reader= new FileReader();
+        var file=e.target.files[0];
+        reader.readAsDataURL(file);
+        reader.addEventListener("load", function () {
+          this.$.assDB.setStoredValue("/homes/"+this.home+"/patients/"+this.patient+"/medicalAssessment/test", reader.result);
+        }.bind(this), false);
+      },
+      _computeImage:function(assData){
+        return base64;
+      },
+      print:function(e){
+        var printable=window.open("","printable", "height:=400, width=600");
+        printable.document.write("<html><head>");
+        printable.document.write("</head><body>");
+        printable.document.write("<div style='width:100% padding:5%;'>");
+        printable.document.write("<p>Build Print pages later.</p></br>")
+        printable.document.write("</body></html>");
+        printable.document.write("</div>");
+        printable.print();
+        printable.close();
+
+      }
+    });
+
+  </script>
+
+</dom-module>

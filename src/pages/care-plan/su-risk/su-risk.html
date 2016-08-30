@@ -1,0 +1,427 @@
+<link rel="import" href="dependencies.html" />
+<dom-module id="su-risk">
+
+  <template>
+
+    <!--firebase query to get all of the risk assessments-->
+    <firebase-query
+      id="risksDB"
+      path="/homes/{{home}}/patients/{{patient}}/riskAssessment"
+      data="{{risksData}}"
+      app-name="main">
+    </firebase-query>
+    <!--db to edit single document that has been selected-->
+    <firebase-document
+      id="riskDB"
+      data="{{riskData}}"
+      app-name="main">
+    </firebase-document>
+    <!--db to print-->
+    <firebase-document
+      id="printDB"
+      path="/homes/{{home}}/patients/{{patient}}/riskAssessment"
+      app-name="main">
+    </firebase-document>
+
+    <!--media query workaround for shadow dom-->
+    <iron-media-query
+      query="(max-width:1300px)"
+      query-matches="{{query1300}}">
+    </iron-media-query>
+    <iron-media-query
+      query="(max-width:1100px)"
+      query-matches="{{query1100}}">
+    </iron-media-query>
+    <iron-media-query
+      query="(max-width:750px)"
+      query-matches="{{query750}}">
+    </iron-media-query>
+    <iron-media-query
+      query="(max-width:640px)"
+      query-matches="{{query640}}">
+    </iron-media-query>
+
+    <style include="app-grid-style">
+      :host{
+        --app-grid-columns:3;
+        --app-grid-item-height:150%;
+      }
+      .dateInput{
+        padding-top:40px;
+      }
+      .inputWrapper{
+        padding:20px;
+      }
+      .mainCard{
+        width:80%;
+        margin:-50px 10% 50px 10%;
+      }
+      .riskHeading{
+        text-align:center;
+        font-size:24px;
+        height:10%;
+        margin:4%;
+      }
+      .riskDescription{
+        text-align:center;
+        font-size:18px;
+        height:50%;
+        max-height:50%;
+        margin:4%;
+        overflow:hidden;
+      }
+      .riskBox{
+        margin:20px;
+      }
+      .mainFab{
+        position:absolute;
+        right:-25px;
+        top:-25px;
+        z-index:1;
+        position:var(--main-fab-position);
+        bottom:var(--main-fab-bottom);
+        top:var(--main-fab-top);
+        right:var(--main-fab-right);
+      }
+      .mainContainer{
+        position:relative;
+        width:100%;
+      }
+      .guuey-button{
+        background-color:#41847d;
+        color:#FFFFFF;
+        width:60%;
+        margin: 4% 20% 4% 20%;
+        height:10%;
+      }
+    </style>
+
+    <paper-card class="mainCard" elevation="3">
+      <su-header
+        page="Risk Assessment"
+        home="{{home}}"
+        patient="{{patient}}">
+      </su-header>
+
+      <div class="mainContainer">
+
+        <!--absolute positioned button to add a new risk-->
+        <paper-fab
+          class="mainFab"
+          icon="icons:add"
+          on-tap="addRisk"
+          hidden="{{riskSelected}}">
+        </paper-fab>
+
+        <!--absolute positioned button to finsh adding a new risk assessment and close the add view-->
+        <paper-fab
+          class="mainFab"
+          icon="icons:check"
+          on-tap="finishRisk"
+          hidden="{{!riskSelected}}">
+        </paper-fab>
+
+        <div class="app-grid" has-aspect-ratio>
+
+          <!--
+          <div hidden="{{queryCount}}">
+            <div class="col s4">
+              <paper-card elevation="3" class="riskBox">
+
+                <div class="riskHeading">
+                  Your Date Here
+                </div>
+
+                <div class="riskDescription">
+                    This is an example. Click on the "+" button on the top right of the screen in order to start a new risk assessment for this service user.
+                </div>
+
+                  <paper-button disabled class="guuey-button" on-tap="editRisk">edit</paper-button>
+                  <paper-button disabled class="guuey-button" on-tap="deleteRisk">delete</paper-button>
+
+              </paper-card>
+            </div>
+
+            <div class="col s4">
+              <paper-card elevation="3" class="riskBox">
+
+                <div class="riskHeading">
+                  Another Example
+                </div>
+
+                <div class="riskDescription">
+                    Your description of the risk assessment will display here after creating a risk assessment.
+                </div>
+
+                  <paper-button class="guuey-button" on-tap="editRisk">edit</paper-button>
+                  <paper-button class="guuey-button" on-tap="deleteRisk">delete</paper-button>
+
+              </paper-card>
+            </div>
+
+            <div class="col s4">
+              <paper-card elevation="3" class="riskBox">
+
+                <div class="riskHeading">
+                  EXAMPLE Aug 15 2015
+                </div>
+
+                <div class="riskDescription">
+                    The service user was assessed and...
+                </div>
+
+                  <paper-button class="guuey-button" on-tap="editRisk">edit</paper-button>
+                  <paper-button class="guuey-button" on-tap="deleteRisk">delete</paper-button>
+
+              </paper-card>
+            </div>
+          </div>
+          -->
+
+          <template is="dom-repeat" items="{{risksData}}" as="risk">
+            {{_computeQueryCount(risk)}}
+
+            <div class="riskContainer" hidden="{{riskSelected}}">
+
+              <paper-card elevation="3" class="riskBox">
+
+                <div class="riskHeading">
+                  {{_computeDate(risk.date)}}
+                </div>
+
+                <div class="riskDescription">
+                    {{risk.backgroundOfRisk.info}}
+                </div>
+
+                  <paper-button class="guuey-button" on-tap="editRisk">edit</paper-button>
+                  <paper-button class="guuey-button" on-tap="deleteRisk">delete</paper-button>
+
+              </paper-card>
+
+            </div>
+
+          </template>
+
+        </div>
+
+        <div class="inputWrapper" hidden="{{!riskSelected}}">
+
+          <guuey-date-input
+            route="/homes/{{home}}/patients/{{patient}}/riskAssessment/{{riskUID}}/date"
+            label="Date">
+          </guuey-date-input>
+
+
+          <guuey-text-input
+            route="/homes/{{home}}/patients/{{patient}}/riskAssessment/{{riskUID}}/backgroundOfRisk"
+            label="Background of Risk"
+            label2="">
+          </guuey-text-input>
+
+          <guuey-text-input
+            route="/homes/{{home}}/patients/{{patient}}/riskAssessment/{{riskUID}}/riskIdentified"
+            label="Risk Identified"
+            label2="">
+          </guuey-text-input>
+
+          <guuey-text-input
+            route="/homes/{{home}}/patients/{{patient}}/riskAssessment/{{riskUID}}/crisisPlan"
+            label="crisis Plan"
+            label2="How to Address">
+          </guuey-text-input>
+
+          <guuey-text-input
+            route="/homes/{{home}}/patients/{{patient}}/riskAssessment/{{riskUID}}/agreedFrequencyOfEvaluation"
+            label="Agreed Frequencey of Evaluation"
+            label2="">
+          </guuey-text-input>
+
+          <guuey-text-input
+            route="/homes/{{home}}/patients/{{patient}}/riskAssessment/{{riskUID}}/evaluation"
+            label="Evaluation"
+            label2="{{riskData.date}}">
+          </guuey-text-input>
+
+        </div>
+
+      </div>
+
+    </paper-card>
+
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is: 'su-risk',
+      ready:function(){
+        this.addEventListener("print", this.print);
+      },
+      properties:{
+        page:{
+          type:String,
+        },
+        patient:{
+          type:String,
+        },
+        home:{
+          type:String,
+        },
+        inputDisabled:{
+          type:Boolean,
+          value:true
+        },
+        riskSelected:{
+          type:Boolean,
+          value:false
+        }
+      },
+      observers:[
+        "editQuery(query1300, query1100, query750, query640)"
+      ],
+      //is this useless???? i think so... test later
+      editField:function(event){
+        event.model.set('item.name','stuff');
+      },
+      toggleEdit:function(){
+        this.inputDisabled=!this.inputDisabled;
+      },
+      addRisk:function(){
+        this.$.riskDB.path=null;
+        this.$.riskDB.data={};
+        var path="/homes/"+this.home+"/patients/"+this.patient+"/riskAssessment";
+        this.$.riskDB.save(path, null)
+          .then(function(){
+            //save new risk uid for paths to db for new steps and querying steps
+            this.riskUID=this.$.riskDB.path.slice(path.length+2);
+            this.riskSelected=true;
+          }.bind(this));
+      },
+      editRisk:function(e){
+        this.riskUID=e.model.risk.$key;
+        this.riskSelected=true;
+      },
+      deleteRisk:function(e){
+        var path="/homes/"+this.home+"/patients/"+this.patient+"/riskAssessment/"+e.model.risk.$key;
+        this.$.riskDB.setStoredValue(path, null);
+      },
+      finishRisk:function(e){
+        this.riskSelected=false;
+      },
+      _computeDate:function(date){
+        if(typeof date==="string"){
+          return date.slice(3,15);
+        } else {
+          return null;
+        };
+      },
+      _computeQueryCount:function(goal){
+        if(!this.queryCount){
+          this.queryCount=0;
+        };
+        this.queryCount++;
+      },
+      print:function(e){
+        var printable=window.open("","printable");
+        printable.document.write("<html><head>");
+        printable.document.write("</head><body>");
+        printable.document.write("<div style='width:100% padding:5%;'>");
+        var printData=this.$.printDB.data;
+        for(x in printData){
+          var assmt=printData[x];
+          printable.document.write("<p style='font-weight:bold;'>"+assmt.date.slice(0,15)+"</p>");
+          for(y in assmt){
+            var subAssmt=assmt[y];
+            if(y!="date"){
+              printable.document.write("<p>"+this.convertToPrintText(y)+": "+subAssmt.info+"</p>");
+            };
+          };
+        };
+        printable.document.write("</body></html>");
+        printable.document.write("</div>");
+        printable.print();
+        printable.close();
+
+      },
+      convertToPrintText:function(camelCase){
+        if (camelCase == null || camelCase == "") {
+          return camelCase;
+        }
+
+        camelCase = camelCase.trim();
+        var newText = "";
+        for (var i = 0; i < camelCase.length; i++) {
+          if (/[A-Z]/.test(camelCase[i])
+              && i != 0
+              && /[a-z]/.test(camelCase[i-1])) {
+            newText += " ";
+          }
+          if (i == 0 && /[a-z]/.test(camelCase[i]))
+          {
+            newText += camelCase[i].toUpperCase();
+          } else {
+            newText += camelCase[i];
+          }
+        }
+        return newText;
+      },
+      editQuery:function(query1300, query1100, query750, query640){
+        console.log("dicks");
+        if(query640){
+          //column style
+          this.customStyle["--app-grid-columns"]="1";
+
+          //fab style
+          this.customStyle["--main-fab-position"]="fixed";
+          this.customStyle["--main-fab-top"]="unset";
+          this.customStyle["--main-fab-bottom"]="5%";
+          this.customStyle["--main-fab-right"]="5%";
+          this.updateStyles();
+        } else if(query750){
+          //column style
+          this.customStyle["--app-grid-columns"]="1";
+
+          //fab style
+          this.customStyle["--main-fab-position"]="absolute";
+          this.customStyle["--main-fab-top"]="-25px";
+          this.customStyle["--main-fab-right"]="-25px";
+          this.customStyle["--main-fab-bottom"]="unset";
+          this.updateStyles();
+        } else if(query1100){
+          //column style
+          this.customStyle["--app-grid-columns"]="2";
+
+          //fab style
+          this.customStyle["--main-fab-position"]="absolute";
+          this.customStyle["--main-fab-top"]="-25px";
+          this.customStyle["--main-fab-right"]="-25px";
+          this.customStyle["--main-fab-bottom"]="unset";
+          this.updateStyles();
+        } else if(query1300){
+          //column style
+          this.customStyle["--app-grid-columns"]="2";
+
+          //fab style
+          this.customStyle["--main-fab-position"]="absolute";
+          this.customStyle["--main-fab-top"]="-25px";
+          this.customStyle["--main-fab-right"]="-25px";
+          this.customStyle["--main-fab-bottom"]="unset";
+          this.updateStyles();
+        }  else {
+          //column style
+          this.customStyle["--app-grid-columns"]="3";
+
+          //fab style
+          this.customStyle["--main-fab-position"]="absolute";
+          this.customStyle["--main-fab-top"]="-25px";
+          this.customStyle["--main-fab-right"]="-25px";
+          this.customStyle["--main-fab-bottom"]="unset";
+          this.updateStyles();
+        };
+      },
+    });
+
+  </script>
+
+</dom-module>

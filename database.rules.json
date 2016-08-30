@@ -1,0 +1,61 @@
+{
+  "rules": {
+    "homes": {
+      ".read": false,
+      ".write": false,
+      "$home": {
+        ".write": "(auth != null && !data.hasChild('users')) || (root.child('homes').child($home).child('users').child(auth.uid).child('home').val()===$home && root.child('homes').child($home).child('users').child(auth.uid).child('role').val()==='admin')",
+        ".read": "false",
+        "details": {
+          ".read": "root.child('homes').child($home).child('users').child(auth.uid).child('home').val()===$home"
+        },
+        "adminOnly": {
+          ".read": "root.child('homes').child($home).child('users').child(auth.uid).child('home').val()===$home && root.child('homes').child($home).child('users').child(auth.uid).child('role').val()==='admin'",
+          "users": {
+            "$user": {
+              ".validate": true
+            }
+          }
+        },
+        "users": {
+          ".read": "data.child(auth.uid).child('role').val()==='admin' && data.child(auth.uid).child('home').val()===$home",
+          ".write": "data.child(auth.uid).child('role').val()==='admin' && data.child(auth.uid).child('home').val()===$home",
+          "$user": {
+            ".read": "auth.uid===$user",
+            ".write": false,
+            "role": {
+              ".validate": "newData.val()==='admin' || newData.val()==='careWorker'"
+            },
+            "email": {
+              ".write": "auth.uid===$user",
+              ".validate": "true"
+            },
+            "home": {
+              ".validate": "newData.val()===$home"
+            }
+          }
+        },
+        "patients": {
+          ".read": "root.child('homes').child($home).child('users').child(auth.uid).child('home').val()===$home",
+          ".write": "root.child('homes').child($home).child('users').child(auth.uid).child('home').val()===$home",
+          "$patient": {
+            "medicationOutline": {
+              "$med": {
+                "$medHistory": {
+                  ".validate": "!data.exists()"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "userIndex": {
+      "$index": {
+        ".write": "auth !=null",
+        ".read": "auth.uid===$index",
+        ".validate": "data.val() === null && newData.val() != null"
+      }
+    }
+  }
+}

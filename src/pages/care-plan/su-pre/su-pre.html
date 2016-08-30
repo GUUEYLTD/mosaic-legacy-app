@@ -1,0 +1,268 @@
+<link rel="import" href="dependencies.html" />
+<dom-module id="su-pre">
+
+  <template>
+    <firebase-document
+      path="/homes/{{home}}/patients/{{patient}}/preAdmissionAssessment"
+      data="{{assmtData}}"
+      app-name="main"
+      id="assmt">
+    </firebase-document>
+
+    <!--query for custom fields-->
+    <firebase-query
+      path="/homes/{{home}}/patients/{{patient}}/preAdmissionAssessment/custom"
+      data="{{customDataQuery}}"
+      app-name="main">
+    </firebase-query>
+    <!--connection to set new fields in custom section-->
+    <firebase-document
+      id="customInput"
+      data="{{customData}}"
+      app-name="main">
+    </firebase-document>
+
+    <iron-media-query
+      query="(max-width:640px)"
+      query-matches="{{query640}}">
+    </iron-media-query>
+
+    <style inlclude="app-grid-style">
+      paper-card{
+        width:80%;
+        margin:-50px 10% 50px 10%;
+      }
+      .mainWrapper{
+        position:relative;
+      }
+      .mainFab{
+        position:absolute;
+        right:-25px;
+        top:-25px;
+        z-index:1;
+        position:var(--main-fab-position);
+        bottom:var(--main-fab-bottom);
+        top:var(--main-fab-top);
+        right:var(--main-fab-right);
+      }
+    </style>
+
+    <!--dialogue that works to add labels for custom text input area-->
+    <paper-dialog id="customSectionModal">
+      <h2>Add a New Section</h2>
+      <paper-input label="Name the New Section" value="{{customData.label}}"></paper-input>
+      <paper-input label="Describe the New Section" value="{{customData.label2}}"></paper-input>
+    </paper-dialog>
+
+    <paper-card elevation="3">
+
+      <su-header
+        page="Pre-Admission Assessment"
+        home="{{home}}"
+        patient="{{patient}}"
+        id="header">
+      </su-header>
+
+      <div class="mainWrapper">
+
+        <!--fab to add a custom field/input-->
+        <paper-fab
+          class="mainFab"
+          icon="icons:add"
+          on-tap="createNewSection">
+        </paper-fab>
+
+        <template is="dom-repeat" items="{{customDataQuery}}" as="custom">
+          <guuey-custom-text-input
+            route="/homes/{{home}}/patients/{{patient}}/preAdmissionAssessment/custom/{{custom.$key}}"
+            label="{{custom.label}}"
+            label2="{{custom.label2}}"
+            >
+          </guuey-custom-text-input>
+        </template>
+        <guuey-text-input
+          route="/homes/{{home}}/patients/{{patient}}/preAdmissionAssessment/requestReferralSummary"
+          label="Summary of Request for Referral"
+          label2="By Referee">
+        </guuey-text-input>
+
+        <guuey-text-input
+          route="/homes/{{home}}/patients/{{patient}}/preAdmissionAssessment/suCurrentStatusView"
+          label="Service User View of Current Status"
+          label2="i.e. what led to current admission">
+        </guuey-text-input>
+
+        <guuey-text-input
+          route="/homes/{{home}}/patients/{{patient}}/preAdmissionAssessment/staffPatientWardViews"
+          label="Views of Staff on Ward of Patient"
+          label2="Including what he/she does while on ward">
+        </guuey-text-input>
+
+        <guuey-text-input
+          route="/homes/{{home}}/patients/{{patient}}/preAdmissionAssessment/offenceIndex"
+          label="Index Offence"
+          label2="What did you do to end up here?">
+        </guuey-text-input>
+
+        <guuey-text-input
+          route="/homes/{{home}}/patients/{{patient}}/preAdmissionAssessment/legalStatus"
+          label="Legal Status"
+          label2="">
+        </guuey-text-input>
+
+        <guuey-text-input
+          route="/homes/{{home}}/patients/{{patient}}/preAdmissionAssessment/mentalIllnessDiagnosis"
+          label="Mental Illness & Diagnosis"
+          label2="According to the Professional">
+        </guuey-text-input>
+
+        <guuey-text-input
+          route="/homes/{{home}}/patients/{{patient}}/preAdmissionAssessment/currentMentalState"
+          label="Current Mental State"
+          label2="As described or percieved by patient">
+        </guuey-text-input>
+
+        <guuey-text-input
+          route="/homes/{{home}}/patients/{{patient}}/preAdmissionAssessment/suMentalStatePresentation"
+          label="Mental State Presentation to Assessor"
+          label2="">
+        </guuey-text-input>
+
+        <guuey-text-input
+          route="/homes/{{home}}/patients/{{patient}}/preAdmissionAssessment/mentalHealthTrigger"
+          label="Mental Health Trigger"
+          label2="What do you experience when becoming unwell?">
+        </guuey-text-input>
+
+        <guuey-text-input
+          route="/homes/{{home}}/patients/{{patient}}/preAdmissionAssessment/currentMedication"
+          label="Current Medication"
+          label2="">
+        </guuey-text-input>
+
+        <guuey-text-input
+          route="/homes/{{home}}/patients/{{patient}}/preAdmissionAssessment/medicationManagement"
+          label="Medication Management"
+          label2="i.e. history or non-compliance and compliance">
+        </guuey-text-input>
+
+        <guuey-text-input
+          route="/homes/{{home}}/patients/{{patient}}/preAdmissionAssessment/sleepPattern"
+          label="Sleep Pattern"
+          label2="What is your sleeping habit i.e. bedtime & waking time">
+        </guuey-text-input>
+
+        <guuey-text-input
+          route="/homes/{{home}}/patients/{{patient}}/preAdmissionAssessment/hospitalRiskAssessment"
+          label="Hospital Risk Assessment"
+          label2="i.e. is there a health clinical record">
+        </guuey-text-input>
+
+        <guuey-text-input
+          route="/homes/{{home}}/patients/{{patient}}/preAdmissionAssessment/mappa"
+          label="MAPPA"
+          label2="i.e. multi-agency protection arrangement">
+        </guuey-text-input>
+
+      </div>
+
+    </paper-card>
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is: 'su-pre',
+      ready:function(){
+        this.addEventListener("print", this.print);
+      },
+      properties:{
+        page:{
+          type:String,
+        },
+        patient:{
+          type:String,
+        },
+        home:{
+          type:String,
+        }
+      },
+      observers:[
+        "editQuery(query640)"
+      ],
+      createNewSection:function(){
+        this.$.customInput.path=null;
+        this.$.customInput.data={};
+        var path="/homes/"+this.home+"/patients/"+this.patient+"/preAdmissionAssessment/custom"
+        this.$.customInput.save(path, null)
+          .then(function(){
+            this.$.customSectionModal.toggle();
+          }.bind(this));
+      },
+      print:function(e){
+        var printable=window.open("","printable");
+        printable.document.write("<html><head>");
+        printable.document.write("</head><body>");
+        printable.document.write("<div style='width:100% padding:5%;'>");
+        var assmt=this.assmtData;
+        for(x in assmt){
+          if(x !="custom"){
+            printable.document.write("<p>"+this.convertToPrintText(x)+": "+assmt[x].info+"<br /></p>");
+          }
+          if(x ==="custom"){
+            var custom=assmt[x];
+            for(y in custom){
+              printable.document.write("<p>"+custom[y].label+"/"+custom[y].label2+": "+custom[y].info+"</br></p>");
+            }
+          }
+        };
+        printable.document.write();
+        printable.document.write("</body></html>");
+        printable.document.write("</div>");
+        printable.print();
+        printable.close();
+      },
+      //convert db keys to regular with spaces
+      convertToPrintText:function(camelCase){
+        if (camelCase == null || camelCase == "") {
+          return camelCase;
+        }
+
+        camelCase = camelCase.trim();
+        var newText = "";
+        for (var i = 0; i < camelCase.length; i++) {
+          if (/[A-Z]/.test(camelCase[i])
+              && i != 0
+              && /[a-z]/.test(camelCase[i-1])) {
+            newText += " ";
+          }
+          if (i == 0 && /[a-z]/.test(camelCase[i]))
+          {
+            newText += camelCase[i].toUpperCase();
+          } else {
+            newText += camelCase[i];
+          }
+        }
+        return newText;
+      },
+      editQuery:function(query640){
+        if(query640){
+          this.customStyle["--main-fab-position"]="fixed";
+          this.customStyle["--main-fab-top"]="unset";
+          this.customStyle["--main-fab-bottom"]="5%";
+          this.customStyle["--main-fab-right"]="5%";
+          this.updateStyles();
+        } else {
+          this.customStyle["--main-fab-position"]="absolute";
+          this.customStyle["--main-fab-top"]="-25px";
+          this.customStyle["--main-fab-bottom"]="unset";
+          this.customStyle["--main-fab-right"]="-25px";
+          this.updateStyles();
+        };
+      }
+    });
+
+  </script>
+
+</dom-module>

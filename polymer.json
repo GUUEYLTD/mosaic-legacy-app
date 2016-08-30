@@ -2,10 +2,23 @@
   "entrypoint": "index.html",
   "shell": "src/my-app.html",
   "fragments": [
-    "src/my-view1.html",
-    "src/my-view2.html",
-    "src/my-view3.html",
-    "src/my-view404.html"
+  "src/pages/admin/ad-dash/ad-dash.html",
+  "src/pages/admin/ad-payment/ad-payment.html",
+  "src/pages/admin/ad-profile/ad-profile.html",
+  "src/pages/admin/ad-settings/ad-settings.html",
+  "src/pages/admin/ad-support/ad-support.html",
+  "src/pages/admin/ad-users/ad-users.html",
+	"src/pages/care-plan/su-care/su-care.html",
+  "src/pages/care-plan/su-care-review/su-care-review.html",
+  "src/pages/care-plan/su-create/su-create.html",
+  "src/pages/care-plan/su-goals/su-goals.html",
+  "src/pages/care-plan/su-medical/su-medical.html",
+  "src/pages/care-plan/su-medication/su-medication.html",
+  "src/pages/care-plan/su-pre/su-pre.html",
+  "src/pages/care-plan/su-profile/su-profile.html",
+  "src/pages/care-plan/su-risk/su-risk.html",
+  "src/pages/default/def-login/def-login.html",
+  "src/pages/default/def-home/def-home.html"
   ],
   "sourceGlobs": [
    "src/**/*",

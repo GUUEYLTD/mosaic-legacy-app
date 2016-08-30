@@ -1,0 +1,225 @@
+<link rel="import" href="dependencies.html" />
+
+<dom-module id="ad-profile">
+
+  <template>
+    <firebase-document
+    id="careHomeProfileDB"
+    path="/homes/{{home}}/details"
+    data="{{careHomeProfile}}"
+    app-name="main">
+  </firebase-document>
+
+  <iron-media-query
+    query="(max-width:600px)"
+    query-matches="{{query600}}">
+  </iron-media-query>
+
+    <style include="app-grid-style"></style>
+
+    <style>
+      :host{
+        --app-grid-columns:2;
+        --app-grid-expandible-item-columns:2;
+        --app-grid-item-height:100px;
+      }
+      .mainCard{
+        width:80%;
+        margin: -50px 10% 50px 10%;
+        padding-bottom:50px;
+        position:absolute;
+      }
+      paper-input{
+        padding:20px;
+      }
+      .imageWrapper{
+        height:200px;
+        width:50%;
+        margin:20px 25% 20px 25%;
+        @appply(--app-grid-expandible-item);
+        position:relative;
+      }
+      .businessImage{
+        width:100%;
+        height:200px;
+        background-color:lightgray;
+        border: 1px solid grey;
+      }
+      #imageButton{
+        position:absolute;
+        bottom:5%;
+        right:5%;
+      }
+    </style>
+
+    <paper-card class="mainCard">
+      <admin-header
+        page="Care Home Profile"
+        icon="social:location-city">
+      </admin-header>
+      <div class="app-grid">
+
+        <div class="imageWrapper">
+
+          <iron-image
+            class="businessImage"
+            sizing="cover"
+            preload
+            fade
+            src="{{careHomeProfile.profileImage}}"
+            hidden>
+          </iron-image>
+
+          <paper-icon-button
+            id="imageButton"
+            on-tap="_onAddFilesClick"
+            icon="image:camera-alt">
+          </paper-icon-button>
+
+        </div>
+
+        <paper-input
+          label="Company Name"
+          value="{{careHomeProfile.name}}"
+          required
+          auto-validate
+          pattern="[a-zA-Z\s\.]*"
+          error-message="Please enter a company name.">
+        </paper-input>
+        <paper-input
+          label="Company Number"
+          value="{{careHomeProfile.companyNumber}}"
+          required
+          auto-validate
+          pattern="[\d\s]*"
+          error-message="Please enter a company number with only numbers.">
+        </paper-input>
+        <paper-input
+          label="Company VAT Number"
+          value="{{careHomeProfile.vatNumber}}"
+          required
+          auto-validate
+          pattern="[a-zA-Z]{2,2}[0-9\s]{9,15}"
+          error-message="Please enter a valid vat number.">
+        </paper-input>
+        <paper-input
+          label="Company Website"
+          value="{{careHomeProfile.website}}"
+          auto-validate
+          pattern="[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,}"
+          error-message="Please enter a valid website address">
+        </paper-input>
+
+        <input
+          id="imageInput"
+          type="file"
+          on-change="_inputChanged"
+          hidden>
+        </input>
+
+        <paper-input
+          label="Number of Employees"
+          value="{{careHomeProfile.numEmployees}}"
+          auto-validate
+          pattern="[0-9]{1,4}"
+          error-message="Please enter a number between 1 and 9999">
+        </paper-input>
+        <paper-input
+          label="Email"
+          value="{{careHomeProfile.email}}"
+          required
+          auto-validate
+          pattern="[a-zA-Z0-9_\.\+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-\.]+"
+          error-message="Please enter a valid email address.">
+        </paper-input>
+
+        <paper-input
+          label="Address (Street/Number)"
+          value="{{careHomeProfile.address}}"
+          required
+          auto-validate
+          pattern="[a-zA-Z\d\s\-\,\#\.\+]+"
+          error-message="Please enter a valid address.">
+        </paper-input>
+        <paper-input
+          label="Country"
+          value="{{careHomeProfile.country}}"
+          required
+          auto-validate
+          pattern="[a-zA-Z\s\.]*"
+          error-message="Please enter a valid country.">
+        </paper-input>
+
+        <paper-input
+          label="Post Code"
+          value="{{careHomeProfile.postCode}}"
+          auto-validate
+          pattern="[a-zA-Z0-9\s]*"
+          error-message="Please enter a valid post code.">
+        </paper-input>
+        <paper-input
+          label="Company Number"
+          value="{{careHomeProfile.companyNumber}}"
+          required
+          auto-validate
+          pattern="[0-9\s]*"
+          error-message="Please enter a valid company number.">
+        </paper-input>
+
+      </div>
+    </paper-card>
+
+  </template>
+
+  <script>
+
+    Polymer({
+      is: 'ad-profile',
+      properties:{
+        home:{
+          type:String,
+        },
+      },
+      observers:[
+        "editQuery(query600)",
+        "_computeImage(careHomeProfile.profileImage)"
+      ],
+      _inputChanged:function(e){
+        var reader= new FileReader();
+        var file=e.target.files[0];
+        reader.readAsDataURL(file);
+        reader.addEventListener("load", function () {
+          this.$.careHomeProfileDB.setStoredValue("/homes/"+this.home+"/details/profileImage", reader.result);
+        }.bind(this), false);
+      },
+      _onAddFilesClick: function(e) {
+        if (document.createEvent) {
+          this.$.imageInput.value = '';
+          this.$.imageInput.click();
+        }
+      },
+      editQuery:function(query600){
+        if(query600){
+          this.customStyle["--app-grid-columns"]="1";
+          this.updateStyles();
+        } else {
+          this.customStyle["--app-grid-columns"]="2";
+          this.updateStyles();
+        };
+      },
+      _computeImage:function(image){
+        var type=typeof image;
+        console.log(type);
+        if(type==="undefined"){
+          return false;
+        } else if(image.length>1){
+          return true;
+        } else {
+          return false;
+        };
+      }
+    });
+
+  </script>
+
+</dom-module>
