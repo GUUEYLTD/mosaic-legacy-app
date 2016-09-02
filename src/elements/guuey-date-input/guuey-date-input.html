@@ -69,6 +69,10 @@ label(string)
         },
         label:{
           type:String
+        },
+        guueyDate:{
+          type:String,
+          notify:true
         }
       },
       enterDate:function(){
@@ -83,6 +87,7 @@ label(string)
       },
       _computeDate:function(date){
         if(typeof date==="string"){
+          this.guueyDate=date.slice(3,15);
           return date.slice(3,15);
         } else {
           return null;
