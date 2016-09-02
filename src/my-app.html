@@ -302,6 +302,10 @@
         </app-drawer>
     </app-drawer-layout>
 
+    <paper-toast
+      id="mainToast">
+    </paper-toast>
+
   </template>
 
   <script>
@@ -367,8 +371,11 @@
       //function to create new user for new home
       createNewAccount:function(e){
         //create new user for new home
+        console.log(e.detail.username);
+        console.log(e.detail.password);
         this.$.auth.createUserWithEmailAndPassword(e.detail.username, e.detail.password)
           .then(function(user){
+            console.log(user.uid);
             this.$.homeDB.path=null;
             this.$.homeDB.data={
               details:{
@@ -398,6 +405,11 @@
                       });
                   }.bind(this));
               }.bind(this));
+          }.bind(this))
+          .catch(function(error){
+            console.log(error);
+            this.$.mainToast.text=error;
+            this.$.mainToast.open()
           }.bind(this));
       },
 
@@ -470,9 +482,9 @@
           this.resolveUrl('pages/'+this.category+'/' + page +'/'+page+'.html'), null, null, true);
         if(page.slice(0,3)==="def" || page.slice(0,2)==="ad" || page==="su-create"){
           //drawer and rest of page not rendering properly after being hidden and switching pages...
-          //this.$.suDrawer.hidden=true;
+          this.$.suDrawer.hidden=true;
         } else {
-          //this.$.suDrawer.hidden=false;
+          this.$.suDrawer.hidden=false;
         }
       },
       _paramChanged:function(param){
@@ -481,13 +493,6 @@
       //workaround for toggle-drawer bug
       toggleDrawer:function(){
         this.$.adminDrawer.opened=!this.$.adminDrawer.opened;
-      },
-      //login stuff
-      login:function(){
-        this.$.auth.signInWithPopup()
-          .then(function(){
-            //put code in here to route from login...
-          }.bind(this));
       },
       //sign in that redirects based on user uid and user index with homes attached
       emailSignIn:function(e){
@@ -498,6 +503,11 @@
                 window.location="/"+value+"/default/def-home";
               }.bind(this))
             //this.fire('signInRedirect');
+          }.bind(this))
+          .catch(function(error){
+            console.log(error);
+            this.$.mainToast.text=error;
+            this.$.mainToast.open()
           }.bind(this));
       },
       logout:function(){
@@ -533,10 +543,12 @@
           if(!this.$.auth.user && this.$.location.path!="/default/default/def-login"){
             window.location="/default/default/def-login";
           } else {
-            this.$.userIndexDB.getStoredValue("/userIndex/"+this.user.uid+"/home")
-              .then(function(value){
-                this.set('homeData.home', value);
-              }.bind(this))
+            if(this.user){
+              this.$.userIndexDB.getStoredValue("/userIndex/"+this.user.uid+"/home")
+                .then(function(value){
+                  this.set('homeData.home', value);
+                }.bind(this))
+            };
           };
         };
       },
