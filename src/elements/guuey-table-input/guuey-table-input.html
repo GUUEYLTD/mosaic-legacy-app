@@ -9,7 +9,7 @@
       data="{{inputData}}"
       path="{{route}}">
     </firebase-document>
-    <style include "">
+    <style>
       .sectionHeading{
         background-color:#42c6ff;
         width:100%;
@@ -43,12 +43,12 @@
         </div>
       </div>
       <div class="container">
-        <table class="mdl-data-table mdl-js-data-table">
+        <table>
           <thead>
             <tr>
               <th>
               <template is="dom-repeat" items="{{headings}}" as="heading">
-                  <td class="mdl-data-table__cell--non-numeric">{{heading}}</td>
+                  <td>{{heading}}</td>
               </template>
             </th>
             </tr>
