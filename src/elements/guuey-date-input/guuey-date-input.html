@@ -46,12 +46,26 @@ label(string)
       .toggleButton{
         padding-top:50px;
       }
+      .dialogButtons{
+        text-align:center;
+      }
     </style>
     <paper-dialog id="dateDialog" class="paper-date-picker-dialog">
       <paper-date-picker id="paperDate" date={{date}}></paper-date-picker>
+      <div class="buttons">
+        <paper-button dialog-dismiss>Cancel</paper-button>
+        <paper-button on-tap="saveMed">Save</paper-button>
+      </div>
     </paper-dialog>
 
-    <paper-input on-tap="enterDate" label="{{label}}" value="{{_computeDate(dateData)}}"></paper-input>
+    <paper-input
+      on-tap="enterDate"
+      label="{{label}}"
+      value="{{_computeDate(dateData)}}"
+      required
+      auto-validate
+      error-message="Please enter a date by clicking on tapping/clicking on this field.">
+    </paper-input>
 
   </template>
 
