@@ -1,5 +1,5 @@
 <link rel="import" href="dependencies.html" />
-<dom-module id="def-home">
+<dom-module id="test-test">
 
   <template>
     <firebase-query
@@ -47,13 +47,6 @@
       margin:20px;
       position:relative;
     }
-    .suBoxImage{
-      width:100%;
-      height:200px;
-    }
-    .suBoxImage:hover{
-      cursor:pointer;
-    }
     .suspendedText{
       text-transform:uppercase;
       width:80%;
@@ -83,14 +76,9 @@
     }
     paper-fab{
       position:absolute;
-      right:5%;
+      left:90%;
       top:140px;
       z-index:1;
-      /*polyme overrides*/
-      position:var(--main-fab-position);
-      bottom:var(--main-fab-bottom);
-      top:var(--main-fab-top);
-      right:var(--main-fab-right);
     }
     #activeDialog{
       margin:0;
@@ -117,7 +105,6 @@
     </paper-dialog>
 
     <paper-fab
-      id="mainFab"
       elevation="3"
       icon="icons:add"
       on-tap="createNewPatient">
@@ -134,16 +121,11 @@
             <div hidden="{{!_computeSuspended(item.currentStatus)}}" class=" suBoxWrapper">
               <paper-card
                 class="suBox"
-                elevation="3">
-              <iron-image
-                class="suBoxImage"
-                sizing="cover"
                 preload-image
                 placeholder-image="../../../../images/defaultAvatar.png"
                 fade-image
-                src="{{_computeImage(item.personalProfile.image)}}"
-                on-tap="editServiceUser">
-              </iron-image>
+                image="{{_computeImage(item.personalProfile.image)}}"
+                elevation="3">
                 <p class="suspendedText">
                   suspended
                 </p>
@@ -159,17 +141,11 @@
             <div hidden="{{_computeSuspended(item.currentStatus)}}" class="suBoxWrapper">
               <paper-card
                 class="suBox"
+                preload-image
+                placeholder-image="../../../../images/defaultAvatar.png"
+                fade-image
+                image="{{_computeImage(item.personalProfile.image)}}"
                 elevation="3">
-              <a class="inherit" href="/{{home}}/care-plan/su-profile/{{item.$key}}">
-                <iron-image
-                  class="suBoxImage"
-                  sizing="cover"
-                  preload-image
-                  placeholder-image="../../../../images/defaultAvatar.png"
-                  fade-image
-                  src="{{_computeImage(item.personalProfile.image)}}">
-              </iron-image>
-              </a>
                 <div class="suLower">
                   {{item.personalProfile.fName}}
                   <br />
@@ -192,7 +168,7 @@
 
     Polymer({
 
-      is: 'def-home',
+      is: 'test-test',
       properties:{
         patient:{
           type:String,
@@ -295,39 +271,21 @@
       mediaQueryEdit:function(query1300, query1100, query900, query700, query500){
         if(query1300){
           this.customStyle["--app-grid-columns"]="5";
-          this.customStyle["--main-fab-position"]="absolute";
-          this.customStyle["--main-fab-top"]="140px";
-          this.customStyle["--main-fab-bottom"]="unset";
           this.updateStyles();
         } else if(query1100){
           this.customStyle["--app-grid-columns"]="4";
-          this.customStyle["--main-fab-position"]="absolute";
-          this.customStyle["--main-fab-top"]="140px";
-          this.customStyle["--main-fab-bottom"]="unset";
           this.updateStyles();
         } else if(query900){
           this.customStyle["--app-grid-columns"]="3";
-          this.customStyle["--main-fab-position"]="absolute";
-          this.customStyle["--main-fab-top"]="140px";
-          this.customStyle["--main-fab-bottom"]="unset";
           this.updateStyles();
         } else if(query700){
           this.customStyle["--app-grid-columns"]="2";
-          this.customStyle["--main-fab-position"]="fixed";
-          this.customStyle["--main-fab-top"]="unset";
-          this.customStyle["--main-fab-bottom"]="5%";
           this.updateStyles();
         } else if(query500){
           this.customStyle["--app-grid-columns"]="2";
-          this.customStyle["--main-fab-position"]="fixed";
-          this.customStyle["--main-fab-top"]="unset";
-          this.customStyle["--main-fab-bottom"]="5%";
           this.updateStyles();
         } else {
           this.customStyle["--app-grid-columns"]="1";
-          this.customStyle["--main-fab-position"]="fixed";
-          this.customStyle["--main-fab-top"]="unset";
-          this.customStyle["--main-fab-bottom"]="5%";
           this.updateStyles();
         };
       },
