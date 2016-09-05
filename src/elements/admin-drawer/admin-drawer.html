@@ -12,6 +12,7 @@
         --paper-icon-button-ink-color: white;
       }
       app-drawer{
+        z-index:50;
         color:#303030
       }
 
@@ -43,7 +44,7 @@
       }
     </style>
 
-    <app-drawer id="adminDrawer" position="left" opened="{{opened}}">
+    <app-drawer id="adminDrawer" position="start" opened="{{opened}}">
       <app-toolbar>
         {{email}}
       </app-toolbar>
