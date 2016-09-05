@@ -84,7 +84,17 @@ fieldDisabled(boolean)
         },
         label2:{
           type:String,
+        },
+        guueyText:{
+          type:String,
+          notify:true
         }
+      },
+      observers:[
+        "_inputChanged(inputData.info)"
+      ],
+      _inputChanged:function(data){
+        this.guueyText=data;
       }
     });
 
