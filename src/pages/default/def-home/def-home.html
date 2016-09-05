@@ -6,7 +6,8 @@
       id="patientsDB"
       path="/homes/{{home}}/patients"
       data="{{patientList}}"
-      app-name="main">
+      app-name="main"
+      transactions-complete="stuff">
     </firebase-query>
     <firebase-document
       id="fireDoc"
@@ -193,6 +194,9 @@
     Polymer({
 
       is: 'def-home',
+      ready:function(){
+
+      },
       properties:{
         patient:{
           type:String,
@@ -331,6 +335,9 @@
           this.updateStyles();
         };
       },
+      stuff:function(e){
+        console.log()
+      }
     });
 
   </script>
