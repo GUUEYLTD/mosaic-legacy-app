@@ -213,7 +213,8 @@
 
               <guuey-date-input
                 route="/homes/{{home}}/patients/{{patient}}/carePlan/statementOfServiceUser/suDate"
-                label="Date">
+                label="Date"
+                guuey-date="{{guueySUDOA}}">
               </guuey-date-input>
 
               <div class="agreeButtons">
@@ -238,7 +239,8 @@
 
               <guuey-date-input
                 route="/homes/{{home}}/patients/{{patient}}/carePlan/statementOfServiceUser/swDate"
-                label="Date">
+                label="Date"
+                guuey-date="{{guueySWDOA}}">
               </guuey-date-input>
 
               <div class="agreeButtons">
@@ -435,7 +437,9 @@
       }
       },
       observers:[
-        "editQuery(query900, query750, query1100, query640)"
+        "editQuery(query900, query750, query1100, query640)",
+        "requirementsMet(agreeData)"
+
       ],
       suAgreeUpdate:function(e){
         this.$.formDB.path=null;
@@ -586,6 +590,29 @@
         }
         return newText;
       },
+      requirementsMet:function(data){
+        //suAgree suName guueySUDOA swAgree swName guueySWDOA
+        if(!data.suName){
+          this.fire("openToast", {toastText:"Please enter a service user for the agreement."});
+          return false;
+        } else if(!this.guueySUDOA){
+          this.fire("openToast", {toastText:"Please enter a date for when the service user agreed."});
+          return false;
+        } else if(!data.suAgree){
+          this.fire("openToast", {toastText:"Please ensure that the service user agrees by tapping on the agree button."});
+          return false;
+        } else if(!data.swName){
+          this.fire("openToast", {toastText:"Please enter a staff worker name for the agreement."});
+          return false;
+        } else if(!this.guueySWDOA){
+          this.fire("openToast", {toastText:"Please enter a date for when the staff worker agreed."});
+          return false;
+        } else if(!data.swAgree){
+          this.fire("openToast", {toastText:"Please ensure that the staff worker agrees by tapping on the agree button."});
+        } else {
+          return true;
+        };
+      },
       editQuery:function(query900, query750, query1100, query640){
         if(query640){
           //list styles
@@ -664,6 +691,10 @@
           this.customStyle["--main-fab-right"]="-25px";
           this.updateStyles();
         };
+      },
+      _stuff:function(){
+        console.log("stuff");
+        console.log(this.agreeData.suName);
       }
     });
 

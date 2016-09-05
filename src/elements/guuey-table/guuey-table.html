@@ -129,7 +129,8 @@ home(string)
                     rowdata="{{rowdata}}"
                     tableroute="{{tableroute}}/{{rowdata}}"
                     home="{{home}}"
-                    patient="{{patient}}">
+                    patient="{{patient}}"
+                    tablename="{{label}}">
                   </guuey-table-row>
                   <br />
               </template>
@@ -143,6 +144,10 @@ home(string)
 
     Polymer({
       is:'guuey-table',
+      ready:function(){
+        this.addEventListener("rowDataMissing", this.addToastText);
+        this.addEventListener("rowDataExists", this.removeToastText);
+      },
       properties:{
         page:{
           type:String
@@ -168,6 +173,10 @@ home(string)
         },
         category:{
           type:String
+        },
+        missingRows:{
+          type:Object,
+          value:{}
         }
       },
       observers:[
@@ -230,6 +239,40 @@ home(string)
           this.customStyle["--td-th-last-width"]="150px";
           this.updateStyles();
         }
+      },
+      addToastText:function(e){
+        if(e.detail.tableName===this.label){
+          this.missingRows=this.label;
+          this.missingRows[e.detail.rowInfo]=true;
+          var toastText=this.label+" is missing: ";
+          for(x in this.missingRows){
+            if(x!="name"){
+              if(this.missingRows[x]!=false){
+                toastText+=" "+x+" ";
+              };
+            };
+          };
+          this.fire("openToast", {toastText:toastText});
+        };
+      },
+      removeToastText:function(e){
+        if(e.detail.tableName===this.label){
+          if(this.missingRows[e.detail.rowInfo]){
+            this.missingRows[e.detail.rowInfo]=false;
+          };
+          var toastText=this.label+" is missing: ";
+          var origLength=toastText.length;
+          for(x in this.missingRows){
+            if(x!="name"){
+              if(this.missingRows[x]!=false){
+                toastText+=" "+x+" ";
+              };
+            };
+          };
+          if(toastText.length>origLength){
+            this.fire("openToast", {toastText:toastText});
+          };
+        };
       }
     });
 

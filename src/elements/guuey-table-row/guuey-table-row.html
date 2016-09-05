@@ -135,7 +135,8 @@ patient
         },
       },
       observers:[
-        "editQuery(query1660)"
+        "editQuery(query1660)",
+        "checkRowData(mainTableData)"
       ],
       checkboxChanged:function(e){
         this.$.tableDB.path=null;
@@ -163,6 +164,13 @@ patient
         this.$.tableDB.path=this.tableroute;
         this.$.tableComment.toggle();
 
+      },
+      checkRowData:function(data){
+        if(!data.daily && !data.weekly && !data.biWeekly && !data.monthly){
+          this.fire("rowDataMissing", {rowInfo:this.rowdata, tableName:this.tablename});
+        } else {
+          this.fire("rowDataExists", {rowInfo:this.rowData, tableName:this.tablename});
+        };
       },
       editQuery:function(query1660){
         if(query1660){

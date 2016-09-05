@@ -1014,12 +1014,16 @@
         if(this.requirementsMet){
           if(!data.name){
             this.fire("openToast", {toastText: "Next of kin name is required."});
+            return;
           } else if(!data.relationship){
-            this.fire("openToast", {toastText: "Relationship to the service user is required."})
+            this.fire("openToast", {toastText: "Relationship to the service user is required."});
+            return;
           } else if(!data.address){
-            this.fire("openToast", {toastText: "Next of kin address is required."})
+            this.fire("openToast", {toastText: "Next of kin address is required."});
+            return;
           } else if(!data.phone){
-            this.fire("openToast", {toastText: "Next of kin phone number is required."})
+            this.fire("openToast", {toastText: "Next of kin phone number is required."});
+            return;
           } else {
             return true;
           };
