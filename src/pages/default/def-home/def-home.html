@@ -193,6 +193,9 @@
     Polymer({
 
       is: 'def-home',
+      ready:function(){
+        console.log(this.$.patientsDB.transactionsComplete);
+      },
       properties:{
         patient:{
           type:String,
@@ -331,6 +334,10 @@
           this.updateStyles();
         };
       },
+      stuff:function(e){
+        console.log(e);
+        console.log("done");
+      }
     });
 
   </script>
