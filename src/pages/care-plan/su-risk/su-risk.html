@@ -216,38 +216,43 @@
 
           <guuey-date-input
             route="/homes/{{home}}/patients/{{patient}}/riskAssessment/{{riskUID}}/date"
-            label="Date">
+            label="Date"
+            guuey-date="{{guueyDOR}}">
           </guuey-date-input>
-
 
           <guuey-text-input
             route="/homes/{{home}}/patients/{{patient}}/riskAssessment/{{riskUID}}/backgroundOfRisk"
             label="Background of Risk"
-            label2="">
+            label2=""
+            guuey-text="{{guueyInput0}}">
           </guuey-text-input>
 
           <guuey-text-input
             route="/homes/{{home}}/patients/{{patient}}/riskAssessment/{{riskUID}}/riskIdentified"
             label="Risk Identified"
-            label2="">
+            label2=""
+            guuey-text="{{guueyInput1}}">
           </guuey-text-input>
 
           <guuey-text-input
             route="/homes/{{home}}/patients/{{patient}}/riskAssessment/{{riskUID}}/crisisPlan"
             label="crisis Plan"
-            label2="How to Address">
+            label2="How to Address"
+            guuey-text="{{guueyInput2}}">
           </guuey-text-input>
 
           <guuey-text-input
             route="/homes/{{home}}/patients/{{patient}}/riskAssessment/{{riskUID}}/agreedFrequencyOfEvaluation"
             label="Agreed Frequencey of Evaluation"
-            label2="">
+            label2=""
+            guuey-text="{{guueyInput3}}">
           </guuey-text-input>
 
           <guuey-text-input
             route="/homes/{{home}}/patients/{{patient}}/riskAssessment/{{riskUID}}/evaluation"
             label="Evaluation"
-            label2="{{riskData.date}}">
+            label2="{{riskData.date}}"
+            guuey-text="{{guueyInput4}}">
           </guuey-text-input>
 
         </div>
@@ -286,7 +291,8 @@
         }
       },
       observers:[
-        "editQuery(query1300, query1100, query750, query640)"
+        "editQuery(query1300, query1100, query750, query640)",
+        "requirementsMet(riskData, riskSelected)"
       ],
       //is this useless???? i think so... test later
       editField:function(event){
@@ -373,6 +379,15 @@
           }
         }
         return newText;
+      },
+      requirementsMet(data, riskSelected){
+        console.log(data);
+        if(!data.date){
+          console.log(this.riskSelected);
+          if(this.riskSelected){
+            this.fire("openToast", {toastText:"Date of risk assessment is reqiured."});
+          };
+        };
       },
       editQuery:function(query1300, query1100, query750, query640){
         if(query640){
