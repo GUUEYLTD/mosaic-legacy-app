@@ -1,3 +1,4 @@
+
 <link rel="import" href="dependencies.html" />
 
 <dom-module id="ad-payment">
@@ -200,6 +201,9 @@
     Polymer({
 
       is: 'ad-payment',
+      ready:function(){
+        this.fire("pageloaded");
+      },
       properties:{
         home:{
           type:String,

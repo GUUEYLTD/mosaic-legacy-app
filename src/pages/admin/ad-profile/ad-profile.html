@@ -138,7 +138,7 @@
           value="{{careHomeProfile.address}}"
           required
           auto-validate
-          pattern="[a-zA-Z\d\s\-\,\#\.\+]+"
+          pattern="[A-Za-z0-9'\.\-\s,]*"
           error-message="Please enter a valid address.">
         </paper-input>
         <paper-input
@@ -175,6 +175,9 @@
 
     Polymer({
       is: 'ad-profile',
+      ready:function(){
+        this.fire("pageLoaded");
+      },
       properties:{
         home:{
           type:String,

@@ -311,6 +311,9 @@
     Polymer({
 
       is: 'ad-users',
+      ready:function(){
+        this.fire("pageLoaded");
+      },
       properties:{
         newAccount:{
           type:Object,

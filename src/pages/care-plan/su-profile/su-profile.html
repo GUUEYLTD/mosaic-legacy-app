@@ -971,49 +971,57 @@
         }
       },
       requirementsMet:function(data){
-        if(!data.fName){
-          this.fire("openToast", {toastText: "First name is required before saving the new service user."});
-          return;
-        } else if(!data.lName){
-          this.fire("openToast", {toastText: "Last name is required before saving the new service user."});
-          return;
-        } else if(!this.guueyDOB){
-          this.fire("openToast", {toastText: "Date of birth is required before saving the new service user."});
-          return;
-        } else if(!this.guueyDOA){
-          this.fire("openToast", {toastText: "Date of assessment is required before saving the new service user."});
-          return;
-        } else if(!data.partnership){
-          this.fire("openToast", {toastText: "Partnership status is required before saving the new service user."});
-          return;
-        } else if(!data.whereAssessed){
-          this.fire("openToast", {toastText: "Where assessed is required before saving the new service user."});
-        } else if(!data.religion){
-          this.fire("openToast", {toastText: "Religion is required before saving the new service user."});
-        } else if(!data.ethnicity){
-          this.fire("openToast", {toastText: "Ethnicity is required before saving the new service user."});
-        } else if(!data.nationality){
-          this.fire("openToast", {toastText: "Nationality is required before saving the new service user."});
+        if(Object.keys(data).length === 0 && data.constructor === Object){
+
         } else {
-          return true;
+          if(!data.fName){
+            this.fire("openToast", {toastText: "First name is required before saving the new service user."});
+            return;
+          } else if(!data.lName){
+            this.fire("openToast", {toastText: "Last name is required before saving the new service user."});
+            return;
+          } else if(!this.guueyDOB){
+            this.fire("openToast", {toastText: "Date of birth is required before saving the new service user."});
+            return;
+          } else if(!this.guueyDOA){
+            this.fire("openToast", {toastText: "Date of assessment is required before saving the new service user."});
+            return;
+          } else if(!data.partnership){
+            this.fire("openToast", {toastText: "Partnership status is required before saving the new service user."});
+            return;
+          } else if(!data.whereAssessed){
+            this.fire("openToast", {toastText: "Where assessed is required before saving the new service user."});
+          } else if(!data.religion){
+            this.fire("openToast", {toastText: "Religion is required before saving the new service user."});
+          } else if(!data.ethnicity){
+            this.fire("openToast", {toastText: "Ethnicity is required before saving the new service user."});
+          } else if(!data.nationality){
+            this.fire("openToast", {toastText: "Nationality is required before saving the new service user."});
+          } else {
+            return true;
+          };
         };
       },
       secondaryRequirementsMet(data){
-        if(this.requirementsMet){
-          if(!data.name){
-            this.fire("openToast", {toastText: "Next of kin name is required."});
-            return;
-          } else if(!data.relationship){
-            this.fire("openToast", {toastText: "Relationship to the service user is required."});
-            return;
-          } else if(!data.address){
-            this.fire("openToast", {toastText: "Next of kin address is required."});
-            return;
-          } else if(!data.phone){
-            this.fire("openToast", {toastText: "Next of kin phone number is required."});
-            return;
-          } else {
-            return true;
+        if(Object.keys(data).length === 0 && data.constructor === Object){
+
+        } else {
+          if(this.requirementsMet){
+            if(!data.name){
+              this.fire("openToast", {toastText: "Next of kin name is required."});
+              return;
+            } else if(!data.relationship){
+              this.fire("openToast", {toastText: "Relationship to the service user is required."});
+              return;
+            } else if(!data.address){
+              this.fire("openToast", {toastText: "Next of kin address is required."});
+              return;
+            } else if(!data.phone){
+              this.fire("openToast", {toastText: "Next of kin phone number is required."});
+              return;
+            } else {
+              return true;
+            };
           };
         };
       }

@@ -33,7 +33,10 @@
 
     Polymer({
 
-      is: 'ad-dash'
+      is: 'ad-dash',
+      ready:function(){
+        this.fire("pageLoaded");
+      }
 
     });
 

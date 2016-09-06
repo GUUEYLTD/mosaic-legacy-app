@@ -33,8 +33,10 @@
 
     Polymer({
 
-      is: 'ad-settings'
-
+      is: 'ad-settings',
+      ready:function(){
+        this.fire("pageLoaded");
+      }
     });
 
   </script>
