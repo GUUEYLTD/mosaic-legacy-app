@@ -974,13 +974,7 @@
       },
       requirementsMet:function(data){
         if(Object.keys(data).length === 0 && data.constructor === Object && this.guueyDOB!="loading" && this.guueyDOA!="loading"){
-          console.log("no good");
-          console.log(data);
         } else {
-          console.log("ok");
-          console.log(data);
-          console.log(this.guueyDOB);
-          console.log(this.guueyDOA);
           if(!data.fName){
             this.fire("openToast", {toastText: "First name is required before saving the new service user."});
             return;

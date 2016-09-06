@@ -6,7 +6,7 @@
     <!--firebase query to get all of the risk assessments-->
     <firebase-query
       id="risksDB"
-      path="/homes/{{home}}/patients/{{patient}}/riskAssessment"
+      path="/homes/[[home]]/patients/[[patient]]/riskAssessment"
       data="{{risksData}}"
       app-name="main">
     </firebase-query>
@@ -19,7 +19,7 @@
     <!--db to print-->
     <firebase-document
       id="printDB"
-      path="/homes/{{home}}/patients/{{patient}}/riskAssessment"
+      path="/homes/[[home]]/patients/[[patient]]/riskAssessment"
       app-name="main">
     </firebase-document>
 
@@ -293,7 +293,7 @@
       },
       observers:[
         "editQuery(query1300, query1100, query750, query640)",
-        "requirementsMet(riskData, riskSelected)"
+        "requirementsMet(risksData)"
       ],
       //is this useless???? i think so... test later
       editField:function(event){
@@ -381,14 +381,14 @@
         }
         return newText;
       },
-      requirementsMet(data, riskSelected){
-        console.log(data);
-        if(!data.date){
-          console.log(this.riskSelected);
-          if(this.riskSelected){
+      requirementsMet(data){
+        var riskData = this.$.riskDB.data;
+        //change case
+        this.$.risksDB.query.on("child_changed",function(){
+          if(!riskData.date){
             this.fire("openToast", {toastText:"Date of risk assessment is reqiured."});
           };
-        };
+        }.bind(this));
       },
       editQuery:function(query1300, query1100, query750, query640){
         if(query640){

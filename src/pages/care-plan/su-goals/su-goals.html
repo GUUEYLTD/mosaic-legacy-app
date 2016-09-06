@@ -7,7 +7,7 @@
     <firebase-query
       id="goalsDB"
       app-name="main"
-      path="homes/{{home}}/patients/{{patient}}/personalGoals"
+      path="homes/[[home]]/patients/[[patient]]/personalGoals"
       data="{{goalsData}}">
     </firebase-query>
     <!--db to create new goal for a patient-->
@@ -30,7 +30,7 @@
     <firebase-document
       id="printDB"
       app-name="main"
-      path="homes/{{home}}/patients/{{patient}}/personalGoals">
+      path="homes/[[home]]/patients/[[patient]]/personalGoals">
     </firebase-document>
 
     <!--media query workaround for shadow dom-->
@@ -239,7 +239,7 @@
         value="{{stepData.description}}"
         required
         auto-validate
-        pattern="[a-zA-Z\s\.\!\d]*"
+        pattern="[a-zA-Z\s\.!\d]*"
         error-message="Please describe the step.">
       </paper-input>
       <paper-input
@@ -250,6 +250,8 @@
         pattern="\d{1,1}"
         error-message="Please enter a step from 1 to 9">
       </paper-input>
+      <paper-button dialog-dismiss>cancel</paper-button>
+      <paper-button dialog-dismiss>save</paper-button>
     </paper-dialog>
 
     <paper-card class="mainCard" elevation="3">
@@ -454,12 +456,14 @@
 
           <guuey-date-input
             route="homes/{{home}}/patients/{{patient}}/personalGoals/{{goalUID}}/startDate"
-            label="Start Date">
+            label="Start Date"
+            guuey-date="{{guueySD}}">
           </guuey-date-input>
 
           <guuey-date-input
             route="homes/{{home}}/patients/{{patient}}/personalGoals/{{goalUID}}/finishDate"
-            label="Estimated Finish Date">
+            label="Estimated Finish Date"
+            guuey-date="{{guueyFD}}">
           </guuey-date-input>
 
           <paper-input
@@ -604,7 +608,8 @@
 
       },
       observers:[
-        "editQuery(query1200, query850, query950, query640)"
+        "editQuery(query1200, query850, query950, query640)",
+        "requirementsMet(goalsData)"
       ],
       addGoal:function(){
         this.$.goalDB.path=null;
@@ -746,6 +751,34 @@
           }
         }
         return newText;
+      },
+      requirementsMet:function(data){
+        console.log("hitting");
+        //change case
+        this.$.goalsDB.query.on("child_changed",function(){
+          var goalData=this.$.goalDB.data;
+          if(!goalData.category){
+            this.fire("openToast", {toastText:"Goal category is required."});
+            console.log(this.goalData);
+            return false;
+          } else if(!this.guueySD){
+            this.fire("openToast", {toastText:"Goal start date is required."});
+            return false;
+          } else if(!this.guueyFD){
+            this.fire("openToast", {toastText:"Goal finish date is required."});
+            return false;
+          } else if(!goalData.coordinator){
+            this.fire("openToast", {toastText:"Goal cooridnator is required."});
+            return false;
+          } else if(!goalData.description){
+            this.fire("openToast", {toastText:"Goal description is required."});
+            return false;
+          } else if(!goalData.steps){
+            this.fire("openToast", {toastText:"Add steps to the goal."});
+          } else {
+            return true;
+          };
+        }.bind(this));
       },
       editQuery:function(query1200, query850, query950, query640){
         if(query640){
