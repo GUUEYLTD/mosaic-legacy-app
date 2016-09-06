@@ -185,6 +185,9 @@
     Polymer({
 
       is: 'su-create',
+      ready:function(){
+        this.fire("pageLoaded");
+      },
       properties:{
         page:{
           type:String,

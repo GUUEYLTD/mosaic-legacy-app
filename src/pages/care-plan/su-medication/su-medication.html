@@ -523,6 +523,7 @@
 
       is: 'su-medication',
       ready:function(){
+        this.fire("pageLoaded");
         this.addEventListener("print", this.print);
       },
       properties:{

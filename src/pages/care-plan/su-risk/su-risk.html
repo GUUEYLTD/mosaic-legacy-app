@@ -269,6 +269,7 @@
 
       is: 'su-risk',
       ready:function(){
+        this.fire("pageLoaded");
         this.addEventListener("print", this.print);
       },
       properties:{

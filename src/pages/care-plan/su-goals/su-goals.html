@@ -570,6 +570,7 @@
 
       is: 'su-goals',
       ready:function(){
+        this.fire("pageLoaded");
         this.addEventListener("print", this.print);
       },
       properties:{
