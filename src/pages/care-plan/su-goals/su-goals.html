@@ -753,13 +753,11 @@
         return newText;
       },
       requirementsMet:function(data){
-        console.log("hitting");
         //change case
         this.$.goalsDB.query.on("child_changed",function(){
           var goalData=this.$.goalDB.data;
           if(!goalData.category){
             this.fire("openToast", {toastText:"Goal category is required."});
-            console.log(this.goalData);
             return false;
           } else if(!this.guueySD){
             this.fire("openToast", {toastText:"Goal start date is required."});

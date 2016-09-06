@@ -316,6 +316,7 @@
       editRisk:function(e){
         this.riskUID=e.model.risk.$key;
         this.riskSelected=true;
+        this.$.riskDB.path="/homes/"+this.home+"/patients/"+this.patient+"/riskAssessment/"+e.model.risk.$key;
       },
       deleteRisk:function(e){
         var path="/homes/"+this.home+"/patients/"+this.patient+"/riskAssessment/"+e.model.risk.$key;
@@ -382,9 +383,11 @@
         return newText;
       },
       requirementsMet(data){
-        var riskData = this.$.riskDB.data;
         //change case
         this.$.risksDB.query.on("child_changed",function(){
+          var riskData = this.$.riskDB.data;
+          console.log(riskData.path);
+          console.log(riskData);
           if(!riskData.date){
             this.fire("openToast", {toastText:"Date of risk assessment is reqiured."});
           };
