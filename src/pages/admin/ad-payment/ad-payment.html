@@ -202,7 +202,7 @@
 
       is: 'ad-payment',
       ready:function(){
-        this.fire("pageloaded");
+        this.fire("pageLoaded", {page:this.page});
       },
       properties:{
         home:{

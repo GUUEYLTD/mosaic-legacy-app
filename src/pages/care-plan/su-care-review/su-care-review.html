@@ -301,7 +301,7 @@
     Polymer({
       is: 'su-care-review',
       ready:function(){
-        this.fire("pageLoaded");
+        this.fire("pageLoaded", {page:this.page});
         this.addEventListener("print", this.print);
       },
       properties:{
