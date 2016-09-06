@@ -4,10 +4,16 @@
   <template>
     <firebase-query
       id="patientsDB"
-      path="/homes/{{home}}/patients"
-      data="{{patientList}}"
+      path="/homes/[[home]]/patients"
+      data="{{patientListLive}}"
       app-name="main">
     </firebase-query>
+    <app-indexeddb-mirror
+      key="patients"
+      data="{{patientListLive}}"
+      persisted-data="{{patientList}}"
+      worker-url="../../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
     <firebase-document
       id="fireDoc"
       app-name="main">
@@ -339,7 +345,7 @@
           this.customStyle["--main-fab-bottom"]="5%";
           this.updateStyles();
         };
-      },
+      }
     });
 
   </script>

@@ -2,166 +2,40 @@
 <dom-module id="test-test">
 
   <template>
-    <firebase-query
-      id="patientsDB"
-      path="/homes/{{home}}/patients"
-      data="{{patientList}}"
-      app-name="main">
-    </firebase-query>
     <firebase-document
-      id="fireDoc"
-      app-name="main">
+      id="agreeDB"
+      app-name="main"
+      data="{{agreeDataLive}}"
+      path="/homes/{{home}}/patients/{{patient}}/carePlan/statementOfServiceUser">
     </firebase-document>
-    <!--media query workaround for shadow dom-->
-    <iron-media-query
-      query="(min-width:1300px)"
-      query-matches="{{query1300}}">
-    </iron-media-query>
-    <iron-media-query
-      query="(min-width:1100px)"
-      query-matches="{{query1100}}">
-    </iron-media-query>
-    <iron-media-query
-      query="(min-width:900px)"
-      query-matches="{{query900}}">
-    </iron-media-query>
-    <iron-media-query
-      query="(min-width:700px)"
-      query-matches="{{query700}}">
-    </iron-media-query>
-    <iron-media-query
-      query="(min-width:500px)"
-      query-matches="{{query500}}">
-    </iron-media-query>
+    <app-indexeddb-mirror
+      key="agree"
+      persisted-data="{{agreeData}}"
+      worker-url="../../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
     <style include="app-grid-style">
     :host{
-      --app-grid-columns:5;
-      --app-grid-item-height:150%;
+      --app-grid-columns:2;
+      --app-grid-item-height:100%;
     }
-    .multiBoxContainer{
-      margin-top:-75px;
-      margin-right:10%;
-      margin-left:10%;
-    }
-    .suBox{
-      margin:20px;
-      position:relative;
-    }
-    .suspendedText{
-      text-transform:uppercase;
+    paper-card{
       width:80%;
-      color:red;
-      font-size:24px;
-      font-weight:bold;
-      position:absolute;
-      text-align:center;
-      z-index:2;
-      top:25%;
-      left:10%;
-    }
-    .activeImage{
-      height:auto;
-      width:auto;
-      background-color: lightgray;
-    }
-    .suLower{
-      padding: 10px 10px 10px 10px;
-      position:absolute;
-      bottom:0;
-    }
-    .suEdit{
-      position:absolute;
-      bottom:0;
-      right:0;
-    }
-    paper-fab{
-      position:absolute;
-      left:90%;
-      top:140px;
-      z-index:1;
-    }
-    #activeDialog{
-      margin:0;
-    }
-    #suspendedDialog{
-      margin:0;
+      margin:-50px 10% 50px 10%;
     }
     </style>
 
-    <paper-dialog id="activeDialog" no-overlap horizontal-align="left" vertical-align="top">
-      <paper-button on-tap="editServiceUser">edit</paper-button>
-      <br />
-      <paper-button on-tap="suspendServiceUser">suspend</paper-button>
-      <br />
-      <paper-button on-tap="archiveUser">archive</paper-button>
-    </paper-dialog>
+    <paper-card class="app-grid">
 
-    <paper-dialog id="suspendedDialog" no-overlap horizontal-align="left" vertical-align="top">
-      <paper-button on-tap="editServiceUser">edit</paper-button>
-      <br />
-      <paper-button on-tap="unSuspendServiceUser">un-suspend</paper-button>
-      <br />
-      <paper-button on-tap="archiveUser">archive</paper-button>
-    </paper-dialog>
+      <p>
+        Stored: {{agreeData.swAgree}}
+      </p>
+      <p>
+        Live: {{agreeDataLive.swAgree}}
+      </p>
 
-    <paper-fab
-      elevation="3"
-      icon="icons:add"
-      on-tap="createNewPatient">
-    </paper-fab>
+    </paper-card>
 
-    <div class="multiBoxContainer">
-      <div class="app-grid" has-aspect-ratio>
-        <template
-          is="dom-repeat"
-          items="{{patientList}}"
-          filter="filterArchived"
-          observe="currentStatus">
-
-            <div hidden="{{!_computeSuspended(item.currentStatus)}}" class=" suBoxWrapper">
-              <paper-card
-                class="suBox"
-                preload-image
-                placeholder-image="../../../../images/defaultAvatar.png"
-                fade-image
-                image="{{_computeImage(item.personalProfile.image)}}"
-                elevation="3">
-                <p class="suspendedText">
-                  suspended
-                </p>
-                <div class="suLower">
-                  {{item.personalProfile.fName}}
-                  <br />
-                  {{item.personalProfile.lName}}
-                </div>
-                <paper-icon-button class="suEdit" on-tap="openSuspendedDialog" icon="icons:more-vert"></paper-icon-button>
-              </paper-card>
-            </div>
-
-            <div hidden="{{_computeSuspended(item.currentStatus)}}" class="suBoxWrapper">
-              <paper-card
-                class="suBox"
-                preload-image
-                placeholder-image="../../../../images/defaultAvatar.png"
-                fade-image
-                image="{{_computeImage(item.personalProfile.image)}}"
-                elevation="3">
-                <div class="suLower">
-                  {{item.personalProfile.fName}}
-                  <br />
-                  {{item.personalProfile.lName}}
-                </div>
-                <paper-icon-button class="suEdit" on-tap="openDialog" icon="icons:more-vert"></paper-icon-button>
-              </paper-card>
-            </div>
-
-        </template>
-
-    </div>
-  </div>
-    <div style="height:100px;">
-      <!--padding for bottom-->
-    </div>
   </template>
 
   <script>
@@ -186,109 +60,7 @@
           type:Object,
           value:{},
         },
-      },
-      observers:[
-        "mediaQueryEdit(query1300, query1100, query900, query700, query500)",
-      ],
-      createNewPatient:function(){
-        this.$.fireDoc.path=null;
-        this.$.fireDoc.data={
-          home:this.home,
-          currentStatus:"archived"
-        };
-        this.$.fireDoc.save('/homes/'+this.home+'/patients', null)
-          .then(function(){
-            var patientPath='/homes/'+this.home+'/patients';
-            this.patient = this.$.fireDoc.path.slice(patientPath.length+1);
-            window.location.href="/"+this.home+"/care-plan/su-create/"+this.patient;
-          }.bind(this));
-      },
-      createNewAccount:function(){
-        this.fire('createNewAccount',this.newAccount);
-      },
-      openDialog:function(e) {
-        this.$.activeDialog.positionTarget = e.target;
-        if(e.model.item.personalProfile && e.model.item.personalProfile){
-          if(e.model.item.personalProfile.fName && e.model.item.personalProfile.lName){
-            this.modalFirstName=e.model.item.personalProfile.fName;
-            this.modalLastName=e.model.item.personalProfile.lName;
-          }
-        }
-        this.modalKey=e.model.item.$key;
-        this.$.activeDialog.toggle();
-      },
-      openSuspendedDialog:function(e) {
-        this.$.suspendedDialog.positionTarget = e.target;
-        if(e.model.item.personalProfile && e.model.item.personalProfile){
-          if(e.model.item.personalProfile.fName && e.model.item.personalProfile.lName){
-            this.modalFirstName=e.model.item.personalProfile.fName;
-            this.modalLastName=e.model.item.personalProfile.lName;
-          }
-        }
-        this.modalKey=e.model.item.$key;
-        this.$.suspendedDialog.toggle();
-      },
-      editServiceUser:function(e){
-        window.location.href="/"+this.home+"/care-plan/su-profile/"+this.modalKey;
-      },
-      suspendServiceUser:function(e){
-        var path=this.$.patientsDB.path+"/"+this.modalKey+"/currentStatus";
-        this.$.patientsDB.setStoredValue(path, "suspended");
-        this.$.activeDialog.toggle();
-      },
-      unSuspendServiceUser:function(e){
-        var path=this.$.patientsDB.path+"/"+this.modalKey+"/currentStatus";
-        this.$.patientsDB.setStoredValue(path, "active");
-        this.$.suspendedDialog.toggle();
-      },
-      archiveUser:function(e){
-        var path=this.$.patientsDB.path+"/"+this.modalKey+"/currentStatus";
-        this.$.patientsDB.setStoredValue(path, "archived");
-        this.$.activeDialog.toggle();
-      },
-      filterArchived:function(item){
-        return item.currentStatus!=="archived";
-      },
-      //check to see if the remaining non archived service users are suspended or not
-      _computeSuspended:function(status){
-        return status=="suspended";
-      },
-      _computeQueryCount:function(item){
-        if(item.currentStatus!="archived"){
-          if(!this.queryCount){
-            this.queryCount=0;
-          };
-          this.queryCount++;
-        }
-      },
-      _computeImage:function(image){
-        if(image){
-          return image;
-        } else {
-          return "../../../../images/defaultAvatar.png";
-        };
-      },
-      mediaQueryEdit:function(query1300, query1100, query900, query700, query500){
-        if(query1300){
-          this.customStyle["--app-grid-columns"]="5";
-          this.updateStyles();
-        } else if(query1100){
-          this.customStyle["--app-grid-columns"]="4";
-          this.updateStyles();
-        } else if(query900){
-          this.customStyle["--app-grid-columns"]="3";
-          this.updateStyles();
-        } else if(query700){
-          this.customStyle["--app-grid-columns"]="2";
-          this.updateStyles();
-        } else if(query500){
-          this.customStyle["--app-grid-columns"]="2";
-          this.updateStyles();
-        } else {
-          this.customStyle["--app-grid-columns"]="1";
-          this.updateStyles();
-        };
-      },
+      }
     });
 
   </script>
