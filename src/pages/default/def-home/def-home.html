@@ -160,16 +160,15 @@
               <paper-card
                 class="suBox"
                 elevation="3">
-              <a class="inherit" href="/{{home}}/care-plan/su-profile/{{item.$key}}">
                 <iron-image
                   class="suBoxImage"
                   sizing="cover"
                   preload-image
                   placeholder-image="../../../../images/defaultAvatar.png"
                   fade-image
-                  src="{{_computeImage(item.personalProfile.image)}}">
-              </iron-image>
-              </a>
+                  src="{{_computeImage(item.personalProfile.image)}}"
+                  on-tap="editServiceUser">
+                </iron-image>
                 <div class="suLower">
                   {{item.personalProfile.fName}}
                   <br />
@@ -254,7 +253,11 @@
         this.$.suspendedDialog.toggle();
       },
       editServiceUser:function(e){
-        window.location.href="/"+this.home+"/care-plan/su-profile/"+this.modalKey;
+        if(e.model){
+          window.location.href="/"+this.home+"/care-plan/su-profile/"+e.model.item.$key;
+        } else {
+          window.location.href="/"+this.home+"/care-plan/su-profile/"+this.modalKey;
+        };
       },
       suspendServiceUser:function(e){
         var path=this.$.patientsDB.path+"/"+this.modalKey+"/currentStatus";
