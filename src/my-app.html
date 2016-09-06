@@ -197,6 +197,10 @@
         --paper-progress-active-color:var(--page-loading-active-color);
         display:inherit;
       }
+      paper-spinner{
+        height:150px;
+        width:150px;
+      }
     </style>
 
     <div class="loadingOverlay">
@@ -517,7 +521,7 @@
         } else {
           this.disableDBLoading();
         };
-        if(page!="def-home"){
+        if(page!="def-home" && !this[page]){
           this.enablePageLoading();
         } else {
           this.disablePageLoading();
@@ -551,7 +555,6 @@
             //this.fire('signInRedirect');
           }.bind(this))
           .catch(function(error){
-            console.log(error);
             this.$.mainToast.text=error;
             this.$.mainToast.open()
           }.bind(this));
@@ -622,12 +625,14 @@
         this.updateStyles();
       },
       enablePageLoading:function(){
-        console.log("enabled");
         this.customStyle["--page-loading-active-color"]="#FFEB3B";
         this.updateStyles();
       },
-      disablePageLoading:function(){
-        console.log("disabled");
+      disablePageLoading:function(e){
+        if(e){
+          var page=e.detail.page
+          this[e.detail.page]=true;
+        };  
         this.customStyle["--page-loading-active-color"]="#3d4ba8";
         this.updateStyles();
       }
