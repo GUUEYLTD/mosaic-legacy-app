@@ -386,8 +386,6 @@
         //change case
         this.$.risksDB.query.on("child_changed",function(){
           var riskData = this.$.riskDB.data;
-          console.log(riskData.path);
-          console.log(riskData);
           if(!riskData.date){
             this.fire("openToast", {toastText:"Date of risk assessment is reqiured."});
           };
