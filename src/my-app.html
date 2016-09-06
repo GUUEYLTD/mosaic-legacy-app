@@ -172,7 +172,36 @@
       .toolbarButtonContainer{
         width:90%;
       }
+      .loadingOverlay{
+        position:absolute;
+        right:0;
+        left:0;
+        bottom:0;
+        top:0;
+        background-color:rgba(0, 0, 0, 0.5);
+        z-index:5;
+        flex-direction:column;
+        align-items:center;
+        justify-content: center;
+        display:none;
+        display:var(--db-loading-display);
+      }
+      .loadingOverlay *{
+        z-index:6;
+      }
+      .mainProgress{
+        width:100%;
+        --paper-progress-indeterminate-cycle-duration: 15s;
+        --paper-progress-container-color: #3d4ba8;
+        --paper-progress-active-color:#3d4ba8;
+        --paper-progress-active-color:var(--page-loading-active-color);
+        display:inherit;
+      }
     </style>
+
+    <div class="loadingOverlay">
+      <paper-spinner active></paper-spinner>
+    </div>
 
     <app-drawer-layout fullbleed id="appDrawerLayout" force-narrow>
 
@@ -258,6 +287,7 @@
                 </span>
               </div>
             </app-toolbar>
+            <paper-progress class="mainProgress" indeterminate></paper-progress>
           </template>
         </app-header>
         <div class="headerBackground">
@@ -326,6 +356,10 @@
         this.addEventListener('emailSignIn',this.emailSignIn);
         this.addEventListener('openToast', this.openToast);
         this.addEventListener('openDrawer', this.openDrawer);
+        this.addEventListener('dbLoading', this.enableDBLoading);
+        this.addEventListener('dbLoaded', this.disableDBLoading);
+        this.addEventListener('pageLoading', this.enablePageLoading);
+        this.addEventListener('pageLoaded', this.disablePageLoading);
       },
       //create new service user for an already existing home
       createNewUser:function(e){
@@ -478,6 +512,16 @@
       },
       _pageChanged:function(page) {
         // load page import on demand.
+        if(page==="def-home"){
+          this.enableDBLoading();
+        } else {
+          this.disableDBLoading();
+        };
+        if(page!="def-home"){
+          this.enablePageLoading();
+        } else {
+          this.disablePageLoading();
+        };
         this.importHref(
           this.resolveUrl('pages/'+this.category+'/' + page +'/'+page+'.html'), null, null, true);
         if(page.slice(0,3)==="def" || page.slice(0,2)==="ad" || page==="su-create"){
@@ -487,7 +531,7 @@
         } else {
           this.$.appDrawerLayout.forceNarrow=false;
           this.$.suDrawer.open();
-        }
+        };
       },
       _paramChanged:function(param){
         this.param=this.paramData.param || '';
@@ -567,6 +611,25 @@
       },
       openDrawer:function(){
         this.$.suDrawer.open();
+      },
+      enableDBLoading:function(){
+        this.customStyle["--db-loading-display"]="flex";
+        this.updateStyles();
+      },
+      disableDBLoading:function(){
+
+        this.customStyle["--db-loading-display"]="none";
+        this.updateStyles();
+      },
+      enablePageLoading:function(){
+        console.log("enabled");
+        this.customStyle["--page-loading-active-color"]="#FFEB3B";
+        this.updateStyles();
+      },
+      disablePageLoading:function(){
+        console.log("disabled");
+        this.customStyle["--page-loading-active-color"]="#3d4ba8";
+        this.updateStyles();
       }
     });
 

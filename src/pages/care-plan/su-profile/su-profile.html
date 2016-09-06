@@ -281,7 +281,7 @@
               tabindex="13"
               required
               auto-validate
-              pattern="[a-zA-Z\d\s\-\,\#\.\+]+"
+              pattern="[A-Za-z0-9'\.\-\s,]*"
               error-message="Please enter a valid address">
             </paper-input>
 
@@ -331,7 +331,7 @@
               value="{{secondContactNameData.address}}"
               tabindex="17"
               auto-validate
-              pattern="[a-zA-Z\d\s\-\,\#\.\+]+"
+              pattern="[A-Za-z0-9'\.\-\s,]*"
               error-message="Please enter a valid address">
             </paper-input>
 
@@ -369,7 +369,7 @@
               value="{{consultantPsychiatristData.address}}"
               tabindex="20"
               auto-validate
-              pattern="[a-zA-Z\d\s\-\,\#\.\+]+"
+              pattern="[A-Za-z0-9'\.\-\s,]*"
               error-message="Please enter a valid address">
             </paper-input>
 
@@ -407,7 +407,7 @@
               value="{{generalPractitionerData.address}}"
               tabindex="23"
               auto-validate
-              pattern="[a-zA-Z\d\s\-\,\#\.\+]+"
+              pattern="[A-Za-z0-9'\.\-\s,]*"
               error-message="Please enter a valid address">
             </paper-input>
 
@@ -445,7 +445,7 @@
               value="{{socialWorkerReferrerData.address}}"
               tabindex="26"
               auto-validate
-              pattern="[a-zA-Z\d\s\-\,\#\.\+]+"
+              pattern="[A-Za-z0-9'\.\-\s,]*"
               error-message="Please enter a valid address">
             </paper-input>
 
@@ -483,7 +483,7 @@
               value="{{cpnData.address}}"
               tabindex="29"
               auto-validate
-              pattern="[a-zA-Z\d\s\-\,\#\.\+]+"
+              pattern="[A-Za-z0-9'\.\-\s,]*"
               error-message="Please enter a valid address">
             </paper-input>
 
@@ -522,7 +522,7 @@
               value="{{ministerOfReligionData.address}}"
               tabindex="32"
               auto-validate
-              pattern="[a-zA-Z\d\s\-\,\#\.\+]+"
+              pattern="[A-Za-z0-9'\.\-\s,]*"
               error-message="Please enter a valid address">
             </paper-input>
 
@@ -550,7 +550,7 @@
 
       is: 'su-profile',
       ready:function(){
-        this.addEventListener('print', this.print);
+        this.fire("pageLoaded");
       },
       properties:{
         page:{

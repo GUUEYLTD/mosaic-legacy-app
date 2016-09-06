@@ -213,6 +213,7 @@
       },
       observers:[
         "mediaQueryEdit(query1300, query1100, query900, query700, query500)",
+        "dbLoaded(patientList)"
       ],
       createNewPatient:function(){
         this.$.fireDoc.path=null;
@@ -291,6 +292,11 @@
         } else {
           return "../../../../images/defaultAvatar.png";
         };
+      },
+      dbLoaded:function(data){
+        this.$.patientsDB.query.on("value", function(){
+            this.fire("dbLoaded");
+        }.bind(this));
       },
       mediaQueryEdit:function(query1300, query1100, query900, query700, query500){
         if(query1300){
