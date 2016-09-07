@@ -27,11 +27,6 @@ home(string)
       data="{{mainTableData}}"
       path="{{tableroute}}">
     </firebase-document>
-    <firebase-document
-      id="tableDB"
-      app-name="main"
-      data="{{tableData}}">
-    </firebase-document>
 
     <iron-media-query
       query="(max-width:1660px)"
@@ -100,10 +95,10 @@ home(string)
       <div class="sectionHeading">
         <div class="container">
           <p class="sectionHeadingText">
-            {{label}}
+            [[label]]
           </p>
           <p class="subHeadingText">
-            {{label2}}
+            [[label2]]
           </p>
         </div>
       </div>
@@ -114,7 +109,7 @@ home(string)
         <table>
           <thead>
             <tr>
-              <th>{{category}}</th>
+              <th>[[category]]</th>
               <th>Daily</th>
               <th>Weekly</th>
               <th>Bi-weekly</th>
@@ -126,11 +121,11 @@ home(string)
               <template is="dom-repeat" items="{{tableinputs}}" as="rowdata">
                 <!--see element for details-->
                   <guuey-table-row
-                    rowdata="{{rowdata}}"
-                    tableroute="{{tableroute}}/{{rowdata}}"
-                    home="{{home}}"
-                    patient="{{patient}}"
-                    tablename="{{label}}">
+                    rowdata="[[rowdata]]"
+                    tableroute="[[tableroute]]/[[rowdata]]"
+                    home="[[home]]"
+                    patient="[[patient]]"
+                    tablename="[[label]]">
                   </guuey-table-row>
                   <br />
               </template>

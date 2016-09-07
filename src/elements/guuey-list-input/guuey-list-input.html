@@ -25,11 +25,18 @@ label2(string)
     </firebase-document>
     <!--query for custom properties that have not been predefined-->
     <firebase-query
-      id="careAndSuppPropQuery"
+      id="guueyListDB"
       app-name="main"
-      data="{{careAndSuppPropQuery}}"
+      data="{{guueyListDataLive}}"
       path={{listroute}}>
     </firebase-query>
+
+    <app-indexeddb-mirror
+      key="guueyListInputDB|[[listroute]]"
+      data="{{guueyListDataLive}}"
+      persisted-data="{{guueyListData}}"
+      worker-url="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
 
     <iron-media-query
       query="(max-width:1600px)"
@@ -102,9 +109,9 @@ label2(string)
         </div>
       </div>
       <div class="customContainer">
-        <template is="dom-if" if="{{editingEnabled}}">
+        <template is="dom-if" if="[[editingEnabled]]">
 
-            <template is="dom-repeat" items="{{careAndSuppPropQuery}}">
+            <template is="dom-repeat" items="[[guueyListData]]">
               <div class="row">
                 <div class="col s10">
                   <paper-textarea value="{{item.proposal}}"></paper-textarea>
@@ -118,9 +125,9 @@ label2(string)
             <paper-button on-tap="enabledEdit">stop editing</paper-button> <paper-button disabled on-tap="addSection" data-args="careAndSuppProp">add</paper-button>
 
         </template>
-        <template is="dom-if" if="{{!editingEnabled}}">
+        <template is="dom-if" if="[[!editingEnabled]]">
 
-            <template is="dom-repeat" items="{{careAndSuppPropQuery}}">
+            <template is="dom-repeat" items="[[guueyListData]]">
 
                 <paper-textarea value="{{item.proposal}}"></paper-textarea>
 

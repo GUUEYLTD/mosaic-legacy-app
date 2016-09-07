@@ -7,29 +7,48 @@
     <firebase-document
       id="agreeDB"
       app-name="main"
-      data="{{agreeData}}"
-      path="/homes/{{home}}/patients/{{patient}}/carePlan/statementOfServiceUser">
+      data="{{agreeDataLive}}"
+      path="/homes/[[home]]/patients/[[patient]]/carePlan/statementOfServiceUser">
     </firebase-document>
-    <firebase-document
-      id="formDB"
-      app-name="main">
-    </firebase-document>
+
+    <app-indexeddb-mirror
+      key="agreeDB|[[patient]]"
+      data="{{agreeDataLive}}"
+      persisted-data="{{agreeData}}"
+      worker-url="../../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
     <!--query for custom fields-->
     <firebase-query
-      path="/homes/{{home}}/patients/{{patient}}/carePlan/custom"
-      data="{{customDataQuery}}"
+      id="assmtCustomDB"
+      path="/homes/[[home]]/patients/[[patient]]/carePlan/custom"
+      data="{{customDataQueryLive}}"
       app-name="main">
     </firebase-query>
+
+    <app-indexeddb-mirror
+      key="assmtCustomDB|[[page]]|[[patient]]"
+      data="{{customDataQueryLive}}"
+      persisted-data="{{customDataQuery}}"
+      worker-url="../../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
     <!--connection to set new fields in custom section-->
     <firebase-document
       id="customInput"
       data="{{customData}}"
       app-name="main">
     </firebase-document>
+
+    <firebase-document
+      id="formDB"
+      app-name="main">
+    </firebase-document>
+
     <!--db connection to get all care plan info for printing-->
     <firebase-document
       id="printDB"
-      path="/homes/{{home}}/patients/{{patient}}/carePlan"
+      path="/homes/[[home]]/patients/[[patient]]/carePlan"
       app-name="main">
     </firebase-document>
 
@@ -137,6 +156,8 @@
         auto-validate
         error-message="Please describe the custom section">
       </paper-input>
+      <paper-button dialog-dismiss>cancel</paper-button>
+      <paper-button dialog-dismiss>save</paper-button>
     </paper-dialog>
 
     <!--start of organized section-->
@@ -144,8 +165,8 @@
 
       <su-header
         page="Care Plan"
-        home="{{home}}"
-        patient="{{patient}}">
+        home="[[home]]"
+        patient="[[patient]]">
       </su-header>
 
       <div class="mainContainer">
@@ -156,19 +177,19 @@
           on-tap="createNewSection">
         </paper-fab>
 
-        <template is="dom-repeat" items="{{customDataQuery}}" as="custom">
+        <template is="dom-repeat" items="[[customDataQuery]]" as="custom">
           <guuey-custom-text-input
-            route="/homes/{{home}}/patients/{{patient}}/carePlan/custom/{{custom.$key}}"
+            route="/homes/[[home]]/patients/[[patient]]/carePlan/custom/{{custom.$key}}"
             label="{{custom.label}}"
             label2="{{custom.label2}}">
           </guuey-custom-text-input>
         </template>
 
         <guuey-list-input
-          home="{{home}}"
-          patient="{{patient}}"
+          home="[[home]]"
+          patient="[[patient]]"
           label="Proposed Care & Support"
-          listroute="homes/{{home}}/patients/{{patient}}/carePlan/careAndSuppProp">
+          listroute="homes/[[home]]/patients/[[patient]]/carePlan/careAndSuppProp">
         </guuey-list-input>
 
         <!--statement of service user section-->
@@ -212,16 +233,16 @@
               </paper-input>
 
               <guuey-date-input
-                route="/homes/{{home}}/patients/{{patient}}/carePlan/statementOfServiceUser/suDate"
+                route="/homes/[[home]]/patients/[[patient]]/carePlan/statementOfServiceUser/suDate"
                 label="Date"
                 guuey-date="{{guueySUDOA}}">
               </guuey-date-input>
 
               <div class="agreeButtons">
 
-                <paper-button hidden="{{agreeData.suAgree}}" on-tap="suAgreeUpdate">AGREE</paper-button>
+                <paper-button hidden="[[agreeData.suAgree]]" on-tap="suAgreeUpdate">AGREE</paper-button>
 
-                <paper-button hidden="{{!agreeData.suAgree}}">AGREED</paper-button>
+                <paper-button hidden="[[!agreeData.suAgree]]">AGREED</paper-button>
 
               </div>
             </div>
@@ -238,16 +259,16 @@
               </paper-input>
 
               <guuey-date-input
-                route="/homes/{{home}}/patients/{{patient}}/carePlan/statementOfServiceUser/swDate"
+                route="/homes/[[home]]/patients/[[patient]]/carePlan/statementOfServiceUser/swDate"
                 label="Date"
                 guuey-date="{{guueySWDOA}}">
               </guuey-date-input>
 
               <div class="agreeButtons">
 
-                <paper-button hidden="{{agreeData.swAgree}}" on-tap="swAgreeUpdate">AGREE</paper-button>
+                <paper-button hidden="[[agreeData.swAgree]]" on-tap="swAgreeUpdate">AGREE</paper-button>
 
-                <paper-button hidden="{{!agreeData.swAgree}}">AGREED</paper-button>
+                <paper-button hidden="[[!agreeData.swAgree]]">AGREED</paper-button>
 
               </div>
             </div>
@@ -256,115 +277,112 @@
         </paper-card>
 
     <guuey-text-input
-      route="homes/{{home}}/patients/{{patient}}/carePlan/aboutMeAndMyLife"
+      route="homes/[[home]]/patients/[[patient]]/carePlan/aboutMeAndMyLife"
       label="About me and my life"
       label2="Fill in the information about where you were born, studied, lived etc.">
     </guuey-text-input>
     <guuey-text-input
-      route="homes/{{home}}/patients/{{patient}}/carePlan/myStrengthsAndAbilities"
+      route="homes/[[home]]/patients/[[patient]]/carePlan/myStrengthsAndAbilities"
       label="My strengths and abilities"
       label2="Name the activities that you are good at.">
     </guuey-text-input>
     <guuey-text-input
-      route="homes/{{home}}/patients/{{patient}}/carePlan/myHobbies"
+      route="homes/[[home]]/patients/[[patient]]/carePlan/myHobbies"
       label="My hobbies"
       label2="Name the things you enjoy doing.">
     </guuey-text-input>
     <guuey-text-input
-      route="homes/{{home}}/patients/{{patient}}/carePlan/wellness"
+      route="homes/[[home]]/patients/[[patient]]/carePlan/wellness"
       label="Wellness"
       label2="A description of an individual when they are well">
     </guuey-text-input>
     <guuey-text-input
-      route="homes/{{home}}/patients/{{patient}}/carePlan/dailyMaintenance"
+      route="homes/[[home]]/patients/[[patient]]/carePlan/dailyMaintenance"
       label="Daily maintenance"
       label2="List of things an individual needs to do weekly/daily to stay well. More specific than wellness box.">
     </guuey-text-input>
     <guuey-text-input
-      route="homes/{{home}}/patients/{{patient}}/carePlan/triggers"
+      route="homes/[[home]]/patients/[[patient]]/carePlan/triggers"
       label="Triggers"
       label2="List of things an individual needs to do weekly/daily/monthly to stay well. More specific than wellness box.">
     </guuey-text-input>
     <guuey-text-input
-      route="homes/{{home}}/patients/{{patient}}/carePlan/crisisOrContingencyPlan"
+      route="homes/[[home]]/patients/[[patient]]/carePlan/crisisOrContingencyPlan"
       label="Crisis or contigency plan"
       label2="STILL NEED TEXT FOR THIS">
     </guuey-text-input>
 
   <guuey-table
-    tableroute="homes/{{home}}/patients/{{patient}}/carePlan/wellBeingQuestionnaire"
-    tableinputs="{{wellBeingQuestionnaireInputs}}"
+    tableroute="homes/[[home]]/patients/[[patient]]/carePlan/wellBeingQuestionnaire"
+    tableinputs="[[wellBeingQuestionnaireInputs]]"
     category="Body Part"
     label="Well being Questionnaire"
     label2="Personal Health & Hygiene care"
-    patient="{{patient}}"
-    home="{{home}}"
-    >
-    <template is="dom-repeat" items="{{tableinputs}}" as="row">
+    patient="[[patient]]"
+    home="[[home]]">
+    <template is="dom-repeat" items="[[tableinputs]]" as="row">
         <guuey-table-row
-          row="{{row}}"
-          tableroute="{{tableroute}}/{{row}}"
-          home="{{home}}"
-          patient="{{patient}}">
+          row="[[row]]"
+          tableroute="[[tableroute]]/[[row]]"
+          home="[[home]]"
+          patient="[[patient]]">
         </guuey-table-row>
     </template>
   </guuey-table>
 
   <guuey-table
-    tableroute="homes/{{home}}/patients/{{patient}}/carePlan/myHealthQuestionnaire"
-    tableinputs="{{myHealthQuestionnaireInputs}}"
+    tableroute="homes/[[home]]/patients/[[patient]]/carePlan/myHealthQuestionnaire"
+    tableinputs="[[myHealthQuestionnaireInputs]]"
     category="Areas of concern"
     label="My Health"
     label2="Personal Health & Hygiene care"
-    patient="{{patient}}"
-    home="{{home}}"
-    >
-    <template is="dom-repeat" items="{{tableinputs}}" as="row">
+    patient="[[patient]]"
+    home="[[home]]">
+    <template is="dom-repeat" items="[[tableinputs]]" as="row">
         <guuey-table-row
-          row="{{row}}"
-          tableroute="{{tableroute}}/{{row}}"
-          home="{{home}}"
-          patient="{{patient}}">
+          row="[[row]]"
+          tableroute="[[tableroute]]/[[row]]"
+          home="[[home]]"
+          patient="[[patient]]">
         </guuey-table-row>
     </template>
   </guuey-table>
 
   <guuey-table
-    tableroute="homes/{{home}}/patients/{{patient}}/carePlan/myRoomQuestionnaire"
-    tableinputs="{{myRoomQuestionnaireInputs}}"
+    tableroute="homes/[[home]]/patients/[[patient]]/carePlan/myRoomQuestionnaire"
+    tableinputs="[[myRoomQuestionnaireInputs]]"
     category="Activity"
     label="My room"
     label2="Personal Health & Hygiene care"
-    patient="{{patient}}"
-    home="{{home}}"
-    >
-    <template is="dom-repeat" items="{{tableinputs}}" as="row">
+    patient="[[patient]]"
+    home="[[home]]">
+    <template is="dom-repeat" items="[[tableinputs]]" as="row">
         <guuey-table-row
-          row="{{row}}"
-          tableroute="{{tableroute}}/{{row}}"
-          home="{{home}}"
-          patient="{{patient}}">
+          row="[[row]]"
+          tableroute="[[tableroute]]/[[row]]"
+          home="[[home]]"
+          patient="[[patient]]">
         </guuey-table-row>
     </template>
   </guuey-table>
 
   <guuey-list-input
     class="halfSizeLeft"
-    home="{{home}}"
-    patient="{{patient}}"
+    home="[[home]]"
+    patient="[[patient]]"
     label="What service will the service user do?"
     label2="i.e. agree to the following"
-    listroute="homes/{{home}}/patients/{{patient}}/carePlan/whatWillTheServiceUserDo"
+    listroute="homes/[[home]]/patients/[[patient]]/carePlan/whatWillTheServiceUserDo"
     section="{{whatWillTheServiceUserDo}}">
   </guuey-list-input>
 
   <guuey-list-input
     class="halfSizeRight"
-    home="{{home}}"
-    patient="{{patient}}"
+    home="[[home]]"
+    patient="[[patient]]"
     label="Intervention by staff"
     label2="what will the staff do?"
-    listroute="homes/{{home}}/patients/{{patient}}/carePlan/interventionByStaff"
+    listroute="homes/[[home]]/patients/[[patient]]/carePlan/interventionByStaff"
     section="{{interventionByStaff}}">
   </guuey-list-input>
 
@@ -692,10 +710,6 @@
           this.customStyle["--main-fab-right"]="-25px";
           this.updateStyles();
         };
-      },
-      _stuff:function(){
-        console.log("stuff");
-        console.log(this.agreeData.suName);
       }
     });
 

@@ -16,9 +16,16 @@ fieldDisabled(boolean)
     <firebase-document
       id="guueyInputDB"
       app-name="main"
-      data="{{inputData}}"
+      data="{{inputDataLive}}"
       path="{{route}}">
     </firebase-document>
+
+    <app-indexeddb-mirror
+      key="guueyCustomInputDB|[[route]]"
+      data="{{inputDataLive}}"
+      persisted-data="{{inputData}}"
+      worker-url="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
 
     <iron-media-query
       query="max-width:1400px"
@@ -72,15 +79,15 @@ fieldDisabled(boolean)
     </style>
     <paper-card elevation="3">
       <div class="sectionHeading">
-        <span hidden="{{!editDisabled}}">
+        <span hidden="[[!editDisabled]]">
           <p class="sectionHeadingText">
-            {{label}}
+            [[label]]
           </p>
           <p class="subHeadingText">
-            {{label2}}
+            [[label2]]
           </p>
         </span>
-        <span hidden="{{editDisabled}}">
+        <span hidden="[[editDisabled]]">
           <paper-input class="labelEdit" label="name" value="{{inputData.label}}"></paper-input>
           <paper-input class="labelEdit" label="description" value="{{inputData.label2}}"></paper-input>
         </span>
@@ -95,11 +102,11 @@ fieldDisabled(boolean)
           </div>
         </div>
         <div class="editColumn">
-          <span hidden="{{!editDisabled}}">
+          <span hidden="[[!editDisabled]]">
             <paper-button on-tap="toggleEdit">edit</paper-button>
             <paper-button on-tap="deleteCustom">delete</paper-button>
           </span>
-          <span hidden="{{editDisabled}}">
+          <span hidden="[[editDisabled]]">
             <paper-button on-tap="toggleEdit">save</paper-button>
           </span>
         </div>

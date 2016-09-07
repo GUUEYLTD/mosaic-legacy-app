@@ -6,26 +6,43 @@
     <firebase-document
       id="agreeDB"
       app-name="main"
-      data="{{agreeData}}"
+      data="{{agreeDataLive}}"
       path="homes/{{home}}/patients/{{patient}}/carePlan/statementOfServiceUser">
     </firebase-document>
-    <firebase-document
-      id="confirmDB"
-      app-name="main">
-    </firebase-document>
+
+    <app-indexeddb-mirror
+      key="agreeDB|[[patient]]"
+      data="{{agreeDataLive}}"
+      persisted-data="{{agreeData}}"
+      worker-url="../../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
 
     <!--query for custom fields-->
     <firebase-query
       path="/homes/{{home}}/patients/{{patient}}/carePlan/custom"
-      data="{{customDataQuery}}"
+      data="{{customDataQueryLive}}"
       app-name="main">
     </firebase-query>
+
+    <app-indexeddb-mirror
+      key="assmtCustomDB|[[page]]|[[patient]]"
+      data="{{customDataQueryLive}}"
+      persisted-data="{{customDataQuery}}"
+      worker-url="../../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
     <!--connection to set new fields in custom section-->
     <firebase-document
       id="customInput"
       data="{{customData}}"
       app-name="main">
     </firebase-document>
+
+    <firebase-document
+      id="confirmDB"
+      app-name="main">
+    </firebase-document>
+
     <!-- db connection for printing-->
     <firebase-document
       id="printDB"
@@ -479,9 +496,7 @@
       requirementsMet:function(data){
         if(Object.keys(data).length === 0 && data.constructor === Object){
           //do nothing and wait for change
-          console.log("no good");
         } else {
-          console.log("good");
           if(!data.suDate){
             this.fire("openToast",{toastText:"Service user date of agreement is required."});
             return false;

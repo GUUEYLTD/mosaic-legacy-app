@@ -17,9 +17,17 @@ patient
     <firebase-document
       id="mainTableDB"
       app-name="main"
-      data="{{mainTableData}}"
-      path="{{tableroute}}">
+      data="{{mainTableDataLive}}"
+      path="[[tableroute]]">
     </firebase-document>
+
+    <app-indexeddb-mirror
+      key="mainTableDB|[[tableroute]]"
+      data="{{mainTableDataLive}}"
+      persisted-data="{{mainTableData}}"
+      worker-url="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
     <firebase-document
       id="tableDB"
       app-name="main"
@@ -61,11 +69,11 @@ patient
     </paper-dialog>
 
     <custom-row>
-      <custom-cell>{{rowdata}}</custom-cell>
+      <custom-cell>[[rowdata]]</custom-cell>
 
       <custom-cell>
         <paper-checkbox
-          id="{{rowdata}}"
+          id="[[rowdata]]"
           on-change="checkboxChanged"
           value="daily"
           checked="{{mainTableData.daily}}">
@@ -83,7 +91,7 @@ patient
 
       <custom-cell>
         <paper-checkbox
-          id="{{rowdata}}"
+          id="[[rowdata]]"
           on-change="checkboxChanged"
           value="biWeekly"
           checked="{{mainTableData.biWeekly}}">
@@ -92,7 +100,7 @@ patient
 
       <custom-cell>
         <paper-checkbox
-          id="{{rowdata}}"
+          id="[[rowdata]]"
           on-change="checkboxChanged"
           value="monthly"
           checked="{{mainTableData.monthly}}">
@@ -101,11 +109,11 @@ patient
 
       <custom-cell class="comment">
         <paper-icon-button
-          id="{{rowdata}}"
+          id="[[rowdata]]"
           on-tap="toggleDialog"
           icon="communication:comment">
         </paper-icon-button>
-        {{mainTableData.comment}}
+        [[mainTableData.comment]]
       </custom-cell>
     </custom-row>
   </template>

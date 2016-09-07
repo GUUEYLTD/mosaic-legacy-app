@@ -3,18 +3,34 @@
 
   <template>
     <firebase-document
-      path="/homes/{{home}}/patients/{{patient}}/preAdmissionAssessment"
-      data="{{assmtData}}"
-      app-name="main"
-      id="assmt">
+      id="assmtDB"
+      path="/homes/[[home]]/patients/[[patient]]/preAdmissionAssessment"
+      data="{{assmtDataLive}}"
+      app-name="main">
     </firebase-document>
+
+    <app-indexeddb-mirror
+      key="assmtDB|[[patient]]"
+      data="{{assmtDataLive}}"
+      persisted-data="{{assmtData}}"
+      worker-url="../../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
 
     <!--query for custom fields-->
     <firebase-query
-      path="/homes/{{home}}/patients/{{patient}}/preAdmissionAssessment/custom"
-      data="{{customDataQuery}}"
+      id="assmtCustomDB"
+      path="/homes/[[home]]/patients/[[patient]]/preAdmissionAssessment/custom"
+      data="{{customDataQueryLive}}"
       app-name="main">
     </firebase-query>
+
+    <app-indexeddb-mirror
+      key="assmtCustomDB|[[page]]|[[patient]]"
+      data="{{customDataQueryLive}}"
+      persisted-data="{{customDataQuery}}"
+      worker-url="../../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
     <!--connection to set new fields in custom section-->
     <firebase-document
       id="customInput"
@@ -52,14 +68,16 @@
       <h2>Add a New Section</h2>
       <paper-input label="Name the New Section" value="{{customData.label}}"></paper-input>
       <paper-input label="Describe the New Section" value="{{customData.label2}}"></paper-input>
+      <paper-button dialog-dismiss>cancel</paper-button>
+      <paper-button dialog-dismiss>save</paper-button>
     </paper-dialog>
 
     <paper-card elevation="3">
 
       <su-header
         page="Pre-Admission Assessment"
-        home="{{home}}"
-        patient="{{patient}}"
+        home="[[home]]"
+        patient="[[patient]]"
         id="header">
       </su-header>
 
@@ -74,92 +92,92 @@
 
         <template is="dom-repeat" items="{{customDataQuery}}" as="custom">
           <guuey-custom-text-input
-            route="/homes/{{home}}/patients/{{patient}}/preAdmissionAssessment/custom/{{custom.$key}}"
+            route="/homes/[[home]]/patients/[[patient]]/preAdmissionAssessment/custom/{{custom.$key}}"
             label="{{custom.label}}"
             label2="{{custom.label2}}"
             >
           </guuey-custom-text-input>
         </template>
         <guuey-text-input
-          route="/homes/{{home}}/patients/{{patient}}/preAdmissionAssessment/requestReferralSummary"
+          route="/homes/[[home]]/patients/[[patient]]/preAdmissionAssessment/requestReferralSummary"
           label="Summary of Request for Referral"
           label2="By Referee">
         </guuey-text-input>
 
         <guuey-text-input
-          route="/homes/{{home}}/patients/{{patient}}/preAdmissionAssessment/suCurrentStatusView"
+          route="/homes/[[home]]/patients/[[patient]]/preAdmissionAssessment/suCurrentStatusView"
           label="Service User View of Current Status"
           label2="i.e. what led to current admission">
         </guuey-text-input>
 
         <guuey-text-input
-          route="/homes/{{home}}/patients/{{patient}}/preAdmissionAssessment/staffPatientWardViews"
+          route="/homes/[[home]]/patients/[[patient]]/preAdmissionAssessment/staffPatientWardViews"
           label="Views of Staff on Ward of Patient"
           label2="Including what he/she does while on ward">
         </guuey-text-input>
 
         <guuey-text-input
-          route="/homes/{{home}}/patients/{{patient}}/preAdmissionAssessment/offenceIndex"
+          route="/homes/[[home]]/patients/[[patient]]/preAdmissionAssessment/offenceIndex"
           label="Index Offence"
           label2="What did you do to end up here?">
         </guuey-text-input>
 
         <guuey-text-input
-          route="/homes/{{home}}/patients/{{patient}}/preAdmissionAssessment/legalStatus"
+          route="/homes/[[home]]/patients/[[patient]]/preAdmissionAssessment/legalStatus"
           label="Legal Status"
           label2="">
         </guuey-text-input>
 
         <guuey-text-input
-          route="/homes/{{home}}/patients/{{patient}}/preAdmissionAssessment/mentalIllnessDiagnosis"
+          route="/homes/[[home]]/patients/[[patient]]/preAdmissionAssessment/mentalIllnessDiagnosis"
           label="Mental Illness & Diagnosis"
           label2="According to the Professional">
         </guuey-text-input>
 
         <guuey-text-input
-          route="/homes/{{home}}/patients/{{patient}}/preAdmissionAssessment/currentMentalState"
+          route="/homes/[[home]]/patients/[[patient]]/preAdmissionAssessment/currentMentalState"
           label="Current Mental State"
           label2="As described or percieved by patient">
         </guuey-text-input>
 
         <guuey-text-input
-          route="/homes/{{home}}/patients/{{patient}}/preAdmissionAssessment/suMentalStatePresentation"
+          route="/homes/[[home]]/patients/[[patient]]/preAdmissionAssessment/suMentalStatePresentation"
           label="Mental State Presentation to Assessor"
           label2="">
         </guuey-text-input>
 
         <guuey-text-input
-          route="/homes/{{home}}/patients/{{patient}}/preAdmissionAssessment/mentalHealthTrigger"
+          route="/homes/[[home]]/patients/[[patient]]/preAdmissionAssessment/mentalHealthTrigger"
           label="Mental Health Trigger"
           label2="What do you experience when becoming unwell?">
         </guuey-text-input>
 
         <guuey-text-input
-          route="/homes/{{home}}/patients/{{patient}}/preAdmissionAssessment/currentMedication"
+          route="/homes/[[home]]/patients/[[patient]]/preAdmissionAssessment/currentMedication"
           label="Current Medication"
           label2="">
         </guuey-text-input>
 
         <guuey-text-input
-          route="/homes/{{home}}/patients/{{patient}}/preAdmissionAssessment/medicationManagement"
+          route="/homes/[[home]]/patients/[[patient]]/preAdmissionAssessment/medicationManagement"
           label="Medication Management"
           label2="i.e. history or non-compliance and compliance">
         </guuey-text-input>
 
         <guuey-text-input
-          route="/homes/{{home}}/patients/{{patient}}/preAdmissionAssessment/sleepPattern"
+          route="/homes/[[home]]/patients/[[patient]]/preAdmissionAssessment/sleepPattern"
           label="Sleep Pattern"
           label2="What is your sleeping habit i.e. bedtime & waking time">
         </guuey-text-input>
 
         <guuey-text-input
-          route="/homes/{{home}}/patients/{{patient}}/preAdmissionAssessment/hospitalRiskAssessment"
+          route="/homes/[[home]]/patients/[[patient]]/preAdmissionAssessment/hospitalRiskAssessment"
           label="Hospital Risk Assessment"
           label2="i.e. is there a health clinical record">
         </guuey-text-input>
 
         <guuey-text-input
-          route="/homes/{{home}}/patients/{{patient}}/preAdmissionAssessment/mappa"
+          route="/homes/[[home]]/patients/[[patient]]/preAdmissionAssessment/mappa"
           label="MAPPA"
           label2="i.e. multi-agency protection arrangement">
         </guuey-text-input>
