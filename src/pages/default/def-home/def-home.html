@@ -148,7 +148,7 @@
                 preload
                 placeholder="../../../../images/defaultAvatar.png"
                 fade
-                src="{{_computeImage(su.image)}}"
+                src="[[su.image]]"
                 on-tap="editServiceUser">
               </iron-image>
                 <p class="suspendedText">
@@ -170,10 +170,10 @@
                 <iron-image
                   class="suBoxImage"
                   sizing="cover"
-                  preload-image
-                  placeholder-image="../../../../images/defaultAvatar.png"
-                  fade-image
-                  src="{{_computeImage(su.image)}}"
+                  preload
+                  placeholder="../../../../images/defaultAvatar.png"
+                  fade
+                  src="[[su.image]]"
                   on-tap="editServiceUser">
                 </iron-image>
                 <div class="suLower">
