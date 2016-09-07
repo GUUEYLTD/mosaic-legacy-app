@@ -276,7 +276,7 @@
                   <paper-icon-button class="toolbarButton" icon="menu" on-tap="toggleDrawer"></paper-icon-button>
                 </span>
                 <span class="buttonContainer">
-                  <paper-icon-button on-tap="goHome" class="toolbarButton" icon="icons:home"></paper-icon-button>
+                  <a class="inherit" href="/{{home}}/default/def-home"><paper-icon-button class="toolbarButton" icon="icons:home"></paper-icon-button></a>
                 </span>
                 <span class="buttonContainer">
                   <paper-icon-button class="toolbarButton notifyButton" id="notify" icon="social:notifications"></paper-icon-button>
@@ -515,7 +515,7 @@
       },
       _pageChanged:function(page) {
         // load page import on demand.
-        if(page==="def-home"){
+        if(page==="def-home" && !this[page]){
           this.enableDBLoading();
         } else {
           this.disableDBLoading();
@@ -580,7 +580,9 @@
         };
       },
       goHome:function(){
-        window.location="/"+this.home+"/default/def-home";
+        this.set("catData.category", "default");
+        this.set("pageData.page", "def-home");
+        //window.location="/"+this.home+"/default/def-home";
       },
       setPage:function(e){
         //this.$.location.route.path="/"+this.home+"/care-plan/"+e.target.name+"/"+this.param;
@@ -625,8 +627,11 @@
         this.customStyle["--db-loading-display"]="flex";
         this.updateStyles();
       },
-      disableDBLoading:function(){
-
+      disableDBLoading:function(e){
+        if(e){
+          var page=e.detail.page
+          this[e.detail.page]=true;
+        };
         this.customStyle["--db-loading-display"]="none";
         this.updateStyles();
       },

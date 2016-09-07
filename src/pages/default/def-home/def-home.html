@@ -9,6 +9,7 @@
       app-name="main">
     </firebase-query>
     <app-indexeddb-mirror
+      id="suIndexDBIndex"
       key="suIndexDB"
       data="{{patientListLive}}"
       persisted-data="{{patientList}}"
@@ -142,15 +143,17 @@
               <paper-card
                 class="suBox"
                 elevation="3">
-              <iron-image
-                class="suBoxImage"
-                sizing="cover"
-                preload
-                placeholder="../../../../images/defaultAvatar.png"
-                fade
-                src="[[su.image]]"
-                on-tap="editServiceUser">
-              </iron-image>
+              <a href="/[[home]]/care-plan/su-profile/[[su.$key]]">
+                <iron-image
+                  class="suBoxImage"
+                  sizing="cover"
+                  preload
+                  placeholder="../../../../images/defaultAvatar.png"
+                  fade
+                  src="[[su.image]]">
+                </iron-image>
+              </a>
+
                 <p class="suspendedText">
                   suspended
                 </p>
@@ -167,15 +170,16 @@
               <paper-card
                 class="suBox"
                 elevation="3">
-                <iron-image
-                  class="suBoxImage"
-                  sizing="cover"
-                  preload
-                  placeholder="../../../../images/defaultAvatar.png"
-                  fade
-                  src="[[su.image]]"
-                  on-tap="editServiceUser">
-                </iron-image>
+                <a href="/[[home]]/care-plan/su-profile/[[su.$key]]">
+                  <iron-image
+                    class="suBoxImage"
+                    sizing="cover"
+                    preload
+                    placeholder="../../../../images/defaultAvatar.png"
+                    fade
+                    src="[[su.image]]">
+                  </iron-image>
+                </a>
                 <div class="suLower">
                   [[su.fName]]
                   <br />
@@ -199,6 +203,9 @@
     Polymer({
 
       is: 'def-home',
+      ready:function(){
+        this.fire("dbLoaded", {page:"def-home"});
+      },
       properties:{
         patient:{
           type:String,
@@ -261,9 +268,9 @@
       },
       editServiceUser:function(e){
         if(e.model){
-          window.location.href="/"+this.home+"/care-plan/su-profile/"+e.model.su.$key;
+          window.open("/"+this.home+"/care-plan/su-profile/"+e.model.su.$key, '_self');
         } else {
-          window.location.href="/"+this.home+"/care-plan/su-profile/"+this.modalKey;
+          window.open("/"+this.home+"/care-plan/su-profile/"+this.modalKey, '_self');
         };
       },
       suspendServiceUser:function(e){
