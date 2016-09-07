@@ -8,24 +8,42 @@
       id="goalsDB"
       app-name="main"
       path="homes/[[home]]/patients/[[patient]]/personalGoals"
-      data="{{goalsData}}">
+      data="{{goalsDataLive}}">
     </firebase-query>
+
+    <app-indexeddb-mirror
+      key="goalsDB|[[patient]]"
+      data="{{goalsDataLive}}"
+      persisted-data="{{goalsData}}"
+      worker-url="../../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
     <!--db to create new goal for a patient-->
     <firebase-document
       id="goalDB"
       app-name="main"
       data="{{goalData}}">
     </firebase-document>
+
     <firebase-query
       id="stepsDB"
       app-name="main"
-      data="{{stepsData}}">
+      data="{{stepsDataLive}}">
     </firebase-query>
+
+    <app-indexeddb-mirror
+      key="stepsDB|[[patient]]"
+      data="{{stepsDataLive}}"
+      persisted-data="{{stepsData}}"
+      worker-url="../../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
     <firebase-document
       id="stepDB"
       app-name="main"
       data="{{stepData}}">
     </firebase-document>
+
     <!--print db-->
     <firebase-document
       id="printDB"
@@ -258,14 +276,14 @@
 
       <su-header
         page="Personal Goals"
-        patient="{{patient}}"
-        home="{{home}}">
+        patient="[[patient]]"
+        home="[[home]]">
       </su-header>
 
       <!--repeat each goal that currently is set-->
       <div class="mainContainer">
 
-        <span hidden="{{!goalSelected}}">
+        <span hidden="[[!goalSelected]]">
 
           <!--absolute positioned button to finsh adding a new goal and close the add view-->
           <paper-fab
@@ -276,19 +294,19 @@
 
         </span>
 
-        <span hidden="{{goalSelected}}">
+        <span hidden="[[goalSelected]]">
 
           <!--absolute positioned button to add a new goal-->
           <paper-fab
             class="mainFab"
             icon="icons:add"
             on-tap="addGoal"
-            hidden="{{goalSelected}}">
+            hidden="[[goalSelected]]">
           </paper-fab>
 
         </span>
 
-        <div hidden="{{goalSelected}}">
+        <div hidden="[[goalSelected]]">
           <!--default placeholder if user has not put any goals in yet...-->
           <!--
           <div hidden="{{queryCount}}">
@@ -392,7 +410,7 @@
           -->
           <div class="app-grid" has-aspect-ratio>
 
-            <template id="goalRepeat" is="dom-repeat" items="{{goalsData}}" as="goal">
+            <template id="goalRepeat" is="dom-repeat" items="[[goalsData]]" as="goal">
               {{_computeQueryCount(goal)}}
 
               <div class="goalBoxContainer">
@@ -401,12 +419,12 @@
 
                   <div style="background-image:url(../../../../{{_computeGoalImage(goal.category)}})" class="goalHeading">
                     <p class="goalLabel">
-                      {{goal.category}}
+                      [[goal.category]]
                     </p>
                   </div>
 
                   <div class="goalDescription">
-                      {{goal.description}}
+                      [[goal.description]]
                   </div>
 
                   <paper-icon-button
@@ -439,7 +457,7 @@
         </div>
 
       </div>
-      <div hidden="{{!goalSelected}}">
+      <div hidden="[[!goalSelected]]">
 
         <div class="detailBar"
           style="background-image:url(../../../../{{_computeGoalImage(goalData.category)}})">
@@ -455,13 +473,13 @@
         <div class="inputContainer">
 
           <guuey-date-input
-            route="homes/{{home}}/patients/{{patient}}/personalGoals/{{goalUID}}/startDate"
+            route="homes/[[home]]/patients/[[patient]]/personalGoals/[[goalUID]]/startDate"
             label="Start Date"
             guuey-date="{{guueySD}}">
           </guuey-date-input>
 
           <guuey-date-input
-            route="homes/{{home}}/patients/{{patient}}/personalGoals/{{goalUID}}/finishDate"
+            route="homes/[[home]]/patients/[[patient]]/personalGoals/[[goalUID]]/finishDate"
             label="Estimated Finish Date"
             guuey-date="{{guueyFD}}">
           </guuey-date-input>
@@ -518,22 +536,22 @@
             <tbody>
               <template
                 is="dom-repeat"
-                items="{{stepsData}}"
+                items="[[stepsData]]"
                 as="step"
                 sort="_sortSteps"
                 observe="order">
                 <tr>
                   <td>
                     <center>
-                      <paper-fab label="{{step.order}}"></paper-fab>
+                      <paper-fab label="[[step.order]]"></paper-fab>
                     </center>
                   </td>
                   <td>
-                    {{step.description}}
+                    [[step.description]]
                   </td>
                   <td>
                     <paper-checkbox
-                      checked="{{step.completed}}">
+                      checked="[[step.completed]]">
                     </paper-checkbox>
                   </td>
                   <td>

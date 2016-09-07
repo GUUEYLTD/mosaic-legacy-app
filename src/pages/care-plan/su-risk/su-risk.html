@@ -7,15 +7,24 @@
     <firebase-query
       id="risksDB"
       path="/homes/[[home]]/patients/[[patient]]/riskAssessment"
-      data="{{risksData}}"
+      data="{{risksDataLive}}"
       app-name="main">
     </firebase-query>
+
+    <app-indexeddb-mirror
+      key="risksDB|[[patient]]"
+      data="{{risksDataLive}}"
+      persisted-data="{{risksData}}"
+      worker-url="../../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
     <!--db to edit single document that has been selected-->
     <firebase-document
       id="riskDB"
       data="{{riskData}}"
       app-name="main">
     </firebase-document>
+
     <!--db to print-->
     <firebase-document
       id="printDB"
@@ -99,32 +108,32 @@
     <paper-card class="mainCard" elevation="3">
       <su-header
         page="Risk Assessment"
-        home="{{home}}"
-        patient="{{patient}}">
+        home="[[home]]"
+        patient="[[patient]]">
       </su-header>
 
       <div class="mainContainer">
 
         <!--absolute positioned button to add a new risk-->
-        <span hidden="{{riskSelected}}">
+        <span hidden="[[riskSelected]]">
 
           <paper-fab
             class="mainFab"
             icon="icons:add"
             on-tap="addRisk"
-            hidden="{{riskSelected}}">
+            hidden="[[riskSelected]]">
           </paper-fab>
 
         </span>
 
         <!--absolute positioned button to finsh adding a new risk assessment and close the add view-->
-        <span hidden="{{!riskSelected}}">
+        <span hidden="[[!riskSelected]]">
 
           <paper-fab
             class="mainFab"
             icon="icons:check"
             on-tap="finishRisk"
-            hidden="{{!riskSelected}}">
+            hidden="[[!riskSelected]]">
           </paper-fab>
 
         </span>
@@ -186,10 +195,10 @@
           </div>
           -->
 
-          <template is="dom-repeat" items="{{risksData}}" as="risk">
+          <template is="dom-repeat" items="[[risksData]]" as="risk">
             {{_computeQueryCount(risk)}}
 
-            <div class="riskContainer" hidden="{{riskSelected}}">
+            <div class="riskContainer" hidden="[[riskSelected]]">
 
               <paper-card elevation="3" class="riskBox">
 
@@ -212,44 +221,44 @@
 
         </div>
 
-        <div class="inputWrapper" hidden="{{!riskSelected}}">
+        <div class="inputWrapper" hidden="[[!riskSelected]]">
 
           <guuey-date-input
-            route="/homes/{{home}}/patients/{{patient}}/riskAssessment/{{riskUID}}/date"
+            route="/homes/[[home]]/patients/[[patient]]/riskAssessment/[[riskUID]]/date"
             label="Date"
             guuey-date="{{guueyDOR}}">
           </guuey-date-input>
 
           <guuey-text-input
-            route="/homes/{{home}}/patients/{{patient}}/riskAssessment/{{riskUID}}/backgroundOfRisk"
+            route="/homes/[[home]]/patients/[[patient]]/riskAssessment/[[riskUID]]/backgroundOfRisk"
             label="Background of Risk"
             label2=""
             guuey-text="{{guueyInput0}}">
           </guuey-text-input>
 
           <guuey-text-input
-            route="/homes/{{home}}/patients/{{patient}}/riskAssessment/{{riskUID}}/riskIdentified"
+            route="/homes/[[home]]/patients/[[patient]]/riskAssessment/[[riskUID]]/riskIdentified"
             label="Risk Identified"
             label2=""
             guuey-text="{{guueyInput1}}">
           </guuey-text-input>
 
           <guuey-text-input
-            route="/homes/{{home}}/patients/{{patient}}/riskAssessment/{{riskUID}}/crisisPlan"
+            route="/homes/[[home]]/patients/[[patient]]/riskAssessment/[[riskUID]]/crisisPlan"
             label="crisis Plan"
             label2="How to Address"
             guuey-text="{{guueyInput2}}">
           </guuey-text-input>
 
           <guuey-text-input
-            route="/homes/{{home}}/patients/{{patient}}/riskAssessment/{{riskUID}}/agreedFrequencyOfEvaluation"
+            route="/homes/[[home]]/patients/[[patient]]/riskAssessment/[[riskUID]]/agreedFrequencyOfEvaluation"
             label="Agreed Frequencey of Evaluation"
             label2=""
             guuey-text="{{guueyInput3}}">
           </guuey-text-input>
 
           <guuey-text-input
-            route="/homes/{{home}}/patients/{{patient}}/riskAssessment/{{riskUID}}/evaluation"
+            route="/homes/[[home]]/patients/[[patient]]/riskAssessment/[[riskUID]]/evaluation"
             label="Evaluation"
             label2="{{riskData.date}}"
             guuey-text="{{guueyInput4}}">
