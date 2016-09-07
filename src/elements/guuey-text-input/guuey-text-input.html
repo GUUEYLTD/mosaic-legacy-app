@@ -13,13 +13,21 @@ fieldDisabled(boolean)
 <link rel="import" href="dependencies.html" />
 <dom-module id="guuey-text-input">
   <template>
+
     <firebase-document
       id="guueyInputDB"
       app-name="main"
-      data="{{inputData}}"
+      data="{{inputDataLive}}"
       path="{{route}}">
     </firebase-document>
-    <style include=""></style>
+
+    <app-indexeddb-mirror
+      key="guueyTextInputDB|[[route]]"
+      data="{{inputDataLive}}"
+      persisted-data="{{inputData}}"
+      worker-url="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
     <style>
       .sectionHeading{
         background-color:#42c6ff;
@@ -52,10 +60,10 @@ fieldDisabled(boolean)
     <paper-card elevation="3">
       <div class="sectionHeading">
         <p class="sectionHeadingText">
-          {{label}}
+          [[label]]
         </p>
         <p class="subHeadingText">
-          {{label2}}
+          [[label2]]
         </p>
       </div>
       <div class="row">
