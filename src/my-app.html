@@ -97,7 +97,6 @@
         padding:0;
         margin:0;
       }
-
       .drawer-list {
         margin: 0 20px;
       }
@@ -245,8 +244,8 @@
                 <a name="su-care-review" href="/[[home]]/care-plan/su-care-review/[[param]]">Care Plan Review</a>
                 <a name="su-medical" href="/[[home]]/care-plan/su-medical/[[param]]">Medical Assessment</a>
                 <a name="su-medication" href="/[[home]]/care-plan/su-medication/[[param]]">Medication Outline</a>
-                <a name="su-risk" on-tap="setPage">Risk Assessment</a>
-                <a name="su-goals" on-tap="setPage">Personal Goals</a>
+                <a name="su-risk" href="/[[home]]/care-plan/su-risk/[[param]]">Risk Assessment</a>
+                <a name="su-goals" href="/[[home]]/care-plan/su-goals/[[param]]">Personal Goals</a>
               </iron-selector>
             </template>
 
@@ -277,7 +276,7 @@
                   <paper-icon-button class="toolbarButton" icon="menu" on-tap="toggleDrawer"></paper-icon-button>
                 </span>
                 <span class="buttonContainer">
-                  <paper-icon-button class="toolbarButton" icon="icons:home" on-tap="goHome"></paper-icon-button>
+                  <paper-icon-button on-tap="goHome" class="toolbarButton" icon="icons:home"></paper-icon-button>
                 </span>
                 <span class="buttonContainer">
                   <paper-icon-button class="toolbarButton notifyButton" id="notify" icon="social:notifications"></paper-icon-button>
@@ -526,16 +525,18 @@
         } else {
           this.disablePageLoading();
         };
-        this.importHref(
-          this.resolveUrl('pages/'+this.category+'/' + page +'/'+page+'.html'), null, null, false);
         if(page.slice(0,3)==="def" || page.slice(0,2)==="ad" || page==="su-create"){
           //drawer and rest of page not rendering properly after being hidden and switching pages...
           this.$.appDrawerLayout.forceNarrow=true;
           this.$.suDrawer.close();
         } else {
+          this.$.suDrawer.hidden=false;
           this.$.appDrawerLayout.forceNarrow=false;
           this.$.suDrawer.open();
         };
+        this.importHref(
+          this.resolveUrl('pages/'+this.category+'/' + page +'/'+page+'.html'), null, null, false);
+
       },
       _paramChanged:function(param){
         this.param=this.paramData.param || '';
@@ -582,7 +583,12 @@
         window.location="/"+this.home+"/default/def-home";
       },
       setPage:function(e){
-        window.location="/"+this.home+"/care-plan/"+e.target.name+"/"+this.param;
+        //this.$.location.route.path="/"+this.home+"/care-plan/"+e.target.name+"/"+this.param;
+        //console.log(this.$.location.route.path);
+        //this.set("catData.category", "care-plan");
+        //this.set("paramData.param", this.param);
+        //this.set("pageData.page", e.target.name);
+        //window.location="/"+this.home+"/care-plan/"+e.target.name+"/"+this.param;
       },
       goBack:function(){
         window.history.back();
