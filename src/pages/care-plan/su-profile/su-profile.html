@@ -4,59 +4,31 @@
   <template>
     <firebase-document
       id="profileDB"
-      path="/homes/{{home}}/patients/{{patient}}/personalProfile"
-      data="{{profileData}}"
+      path="/homes/[[home]]/patients/[[patient]]/personalProfile"
+      data="{{profileDataLive}}"
       app-name="main">
     </firebase-document>
+
+    <app-indexeddb-mirror
+      key="profileDB|[[patient]]"
+      data="{{profileDataLive}}"
+      persisted-data="{{profileData}}"
+      worker-url="../../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
     <firebase-document
       id="contactsQuery"
-      path="/homes/{{home}}/patients/{{patient}}/contacts"
-      data="{{contactsData}}"
+      path="/homes/[[home]]/patients/[[patient]]/contacts"
+      data="{{contactsDataLive}}"
       app-name="main">
     </firebase-document>
-    <!--incredibly stupid???? change later-->
-    <firebase-document
-      id="nextofKinDB"
-      path="/homes/{{home}}/patients/{{patient}}/contacts/nextOfKin"
-      data="{{nextOfKinData}}"
-      app-name="main">
-    </firebase-document>
-    <firebase-document
-      id="secondContactNameDB"
-      path="/homes/{{home}}/patients/{{patient}}/contacts/secondContactName"
-      data="{{secondContactNameData}}"
-      app-name="main">
-    </firebase-document>
-    <firebase-document
-      id="consultantPsychiatristDB"
-      path="/homes/{{home}}/patients/{{patient}}/contacts/consultantPsychiatrist"
-      data="{{consultantPsychiatristData}}"
-      app-name="main">
-    </firebase-document>
-    <firebase-document
-      id="generalPractitionerDB"
-      path="/homes/{{home}}/patients/{{patient}}/contacts/generalPractitioner"
-      data="{{generalPractitionerData}}"
-      app-name="main">
-    </firebase-document>
-    <firebase-document
-      id="socialWorkerReferrerDB"
-      path="/homes/{{home}}/patients/{{patient}}/contacts/socialWorkerReferrer"
-      data="{{socialWorkerReferrerData}}"
-      app-name="main">
-    </firebase-document>
-    <firebase-document
-      id="cpnDB"
-      path="/homes/{{home}}/patients/{{patient}}/contacts/cpn"
-      data="{{cpnData}}"
-      app-name="main">
-    </firebase-document>
-    <firebase-document
-      id="ministerOfReligionDB"
-      path="/homes/{{home}}/patients/{{patient}}/contacts/ministerOfReligion"
-      data="{{ministerOfReligionData}}"
-      app-name="main">
-    </firebase-document>
+
+    <app-indexeddb-mirror
+      key="contactsQuery|[[patient]]"
+      data="{{contactsDataLive}}"
+      persisted-data="{{contactsData}}"
+      worker-url="../../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
 
     <iron-media-query
       query="(max-width:900px)"
@@ -110,10 +82,10 @@
     <paper-card elevation="3">
       <su-header
         page="Personal Profile"
-        patient="{{patient}}"
-        home="{{home}}"
-        lastname="{{profileData.lName}}"
-        firstname="{{profileData.fName}}"
+        patient="[[patient]]"
+        home="[[home]]"
+        lastname="[[profileData.lName]]"
+        firstname="[[profileData.fName]]"
         setimage>
       </su-header>
 
@@ -147,7 +119,7 @@
             </paper-input>
 
             <guuey-date-input
-              route="/homes/{{home}}/patients/{{patient}}/personalProfile/dob"
+              route="/homes/[[home]]/patients/[[patient]]/personalProfile/dob"
               label="Date of Birth"
               tabindex="3"
               required
@@ -166,7 +138,7 @@
             </paper-input>
 
             <guuey-date-input
-              route="/homes/{{home}}/patients/{{patient}}/personalProfile/dateAssessed"
+              route="/homes/[[home]]/patients/[[patient]]/personalProfile/dateAssessed"
               label="Date Assessed"
               tabindex="5"
               required
@@ -255,7 +227,7 @@
 
             <paper-input
               label="Next of Kin"
-              value="{{nextOfKinData.name}}"
+              value="{{contactsData.nextOfKinName}}"
               tabindex="11"
               required
               auto-validate
@@ -267,7 +239,7 @@
               allow-custom-value
               label="Relationship"
               items="[[relationships]]"
-              value="{{nextOfKinData.relationship}}"
+              value="{{contactsData.nextOfKinRelationship}}"
               tabindex="12"
               required
               auto-validate
@@ -277,7 +249,7 @@
 
             <paper-input
               label="Address"
-              value="{{nextOfKinData.address}}"
+              value="{{contactsData.nextOfKinAddress}}"
               tabindex="13"
               required
               auto-validate
@@ -287,7 +259,7 @@
 
             <paper-input
               label="Telephone"
-              value="{{nextOfKinData.phone}}"
+              value="{{contactsData.nextOfKinPhone}}"
               tabindex="14"
               required
               auto-validate
@@ -308,7 +280,7 @@
 
             <paper-input
               label="Second Contact Name"
-              value="{{secondContactNameData.name}}"
+              value="{{contactsData.secondContactName}}"
               tabindex="15"
               auto-validate
               pattern="[a-zA-Z\.\s]*"
@@ -319,7 +291,7 @@
               allow-custom-value
               label="Relationship"
               items="[[relationships]]"
-              value="{{secondContactNameData.relationship}}"
+              value="{{contactsData.secondContactRelationship}}"
               tabindex="16"
               auto-validate
               pattern="[a-zA-Z\.\s]*"
@@ -328,7 +300,7 @@
 
             <paper-input
               label="Address"
-              value="{{secondContactNameData.address}}"
+              value="{{contactsData.secondContactAddress}}"
               tabindex="17"
               auto-validate
               pattern="[A-Za-z0-9'\.\-\s,]*"
@@ -337,7 +309,7 @@
 
             <paper-input
               label="Telephone"
-              value="{{secondContactNameData.phone}}"
+              value="{{contactsData.secondContactPhone}}"
               tabindex="18"
               auto-validate
               pattern="\+?\(?\d{2,4}\)?[\d\s-]{3,}"
@@ -357,7 +329,7 @@
 
             <paper-input
               label="Consultant Psychiatrist"
-              value="{{consultantPsychiatristData.name}}"
+              value="{{contactsData.consultantPsychiatristName}}"
               tabindex="19"
               auto-validate
               pattern="[a-zA-Z\.\s]*"
@@ -366,7 +338,7 @@
 
             <paper-input
               label="Address"
-              value="{{consultantPsychiatristData.address}}"
+              value="{{contactsData.consultantPsychiatristAddress}}"
               tabindex="20"
               auto-validate
               pattern="[A-Za-z0-9'\.\-\s,]*"
@@ -375,7 +347,7 @@
 
             <paper-input
               label="Telephone"
-              value="{{consultantPsychiatristData.phone}}"
+              value="{{contactsData.consultantPsychiatristPhone}}"
               tabindex="21"
               auto-validate
               pattern="\+?\(?\d{2,4}\)?[\d\s-]{3,}"
@@ -395,7 +367,7 @@
 
             <paper-input
               label="General Practitioner"
-              value="{{generalPractitionerData.name}}"
+              value="{{contactsData.generalPractitionerName}}"
               tabindex="22"
               auto-validate
               pattern="[a-zA-Z\.\s]*"
@@ -404,7 +376,7 @@
 
             <paper-input
               label="Address"
-              value="{{generalPractitionerData.address}}"
+              value="{{contactsData.generalPractitionerAddress}}"
               tabindex="23"
               auto-validate
               pattern="[A-Za-z0-9'\.\-\s,]*"
@@ -413,7 +385,7 @@
 
             <paper-input
               label="Telephone"
-              value="{{generalPractitionerData.phone}}"
+              value="{{contactsData.generalPractitionerPhone}}"
               tabindex="24"
               auto-validate
               pattern="\+?\(?\d{2,4}\)?[\d\s-]{3,}"
@@ -433,7 +405,7 @@
 
             <paper-input
               label="Social Worker/Referrer"
-              value="{{socialWorkerReferrerData.name}}"
+              value="{{contactsData.socialWorkerReferrerName}}"
               tabindex="25"
               auto-validate
               pattern="[a-zA-Z\.\s]*"
@@ -442,7 +414,7 @@
 
             <paper-input
               label="Address"
-              value="{{socialWorkerReferrerData.address}}"
+              value="{{contactsData.socialWorkerReferrerAddress}}"
               tabindex="26"
               auto-validate
               pattern="[A-Za-z0-9'\.\-\s,]*"
@@ -451,7 +423,7 @@
 
             <paper-input
               label="Telephone"
-              value="{{socialWorkerReferrerData.phone}}"
+              value="{{contactsData.socialWorkerReferrerPhone}}"
               tabindex="27"
               auto-validate
               pattern="\+?\(?\d{2,4}\)?[\d\s-]{3,}"
@@ -471,7 +443,7 @@
 
             <paper-input
               label="Community Psychiatric Nurse (CPN)"
-              value="{{cpnData.name}}"
+              value="{{contactsData.cpnName}}"
               tabindex="28"
               auto-validate
               pattern="[a-zA-Z\.\s]*"
@@ -480,7 +452,7 @@
 
             <paper-input
               label="Address"
-              value="{{cpnData.address}}"
+              value="{{contactsData.cpnAddress}}"
               tabindex="29"
               auto-validate
               pattern="[A-Za-z0-9'\.\-\s,]*"
@@ -489,7 +461,7 @@
 
             <paper-input
               label="Telephone"
-              value="{{cpnData.phone}}"
+              value="{{contactsData.cpnPhone}}"
               tabindex="30"
               auto-validate
               pattern="\+?\(?\d{2,4}\)?[\d\s-]{3,}"
@@ -510,7 +482,7 @@
 
             <paper-input
               label="Minister of Religion"
-              value="{{ministerOfReligionData.name}}"
+              value="{{contactsData.ministerOfReligionName}}"
               tabindex="31"
               auto-validate
               pattern="[a-zA-Z\.\s]*"
@@ -519,7 +491,7 @@
 
             <paper-input
               label="Address"
-              value="{{ministerOfReligionData.address}}"
+              value="{{contactsData.ministerOfReligionAddress}}"
               tabindex="32"
               auto-validate
               pattern="[A-Za-z0-9'\.\-\s,]*"
@@ -528,7 +500,7 @@
 
             <paper-input
               label="Telephone"
-              value="{{ministerOfReligionData.phone}}"
+              value="{{contactsData.ministerOfReligionPhone}}"
               tabindex="33"
               auto-validate
               pattern="\+?\(?\d{2,4}\)?[\d\s-]{3,}"

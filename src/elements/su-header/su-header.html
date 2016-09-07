@@ -23,17 +23,17 @@ setimage(boolean)
   <template>
     <!--firebase connection for the header info-->
     <firebase-document
-      id="headerDB"
+      id="suIndexDB"
       app-name="main"
-      path="/homes/{{home}}/patients/{{patient}}/personalProfile"
-      data="{{headerName}}">
+      path="/homes/[[home]]/patients/suIndex/[[patient]]"
+      data="{{suIndexDataLive}}">
     </firebase-document>
-    <firebase-document
-      id="imageDB"
-      path="/homes/{{home}}/patients/{{patient}}/personalProfile/image"
-      data="{{image}}"
-      app-name="main">
-    </firebase-document>
+    <app-indexeddb-mirror
+      key="suHeader|[[patient]]"
+      data="{{suIndexDataLive}}"
+      persisted-data="{{suIndexData}}"
+      worker-url="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
 
     <iron-media-query
       query="(max-width:1600px)"
@@ -172,7 +172,7 @@ setimage(boolean)
           sizing="cover"
           preload
           fade
-          src="{{image}}">
+          src="[[suIndexData.image]]">
         </iron-image>
 
           <input
@@ -187,14 +187,14 @@ setimage(boolean)
             class="imageButton"
             on-tap="_onAddFilesClick"
             icon="image:camera-alt"
-            hidden="{{!setimage}}">
+            hidden="[[!setimage]]">
           </paper-icon-button>
 
       </div>
       <div class="headerInfoRow">
         <div class="patientName">
 
-          <template is="dom-if" if="{{firstname}}">
+          <template is="dom-if" if="[[firstName]]">
 
             <span class="patientNameText">
               {{firstname}} {{lastname}}
@@ -210,7 +210,7 @@ setimage(boolean)
           <template is="dom-if" if="{{_nofirstname(firstname)}}">
 
             <span class="patientNameText">
-              {{_computeHeaderName(headerName.fName, headerName.lName)}}
+              {{_computeHeaderName(suIndexData.fName, suIndexData.lName)}}
             </span>
             <paper-icon-button
               class="headerPrint"
@@ -248,7 +248,7 @@ setimage(boolean)
         home:{
           type:String
         },
-        headerName:{
+        suIndexData:{
           type:Object,
           observer:"_computeHeaderName"
         },
@@ -279,7 +279,7 @@ setimage(boolean)
         var file=e.target.files[0];
         reader.readAsDataURL(file);
         reader.addEventListener("load", function () {
-          this.$.imageDB.setStoredValue("/homes/"+this.home+"/patients/"+this.patient+"/personalProfile/image", reader.result);
+          this.$.suIndexDB.setStoredValue("/homes/"+this.home+"/patients/suIndex/"+this.patient+"/image", reader.result);
         }.bind(this), false);
       },
       _onAddFilesClick: function(e) {

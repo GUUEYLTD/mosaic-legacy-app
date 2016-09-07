@@ -37,7 +37,7 @@
     </firebase-document>
     <!--SAME AS ABOVE MOVE LATER USED TO GET PROFILE INFO FOR SIDEBAR-->
     <firebase-document
-      path="/homes/{{home}}/details"
+      path="/homes/[[home]]/details"
       data="{{careHomeProfile}}"
       app-name="main">
     </firebase-document>
@@ -210,7 +210,7 @@
     <app-drawer-layout fullbleed id="appDrawerLayout" force-narrow>
 
       <!--admin drawer that contains admin account info and functions-->
-      <admin-drawer id="adminDrawer" home="{{home}}" admin="{{param}}" email="{{user.email}}" opened="{{opened}}"></admin-drawer>
+      <admin-drawer id="adminDrawer" home="[[home]]" admin="[[param]]" email="{{user.email}}" opened="{{opened}}"></admin-drawer>
       <!--second drawer to contain target info links (company service user etc...) link up to db later-->
       <app-drawer align="end" id="suDrawer" swipe-open>
         <div class="customContainer" style="height: 100%; overflow: auto;">
@@ -219,7 +219,7 @@
             <paper-item>
               <paper-item-body two-line>
                 <div secondary>Company Name</div>
-                <div>{{careHomeProfile.name}}</div>
+                <div>[[careHomeProfile.name]]</div>
               </paper-item-body>
             </paper-item>
             <paper-item>
@@ -238,13 +238,13 @@
 
           <div class="menuLinksContainer">
             <template is="dom-if" if="{{_patientSelected(category, param)}}">
-              <iron-selector selected="{{page}}" attr-for-selected="name" class="drawer-list" role="navigation">
-                <a name="su-profile" href="/{{home}}/care-plan/su-profile/{{param}}">Personal Profile<a>
-                <a name="su-pre" href="/{{home}}/care-plan/su-pre/{{param}}">Pre-Admission Assessment</a>
-                <a name="su-care" href="/{{home}}/care-plan/su-care/{{param}}">Care Plan</a>
-                <a name="su-care-review" href="/{{home}}/care-plan/su-care-review/{{param}}">Care Plan Review</a>
-                <a name="su-medical" href="/{{home}}/care-plan/su-medical/{{param}}">Medical Assessment</a>
-                <a name="su-medication" href="/{{home}}/care-plan/su-medication/{{param}}">Medication Outline</a>
+              <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
+                <a name="su-profile" href="/[[home]]/care-plan/su-profile/[[param]]">Personal Profile<a>
+                <a name="su-pre" href="/[[home]]/care-plan/su-pre/[[param]]">Pre-Admission Assessment</a>
+                <a name="su-care" href="/[[home]]/care-plan/su-care/[[param]]">Care Plan</a>
+                <a name="su-care-review" href="/[[home]]/care-plan/su-care-review/[[param]]">Care Plan Review</a>
+                <a name="su-medical" href="/[[home]]/care-plan/su-medical/[[param]]">Medical Assessment</a>
+                <a name="su-medication" href="/[[home]]/care-plan/su-medication/[[param]]">Medication Outline</a>
                 <a name="su-risk" on-tap="setPage">Risk Assessment</a>
                 <a name="su-goals" on-tap="setPage">Personal Goals</a>
               </iron-selector>
@@ -302,35 +302,35 @@
           <!--custom pages built for the app names attached in order to know which to display according to route-->
           <!--page selected style only shows when the drawer item has been clicked twice need to fix this..-->
           <!--login page-->
-          <def-login page="{{page}}" name="def-login"></def-login>
+          <def-login page="[[page]]" name="def-login"></def-login>
           <!--default page-->
-          <def-home page={{page}} home="{{home}}" name="def-home" signed-in="[[signedIn]]"></def-home>
+          <def-home page=[[page]] home="[[home]]" name="def-home" signed-in="[[signedIn]]"></def-home>
           <!--other pages for care plan-->
-          <su-home page="{{page}}" patient="{{param}}" home="{{home}}" name="su-home"></su-home>
-          <su-profile page="{{page}}" patient="{{param}}" home="{{home}}" name="su-profile"></su-profile>
-          <su-care page="{{page}}" patient="{{param}}" home="{{home}}" name="su-care"></su-care>
-          <su-goals page="{{page}}" patient="{{param}}" home="{{home}}" name="su-goals"></su-goals>
+          <su-home page="[[page]]" patient="[[param]]" home="[[home]]" name="su-home"></su-home>
+          <su-profile page="[[page]]" patient="[[param]]" home="[[home]]" name="su-profile"></su-profile>
+          <su-care page="[[page]]" patient="[[param]]" home="[[home]]" name="su-care"></su-care>
+          <su-goals page="[[page]]" patient="[[param]]" home="[[home]]" name="su-goals"></su-goals>
           <!--add in user in order to log the uid for version control and logging-->
-          <su-medical page="{{page}}" patient="{{param}}" home="{{home}}" user="{{user}}" name="su-medical"></su-medical>
+          <su-medical page="[[page]]" patient="[[param]]" home="[[home]]" user="{{user}}" name="su-medical"></su-medical>
           <!--add in user in order to log the uid for version control and logging-->
-          <su-medication page="{{page}}" patient="{{param}}" home="{{home}}" user="{{user}}" name="su-medication"></su-medication>
-          <su-pre page="{{page}}" patient="{{param}}" home="{{home}}" name="su-pre"></su-pre>
-          <su-profile page="{{page}}" patient="{{param}}" home="{{home}}" name="su-profile"></su-profile>
+          <su-medication page="[[page]]" patient="[[param]]" home="[[home]]" user="{{user}}" name="su-medication"></su-medication>
+          <su-pre page="[[page]]" patient="[[param]]" home="[[home]]" name="su-pre"></su-pre>
+          <su-profile page="[[page]]" patient="[[param]]" home="[[home]]" name="su-profile"></su-profile>
           <!--add in user in order to log the uid for version control and logging-->
-          <su-risk page="{{page}}" patient="{{param}}" home="{{home}}" user="{{user}}" name="su-risk"></su-risk>
-          <su-create page="{{page}}" patient="{{param}}" home="{{home}}" name="su-create"></su-create>
-          <su-care-review page="{{page}}" patient="{{param}}" home="{{home}}" name="su-care-review"></su-care-review>
+          <su-risk page="[[page]]" patient="[[param]]" home="[[home]]" user="{{user}}" name="su-risk"></su-risk>
+          <su-create page="[[page]]" patient="[[param]]" home="[[home]]" name="su-create"></su-create>
+          <su-care-review page="[[page]]" patient="[[param]]" home="[[home]]" name="su-care-review"></su-care-review>
 
           <!--pages for admin-->
-          <ad-dash page="{{page}}" admin-id="{{param}}" home="{{home}}" name="ad-dash"></ad-dash>
-          <ad-profile page="{{page}}" admin-id="{{param}}" home="{{home}}" name="ad-profile"></ad-profile>
-          <ad-payment page="{{page}}" admin-id="{{param}}" home="{{home}}" name="ad-payment"></ad-payment>
-          <ad-users page="{{page}}" admin-id="{{param}}" user={{user}} home="{{home}}" name="ad-users"></ad-users>
-          <ad-user page="{{page}}" uid="{{param}}" user={{user}} home="{{home}}" name="ad-user"></ad-user>
-          <ad-settings page="{{page}}" admin-id="{{param}}" home="{{home}}" name="ad-settings"></ad-settings>
-          <ad-support page="{{page}}" admin-id="{{params}}" home="{{home}}" name="ad-support"></ad-support>
+          <ad-dash page="[[page]]" admin-id="[[param]]" home="[[home]]" name="ad-dash"></ad-dash>
+          <ad-profile page="[[page]]" admin-id="[[param]]" home="[[home]]" name="ad-profile"></ad-profile>
+          <ad-payment page="[[page]]" admin-id="[[param]]" home="[[home]]" name="ad-payment"></ad-payment>
+          <ad-users page="[[page]]" admin-id="[[param]]" user={{user}} home="[[home]]" name="ad-users"></ad-users>
+          <ad-user page="[[page]]" uid="[[param]]" user={{user}} home="[[home]]" name="ad-user"></ad-user>
+          <ad-settings page="[[page]]" admin-id="[[param]]" home="[[home]]" name="ad-settings"></ad-settings>
+          <ad-support page="[[page]]" admin-id="[[param]]" home="[[home]]" name="ad-support"></ad-support>
           <!--test page for whatever-->
-          <test-test page="{{page}}" patient="{{param}}" home="{{home}}" name="test-test"></test-test>
+          <test-test page="[[page]]" patient="[[param]]" home="[[home]]" name="test-test"></test-test>
         </iron-pages>
 
       </app-header-layout>
@@ -527,7 +527,7 @@
           this.disablePageLoading();
         };
         this.importHref(
-          this.resolveUrl('pages/'+this.category+'/' + page +'/'+page+'.html'), null, null, true);
+          this.resolveUrl('pages/'+this.category+'/' + page +'/'+page+'.html'), null, null, false);
         if(page.slice(0,3)==="def" || page.slice(0,2)==="ad" || page==="su-create"){
           //drawer and rest of page not rendering properly after being hidden and switching pages...
           this.$.appDrawerLayout.forceNarrow=true;
@@ -632,7 +632,7 @@
         if(e){
           var page=e.detail.page
           this[e.detail.page]=true;
-        };  
+        };
         this.customStyle["--page-loading-active-color"]="#3d4ba8";
         this.updateStyles();
       }

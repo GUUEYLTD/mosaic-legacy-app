@@ -7,7 +7,17 @@
     <firebase-document
       id="newPatientDB"
       path="/homes/{{home}}/patients/{{patient}}/personalProfile"
-      data="{{data}}"
+      data="{{newPatientDataLive}}"
+      app-name="main">
+    </firebase-document>
+    <app-indexeddb-mirror
+      key="patientProfile|[[patient]]"
+      data="{{newPatientDataLive}}"
+      persisted-data="{{newPatientData}}"
+      worker-url="../../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+    <firebase-document
+      id="suIndexDB"
       app-name="main">
     </firebase-document>
 
@@ -57,8 +67,8 @@
         page="Create New Service User"
         patient="{{patient}}"
         home="{{home}}"
-        lastname="{{data.lName}}"
-        firstname="{{data.fName}}"
+        lastname="{{newPatientData.lName}}"
+        firstname="{{newPatientData.fName}}"
         setimage>
       </su-header>
       <div class="mainContainer app-grid">
@@ -68,7 +78,7 @@
         <!--starting input for patient profile-->
         <paper-input
           label="First Name"
-          value="{{data.fName}}"
+          value="{{newPatientData.fName}}"
           tabindex="1"
           required
           auto-validate
@@ -79,7 +89,7 @@
         <paper-input
           label="Last Name"
           type="text"
-          value="{{data.lName}}"
+          value="{{newPatientData.lName}}"
           tabindex="2"
           required
           auto-validate
@@ -100,7 +110,7 @@
         <paper-input
           label="Preferred Mode of Address"
           type="text"
-          value="{{data.preferredName}}"
+          value="{{newPatientData.preferredName}}"
           tabindex="4"
           auto-validate
           pattern="[a-zA-Z\.\s]*"
@@ -120,7 +130,7 @@
         <paper-input
           label="Where Assessed"
           type="text"
-          value="{{data.whereAssessed}}"
+          value="{{newPatientData.whereAssessed}}"
           tabindex="6"
           required
           auto-validate
@@ -131,7 +141,7 @@
           allow-custom-value
           label="Partership Status"
           items="[[parterShipStatuses]]"
-          value="{{data.partnership}}"
+          value="{{newPatientData.partnership}}"
           tabindex="7"
           required
           auto-validate
@@ -143,7 +153,7 @@
           allow-custom-value
           label="Religion"
           items="[[religions]]"
-          value="{{data.religion}}"
+          value="{{newPatientData.religion}}"
           tabindex="8"
           required
           auto-validate
@@ -155,7 +165,7 @@
           allow-custom-value
           label="Ethnicity"
           items="[[ethnicities]]"
-          value="{{data.ethnicity}}"
+          value="{{newPatientData.ethnicity}}"
           tabindex="9"
           required
           auto-valdate
@@ -167,7 +177,7 @@
           allow-custom-value
           label="Nationality"
           items="[[nationalities]]"
-          value="{{data.nationality}}"
+          value="{{newPatientData.nationality}}"
           tabindex="10"
           required
           auto-validate
@@ -546,11 +556,19 @@
       },
       observers:[
         "editQuery(query950)",
-        "requirementsMet(data)"
+        "requirementsMet(newPatientData)"
       ],
       createNewPatient:function(){
         var path="/homes/"+this.home+"/patients/"+this.patient+"/currentStatus";
-        this.$.newPatientDB.setStoredValue(path, "active");
+        this.$.newPatientDB.setStoredValue(path, "active")
+          .then(function(val){
+            this.$.suIndexDB.data={};
+            this.$.suIndexDB.data.fName=this.$.newPatientDB.data.fName;
+            this.$.suIndexDB.data.lName=this.$.newPatientDB.data.lName;
+            this.$.suIndexDB.data.currentStatus="active";
+            this.$.suIndexDB.data.home=this.home;
+            this.$.suIndexDB.save("/homes/"+this.home+"/patients/suIndex", this.patient);
+          }.bind(this));
       },
       editQuery:function(query950){
         if(query950){
