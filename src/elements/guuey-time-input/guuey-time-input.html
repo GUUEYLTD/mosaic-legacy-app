@@ -10,12 +10,21 @@ label(string)
 <link rel="import" href="dependencies.html" />
 <dom-module id="guuey-time-input">
   <template>
+
     <firebase-document
       id="timeDB"
       app-name="main"
-      path="{{route}}"
-      data="{{timeData}}">
+      path="[[route]]"
+      data="{{timeDatalive}}">
     </firebase-document>
+
+    <app-indexeddb-mirror
+      key="timeDB|[[route]]"
+      data="{{timeDatalive}}"
+      persisted-data="{{timeData}}"
+      worker-url="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
     <style>
       .sectionHeading{
         background-color:#42c6ff;
@@ -49,7 +58,11 @@ label(string)
       <paper-time-picker id="papertime" time={{time}}></paper-time-picker>
     </paper-dialog>
 
-    <paper-input on-tap="enterTime" label="{{label}}" value="{{_computeTime(timeData)}}"></paper-input>
+    <paper-input
+      on-tap="enterTime"
+      label="[[label]]"
+      value="{{_computeTime(timeData)}}">
+    </paper-input>
 
   </template>
 

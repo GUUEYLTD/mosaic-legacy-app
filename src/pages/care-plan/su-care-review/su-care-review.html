@@ -7,7 +7,7 @@
       id="agreeDB"
       app-name="main"
       data="{{agreeDataLive}}"
-      path="homes/{{home}}/patients/{{patient}}/carePlan/statementOfServiceUser">
+      path="homes/[[home]]/patients/[[patient]]/carePlan/statementOfServiceUser">
     </firebase-document>
 
     <app-indexeddb-mirror
@@ -19,7 +19,7 @@
 
     <!--query for custom fields-->
     <firebase-query
-      path="/homes/{{home}}/patients/{{patient}}/carePlan/custom"
+      path="/homes/[[home]]/patients/[[patient]]/carePlan/custom"
       data="{{customDataQueryLive}}"
       app-name="main">
     </firebase-query>
@@ -46,7 +46,7 @@
     <!-- db connection for printing-->
     <firebase-document
       id="printDB"
-      path="homes/{{home}}/patients/{{patient}}/carePlan"
+      path="homes/[[home]]/patients/[[patient]]/carePlan"
       app-name="main">
     </firebase-document>
 
@@ -156,8 +156,8 @@
 
           <su-header
             page="Care Plan Review"
-            home="{{home}}"
-            patient="{{patient}}">
+            home="[[home]]"
+            patient="[[patient]]">
           </su-header>
 
           <div class="mainContainer">
@@ -170,68 +170,68 @@
 
             <template is="dom-repeat" items="{{customDataQuery}}" as="custom">
               <guuey-custom-text-input
-                route="/homes/{{home}}/patients/{{patient}}/carePlan/custom/{{custom.$key}}"
-                label="{{custom.label}}"
-                label2="{{custom.label2}}"
+                route="/homes/[[home]]/patients/[[patient]]/carePlan/custom/{{custom.$key}}"
+                label="[[custom.label]]"
+                label2="[[custom.label2]]"
                 >
               </guuey-custom-text-input>
             </template>
 
             <guuey-list-input
               class="smallHeader"
-              home="{{home}}"
-              patient="{{patient}}"
+              home="[[home]]"
+              patient="[[patient]]"
               label="Areas of concern"
               label2="Areas of concern are issues that are on-going or that staff and/or the service user have identified as problems that need to be worked on in order to achieve either short term, medium term, or long term goals."
-              listroute="homes/{{home}}/patients/{{patient}}/carePlanReview/areasOfConcern">
+              listroute="homes/[[home]]/patients/[[patient]]/carePlanReview/areasOfConcern">
             </guuey-list-input>
 
             <guuey-list-input
               class="smallHeader"
-              home="{{home}}"
-              patient="{{patient}}"
+              home="[[home]]"
+              patient="[[patient]]"
               label="Short term goals"
-              listroute="homes/{{home}}/patients/{{patient}}/carePlanReview/shortTermGoals">
+              listroute="homes/[[home]]/patients/[[patient]]/carePlanReview/shortTermGoals">
             </guuey-list-input>
 
             <guuey-list-input
               class="smallHeader"
-              home="{{home}}"
-              patient="{{patient}}"
+              home="[[home]]"
+              patient="[[patient]]"
               label="Medium term goals"
-              listroute="homes/{{home}}/patients/{{patient}}/carePlanReview/mediumTermGoals">
+              listroute="homes/[[home]]/patients/[[patient]]/carePlanReview/mediumTermGoals">
             </guuey-list-input>
 
             <guuey-list-input
               class="smallHeader"
-              home="{{home}}"
-              patient="{{patient}}"
+              home="[[home]]"
+              patient="[[patient]]"
               label="Long term goals"
-              listroute="homes/{{home}}/patients/{{patient}}/carePlanReview/longTermGoals">
+              listroute="homes/[[home]]/patients/[[patient]]/carePlanReview/longTermGoals">
             </guuey-list-input>
 
             <guuey-list-input
               class="halfSizeLeft"
-              home="{{home}}"
-              patient="{{patient}}"
+              home="[[home]]"
+              patient="[[patient]]"
               label="What service will the service user do?"
               label2="i.e. agree to the following"
-              listroute="homes/{{home}}/patients/{{patient}}/carePlan/whatWillTheServiceUserDo"
+              listroute="homes/[[home]]/patients/[[patient]]/carePlan/whatWillTheServiceUserDo"
               section="{{whatWillTheServiceUserDo}}">
             </guuey-list-input>
 
             <guuey-list-input
               class="halfSizeRight"
-              home="{{home}}"
-              patient="{{patient}}"
+              home="[[home]]"
+              patient="[[patient]]"
               label="Intervention by staff"
               label2="what will the staff do?"
-              listroute="homes/{{home}}/patients/{{patient}}/carePlan/interventionByStaff"
+              listroute="homes/[[home]]/patients/[[patient]]/carePlan/interventionByStaff"
               section="{{interventionByStaff}}">
             </guuey-list-input>
 
             <guuey-text-input
-              route="homes/{{home}}/patients/{{patient}}/carePlanReview/reviewSummary"
+              route="homes/[[home]]/patients/[[patient]]/carePlanReview/reviewSummary"
               label="Review Summary"
               label2="Include progress made from previous review i.e. areas of improvement from &quot; areas of concern&quot;">
             </guuey-text-input>
@@ -248,14 +248,14 @@
               </paper-input>
 
               <guuey-date-input
-                route="/homes/{{home}}/patients/{{patient}}/carePlan/statementOfServiceUser/suDate"
+                route="/homes/[[home]]/patients/[[patient]]/carePlan/statementOfServiceUser/suDate"
                 label="Date">
               </guuey-date-input>
 
               <div class="buttonContainer">
-                <paper-button hidden="{{agreeData.suAgree}}" on-tap="suConfirm">CONFIRM</paper-button>
+                <paper-button hidden="[[agreeData.suAgree]]" on-tap="suConfirm">CONFIRM</paper-button>
 
-                <paper-button hidden="{{!agreeData.suAgree}}">CONFIRMED</paper-button>
+                <paper-button hidden="[[!agreeData.suAgree]]">CONFIRMED</paper-button>
               </div>
 
               <!--need to create a file input for this???-->
@@ -269,7 +269,7 @@
               </paper-input>
 
               <guuey-date-input
-                route="/homes/{{home}}/patients/{{patient}}/carePlan/statementOfServiceUser/swDate"
+                route="/homes/[[home]]/patients/[[patient]]/carePlan/statementOfServiceUser/swDate"
                 label="Date">
               </guuey-date-input>
 
@@ -283,7 +283,7 @@
               </paper-input>
 
               <guuey-date-input
-                route="homes/{{home}}/patients/{{patient}}/carePlan/statementOfServiceUser/agreementGivenDate"
+                route="homes/[[home]]/patients/[[patient]]/carePlan/statementOfServiceUser/agreementGivenDate"
                 label="Date">
               </guuey-date-input>
 
@@ -296,15 +296,15 @@
               </paper-input>
 
               <guuey-date-input
-                route="homes/{{home}}/patients/{{patient}}/carePlan/statementOfServiceUser/nextReviewDate"
+                route="homes/[[home]]/patients/[[patient]]/carePlan/statementOfServiceUser/nextReviewDate"
                 label="Next Review Date">
               </guuey-date-input>
 
               <div class="buttonContainer">
 
-                <paper-button hidden="{{agreeData.swAgree}}" on-tap="cofirmAgreement">CONFIRM</paper-button>
+                <paper-button hidden="[[agreeData.swAgree]]" on-tap="cofirmAgreement">CONFIRM</paper-button>
 
-                <paper-button hidden="{{!agreeData.swAgree}}">CONFIRMED</paper-button>
+                <paper-button hidden="[[!agreeData.swAgree]]">CONFIRMED</paper-button>
 
               </div>
 

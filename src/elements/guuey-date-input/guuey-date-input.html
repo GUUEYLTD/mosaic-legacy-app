@@ -11,14 +11,22 @@ label(string)
 
 <dom-module id="guuey-date-input">
   <template>
+
     <firebase-document
       id="dateDB"
       app-name="main"
-      path="{{route}}"
-      data="{{dateData}}">
+      path="[[route]]"
+      data="{{dateDataLive}}">
     </firebase-document>
-    <style include="paper-date-picker-dialog-style"></style>
-    <style>
+
+    <app-indexeddb-mirror
+      key="dateDB|[[route]]"
+      data="{{dateDataLive}}"
+      persisted-data="{{dateData}}"
+      worker-url="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
+    <style include="paper-date-picker-dialog-style">
       .sectionHeading{
         background-color:#42c6ff;
         width:100%;
@@ -60,7 +68,7 @@ label(string)
 
     <paper-input
       on-tap="enterDate"
-      label="{{label}}"
+      label="[[label]]"
       value="{{_computeDate(dateData)}}"
       required
       auto-validate
@@ -90,7 +98,7 @@ label(string)
         }
       },
       enterDate:function(){
-        this.$.dateDialog.toggle();
+        this.$.dateDialog.open();
         this.dateEdit=true;
       },
       _dateChanged:function(){
