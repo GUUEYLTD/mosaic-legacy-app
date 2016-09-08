@@ -79,13 +79,12 @@
       pattern="/:param"
       data="{{paramData}}">
     </app-route>
-    <style include="app-grid-style">
+    <style>
 
       :host {
         display: block;
         --app-primary-color: #3d4ba8;
         --app-secondary-color: black;
-        --app-grid-columns:5;
       }
 
       app-header {
@@ -131,22 +130,14 @@
       #suDrawer{
         text-align:left;
       }
-      #notifyBadge{
-        height:10px;
-        width:10px;
-      }
+
       .disabled{
         color:#000000 !important;
         opacity: .38 !important;
       }
-      .buttonContainer{
-        text-align:center;
-        padding:0px;
-        margin:0px;
-      }
       .toolbarButton{
-        width: 35px;
-        height: 35px;
+        width: 30px;
+        height: 30px;
       }
       a:hover {
        cursor:pointer;
@@ -166,10 +157,46 @@
         color:#FFFFFF;
         margin-top:25px;
       }
-      #mainToolbar{
+      .toolbarLeft{
+        width:50%;
+        display:inline-flex;
+        flex-direction:row;
       }
-      .toolbarButtonContainer{
-        width:90%;
+      .toolbarLeft :last-child{
+        margin-left:5%;
+      }
+      .toolbarLeft :first-child{
+        margin-left:5%;
+      }
+      .toolbarRight{
+        width:50%;
+        text-align:right;
+      }
+      .toolbarRight *{
+        margin-right:5%;
+      }
+      #notifyBadge{
+        float:right;
+        --paper-badge-width:20px;
+        --paper-badge-height:20px;
+        --paper-badge-margin-left:10px;
+        --paper-badge-margin-right:10px;
+
+      }
+      .menuText{
+        text-transform:uppercase;
+        font-size:14px;
+        align-self:center;
+        margin-left:5px;
+      }
+      paper-input{
+        width:20%;
+        background-color:#FFF;
+        border-radius:25px;
+        padding:0px;
+        margin:0px;
+        height:30px;
+        display:inline-block;
       }
       .loadingOverlay{
         position:absolute;
@@ -206,7 +233,7 @@
       <paper-spinner active></paper-spinner>
     </div>
 
-    <app-drawer-layout fullbleed id="appDrawerLayout" force-narrow>
+    <app-drawer-layout fullbleed id="appDrawerLayout">
 
       <!--admin drawer that contains admin account info and functions-->
       <admin-drawer id="adminDrawer" home="[[home]]" admin="[[param]]" email="{{user.email}}" opened="{{opened}}"></admin-drawer>
@@ -236,62 +263,45 @@
           </paper-listbox>
 
           <div class="menuLinksContainer">
-            <template is="dom-if" if="{{_patientSelected(category, param)}}">
-              <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
-                <a name="su-profile" href="/[[home]]/care-plan/su-profile/[[param]]">Personal Profile<a>
-                <a name="su-pre" href="/[[home]]/care-plan/su-pre/[[param]]">Pre-Admission Assessment</a>
-                <a name="su-care" href="/[[home]]/care-plan/su-care/[[param]]">Care Plan</a>
-                <a name="su-care-review" href="/[[home]]/care-plan/su-care-review/[[param]]">Care Plan Review</a>
-                <a name="su-medical" href="/[[home]]/care-plan/su-medical/[[param]]">Medical Assessment</a>
-                <a name="su-medication" href="/[[home]]/care-plan/su-medication/[[param]]">Medication Outline</a>
-                <a name="su-risk" href="/[[home]]/care-plan/su-risk/[[param]]">Risk Assessment</a>
-                <a name="su-goals" href="/[[home]]/care-plan/su-goals/[[param]]">Personal Goals</a>
-              </iron-selector>
-            </template>
 
-            <template is="dom-if" if="{{!_patientSelected(category, param)}}">
-              <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
-                <a class="disabled">Pre-Admission Assessment</a>
-                <a class="disabled">Personal Profile<a>
-                <a class="disabled">Care Plan</a>
-                <a class="disabled">Care Plan Review</a>
-                <a class="disabled">Medical Assessment</a>
-                <a class="disabled">Medication Outline</a>
-                <a class="disabled">Risk Assessment</a>
-                <a class="disabled">Personal Goals</a>
-              </iron-selector>
-            </template>
+            <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
+              <a name="su-profile" href="/[[home]]/care-plan/su-profile/[[param]]">Personal Profile<a>
+              <a name="su-pre" href="/[[home]]/care-plan/su-pre/[[param]]">Pre-Admission Assessment</a>
+              <a name="su-care" href="/[[home]]/care-plan/su-care/[[param]]">Care Plan</a>
+              <a name="su-care-review" href="/[[home]]/care-plan/su-care-review/[[param]]">Care Plan Review</a>
+              <a name="su-medical" href="/[[home]]/care-plan/su-medical/[[param]]">Medical Assessment</a>
+              <a name="su-medication" href="/[[home]]/care-plan/su-medication/[[param]]">Medication Outline</a>
+              <a name="su-risk" href="/[[home]]/care-plan/su-risk/[[param]]">Risk Assessment</a>
+              <a name="su-goals" href="/[[home]]/care-plan/su-goals/[[param]]">Personal Goals</a>
+            </iron-selector>
+
           </div>
         </div>
       </app-drawer>
 
       <!-- Main content -->
-      <app-header-layout>
+      <app-header-layout fullbleed>
 
-        <app-header condenses reveals effects="waterfall">
-          <template is="dom-if" if="{{loginPageInactive(page)}}">
+        <app-header id="appHeader" condenses reveals effects="waterfall">
+          <span hidden="{{!loginPageInactive(page)}}">
             <app-toolbar>
-              <div class="toolbarButtonContainer app-grid">
-                <span class="buttonContainer">
-                  <paper-icon-button class="toolbarButton" icon="menu" on-tap="toggleDrawer"></paper-icon-button>
-                </span>
-                <span class="buttonContainer">
-                  <a class="inherit" href="/{{home}}/default/def-home"><paper-icon-button class="toolbarButton" icon="icons:home"></paper-icon-button></a>
-                </span>
-                <span class="buttonContainer">
-                  <paper-icon-button class="toolbarButton notifyButton" id="notify" icon="social:notifications"></paper-icon-button>
-                  <paper-badge id="notifyBadge" for="notify" label="4"></paper-badge>
-                </span>
-                <span class="buttonContainer">
-                  <paper-icon-button class="toolbarButton" icon="icons:search" on-tap="search"></paper-icon-button>
-                </span>
-                <span class="buttonContainer">
-                  <paper-icon-button class="toolbarButton logoutButton" on-tap="logout" icon="icons:account-circle"></paper-icon-button>
-                </span>
+
+              <div class="toolbarLeft">
+                <paper-icon-button class="toolbarButton" icon="menu" on-tap="toggleDrawer"></paper-icon-button>
+                <span class="menuText">menu</span>
+                <paper-icon-button class="toolbarButton" icon="icons:search" on-tap="search"></paper-icon-button>
               </div>
+
+              <div class="toolbarRight">
+                <a class="inherit" href="/{{home}}/default/def-home"><paper-icon-button class="toolbarButton" icon="icons:home"></paper-icon-button></a>
+                <paper-icon-button class="toolbarButton" id="notifyButton" icon="social:notifications"></paper-icon-button>
+                <paper-badge id="notifyBadge" for="notifyButton" label="4"></paper-badge>
+                <paper-icon-button class="toolbarButton logoutButton" on-tap="logout" icon="icons:account-circle"></paper-icon-button>
+              </div>
+
             </app-toolbar>
             <paper-progress class="mainProgress" indeterminate></paper-progress>
-          </template>
+          </span>
         </app-header>
         <div class="headerBackground">
           <paper-icon-button class="backButton" icon="hardware:keyboard-backspace" on-tap="goBack"></paper-icon-button>
@@ -488,7 +498,7 @@
         '_catRouteChanged(catData.category)',
         '_pageRouteChanged(pageData.page)',
         '_paramRouteChanged(paramData.param)',
-        '_authKnown(statusKnown)',
+        '_authKnown(statusKnown)'
       ],
       _homeRouteChanged:function(home){
         this.home=home || 'default';
@@ -525,18 +535,9 @@
         } else {
           this.disablePageLoading();
         };
-        if(page.slice(0,3)==="def" || page.slice(0,2)==="ad" || page==="su-create"){
-          //drawer and rest of page not rendering properly after being hidden and switching pages...
-          this.$.appDrawerLayout.forceNarrow=true;
-          this.$.suDrawer.close();
-        } else {
-          this.$.suDrawer.hidden=false;
-          this.$.appDrawerLayout.forceNarrow=false;
-          this.$.suDrawer.open();
-        };
-        this.importHref(
-          this.resolveUrl('pages/'+this.category+'/' + page +'/'+page+'.html'), null, null, false);
 
+        this.importHref(
+          this.resolveUrl('pages/'+this.category+'/' + page +'/'+page+'.html'), this.ensureLayout(this.page), null, false);
       },
       _paramChanged:function(param){
         this.param=this.paramData.param || '';
@@ -583,14 +584,6 @@
         this.set("catData.category", "default");
         this.set("pageData.page", "def-home");
         //window.location="/"+this.home+"/default/def-home";
-      },
-      setPage:function(e){
-        //this.$.location.route.path="/"+this.home+"/care-plan/"+e.target.name+"/"+this.param;
-        //console.log(this.$.location.route.path);
-        //this.set("catData.category", "care-plan");
-        //this.set("paramData.param", this.param);
-        //this.set("pageData.page", e.target.name);
-        //window.location="/"+this.home+"/care-plan/"+e.target.name+"/"+this.param;
       },
       goBack:function(){
         window.history.back();
@@ -646,6 +639,22 @@
         };
         this.customStyle["--page-loading-active-color"]="#3d4ba8";
         this.updateStyles();
+      },
+      ensureLayout:function(page){
+        if(page.slice(0,3)==="def" || page.slice(0,2)==="ad" || page==="su-create"){
+          this.$.appDrawerLayout.forceNarrow=true;
+          //this.$.appHeader.resizerShouldNotify('notifyBadge');
+          this.$.appHeader.notifyResize();
+          this.$.notifyBadge.updatePosition();
+          //this.$.appHeader.resetLayout();
+          this.$.suDrawer.close();
+        } else {
+          this.$.appDrawerLayout.forceNarrow=false;
+          //this.$.appHeader.resizerShouldNotify('notifyBadge');
+          this.$.appHeader.notifyResize();
+          this.$.notifyBadge.updatePosition();
+          //this.$.appHeader.resetLayout();
+        };
       }
     });
 
