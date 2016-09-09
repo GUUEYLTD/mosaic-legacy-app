@@ -46,10 +46,28 @@
       id="homeDB"
       app-name="main">
     </firebase-document>
+
     <firebase-document
       id="userIndexDB"
       app-name="main">
     </firebase-document>
+
+    <firebase-document
+      id="homeIndexDB"
+      app-name="main">
+    </firebase-document>
+
+    <firebase-document
+      id="notifiableDB"
+      app-name="main">
+    </firebase-document>
+
+    <firebase-query
+      id="notifyDB"
+      path="/homes/[[home]]/notifications/notify"
+      data="{{notifiesData}}"
+      app-name="main">
+    </firebase-query>
     <!--routing config-->
     <app-location id="location" route="{{route}}"></app-location>
     <!--route to declare which home is being accessed-->
@@ -176,7 +194,6 @@
         margin-right:5%;
       }
       #notifyBadge{
-        float:right;
         --paper-badge-width:20px;
         --paper-badge-height:20px;
         --paper-badge-margin-left:10px;
@@ -188,15 +205,6 @@
         font-size:14px;
         align-self:center;
         margin-left:5px;
-      }
-      paper-input{
-        width:20%;
-        background-color:#FFF;
-        border-radius:25px;
-        padding:0px;
-        margin:0px;
-        height:30px;
-        display:inline-block;
       }
       .loadingOverlay{
         position:absolute;
@@ -295,7 +303,7 @@
               <div class="toolbarRight">
                 <a class="inherit" href="/{{home}}/default/def-home"><paper-icon-button class="toolbarButton" icon="icons:home"></paper-icon-button></a>
                 <paper-icon-button class="toolbarButton" id="notifyButton" icon="social:notifications"></paper-icon-button>
-                <paper-badge id="notifyBadge" for="notifyButton" label="4"></paper-badge>
+                <paper-badge id="notifyBadge" for="notifyButton" label="[[notifyCount]]"></paper-badge>
                 <paper-icon-button class="toolbarButton logoutButton" on-tap="logout" icon="icons:account-circle"></paper-icon-button>
               </div>
 
@@ -435,23 +443,28 @@
               .then(function(){
                 var homePath = '/homes';
                 var homeUID = this.$.homeDB.path.slice(homePath.length+1);
-                this.$.userDB.path=null;
-                this.$.userDB.data={
-                  role:'admin',
-                  home:homeUID,
-                  email:e.detail.username
-                };
-                this.$.userDB.save('/homes/'+homeUID+'/users', user.uid)
+                this.$.homeIndexDB.setStoredValue("/homeIndex/"+homeUID,homeUID)
                   .then(function(){
-                    this.$.userIndexDB.path=null;
-                    this.$.userIndexDB.data={
-                      home:homeUID
+                    this.$.userDB.path=null;
+                    this.$.userDB.data={
+                      role:'admin',
+                      home:homeUID,
+                      email:e.detail.username
                     };
-                    this.$.userIndexDB.save('/userIndex',user.uid)
+                    this.$.userDB.save('/homes/'+homeUID+'/users', user.uid)
                       .then(function(){
-                        window.location="/"+homeUID+"/default/def-home";
-                      });
+                        this.$.userIndexDB.path=null;
+                        this.$.userIndexDB.data={
+                          home:homeUID
+                        };
+                        this.$.userIndexDB.save('/userIndex',user.uid)
+                          .then(function(){
+                            window.location="/"+homeUID+"/default/def-home";
+                          });
+                      }.bind(this));
                   }.bind(this));
+
+
               }.bind(this));
           }.bind(this))
           .catch(function(error){
@@ -498,7 +511,8 @@
         '_catRouteChanged(catData.category)',
         '_pageRouteChanged(pageData.page)',
         '_paramRouteChanged(paramData.param)',
-        '_authKnown(statusKnown)'
+        '_authKnown(statusKnown)',
+        '_computeNotificationCount(notifiesData)'
       ],
       _homeRouteChanged:function(home){
         this.home=home || 'default';
@@ -655,6 +669,13 @@
           this.$.notifyBadge.updatePosition();
           //this.$.appHeader.resetLayout();
         };
+      },
+      _computeNotificationCount:function(notifiesData){
+        this.$.notifyDB.query
+          .on("value",function(snapshot){
+            var count=snapshot.numChildren();
+            this.notifyCount=count;
+          }.bind(this));
       }
     });
 

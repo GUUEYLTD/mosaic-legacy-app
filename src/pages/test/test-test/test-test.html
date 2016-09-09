@@ -1,68 +1,143 @@
 <link rel="import" href="dependencies.html" />
 <dom-module id="test-test">
-
   <template>
-    <firebase-document
-      id="agreeDB"
-      app-name="main"
-      data="{{agreeDataLive}}"
-      path="/homes/{{home}}/patients/{{patient}}/carePlan/statementOfServiceUser">
-    </firebase-document>
-    <app-indexeddb-mirror
-      key="agree"
-      persisted-data="{{agreeData}}"
-      worker-url="../../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
-    </app-indexeddb-mirror>
 
-    <style include="app-grid-style">
-    :host{
-      --app-grid-columns:2;
-      --app-grid-item-height:100%;
-    }
-    paper-card{
-      width:80%;
-      margin:-50px 10% 50px 10%;
-    }
+    <firebase-document
+      id="genInputDB"
+      path="/homes/[[home]]/notifications"
+      data="{{genInputData}}"
+      app-name="main">
+    </firebase-document>
+
+    <firebase-document
+      id="notifiableDB"
+      app-name="main">
+    </firebase-document>
+
+    <firebase-query
+      id="notifyDB"
+      path="/homes/[[home]]/notifications/notify"
+      data="{{notifiesData}}"
+      app-name="main">
+    </firebase-query>
+
+    <iron-ajax
+      id="ajaxNode"
+      url="https://morning-river-60610.herokuapp.com//test"
+      params="{{inputParams}}"
+      handle-as="json"
+      on-response="handleResponse"
+      debounce-duration="300">
+    </iron-ajax>
+
+    <iron-ajax
+      id="ajaxNotify"
+      url="https://morning-river-60610.herokuapp.com//notifications"
+      params="{{notifyParams}}"
+      handle-as="json"
+      on-response="handleNotifyResponse"
+      debounce-duration="300">
+    </iron-ajax>
+
+    <style include="shared-styles">
+      :host {
+        display: block;
+
+        padding: 10px;
+      }
     </style>
 
-    <paper-card class="app-grid">
+    <div class="card">
+      <paper-time-picker time="{{genInputData.date}}"></paper-time-picker>
+      <paper-button on-tap="saveChange">save</paper-button>
+      <h1>Notifications</h1>
+      <template is="dom-repeat" items="{{notifiesData}}">
+        Message: {{item.message}}
+        <br />
+        Time: {{item.history.notify}}
+        <paper-button on-tap="dismiss">dismiss</paper-button>
 
-      <p>
-        Stored: {{agreeData.swAgree}}
-      </p>
-      <p>
-        Live: {{agreeDataLive.swAgree}}
-      </p>
+        <div style="width:100%; underline: 1px solid grey"></div>
 
-    </paper-card>
+      </template>
+    </div>
 
+  </div>
   </template>
 
   <script>
-
     Polymer({
-
       is: 'test-test',
+      ready:function(){
+        this.fire("pageLoaded",{page:"test-test"});
+      },
       properties:{
-        patient:{
-          type:String,
-        },
-        page:{
-          type:String,
-        },
-        home:{
-          type:String,
-        },
-        signedIn:{
-          type:Boolean,
-        },
-        newAccount:{
+        inputParams:{
           type:Object,
-          value:{},
-        },
+          value:{}
+        }
+      },
+      observers:[
+        "dataChanged(notifiesData)"
+      ],
+      saveChange:function(date){
+        var origPath=this.$.genInputDB.path+"/date";
+        this.$.notifiableDB.data={
+          message:"This date is coming up soon.",
+          url:"set later",
+          location:origPath,
+          conditions:{
+            type:"simple",
+            condition:true
+          },
+          history:{
+            notifiable:Date.now()
+          },
+        };
+        var path="homes/"+this.home+"/notifications/notifiable";
+        this.$.notifiableDB.save(path, null);
+      },
+      nodeSubmit:function(){
+        this.inputParams.request=this.nodeInputData;
+        this.$.ajaxNode.generateRequest();
+      },
+      handleResponse:function(response){
+        this.nodeResponse=response.detail.response.request;
+      },
+      setNotification:function(){
+        var path="homes/"+this.home+"/notifications"
+        var value={
+          stuff:true
+        };
+        this.$.genInputDB.setStoredValue(path,value);
+      },
+      removeNotification:function(){
+        var path="homes/"+this.home+"/notifications"
+        var value={
+          stuff:false
+        };
+        this.$.genInputDB.setStoredValue(path,value);
+      },
+      dataChanged:function(data){
+        console.log(data);
+      },
+      dismiss:function(e){
+        console.log(e.model.item);
+        console.log(e.model.item.$key);
+        var data=e.model.item;
+        var key=e.model.item.$key;
+        delete data.$key;
+        console.log(data);
+        this.$.notifiableDB.path=null;
+        this.$.notifiableDB.data=data;
+
+        this.$.notifiableDB.save("/homes/"+this.home+"/notifications/notified", key)
+          .then(function(){
+            this.$.notifiableDB.path="/homes/"+this.home+"/notifications/notify/"+key;
+            console.log(this.$.notifiableDB.path);
+            this.$.notifiableDB.destroy();
+          }.bind(this));
       }
     });
-
   </script>
-
 </dom-module>
