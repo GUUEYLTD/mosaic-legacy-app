@@ -277,7 +277,8 @@
       <su-header
         page="Personal Goals"
         patient="[[patient]]"
-        home="[[home]]">
+        home="[[home]]"
+        su-index-data={{suBasicInfo}}>
       </su-header>
 
       <!--repeat each goal that currently is set-->
@@ -477,6 +478,15 @@
             label="Start Date"
             guuey-date="{{guueySD}}">
           </guuey-date-input>
+
+          <guuey-notify
+            home="[[home]]"
+            notify-route="homes/[[home]]/patients/[[patient]]/personalGoals/[[goalUID]]/finishDate"
+            condition-type="guuey-date"
+            notify-condition="true"
+            notify-message="[[suBasicInfo.fName]] [[suBasicInfo.lName]]'s [[goalData.category]] goal completion date is soon."
+            notify-url="/[[home]]/care-plan/su-goals/[[patient]]">
+          </guuey-notify>
 
           <guuey-date-input
             route="homes/[[home]]/patients/[[patient]]/personalGoals/[[goalUID]]/finishDate"
