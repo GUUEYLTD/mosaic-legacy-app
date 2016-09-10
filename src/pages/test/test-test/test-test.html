@@ -48,7 +48,23 @@
     </style>
 
     <div class="card">
-      <paper-time-picker time="{{genInputData.date}}"></paper-time-picker>
+      <h1>data passthrough???</h1>
+      <guuey-notify
+        home="[[home]]"
+        notify-route="/homes/[[home]]/patients/test/carePlan/statementOfServiceUser/suDate"
+        condition-type="guuey-date"
+        notify-condition="true"
+        notify-message="check this"
+        notify-url="/[[home]]/test/test-test">
+      </guuey-notify>
+      <paper-input label="val1" value="{{val1}}"></paper-input>
+
+      <guuey-date-input
+        route="/homes/[[home]]/patients/test/carePlan/statementOfServiceUser/suDate"
+        label="Date">
+      </guuey-date-input>
+
+
       <paper-button on-tap="saveChange">save</paper-button>
       <h1>Notifications</h1>
       <template is="dom-repeat" items="{{notifiesData}}">
@@ -75,10 +91,16 @@
         inputParams:{
           type:Object,
           value:{}
+        },
+        val1:{
+          type:String,
+        },
+        val2:{
+          type:String,
         }
       },
       observers:[
-        "dataChanged(notifiesData)"
+        "dataChanged(genInputData)"
       ],
       saveChange:function(date){
         var origPath=this.$.genInputDB.path+"/date";
@@ -119,22 +141,23 @@
         this.$.genInputDB.setStoredValue(path,value);
       },
       dataChanged:function(data){
-        console.log(data);
+        this.$.genInputDB.ref.on("value",function(snapshot){
+
+        });
       },
       dismiss:function(e){
-        console.log(e.model.item);
-        console.log(e.model.item.$key);
+
         var data=e.model.item;
         var key=e.model.item.$key;
         delete data.$key;
-        console.log(data);
+
         this.$.notifiableDB.path=null;
         this.$.notifiableDB.data=data;
 
         this.$.notifiableDB.save("/homes/"+this.home+"/notifications/notified", key)
           .then(function(){
             this.$.notifiableDB.path="/homes/"+this.home+"/notifications/notify/"+key;
-            console.log(this.$.notifiableDB.path);
+
             this.$.notifiableDB.destroy();
           }.bind(this));
       }

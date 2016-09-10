@@ -157,7 +157,8 @@
           <su-header
             page="Care Plan Review"
             home="[[home]]"
-            patient="[[patient]]">
+            patient="[[patient]]"
+            su-index-data={{suBasicInfo}}>
           </su-header>
 
           <div class="mainContainer">
@@ -294,6 +295,15 @@
                 pattern="[a-zA-Z\s\.]*"
                 error-message="Please explain with letters and periods only.">
               </paper-input>
+
+              <guuey-notify
+                home="[[home]]"
+                notify-route="homes/[[home]]/patients/[[patient]]/carePlan/statementOfServiceUser/nextReviewDate"
+                condition-type="guuey-date"
+                notify-condition="true"
+                notify-message="[[suBasicInfo.fName]] [[suBasicInfo.lName]]'s Care Plan Review Date is scheduled soon."
+                notify-url="/[[home]]/care-plan/su-care-review/[[patient]]">
+              </guuey-notify>
 
               <guuey-date-input
                 route="homes/[[home]]/patients/[[patient]]/carePlan/statementOfServiceUser/nextReviewDate"

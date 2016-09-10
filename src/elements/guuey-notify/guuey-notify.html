@@ -1,0 +1,92 @@
+<link rel="import" href="dependencies.html" />
+<dom-module id="guuey-notify">
+  <template>
+    <firebase-document
+      id="notifyTargetDB"
+      path=[[notifyRoute]]
+      app-name="main"
+      data={{notifyTargetData}}>
+    </firebase-document>
+
+    <firebase-document
+      id="notifiableDB"
+      app-name="main">
+    </firebase-document>
+
+  </template>
+</dom-module>
+<script>
+  Polymer({
+    is:"guuey-notify",
+    properties:{
+      notifyRoute:{
+        type:String,
+      },
+      conditionType:{
+        type:String
+      },
+      notifyCondition:{
+        type:String
+      },
+      notifyMessage:{
+        type:String
+      },
+      notifyUrl:{
+        type:String
+      },
+      originalTarget:{
+        type:String
+      },
+      newTarget:{
+        type:String,
+        observer:"compareTargets"
+      },
+      readyToCompare:{
+        type:Boolean,
+        value:false
+      }
+    },
+    ready:function(){
+      this.$.notifyTargetDB.getStoredValue(this.notifyRoute)
+        .then(function(snapshot){
+          this.originalTarget=snapshot;
+          this.readyToCompare=true;
+        }.bind(this));
+    },
+    observers:[
+      "notifyTargetChanged(notifyTargetData)"
+    ],
+    notifyTargetChanged:function(data){
+      if(this.$.notifyTargetDB.ref){
+        this.$.notifyTargetDB.ref.once("value",function(snapshot){
+          this.newTarget=snapshot.val();
+        }.bind(this));
+      }
+    },
+    compareTargets:function(){
+      if(this.readyToCompare){
+        if(this.newTarget!=this.oldTarget){
+          this.$.notifiableDB.data={
+            message:this.notifyMessage,
+            url:this.notifyUrl,
+            location:this.$.notifyTargetDB.path,
+            conditions:{
+              type:this.conditionType,
+              condition:Date.parse(this.newTarget)
+            },
+            history:{
+              notifiable:Date.now()
+            },
+          };
+          var path="homes/"+this.home+"/notifications/notifiable";
+          this.$.notifiableDB.save(path, null)
+            .then(function(){
+              console.log("saved new notification");
+              this.$.notifiableDB.path=null;
+              this.$.notifiableDB.data=null;
+            }.bind(this));
+        };
+      };
+    }
+  });
+</script>
