@@ -6,7 +6,7 @@
       id="genInputDB"
       path="/homes/[[home]]/notifications"
       data="{{genInputData}}"
-      app-name="main">
+      app-name="uploads">
     </firebase-document>
 
     <firebase-document
@@ -48,6 +48,24 @@
     </style>
 
     <div class="card">
+      <h1>file uploads</h1>
+
+      <firebase-storage
+        id="storage"
+        app-name="main"
+        path="test/">
+      </firebase-storage>
+
+      <button on-tap="openDialog">Upload File</button>
+      <input type="file" id="fileInput" on-change="fileChange">
+
+
+      <h1>old shenanigans</h1>
+      <input
+        id="imageInput"
+        type="file"
+        on-change="_inputChanged">
+      </input>
       <h1>data passthrough???</h1>
       <guuey-notify
         home="[[home]]"
@@ -80,7 +98,6 @@
 
   </div>
   </template>
-
   <script>
     Polymer({
       is: 'test-test',
@@ -141,9 +158,9 @@
         this.$.genInputDB.setStoredValue(path,value);
       },
       dataChanged:function(data){
-        this.$.genInputDB.ref.on("value",function(snapshot){
+        //this.$.genInputDB.ref.on("value",function(snapshot){
 
-        });
+        //});
       },
       dismiss:function(e){
 
@@ -160,6 +177,34 @@
 
             this.$.notifiableDB.destroy();
           }.bind(this));
+      },
+      _inputChanged:function(e){
+        var reader= new FileReader();
+        var file=e.target.files[0];
+        reader.readAsDataURL(file);
+        reader.addEventListener("load", function () {
+          this.uploadFile(reader.result);
+        }.bind(this), false);
+      },
+      uploadFile:function(file){
+        console.log(this.$.genInputDB.db.storage);
+        var storage=this.$.genInputDB.db.storage();
+
+        var testRef=storage.ref('test');
+        var file=file;
+        console.log(file);
+        testRef.putString(file)
+          .then(function(snapshot){
+            console.log("put the file up.");
+          });
+      },
+      fileChange:function(e) {
+        var file = e.target.files[0];
+        this.$.storage._uploadFile(file).then(function(response) {
+          console.log("Success!", response);
+        }, function(error) {
+          console.error("Failed!", error);
+        });
       }
     });
   </script>
