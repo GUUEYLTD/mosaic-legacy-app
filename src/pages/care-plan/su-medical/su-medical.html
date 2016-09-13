@@ -23,6 +23,11 @@
       data={{uploadsData}}>
     </firebase-query>
 
+    <iron-media-query
+      query="(max-width:900px)"
+      query-matches="{{query900}}">
+    </iron-media-query>
+
     <style include="app-grid-style">
       :host{
         --app-grid-columns:2;
@@ -61,10 +66,7 @@
         width:90%;
       }
       table{
-        width:90%;
-        margin-left:5%;
-        margin-right:5%;
-        margin-bottom:100px;
+        width:100%;
       }
       td{
         text-align:left;
@@ -87,6 +89,43 @@
       tr:nth-child(even){
         background-color:#EEE;
         border-color:#EEE;
+      }
+      .tableScrollLabel{
+        font-weight:bold;
+        text-transform:uppercase;
+        margin-bottom:0px;
+        padding-bottom:0px;
+        font-size:10px;
+        padding-left:20px;
+        color:var(--table-scroll-lable-color);
+      }
+      .tableContainer{
+        padding:20px;
+        height:auto;
+        overflow:var(--table-overflow);
+      }
+      .tableContainer table{
+        padding:20px;
+        width:100%;
+      }
+      table{
+        background-color:var(--table-background-color);
+      }
+      tbody{
+        display:var(--tbody-display);
+      }
+      thead tr{
+        position:var(--thead-tr-position);
+        display:var(--thead-tr-display);
+      }
+      td{
+        width:var(--thead-tr-td-width);
+      }
+      td,th{
+        min-width:var(--td-th-min-width);
+      }
+      td,th:last-of-type{
+        width:var(--td-th-last-width);
       }
     </style>
 
@@ -116,42 +155,49 @@
           on-change="fileChange"
           hidden>
         </input>
-        <table>
-          <thead>
-            <tr>
-              <th>
-                Document Title
-              </th>
-              <th>
-                Date of Upload
-              </th>
-              <th>
-                Notes
-              </th>
-              <th>
-                Location
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <template is="dom-repeat" items="{{uploadsData}}" as="upload">
+        <div class="tableContainer">
+          <p class="tableScrollLabel">
+            swipe left scrolls table
+          </p>
+          <table>
+            <thead>
               <tr>
-                <td>
-                  <paper-input id="tableInput" label="file name" value="{{upload.customName}}"></paper-input>
-                </td>
-                <td>
-                  [[upload.dateUploaded]]
-                </td>
-                <td>
-                  <paper-input id="tableInput" label="comments" value="{{upload.comments}}"></paper-input>
-                </td>
-                <td>
-                  <paper-button id="fileInputDisplay" on-tap="openFile">go to file</paper-button>
-                </td>
+                <th>
+                  Document Title
+                </th>
+                <th>
+                  Date of Upload
+                </th>
+                <th>
+                  Notes
+                </th>
+                <th>
+                  Location
+                </th>
               </tr>
-            </template>
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              <template is="dom-repeat" items="{{uploadsData}}" as="upload">
+                <tr>
+                  <td>
+                    <paper-input id="tableInput" label="file name" value="{{upload.customName}}"></paper-input>
+                  </td>
+                  <td>
+                    [[upload.dateUploaded]]
+                  </td>
+                  <td>
+                    <paper-input id="tableInput" label="comments" value="{{upload.comments}}"></paper-input>
+                  </td>
+                  <td>
+                    <paper-button id="fileInputDisplay" on-tap="openFile">go to file</paper-button>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+
+
+        </div>
 
       </paper-card>
 
@@ -174,6 +220,9 @@
           type:String
         }
       },
+      observers:[
+        "editQuery(query900)"
+      ],
       fileChange:function(e) {
         var file = e.target.files[0];
         this.uploadedFile=file;
@@ -204,6 +253,39 @@
       },
       openFile:function(e){
         window.open(e.model.upload.location);
+      },
+      editQuery:function(query900){
+        if(query900){
+          //table style
+          this.customStyle["--table-scroll-lable-color"]="inherit";
+          this.customStyle["--table-overflow"]="scroll";
+          this.customStyle["--tbody-display"]="block";
+          this.customStyle["--thead-tr-position"]="relative";
+          this.customStyle["--thead-tr-display"]="block";
+          this.customStyle["--thead-tr-td-width"]="150px";
+          this.customStyle["--td-th-min-width"]="150px";
+          this.customStyle["--td-th-last-width"]="150px";
+          //fab style
+          this.customStyle["--main-fab-position"]="fixed";
+          this.customStyle["--main-fab-top"]="unset";
+          this.customStyle["--main-fab-bottom"]="5%";
+
+          this.updateStyles();
+        } else {
+          this.customStyle["--table-scroll-lable-color"]="transparent";
+          this.customStyle["--table-overflow"]="unset";
+          this.customStyle["--tbody-display"]="table-row-group";
+          this.customStyle["--thead-tr-position"]="unset";
+          this.customStyle["--thead-tr-display"]="table-row";
+          this.customStyle["--thead-tr-td-width"]="unset";
+          this.customStyle["--td-th-min-width"]="unset";
+          this.customStyle["--td-th-last-width"]="unset";
+
+          this.customStyle["--main-fab-position"]="absolute";
+          this.customStyle["--main-fab-top"]="235px";
+          this.customStyle["--main-fab-bottom"]="unset";
+          this.updateStyles();
+        };
       },
       print:function(e){
         var printable=window.open("","printable", "height:=400, width=600");
