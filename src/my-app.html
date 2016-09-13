@@ -232,14 +232,10 @@
         --paper-progress-active-color:var(--page-loading-active-color);
         display:inherit;
       }
-      paper-spinner{
-        height:150px;
-        width:150px;
-      }
     </style>
 
     <div class="loadingOverlay">
-      <paper-spinner active></paper-spinner>
+      <paper-spinner-lite active></paper-spinner-lite>
     </div>
 
     <app-drawer-layout fullbleed id="appDrawerLayout">
@@ -294,7 +290,6 @@
         <app-header id="appHeader" condenses reveals effects="waterfall">
           <span hidden="{{!loginPageInactive(page)}}">
             <app-toolbar>
-              <paper-badge id="notifyBadge" for="notifyButton" label="[[notifyCount]]"></paper-badge>
               <div class="toolbarLeft">
                 <paper-icon-button class="toolbarButton" icon="menu" on-tap="toggleDrawer"></paper-icon-button>
                 <span class="menuText">menu</span>
@@ -303,6 +298,7 @@
 
               <div class="toolbarRight">
                 <a class="inherit" href="/[[home]]/default/def-home"><paper-icon-button class="toolbarButton" icon="icons:home"></paper-icon-button></a>
+                <paper-icon-button icon="icons:apps"></paper-icon-button>
                 <paper-menu-button id="notifyDropDown" horizontal-align="right" vertical-align="top" no-overlap ignore-select>
                   <paper-icon-button class="toolbarButton dropdown-trigger" id="notifyButton" icon="social:notifications"></paper-icon-button>
                   <paper-menu class="dropdown-content">
@@ -314,7 +310,7 @@
 
                   </paper-menu>
                 </paper-menu-button>
-
+                <span id="notifyCount" hidden="{{computeNotifyHidden(notifyCount)}}">[[notifyCount]]</span>
 
                 <paper-icon-button class="toolbarButton logoutButton" on-tap="logout" icon="icons:account-circle"></paper-icon-button>
               </div>
@@ -671,14 +667,14 @@
           this.$.appDrawerLayout.forceNarrow=true;
           //this.$.appHeader.resizerShouldNotify('notifyBadge');
           this.$.appHeader.notifyResize();
-          this.$.notifyBadge.updatePosition();
+          //this.$.notifyBadge.updatePosition();
           //this.$.appHeader.resetLayout();
           this.$.suDrawer.close();
         } else {
           this.$.appDrawerLayout.forceNarrow=false;
           //this.$.appHeader.resizerShouldNotify('notifyBadge');
           this.$.appHeader.notifyResize();
-          this.$.notifyBadge.updatePosition();
+          //this.$.notifyBadge.updatePosition();
           //this.$.appHeader.resetLayout();
         };
       },
@@ -700,6 +696,13 @@
             this.$.notifiableDB.path="/homes/"+this.home+"/notifications/notify/"+key;
             this.$.notifiableDB.destroy();
           }.bind(this));
+      },
+      computeNotifyHidden:function(count){
+        if(count<1){
+          return true;
+        } else {
+          return false;
+        }
       }
     });
 

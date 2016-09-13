@@ -23,7 +23,11 @@
       data={{uploadsData}}>
     </firebase-query>
 
-    <style>
+    <style include="app-grid-style">
+      :host{
+        --app-grid-columns:2;
+        --app-grid-expandible-item-columns:2;
+      }
       paper-card{
         width:80%;
         margin:-50px 10% 50px 10%;
@@ -31,6 +35,58 @@
       .pdfContainer{
         margin-bottom:50px;
         border:1px solid black;
+      }
+      .inputContainer{
+        width:100%;
+        display:inline-flex;
+        flex-direction:row;
+      }
+      #fileInputDisplay{
+        background-color: #009688;
+        width:100%;
+        color:#FFF;
+        margin:0;
+      }
+      #fileInputName{
+        align-self:center;
+        margin-top:-15px;
+      }
+      .grid-container{
+        padding:10%;
+      }
+      #tableInput{
+        margin:0;
+        padding:0;
+        padding-bottom:20px;
+        width:90%;
+      }
+      table{
+        width:90%;
+        margin-left:5%;
+        margin-right:5%;
+        margin-bottom:100px;
+      }
+      td{
+        text-align:left;
+        padding:10px;
+      }
+      td a{
+        text-decoration:none;
+        color:#FFF;
+      }
+      th{
+        text-align:left;
+      }
+      tr{
+        width:100%;
+      }
+      tr:nth-child(odd){
+        background-color:#FFF;
+        border-color:#FFF;
+      }
+      tr:nth-child(even){
+        background-color:#EEE;
+        border-color:#EEE;
       }
     </style>
 
@@ -40,8 +96,19 @@
           home="[[home]]"
           patient="[[patient]]">
         </su-header>
-        <h1>file uploads</h1>
-        <paper-input label="File Name" value="{{newFileName}}"></paper-input>
+        <div class="inputContainer app-grid">
+          <div class="grid-container">
+            <paper-input id="fileInputName" label="Asessment Name" value="{{newFileName}}"></paper-input>
+          </div>
+
+          <div class="grid-container">
+            <paper-button
+              id="fileInputDisplay"
+              on-tap="_onAddFilesClick">upload file
+            </paper-button>
+          </div>
+
+        </div>
 
         <input
           type="file"
@@ -49,30 +116,43 @@
           on-change="fileChange"
           hidden>
         </input>
-        <paper-icon-button
-          id="fileInputDisplay"
-          on-tap="_onAddFilesClick"
-          icon="icons:cloud-upload"
-          hidden="[[!setimage]]">
-        </paper-icon-button>
+        <table>
+          <thead>
+            <tr>
+              <th>
+                Document Title
+              </th>
+              <th>
+                Date of Upload
+              </th>
+              <th>
+                Notes
+              </th>
+              <th>
+                Location
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <template is="dom-repeat" items="{{uploadsData}}" as="upload">
+              <tr>
+                <td>
+                  <paper-input id="tableInput" label="file name" value="{{upload.customName}}"></paper-input>
+                </td>
+                <td>
+                  [[upload.dateUploaded]]
+                </td>
+                <td>
+                  <paper-input id="tableInput" label="comments" value="{{upload.comments}}"></paper-input>
+                </td>
+                <td>
+                  <paper-button id="fileInputDisplay" on-tap="openFile">go to file</paper-button>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
 
-        <template is="dom-repeat" items="{{uploadsData}}" as="upload">
-
-          <div class="pdfContainer">
-
-            <h1>[[upload.customName]]</h1>
-            <h2>[[upload.dateUploaded]]</h2>
-
-            <embed
-              src="[[upload.location]]"
-              width="100%"
-              height="500px"
-              type='application/pdf'>
-            </embed>
-
-          </div>
-
-        </template>
       </paper-card>
 
   </template>
@@ -121,6 +201,9 @@
           this.$.fileInput.value = '';
           this.$.fileInput.click();
         }
+      },
+      openFile:function(e){
+        window.open(e.model.upload.location);
       },
       print:function(e){
         var printable=window.open("","printable", "height:=400, width=600");
