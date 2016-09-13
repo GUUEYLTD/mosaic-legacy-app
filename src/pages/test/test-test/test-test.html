@@ -2,42 +2,25 @@
 <dom-module id="test-test">
   <template>
 
-    <firebase-document
-      id="genInputDB"
-      path="/homes/[[home]]/notifications"
-      data="{{genInputData}}"
-      app-name="uploads">
-    </firebase-document>
+    <firebase-storage
+      id="pdf"
+      app-name="main"
+      path="/uploads"
+      url={{pdfURL}}>
+    </firebase-storage>
 
     <firebase-document
-      id="notifiableDB"
+      id="fileLocDB"
       app-name="main">
     </firebase-document>
-
     <firebase-query
-      id="notifyDB"
-      path="/homes/[[home]]/notifications/notify"
-      data="{{notifiesData}}"
-      app-name="main">
+      id="uploadsDB"
+      app-name="main"
+      path="homes/[[home]]/patients/[[patient]]/uploads"
+      data={{uploadsData}}>
     </firebase-query>
 
-    <iron-ajax
-      id="ajaxNode"
-      url="https://morning-river-60610.herokuapp.com//test"
-      params="{{inputParams}}"
-      handle-as="json"
-      on-response="handleResponse"
-      debounce-duration="300">
-    </iron-ajax>
 
-    <iron-ajax
-      id="ajaxNotify"
-      url="https://morning-river-60610.herokuapp.com//notifications"
-      params="{{notifyParams}}"
-      handle-as="json"
-      on-response="handleNotifyResponse"
-      debounce-duration="300">
-    </iron-ajax>
 
     <style include="shared-styles">
       :host {
@@ -50,50 +33,21 @@
     <div class="card">
       <h1>file uploads</h1>
 
-      <firebase-storage
-        id="storage"
-        app-name="main"
-        path="test/">
-      </firebase-storage>
-
       <button on-tap="openDialog">Upload File</button>
       <input type="file" id="fileInput" on-change="fileChange">
 
+      <template is="dom-repeat" items="{{uploadsData}}" as="upload">
 
-      <h1>old shenanigans</h1>
-      <input
-        id="imageInput"
-        type="file"
-        on-change="_inputChanged">
-      </input>
-      <h1>data passthrough???</h1>
-      <guuey-notify
-        home="[[home]]"
-        notify-route="/homes/[[home]]/patients/test/carePlan/statementOfServiceUser/suDate"
-        condition-type="guuey-date"
-        notify-condition="true"
-        notify-message="check this"
-        notify-url="/[[home]]/test/test-test">
-      </guuey-notify>
-      <paper-input label="val1" value="{{val1}}"></paper-input>
+        <h1>a file</h1>
 
-      <guuey-date-input
-        route="/homes/[[home]]/patients/test/carePlan/statementOfServiceUser/suDate"
-        label="Date">
-      </guuey-date-input>
-
-
-      <paper-button on-tap="saveChange">save</paper-button>
-      <h1>Notifications</h1>
-      <template is="dom-repeat" items="{{notifiesData}}">
-        Message: {{item.message}}
-        <br />
-        Time: {{item.history.notify}}
-        <paper-button on-tap="dismiss">dismiss</paper-button>
-
-        <div style="width:100%; underline: 1px solid grey"></div>
+        <embed
+          src="[[upload.location]]"
+          width="100%"
+          height="500px"
+          type='application/pdf'>
 
       </template>
+
     </div>
 
   </div>
@@ -105,106 +59,30 @@
         this.fire("pageLoaded",{page:"test-test"});
       },
       properties:{
-        inputParams:{
-          type:Object,
-          value:{}
-        },
-        val1:{
-          type:String,
-        },
-        val2:{
-          type:String,
-        }
+
       },
       observers:[
-        "dataChanged(genInputData)"
+
       ],
-      saveChange:function(date){
-        var origPath=this.$.genInputDB.path+"/date";
-        this.$.notifiableDB.data={
-          message:"This date is coming up soon.",
-          url:"set later",
-          location:origPath,
-          conditions:{
-            type:"simple",
-            condition:true
-          },
-          history:{
-            notifiable:Date.now()
-          },
-        };
-        var path="homes/"+this.home+"/notifications/notifiable";
-        this.$.notifiableDB.save(path, null);
-      },
-      nodeSubmit:function(){
-        this.inputParams.request=this.nodeInputData;
-        this.$.ajaxNode.generateRequest();
-      },
-      handleResponse:function(response){
-        this.nodeResponse=response.detail.response.request;
-      },
-      setNotification:function(){
-        var path="homes/"+this.home+"/notifications"
-        var value={
-          stuff:true
-        };
-        this.$.genInputDB.setStoredValue(path,value);
-      },
-      removeNotification:function(){
-        var path="homes/"+this.home+"/notifications"
-        var value={
-          stuff:false
-        };
-        this.$.genInputDB.setStoredValue(path,value);
-      },
-      dataChanged:function(data){
-        //this.$.genInputDB.ref.on("value",function(snapshot){
-
-        //});
-      },
-      dismiss:function(e){
-
-        var data=e.model.item;
-        var key=e.model.item.$key;
-        delete data.$key;
-
-        this.$.notifiableDB.path=null;
-        this.$.notifiableDB.data=data;
-
-        this.$.notifiableDB.save("/homes/"+this.home+"/notifications/notified", key)
-          .then(function(){
-            this.$.notifiableDB.path="/homes/"+this.home+"/notifications/notify/"+key;
-
-            this.$.notifiableDB.destroy();
-          }.bind(this));
-      },
-      _inputChanged:function(e){
-        var reader= new FileReader();
-        var file=e.target.files[0];
-        reader.readAsDataURL(file);
-        reader.addEventListener("load", function () {
-          this.uploadFile(reader.result);
-        }.bind(this), false);
-      },
-      uploadFile:function(file){
-        console.log(this.$.genInputDB.db.storage);
-        var storage=this.$.genInputDB.db.storage();
-
-        var testRef=storage.ref('test');
-        var file=file;
-        console.log(file);
-        testRef.putString(file)
-          .then(function(snapshot){
-            console.log("put the file up.");
-          });
-      },
       fileChange:function(e) {
         var file = e.target.files[0];
-        this.$.storage._uploadFile(file).then(function(response) {
-          console.log("Success!", response);
-        }, function(error) {
-          console.error("Failed!", error);
+        this.uploadedFile=file;
+        this.$.pdf._uploadFile(file)
+        .then(function(fileLoc) {
+          //save the location to the firebase reg db...
+          var path="/homes/"+this.home+"/patients/"+this.patient+"/uploads";
+            this.$.fileLocDB.data={
+            location:fileLoc
+          }
+          this.$.fileLocDB.save(path,null);
+          console.log(fileLoc);
+        }.bind(this))
+        .catch(function(error){
+          console.log(error);
         });
+      },
+      renderPDF:function(){
+        this.pdfURL=this.$.pdf._downloadFile('/test/Integration_Guide.pdf');
       }
     });
   </script>

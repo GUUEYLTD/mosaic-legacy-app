@@ -5,30 +5,74 @@
 
   <template>
 
+    <firebase-storage
+      id="pdf"
+      app-name="main"
+      path="uploads/[[home]]/[[patient]]">
+    </firebase-storage>
+
     <firebase-document
-      id="assDB"
-      path="/homes/{{home}}/patients/{{patient}}/medicalAssessment"
-      data="{{assData}}"
+      id="fileLocDB"
       app-name="main">
     </firebase-document>
 
-    <style include=""></style>
+    <firebase-query
+      id="uploadsDB"
+      app-name="main"
+      path="homes/[[home]]/patients/[[patient]]/uploads"
+      data={{uploadsData}}>
+    </firebase-query>
+
     <style>
       paper-card{
         width:80%;
         margin:-50px 10% 50px 10%;
+      }
+      .pdfContainer{
+        margin-bottom:50px;
+        border:1px solid black;
       }
     </style>
 
       <paper-card elevation="3">
         <su-header
           page="Medical Assessment"
-          home="{{home}}"
-          patient="{{patient}}">
+          home="[[home]]"
+          patient="[[patient]]">
         </su-header>
-        <center>
-          <h1>Coming Soon!</h1>
-        </center>
+        <h1>file uploads</h1>
+        <paper-input label="File Name" value="{{newFileName}}"></paper-input>
+
+        <input
+          type="file"
+          id="fileInput"
+          on-change="fileChange"
+          hidden>
+        </input>
+        <paper-icon-button
+          id="fileInputDisplay"
+          on-tap="_onAddFilesClick"
+          icon="icons:cloud-upload"
+          hidden="[[!setimage]]">
+        </paper-icon-button>
+
+        <template is="dom-repeat" items="{{uploadsData}}" as="upload">
+
+          <div class="pdfContainer">
+
+            <h1>[[upload.customName]]</h1>
+            <h2>[[upload.dateUploaded]]</h2>
+
+            <embed
+              src="[[upload.location]]"
+              width="100%"
+              height="500px"
+              type='application/pdf'>
+            </embed>
+
+          </div>
+
+        </template>
       </paper-card>
 
   </template>
@@ -50,16 +94,33 @@
           type:String
         }
       },
-      _inputChanged:function(e){
-        var reader= new FileReader();
-        var file=e.target.files[0];
-        reader.readAsDataURL(file);
-        reader.addEventListener("load", function () {
-          this.$.assDB.setStoredValue("/homes/"+this.home+"/patients/"+this.patient+"/medicalAssessment/test", reader.result);
-        }.bind(this), false);
+      fileChange:function(e) {
+        var file = e.target.files[0];
+        this.uploadedFile=file;
+        this.$.pdf._uploadFile(file)
+        .then(function(fileLoc) {
+          //save the location to the firebase reg db...
+          var path="/homes/"+this.home+"/patients/"+this.patient+"/uploads";
+          var date= new Date().toDateString();
+            this.$.fileLocDB.data={
+            location:fileLoc,
+            dateUploaded:date,
+            customName:this.newFileName
+          };
+          this.$.fileLocDB.save(path,null)
+            .then(function(snapshot){
+              this.newFileName=null;
+            }.bind(this));
+        }.bind(this))
+        .catch(function(error){
+          console.log(error);
+        });
       },
-      _computeImage:function(assData){
-        return base64;
+      _onAddFilesClick: function(e) {
+        if (document.createEvent) {
+          this.$.fileInput.value = '';
+          this.$.fileInput.click();
+        }
       },
       print:function(e){
         var printable=window.open("","printable", "height:=400, width=600");
