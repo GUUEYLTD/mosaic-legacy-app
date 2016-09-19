@@ -30,6 +30,11 @@
       worker-url="../../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
     </app-indexeddb-mirror>
 
+    <firebase-document
+      id="suIndexDB"
+      app-name="main">
+    </firebase-document>
+
     <iron-media-query
       query="(max-width:900px)"
       query-matches="{{query900}}">
@@ -885,7 +890,8 @@
       observers:[
         "editquery900(query900)",
         "requirementsMet(profileData)",
-        "secondaryRequirementsMet(nextOfKinData)"
+        "secondaryRequirementsMet(nextOfKinData)",
+        "nameChanged(profileData.fName, profileData.lName)"
       ],
       print:function(e){
         var printable=window.open("","printable");
@@ -994,6 +1000,15 @@
               return true;
             };
           };
+        };
+      },
+      nameChanged:function(fName, lName){
+        console.log(fName+" "+lName);
+        if(fName!=null){
+          this.$.suIndexDB.setStoredValue("/homes/"+this.home+"/patients/suIndex/"+this.patient+"/fName",fName);
+        };
+        if(lName!=null){
+          this.$.suIndexDB.setStoredValue("/homes/"+this.home+"/patients/suIndex/"+this.patient+"/lName",lName);
         };
       }
     });
