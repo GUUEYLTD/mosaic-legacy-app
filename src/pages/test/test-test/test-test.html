@@ -1,89 +1,389 @@
 <link rel="import" href="dependencies.html" />
 <dom-module id="test-test">
+
   <template>
-
-    <firebase-storage
-      id="pdf"
-      app-name="main"
-      path="/uploads"
-      url={{pdfURL}}>
-    </firebase-storage>
-
+    <firebase-query
+      id="suIndexDB"
+      path="/homes/[[home]]/patients/suIndex"
+      data="{{patientListLive}}"
+      app-name="main">
+    </firebase-query>
+    <app-indexeddb-mirror
+      id="suIndexDBIndex"
+      key="suIndexDB"
+      data="{{patientListLive}}"
+      persisted-data="{{patientList}}"
+      worker-url="../../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
     <firebase-document
-      id="fileLocDB"
+      id="fireDoc"
       app-name="main">
     </firebase-document>
-    <firebase-query
-      id="uploadsDB"
-      app-name="main"
-      path="homes/[[home]]/patients/[[patient]]/uploads"
-      data={{uploadsData}}>
-    </firebase-query>
-
-
-
-    <style include="shared-styles">
-      :host {
-        display: block;
-
-        padding: 10px;
-      }
+    <!--media query workaround for shadow dom-->
+    <iron-media-query
+      query="(min-width:1300px)"
+      query-matches="{{query1300}}">
+    </iron-media-query>
+    <iron-media-query
+      query="(min-width:1100px)"
+      query-matches="{{query1100}}">
+    </iron-media-query>
+    <iron-media-query
+      query="(min-width:900px)"
+      query-matches="{{query900}}">
+    </iron-media-query>
+    <iron-media-query
+      query="(min-width:700px)"
+      query-matches="{{query700}}">
+    </iron-media-query>
+    <iron-media-query
+      query="(min-width:500px)"
+      query-matches="{{query500}}">
+    </iron-media-query>
+    <style include="app-grid-style">
+    :host{
+      --app-grid-columns:5;
+      --app-grid-item-height:150%;
+    }
+    .multiBoxContainer{
+      margin-top:-75px;
+      margin-right:10%;
+      margin-left:10%;
+    }
+    .suBox{
+      margin:20px;
+      position:relative;
+    }
+    .suBoxImage{
+      width:100%;
+      height:200px;
+    }
+    .suBoxImage:hover{
+      cursor:pointer;
+    }
+    .suspendedText{
+      text-transform:uppercase;
+      width:80%;
+      color:red;
+      font-size:24px;
+      font-weight:bold;
+      position:absolute;
+      text-align:center;
+      z-index:2;
+      top:25%;
+      left:10%;
+    }
+    .activeImage{
+      height:auto;
+      width:auto;
+      background-color: lightgray;
+    }
+    .suLower{
+      padding: 10px 10px 10px 10px;
+      position:absolute;
+      bottom:0;
+    }
+    .suEdit{
+      position:absolute;
+      bottom:0;
+      right:0;
+    }
+    paper-fab{
+      position:absolute;
+      right:5%;
+      top:140px;
+      z-index:1;
+      /*polyme overrides*/
+      position:var(--main-fab-position);
+      bottom:var(--main-fab-bottom);
+      top:var(--main-fab-top);
+      right:var(--main-fab-right);
+    }
+    #activeDialog{
+      margin:0;
+    }
+    #suspendedDialog{
+      margin:0;
+    }
     </style>
 
-    <div class="card">
-      <h1>file uploads</h1>
+    <paper-dialog id="activeDialog" no-overlap horizontal-align="left" vertical-align="top">
+      <paper-button on-tap="editServiceUser">edit</paper-button>
+      <br />
+      <paper-button on-tap="suspendServiceUser">suspend</paper-button>
+      <br />
+      <paper-button on-tap="archiveUser">archive</paper-button>
+    </paper-dialog>
 
-      <button on-tap="openDialog">Upload File</button>
-      <input type="file" id="fileInput" on-change="fileChange">
+    <paper-dialog id="suspendedDialog" no-overlap horizontal-align="left" vertical-align="top">
+      <paper-button on-tap="editServiceUser">edit</paper-button>
+      <br />
+      <paper-button on-tap="unSuspendServiceUser">un-suspend</paper-button>
+      <br />
+      <paper-button on-tap="archiveUser">archive</paper-button>
+    </paper-dialog>
 
-      <template is="dom-repeat" items="{{uploadsData}}" as="upload">
+    <paper-fab
+      id="mainFab"
+      elevation="3"
+      icon="icons:add"
+      on-tap="createNewPatient">
+    </paper-fab>
 
-        <h1>a file</h1>
+    <paper-input label="search" value="{{searchVal}}"></paper-input>
 
-        <embed
-          src="[[upload.location]]"
-          width="100%"
-          height="500px"
-          type='application/pdf'>
+    <template
+      is="dom-repeat"
+      items="[[patientList]]"
+      filter="{{searchFilter(searchVal)}}"
+      observe="fName lName">
 
-      </template>
+      [[item.fName]] [[item.lName]]
+      <br />
+    </template>
+    <div style="height:100px; width:100%;">
 
     </div>
 
+    <div class="multiBoxContainer">
+      <div class="app-grid" has-aspect-ratio>
+        <template
+          is="dom-repeat"
+          items="[[patientList]]"
+          filter="filterArchived"
+          observe="currentStatus"
+          as="su">
+
+            <div hidden="{{!_computeSuspended(su.currentStatus)}}" class=" suBoxWrapper">
+              <paper-card
+                class="suBox"
+                elevation="3">
+              <a href="/[[home]]/care-plan/su-profile/[[su.$key]]">
+                <iron-image
+                  class="suBoxImage"
+                  sizing="cover"
+                  preload
+                  placeholder="../../../../images/defaultAvatar.png"
+                  fade
+                  src="[[su.image]]">
+                </iron-image>
+              </a>
+
+                <p class="suspendedText">
+                  suspended
+                </p>
+                <div class="suLower">
+                  [[su.fName]]
+                  <br />
+                  [[su.lName]]
+                </div>
+                <paper-icon-button class="suEdit" on-tap="openSuspendedDialog" icon="icons:more-vert"></paper-icon-button>
+              </paper-card>
+            </div>
+
+            <div hidden="{{_computeSuspended(su.currentStatus)}}" class="suBoxWrapper">
+              <paper-card
+                class="suBox"
+                elevation="3">
+                <a href="/[[home]]/care-plan/su-profile/[[su.$key]]">
+                  <iron-image
+                    class="suBoxImage"
+                    sizing="cover"
+                    preload
+                    placeholder="../../../../images/defaultAvatar.png"
+                    fade
+                    src="[[su.image]]">
+                  </iron-image>
+                </a>
+                <div class="suLower">
+                  [[su.fName]]
+                  <br />
+                  [[su.lName]]
+                </div>
+                <paper-icon-button class="suEdit" on-tap="openDialog" icon="icons:more-vert"></paper-icon-button>
+              </paper-card>
+            </div>
+
+        </template>
+
+    </div>
   </div>
+    <div style="height:100px;">
+      <!--padding for bottom-->
+    </div>
   </template>
+
   <script>
+
     Polymer({
+
       is: 'test-test',
       ready:function(){
-        this.fire("pageLoaded",{page:"test-test"});
+        this.fire("pageLoaded", {page:"test-test"});
       },
       properties:{
-
+        patient:{
+          type:String,
+        },
+        page:{
+          type:String,
+        },
+        home:{
+          type:String,
+        },
+        signedIn:{
+          type:Boolean,
+        },
+        newAccount:{
+          type:Object,
+          value:{},
+        },
       },
       observers:[
-
+        "mediaQueryEdit(query1300, query1100, query900, query700, query500)",
+        "dbLoaded(patientList)"
       ],
-      fileChange:function(e) {
-        var file = e.target.files[0];
-        this.uploadedFile=file;
-        this.$.pdf._uploadFile(file)
-        .then(function(fileLoc) {
-          //save the location to the firebase reg db...
-          var path="/homes/"+this.home+"/patients/"+this.patient+"/uploads";
-            this.$.fileLocDB.data={
-            location:fileLoc
-          }
-          this.$.fileLocDB.save(path,null);
-          console.log(fileLoc);
-        }.bind(this))
-        .catch(function(error){
-          console.log(error);
-        });
+      createNewPatient:function(){
+        this.$.fireDoc.path=null;
+        this.$.fireDoc.data={
+          home:this.home,
+          currentStatus:"archived"
+        };
+        this.$.fireDoc.save('/homes/'+this.home+'/patients', null)
+          .then(function(){
+            var patientPath='/homes/'+this.home+'/patients';
+            this.patient = this.$.fireDoc.path.slice(patientPath.length+1);
+            window.location.href="/"+this.home+"/care-plan/su-create/"+this.patient;
+          }.bind(this));
       },
-      renderPDF:function(){
-        this.pdfURL=this.$.pdf._downloadFile('/test/Integration_Guide.pdf');
+      createNewAccount:function(){
+        this.fire('createNewAccount',this.newAccount);
+      },
+      openDialog:function(e) {
+        this.$.activeDialog.positionTarget = e.target;
+        if(e.model.su && e.model.su){
+          if(e.model.su.fName && e.model.su.lName){
+            this.modalFirstName=e.model.su.fName;
+            this.modalLastName=e.model.su.lName;
+          }
+        }
+        this.modalKey=e.model.su.$key;
+        this.$.activeDialog.toggle();
+      },
+      openSuspendedDialog:function(e) {
+        this.$.suspendedDialog.positionTarget = e.target;
+        if(e.model.su && e.model.su){
+          if(e.model.su.fName && e.model.su.lName){
+            this.modalFirstName=e.model.su.fName;
+            this.modalLastName=e.model.su.lName;
+          }
+        }
+        this.modalKey=e.model.su.$key;
+        this.$.suspendedDialog.toggle();
+      },
+      editServiceUser:function(e){
+        if(e.model){
+          window.open("/"+this.home+"/care-plan/su-profile/"+e.model.su.$key, '_self');
+        } else {
+          window.open("/"+this.home+"/care-plan/su-profile/"+this.modalKey, '_self');
+        };
+      },
+      suspendServiceUser:function(e){
+        var path=this.$.suIndexDB.path+"/"+this.modalKey+"/currentStatus";
+        this.$.suIndexDB.setStoredValue(path, "suspended");
+        this.$.activeDialog.toggle();
+      },
+      unSuspendServiceUser:function(e){
+        var path=this.$.suIndexDB.path+"/"+this.modalKey+"/currentStatus";
+        this.$.suIndexDB.setStoredValue(path, "active");
+        this.$.suspendedDialog.toggle();
+      },
+      archiveUser:function(e){
+        var path=this.$.suIndexDB.path+"/"+this.modalKey+"/currentStatus";
+        this.$.suIndexDB.setStoredValue(path, "archived");
+        this.$.activeDialog.toggle();
+      },
+      filterArchived:function(su){
+        return su.currentStatus!=="archived";
+      },
+      //check to see if the remaining non archived service users are suspended or not
+      _computeSuspended:function(status){
+        return status=="suspended";
+      },
+      _computeQueryCount:function(su){
+        if(su.currentStatus!="archived"){
+          if(!this.queryCount){
+            this.queryCount=0;
+          };
+          this.queryCount++;
+        }
+      },
+      _computeImage:function(image){
+        if(image){
+          return image;
+        } else {
+          return "../../../../images/defaultAvatar.png";
+        };
+      },
+      dbLoaded:function(data){
+        this.$.suIndexDB.query.on("value", function(){
+            this.fire("dbLoaded");
+        }.bind(this));
+      },
+      searchFilter:function(val){
+        if(val.length<3){
+          return false;
+        } else {
+          var val=val.toLowerCase();
+          return function(su){
+            var fName=su.fName.toLowerCase();
+            var lName=su.lName.toLowerCase();
+            return fName.indexOf(val) != -1 ||
+            lName.indexOf(val) != -1;
+          };
+        };
+      },
+      mediaQueryEdit:function(query1300, query1100, query900, query700, query500){
+        if(query1300){
+          this.customStyle["--app-grid-columns"]="5";
+          this.customStyle["--main-fab-position"]="absolute";
+          this.customStyle["--main-fab-top"]="140px";
+          this.customStyle["--main-fab-bottom"]="unset";
+          this.updateStyles();
+        } else if(query1100){
+          this.customStyle["--app-grid-columns"]="4";
+          this.customStyle["--main-fab-position"]="absolute";
+          this.customStyle["--main-fab-top"]="140px";
+          this.customStyle["--main-fab-bottom"]="unset";
+          this.updateStyles();
+        } else if(query900){
+          this.customStyle["--app-grid-columns"]="3";
+          this.customStyle["--main-fab-position"]="absolute";
+          this.customStyle["--main-fab-top"]="140px";
+          this.customStyle["--main-fab-bottom"]="unset";
+          this.updateStyles();
+        } else if(query700){
+          this.customStyle["--app-grid-columns"]="2";
+          this.customStyle["--main-fab-position"]="fixed";
+          this.customStyle["--main-fab-top"]="unset";
+          this.customStyle["--main-fab-bottom"]="5%";
+          this.updateStyles();
+        } else if(query500){
+          this.customStyle["--app-grid-columns"]="2";
+          this.customStyle["--main-fab-position"]="fixed";
+          this.customStyle["--main-fab-top"]="unset";
+          this.customStyle["--main-fab-bottom"]="5%";
+          this.updateStyles();
+        } else {
+          this.customStyle["--app-grid-columns"]="1";
+          this.customStyle["--main-fab-position"]="fixed";
+          this.customStyle["--main-fab-top"]="unset";
+          this.customStyle["--main-fab-bottom"]="5%";
+          this.updateStyles();
+        };
       }
     });
+
   </script>
+
 </dom-module>
