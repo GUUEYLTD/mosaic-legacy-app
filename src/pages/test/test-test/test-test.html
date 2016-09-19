@@ -338,6 +338,12 @@
           return function(su){
             var fName=su.fName.toLowerCase();
             var lName=su.lName.toLowerCase();
+            result1=fName.indexOf(val);
+            result2=lName.indexOf(val);
+            console.log(val);
+            console.log(result1);
+            console.log(result2);
+            console.log(fName);
             return fName.indexOf(val) != -1 ||
             lName.indexOf(val) != -1;
           };

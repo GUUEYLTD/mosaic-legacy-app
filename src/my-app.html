@@ -39,7 +39,7 @@
     <!--SAME AS ABOVE MOVE LATER USED TO GET PROFILE INFO FOR SIDEBAR-->
     <firebase-document
       path="/homes/[[home]]/details"
-      data="{{careHomeProfile}}"
+      data="[[careHomeProfile]]"
       app-name="main">
     </firebase-document>
     <!--firebase doc to create new home... NEEDS TO GO ELSEWHERE LATER!-->
@@ -67,6 +67,13 @@
       id="notifyDB"
       path="/homes/[[home]]/notifications/notify"
       data="{{notifiesData}}"
+      app-name="main">
+    </firebase-query>
+
+    <firebase-query
+      id="suIndexDB"
+      path="/homes/[[home]]/patients/suIndex"
+      data="{{suList}}"
       app-name="main">
     </firebase-query>
     <!--routing config-->
@@ -177,25 +184,16 @@
         margin-top:25px;
       }
       .toolbarLeft{
-        width:30%;
-        display:inline-flex;
-        flex-direction:row;
-      }
-      .toolbarLeft :last-child{
-        margin-left:5%;
-      }
-      .toolbarLeft :first-child{
-        margin-left:5%;
+        width:50%;
+        position:relative;
       }
       .toolbarRight{
-        width:70%;
+        width:50%;
         text-align:right;
+        position:relative;
       }
-      .toolbarRight *{
-        margin-right:5%;
-      }
-      .toolbarRight #notifyDropDown{
-        margin-right:1%;
+      #notifyCount{
+        margin-left:-10px;
       }
       #notifyBadge{
         --paper-badge-width:20px;
@@ -208,7 +206,7 @@
         text-transform:uppercase;
         font-size:14px;
         align-self:center;
-        margin-left:5px;
+        margin-right:20px;
       }
       .loadingOverlay{
         position:absolute;
@@ -234,6 +232,45 @@
         --paper-progress-active-color:#3d4ba8;
         --paper-progress-active-color:var(--page-loading-active-color);
         display:inherit;
+      }
+      .searchInput{
+        border-radius:20px;
+        border:solid 1px #5A67BB;
+        background-color:#5A67BB;
+        transition: box-shadow 0.3s, border 0.3s;
+        text-align:center;
+        color:#FFF;
+        width:20%;
+      }
+      .searchInput:focus{
+        border:border:solid 1px #5A67BB;
+        outline:none;
+      }
+      #searchDropdown{
+        width:100%;
+        position:absolute;
+        background-color:#FFF;
+        z-index:5;
+        color:#000;
+      }
+      #notificationDropdown{
+        width:100%;
+        position:absolute;
+        background-color:#FFF;
+        z-index:5;
+        color:#000;
+      }
+      .notifyButton{
+
+      }
+      .dropdownLinks{
+        text-decoration:none;
+        color:inherit;
+      }
+      .dropdownItem:hover{
+        text-decoration:none;
+        background-color:#5A67BB;
+        color:#FFF;
       }
     </style>
 
@@ -296,24 +333,52 @@
               <div class="toolbarLeft">
                 <paper-icon-button class="toolbarButton" icon="menu" on-tap="toggleDrawer"></paper-icon-button>
                 <span class="menuText">menu</span>
-                <paper-icon-button class="toolbarButton" icon="icons:search" on-tap="search"></paper-icon-button>
+                <span hidden="[[searchVal]]">
+                  <paper-icon-button class="toolbarButton" icon="icons:search"></paper-icon-button>
+                </span>
+                <span hidden="[[!searchVal]]">
+                  <paper-icon-button class="toolbarButton" icon="icons:clear" on-tap="clearSearch"></paper-icon-button>
+                </span>
+                <input class="searchInput" type="text" value="{{searchVal::input}}" />
+
+                <iron-collapse id="searchDropdown">
+
+                  <template
+                    is="dom-repeat"
+                    items="[[suList]]"
+                    as="search"
+                    filter="{{searchFilter(searchVal)}}"
+                    observe="fName lName"
+                    initial-count="10">
+                      <a class="dropdownLinks" href="/[[home]]/care-plan/su-profile/[[search.$key]]" on-tap="hideSearch">
+                        <paper-item class="dropdownItem">[[search.fName]] [[search.lName]]</paper-item>
+                      </a>
+                  </template>
+
+                </iron-collapse>
+
               </div>
 
               <div class="toolbarRight">
                 <a class="inherit" href="/[[home]]/default/def-home"><paper-icon-button class="toolbarButton" icon="icons:home"></paper-icon-button></a>
-                <paper-icon-button icon="icons:apps"></paper-icon-button>
-                <paper-menu-button id="notifyDropDown" horizontal-align="right" vertical-align="top" no-overlap ignore-select>
-                  <paper-icon-button class="toolbarButton dropdown-trigger" id="notifyButton" icon="social:notifications"></paper-icon-button>
-                  <paper-menu class="dropdown-content">
+                <paper-icon-button class="toolbarButton" icon="icons:apps"></paper-icon-button>
+
+                <paper-icon-button class="toolbarButton dropdown-trigger" icon="social:notifications" on-tap="showNotifications"></paper-icon-button>
+                <span id="notifyCount" hidden="{{computeNotifyHidden(notifyCount)}}">[[notifyCount]]</span>
+                <iron-collapse id="notificationDropdown">
+
                   <template is="dom-repeat" items="[[notifiesData]]" as="notification">
-                      <paper-item>[[notification.message]]</paper-item>
-                      <paper-button on-tap="dismissNotification">dismiss</paper-button>
-                      <a style="text-decoration:none;" class="inherit" href="[[notification.url]]"><paper-button>go there</paper-button></a>
+                      <paper-item class="notifyText">
+                        [[notification.message]]
+                        <paper-button class="notifyButton" on-tap="dismissNotification">dismiss</paper-button>
+                        <a style="text-decoration:none;" class="inherit" href="[[notification.url]]">
+                          <paper-button class="notifyButton">check</paper-button>
+                        </a>
+                      </paper-item>
+
                   </template>
 
-                  </paper-menu>
-                </paper-menu-button>
-                <span id="notifyCount" hidden="{{computeNotifyHidden(notifyCount)}}">[[notifyCount]]</span>
+                </iron-collapse>
 
                 <paper-icon-button class="toolbarButton logoutButton" on-tap="logout" icon="icons:account-circle"></paper-icon-button>
               </div>
@@ -514,7 +579,7 @@
           name:"Beecholme Adult Care",
           userCount:"12",
           notifications:"4"
-        },
+        }
       },
       //routing config
       observers: [
@@ -566,6 +631,7 @@
       },
       _paramChanged:function(param){
         this.param=this.paramData.param || '';
+        this.searchVal="";
       },
       //workaround for toggle-drawer bug
       toggleDrawer:function(){
@@ -706,6 +772,30 @@
         } else {
           return false;
         }
+      },
+      searchFilter:function(val){
+        if(val.length<3){
+          this.$.searchDropdown.hide();
+          return null;
+        } else {
+          var val=val.toLowerCase();
+          this.$.searchDropdown.show();
+          return function(search){
+            var fName=search.fName.toLowerCase();
+            var lName=search.lName.toLowerCase();
+            return fName.indexOf(val) != -1 ||
+            lName.indexOf(val) != -1;
+          };
+        };
+      },
+      clearSearch:function(){
+        this.searchVal="";
+      },
+      hideSearch:function(){
+        this.$.searchDropdown.hide();
+      },
+      showNotifications:function(){
+        this.$.notificationDropdown.toggle();
       }
     });
 
