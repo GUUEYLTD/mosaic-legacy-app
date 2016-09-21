@@ -125,23 +125,25 @@
 
     <paper-dialog id="addUserDialog">
 
-        <h2>Add A Care Worker or Care Home Admin</h2>
+        <h2>Add A Care Worker or Manager</h2>
         <paper-input
           label="Name"
-          value="{{newAccount.name}}"
+          value="{{newAccount.fName}}"
           required
           auto-validate
           pattern="[a-zA-Z\s]*"
           error-message="Please enter a valid name with no special characters.">
         </paper-input>
+
         <paper-input
           label="Surname"
-          value="{{newAccount.surname}}"
+          value="{{newAccount.lName}}"
           required
           auto-validate
           pattern="[a-zA-Z\s]*"
           error-message="Please enter a valid surname with no special characters.">
         </paper-input>
+
         <paper-input
           label="Username/Email"
           value="{{newAccount.username}}"
@@ -150,19 +152,10 @@
           pattern="[a-zA-Z0-9_\.\+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-\.]+"
           error-message="Please enter a valid email address as the username.">
         </paper-input>
-        <!--bad regex for this password need to come up with another one later-->
-        <paper-input
-          label="Password"
-          value="{{newAccount.password}}"
-          required
-          auto-complete
-          pattern="((?=.*[A-Z])(?=.*[a-z])(?=.*[0-9].*[0-9])(?=.*[^a-zA-Z0-9]).{8,}"
-          error-message="Password must contain one uppercase, one lowercase, two digits, and be at least 8 characters long.">
-        </paper-input>
 
         <paper-dropdown-menu label="Role">
           <paper-listbox attr-for-selected="value" selected="{{newAccount.role}}" class="dropdown-content">
-            <paper-item value="admin">Admin</paper-item>
+            <paper-item value="manager">Manager</paper-item>
             <paper-item value="careWorker">Care Worker</paper-item>
           </paper-listbox>
         </paper-dropdown-menu>
@@ -208,7 +201,7 @@
 
         <paper-dropdown-menu label="Role">
           <paper-listbox attr-for-selected="value" selected="{{userData.role}}" class="dropdown-content">
-            <paper-item value="admin">Admin</paper-item>
+            <paper-item value="manager">Manager</paper-item>
             <paper-item value="careWorker">Care Worker</paper-item>
           </paper-listbox>
         </paper-dropdown-menu>
@@ -252,6 +245,9 @@
                 Staff Member
               </th>
               <th>
+                Name
+              </th>
+              <th>
                 Status
               </th>
               <th>
@@ -271,24 +267,27 @@
                     class="imageButton"
                     on-tap="_onAddFilesClick"
                     icon="icons:account-circle"
-                    hidden="{{!setimage}}">
+                    hidden="[[!setimage]]">
                   </paper-icon-button>
                 </td>
-                <td hidden="{{!user.image}}">
+                <td hidden="[[!user.image]]">
                   <iron-image
                     class="userImage"
                     sizing="cover"
                     preload
                     fade
-                    src="{{user.image}}"
+                    src="[[user.image]]"
                     on-tap="_onAddFilesClick">
                   </iron-image>
                 </td>
                 <td>
-                  {{user.email}}
+                  [[user.email]]
                 </td>
                 <td>
-                  {{user.role}}
+                  [[user.displayName]]
+                </td>
+                <td>
+                  [[user.role]]
                 </td>
                 <td>
                   <paper-icon-button icon="communication:email"></paper-icon-button>

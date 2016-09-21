@@ -8,6 +8,12 @@
       query="(max-width:400px)"
       query-matches="{{query400}}">
     </iron-media-query>
+
+    <firebase-auth
+      id="forgotUser"
+      app-name="main">
+    </firebase-auth>
+
     <style include="app-grid-style">
       :host {
         display: block;
@@ -107,8 +113,23 @@
       .loginInput:first-of-type{
         margin:0% 10% 5% 10%;
       }
+      #forgotButton{
+        @apply(--app-grid-expandible-item);
+      }
+      #forgotSection{
+        @apply(--app-grid-expandible-item);
+        padding:20px;
+      }
+      #forgotSuccess{
+        @apply(--app-grid-expandible-item);
+        padding:20px;
+      }
+      #forgotError{
+        @apply(--app-grid-expandible-item);
+        padding:20px;
+      }
     </style>
-    <template is="dom-if" if="{{registerSelected(state)}}">
+    <span hidden="{{registerHidden(state)}}">
       <paper-card
         elevation="3"
         class="app-grid registerBox">
@@ -126,9 +147,9 @@
         <paper-button class="registerButton" on-tap="createNewAccount">Create an Account</paper-button>
 
       </paper-card>
-    </template>
+    </span>
 
-    <template is="dom-if" if="{{loginSelected(state)}}">
+    <span hidden="{{loginHidden(state)}}">
 
       <paper-card
         elevation="3"
@@ -144,10 +165,38 @@
         <paper-input class="loginInput" label="username" value="{{username}}"></paper-input>
         <paper-input class="loginInput" type="password" label="password" value="{{password}}"></paper-input>
         <paper-button class="loginButton" on-tap="emailSignIn">Login</paper-button>
+        <paper-button id="forgotButton" on-tap="openForgotPass">Forgot Password?</paper-button>
+        <iron-collapse id="forgotSection">
+
+          <p>
+            Please enter your email below and click reset password. A password reset email will be sent to your account email.
+          </p>
+          <paper-input label="Email Address" value="{{forgotEmail}}"></paper-input>
+
+          <paper-button on-tap="resetPass">reset password</paper-button>
+
+        </iron-collapse>
+
+        <iron-collapse id="forgotSuccess">
+
+          Success! Your password reset email has been sent to [[forgotEmail]]. Please allow 5 minutes before trying to send the password email again.
+
+        </iron-collapse>
+
+        <iron-collapse id="forgotError">
+          <p>
+            Oops! Something went wrong! The error is:
+            [[error]]
+          </p>
+          <p>
+            Please try again, contact your care home administrator, or contact support.
+          </p>
+
+        </iron-collapse>
 
       </paper-card>
 
-    </template>
+    </span>
 
   </template>
 
@@ -186,14 +235,18 @@
         this.fire('createNewAccount',this.newAccount);
       },
       //computed binding to show correct card
-      registerSelected:function(state){
+      registerHidden:function(state){
         if(state==="register"){
+          return false;
+        } else {
           return true;
         };
       },
       //computed binding to show correct card
-      loginSelected:function(state){
+      loginHidden:function(state){
         if(state==="login"){
+          return false;
+        } else {
           return true;
         };
       },
@@ -210,6 +263,22 @@
           password:this.password
         };
         this.fire('emailSignIn',details);
+      },
+      openForgotPass:function(){
+        this.$.forgotSection.toggle();
+      },
+      resetPass:function(){
+        this.$.forgotUser.auth.sendPasswordResetEmail(this.forgotEmail)
+          .then(function(){
+            this.$.forgotSuccess.show();
+            this.$.forgotError.hide();
+            this.$.forgotSection.hide();
+          }.bind(this),
+          function(error){
+            this.$.forgotSuccess.hide();
+            this.$.forgotError.show();
+            this.error=error;
+          }.bind(this));
       },
       queryEdit:function(query400){
         if(query400){

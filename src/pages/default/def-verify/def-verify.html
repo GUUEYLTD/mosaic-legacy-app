@@ -1,0 +1,59 @@
+<link rel="import" href="dependencies.html" />
+<dom-module id="def-verify">
+
+    <template>
+        <firebase-auth id="auth" app-name="main" user="{{user}}" signed-in="{{signedIn}}" status-known="{{statusKnown}}" on-error="handleError">
+        </firebase-auth>
+
+        <style>
+            paper-card {
+                width: 80%;
+                height: 600px;
+                margin: -50px 10% 50px 10%;
+                padding:20px;
+                text-align:justify;
+            }
+        </style>
+
+        <paper-card>
+            <h1>You have not verified your email.</h1>
+            <p>
+              Your email: <b>[[user.email]]</b>
+            </p>
+            <p>
+                Please check your email to find a link to verify your account. You will not be able to use any features until this is completed.
+            </p>
+
+            <p>
+                If more than 24 hours have passed since your account was created, or you cannot find your verification email, please click the button below to the email again.
+            </p>
+
+            <p>
+              If you have found the link and already verified, but are still seeing this page, please logout and login again.
+            </p>
+
+            <paper-button on-tap="verifyEmail">send email again</paper-button>
+
+        </paper-card>
+
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'def-verify',
+            ready:function(){
+              this.fire("pageLoaded", {page:"def-verify"});
+            },
+            verifyEmail: function() {
+              this.$.auth.user.sendEmailVerification()
+                .then(function() {
+                this.fire("openToast",{toastText:"Email sent."});
+              }.bind(this), function(error) {
+                this.fire("openToast",{toastText:error});
+              }.bind(this));
+            }
+        });
+    </script>
+
+</dom-module>

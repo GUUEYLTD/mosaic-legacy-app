@@ -22,13 +22,13 @@
           }
         },
         "users": {
-          ".read": "data.child(auth.uid).child('role').val()==='admin' && data.child(auth.uid).child('home').val()===$home",
-          ".write": "data.child(auth.uid).child('role').val()==='admin' && data.child(auth.uid).child('home').val()===$home",
+          ".read": "data.child(auth.uid).child('home').val()===$home && data.child(auth.uid).child('role').val()==='admin' || data.child(auth.uid).child('role').val()==='manager'",
+          ".write": "data.child(auth.uid).child('home').val()===$home && data.child(auth.uid).child('role').val()==='admin' || data.child(auth.uid).child('role').val()==='manager'",
           "$user": {
             ".read": "auth.uid===$user",
             ".write": false,
             "role": {
-              ".validate": "newData.val()==='admin' || newData.val()==='careWorker'"
+              ".validate": "newData.val()==='admin' || newData.val()==='careWorker' || newData.val()==='manager'"
             },
             "email": {
               ".write": "auth.uid===$user",
