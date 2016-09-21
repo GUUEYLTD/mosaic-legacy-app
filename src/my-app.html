@@ -29,11 +29,16 @@
     <!--NEED TO PUT THIS SOMEWHERE ELSE LATER ONLY USED TO CREATE NEW USERS-->
     <firebase-auth
       id="createUser"
-      app-name="user2">
+      app-name="user2"
+      user="{{newUser}}">
     </firebase-auth>
     <!--MOVE THIS WHEN REFACTORING CODE DOES NOT BELONG HERE!-->
     <firebase-document
       id="userDB"
+      app-name="main">
+    </firebase-document>
+    <firebase-document
+      id="userTypeDB"
       app-name="main">
     </firebase-document>
     <!--SAME AS ABOVE MOVE LATER USED TO GET PROFILE INFO FOR SIDEBAR-->
@@ -397,7 +402,9 @@
           <!--login page-->
           <def-login page="[[page]]" name="def-login"></def-login>
           <!--default page-->
-          <def-home page=[[page]] home="[[home]]" name="def-home" signed-in="[[signedIn]]"></def-home>
+          <def-home page="[[page]]" home="[[home]]" name="def-home" signed-in="[[signedIn]]"></def-home>
+          <!--default page if not verified-->
+          <def-verify page="[[page]]" home="[[home]]" name="def-verify"></def-verify>
           <!--other pages for care plan-->
           <su-home page="[[page]]" patient="[[param]]" home="[[home]]" name="su-home"></su-home>
           <su-profile page="[[page]]" patient="[[param]]" home="[[home]]" name="su-profile"></su-profile>
@@ -460,11 +467,20 @@
       },
       //create new service user for an already existing home
       createNewUser:function(e){
-        this.$.createUser.createUserWithEmailAndPassword(e.detail.username, e.detail.password)
+        var password=this.makePass();
+        this.$.createUser.createUserWithEmailAndPassword(e.detail.username, password)
           .then(function(user){
+            user.updateProfile({
+              displayName: e.detail.fName+" "+e.detail.lName
+            }).then(function() {
+              this.fire("openToast",{toastText: "New User display name updated."});
+            }.bind(this), function(error) {
+              this.fire("openToast",{toastText: error});
+            }.bind(this));
             var userEntry={
               userUID:user.uid,
               username:user.email,
+              displayName:e.detail.fName+" "+e.detail.lName,
               role:e.detail.role,
               home:this.home,
             };
@@ -472,8 +488,10 @@
             if(e.detail.patients){
               userEntry.patients=e.detail.patients;
             };
-            this.$.createUser.signOut();
             this.fire("saveNewUser", userEntry);
+          }.bind(this))
+          .catch(function(error){
+            this.fire("openToast", {toastText:error});
           }.bind(this));
       },
       //save the new user to the db... probably should put into other function.... (createNewSU)
@@ -483,11 +501,11 @@
           email: e.detail.username,
           role: e.detail.role,
           home: e.detail.home,
+          displayName:e.detail.displayName
         };
         if(e.detail.patients){
           this.$.userDB.data.patients=e.detail.patients;
         };
-
         this.$.userDB.save('/homes/'+this.home+'/users', e.detail.userUID)
           .then(function(){
             var indexData={
@@ -495,13 +513,36 @@
               userUID:e.detail.userUID
             };
             this.fire('addUserToIndex',indexData);
-          }.bind(this));
+          }.bind(this))
+          .catch(function(error){
+            this.fire("openToast",{toastText:error});
+          });
       },
       //add the user to the admin user index in the home
       addUserToIndex:function(e){
         this.$.userIndexDB.path=null;
         this.$.userIndexDB.data.home=e.detail.home;
         this.$.userIndexDB.save('/userIndex', e.detail.userUID);
+        var userEmail=this.$.userDB.data.email;
+        this.$.createUser.auth.sendPasswordResetEmail(userEmail)
+          .then(function() {
+          this.fire("openToast",{toastText:"Verification email sent to new user with email address: "+userEmail+"."});
+          }.bind(this), function(error) {
+          this.fire("openToast",{toastText:error});
+          console.log(error);
+          }.bind(this));
+        this.$.createUser.signOut();
+        this.$.userDB.path=null;
+        this.$.userDB.data={};
+      },
+      makePass:function(){
+          var text = "";
+          var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@$?%^&*()";
+
+          for( var i=0; i < 10; i++ )
+              text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+          return text;
       },
       //function to create new user for new home
       createNewAccount:function(e){
@@ -535,12 +576,16 @@
                         };
                         this.$.userIndexDB.save('/userIndex',user.uid)
                           .then(function(){
+                            this.$.auth.user.sendEmailVerification()
+                              .then(function() {
+                              this.fire("openToast",{toastText:"Email sent."});
+                            }.bind(this), function(error) {
+                              this.fire("openToast",{toastText:error});
+                            }.bind(this));
                             window.location="/"+homeUID+"/default/def-home";
-                          });
+                          }.bind(this));
                       }.bind(this));
                   }.bind(this));
-
-
               }.bind(this));
           }.bind(this))
           .catch(function(error){
@@ -614,18 +659,18 @@
         }
       },
       _pageChanged:function(page) {
-        // load page import on demand.
+        if(this.statusKnown && !this.user.emailVerified && this.currentUserType==="admin"){
+          this.set("catData.category", "default");
+          this.set("pageData.page", "def-verify");
+        };
         if(page==="def-home" && !this[page]){
           this.enableDBLoading();
+          this.disablePageLoading();
         } else {
           this.disableDBLoading();
-        };
-        if(page!="def-home" && !this[page]){
           this.enablePageLoading();
-        } else {
-          this.disablePageLoading();
         };
-
+        // load page import on demand.
         this.importHref(
           this.resolveUrl('pages/'+this.category+'/' + page +'/'+page+'.html'), this.ensureLayout(this.page), null, false);
       },
@@ -681,6 +726,16 @@
       },
       _authKnown:function(known){
         if(known===true){
+          if(this.user){
+            this.$.userTypeDB.getStoredValue("/homes/"+this.home+"/users/"+this.user.uid+"/role")
+              .then(function(userType){
+                this.currentUserType=userType;
+                if(userType==="admin" && !this.user.emailVerified){
+                  this.set("catData.category", "default");
+                  this.set("pageData.page", "def-verify");
+                }
+              }.bind(this));
+          }
           if(!this.$.auth.user && this.$.location.path!="/default/default/def-login"){
             window.location="/default/default/def-login";
           } else {
