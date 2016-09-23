@@ -624,6 +624,14 @@
           name:"Beecholme Adult Care",
           userCount:"12",
           notifications:"4"
+        },
+        //routes that do not get overriden by not being logged in
+        noAuthRoutes:{
+          type:Array,
+          value:[
+            "/default/default/def-verify",
+            "/default/default/def-login"
+            ]
         }
       },
       //routing config
@@ -724,6 +732,15 @@
       goBack:function(){
         window.history.back();
       },
+      //take in route as string and check against no auth routes
+      authRequired:function(route){
+        var noAuthRoutes=this.noAuthRoutes;
+        if(noAuthRoutes.indexOf(route)===-1){
+          return false;
+        } else {
+          return true;
+        };
+      },
       _authKnown:function(known){
         if(known===true){
           if(this.user){
@@ -736,8 +753,8 @@
                 }
               }.bind(this));
           }
-          if(!this.$.auth.user && this.$.location.path!="/default/default/def-login"){
-            window.location="/default/default/def-login";
+          if(!this.$.auth.user && !this.authRequired(this.$.location.path)){
+            window.location.href="/default/default/def-login";
           } else {
             if(this.user){
               this.$.userIndexDB.getStoredValue("/userIndex/"+this.user.uid+"/home")

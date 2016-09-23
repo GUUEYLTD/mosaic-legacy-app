@@ -2,7 +2,13 @@
 <dom-module id="def-verify">
 
     <template>
-        <firebase-auth id="auth" app-name="main" user="{{user}}" signed-in="{{signedIn}}" status-known="{{statusKnown}}" on-error="handleError">
+        <firebase-auth
+          id="auth"
+          app-name="main"
+          user="{{user}}"
+          signed-in="{{signedIn}}"
+          status-known="{{statusKnown}}"
+          on-error="handleError">
         </firebase-auth>
 
         <style>
@@ -15,26 +21,95 @@
             }
         </style>
 
-        <paper-card>
-            <h1>You have not verified your email.</h1>
-            <p>
-              Your email: <b>[[user.email]]</b>
-            </p>
-            <p>
-                Please check your email to find a link to verify your account. You will not be able to use any features until this is completed.
-            </p>
+        <span hidden="[[!verifyReminderDisplay]]">
 
-            <p>
-                If more than 24 hours have passed since your account was created, or you cannot find your verification email, please click the button below to the email again.
-            </p>
+          <paper-card>
+              <h1>You have not verified your email.</h1>
+              <p>
+                Your email: <b>[[user.email]]</b>
+              </p>
+              <p>
+                  Please check your email to find a link to verify your account. You will not be able to use any features until this is completed.
+              </p>
 
-            <p>
-              If you have found the link and already verified, but are still seeing this page, please logout and login again.
-            </p>
+              <p>
+                  If more than 24 hours have passed since your account was created, or you cannot find your verification email, please click the button below to the email again.
+              </p>
 
-            <paper-button on-tap="verifyEmail">send email again</paper-button>
+              <p>
+                If you have found the link and already verified, but are still seeing this page, please logout and login again.
+              </p>
 
-        </paper-card>
+              <paper-button on-tap="verifyEmail">send email again</paper-button>
+
+          </paper-card>
+
+        </span>
+
+        <span hidden="[[!showResetPassForm]]">
+
+          <paper-card>
+            <h1>Reset Password</h1>
+            <span hidden="[[!passwordSet]]">
+
+              <p>
+                Your password must be at least 6 characters long.
+              </p>
+
+              <paper-input label="New Password" value="{{newPassword}}"></paper-input>
+              <paper-button on-tap="changePassword">change password</paper-button>
+
+            </span>
+
+            <span hidden="[[!resetVerifySuccess]]">
+
+              Your password has been set: [[resetVerifySuccessMessage]]
+
+            </span>
+
+            <span hidden="[[!resetVerifyError]]">
+
+              There was an error with your password reset: [[resetVerifyErrorMessage]]
+
+            </span>
+
+          </paper-card>
+
+        </span>
+
+        <span hidden="[[!showRecoverEmailForm]]">
+
+          <paper-card>
+            <h1>Recover Email</h1>
+
+            <paper-input label="New Email"></paper-input>
+            <paper-button>change email</paper-button>
+
+          </paper-card>
+
+        </span>
+
+        <span hidden="[[!showVerifyEmailForm]]">
+
+          <paper-card>
+
+            <span hidden="[[!verifySuccess]]">
+
+              <p>
+                Your email has been verified: [[verifyResponse]]
+              </p>
+
+            </span>
+
+            <span hidden="[[!verifyError]]">
+
+              Email Verification failed: [[verifyErrorMessage]]
+
+            </span>
+
+          </paper-card>
+
+        </span>
 
     </template>
 
@@ -44,6 +119,45 @@
             is: 'def-verify',
             ready:function(){
               this.fire("pageLoaded", {page:"def-verify"});
+              this.actionRouter();
+            },
+            properties:{
+              verifyReminderDisplay:{
+                type:Boolean,
+                value:false
+              },
+              showResetPassForm:{
+                type:Boolean,
+                value:false
+              },
+              showRecoverEmailForm:{
+                type:Boolean,
+                value:false
+              },
+              showVerifyEmailForm:{
+                type:Boolean,
+                value:false
+              },
+              resetVerifySuccess:{
+                type:Boolean,
+                value:false
+              },
+              resetVerifyError:{
+                type:Boolean,
+                value:false
+              },
+              verifySuccess:{
+                type:Boolean,
+                value:false
+              },
+              verifyError:{
+                type:Boolean,
+                value:false
+              },
+              passwordSet:{
+                type:Boolean,
+                value:false
+              }
             },
             verifyEmail: function() {
               this.$.auth.user.sendEmailVerification()
@@ -52,6 +166,97 @@
               }.bind(this), function(error) {
                 this.fire("openToast",{toastText:error});
               }.bind(this));
+            },
+            getParameterByName:function(name, url) {
+              if (!url) url = window.location.href;
+              name = name.replace(/[\[\]]/g, "\\$&");
+              var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                  results = regex.exec(url);
+              if (!results) return null;
+              if (!results[2]) return '';
+              return decodeURIComponent(results[2].replace(/\+/g, " "));
+            },
+            actionRouter:function(){
+              var mode=this.getParameterByName("mode");
+              var actionCode=this.getParameterByName("oobCode");
+              //save for other functions
+              this.actionCode=actionCode;
+              var apiKey=this.getParameterByName("apiKey");
+
+              switch(mode){
+                case "resetPassword":
+                  //display reset password handler and uri
+                  this.handleResetPassword(actionCode);
+                  break;
+                case "recoverEmail":
+                  //display recovery email handler and uri
+                  this.handleRecoverEmail(actionCode);
+                  break;
+
+                case "verifyEmail":
+                  //display email verification handler and uri
+                  this.handleVerifyEmail(actionCode);
+                  break;
+
+                default:
+                  //display the regular page with resend verify button and info
+                  this.verifyReminderDisplay=true;
+                  break;
+              }
+            },
+            handleResetPassword:function(actionCode){
+              this.showResetPassForm=true;
+              var accountEmail;
+              //verify password reset code
+              this.$.auth.auth.verifyPasswordResetCode(actionCode)
+                .then(function(email){
+                  this.accountEmail=email;
+                }.bind(this))
+                .catch(function(error){
+                  this.resetVerifyError=true;
+                  this.resetVerifyErrorMessage=error;
+                }.bind(this));
+            },
+            changePassword:function(){
+              this.$.auth.auth.confirmPasswordReset(this.actionCode, this.newPassword)
+                .then(function(resp){
+                  this.passwordSet=true;
+                  this.resetVerifySuccess=true;
+                  this.resetVerifyMessage=resp;
+                })
+                .catch(function(error){
+                  this.passwordSet=true;
+                  this.resetVerifyError=true;
+                  this.resetVerifyMessage=error;
+                });
+            },
+            handleRecoverEmail:function(actionCode){
+              this.showRecoverEmailForm=true;
+              var restoredEmail=null;
+              //confirm action code is valid
+              this.$.auth.auth.checkActionCode(actionCode)
+                .then(function(info){
+                  //get restored email address
+                  restoredEmail=info['data']['email'];
+                  //this function doesnt seem right... check on this later and implement properly
+                  console.log(restoredEmail);
+                }.bind(this))
+                .catch(function(error){
+                  console.log(error);
+                }.bind(this));
+            },
+            handleVerifyEmail:function(actionCode){
+              this.showVerifyEmailForm=true;
+              this.$.auth.auth.applyActionCode(actionCode)
+                .then(function(resp){
+                  //email address verified
+                  this.verifyResponse=resp;
+                  this.verifySuccess=true;
+                }.bind(this))
+                .catch(function(error){
+                  this.verifyErrorMessage=error;
+                  this.verifyError=true;
+                }.bind(this));
             }
         });
     </script>
