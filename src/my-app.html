@@ -226,9 +226,13 @@
         justify-content: center;
         display:none;
         display:var(--db-loading-display);
+        z-index:6;
+        color:#FFF;
+        font-style:italic;
+
       }
       .loadingOverlay *{
-        z-index:6;
+
       }
       .mainProgress{
         width:100%;
@@ -281,6 +285,9 @@
 
     <div class="loadingOverlay">
       <paper-spinner-lite active></paper-spinner-lite>
+      <p>
+        Just a minute... Content Loading...
+      </p>
     </div>
 
     <app-drawer-layout fullbleed id="appDrawerLayout">

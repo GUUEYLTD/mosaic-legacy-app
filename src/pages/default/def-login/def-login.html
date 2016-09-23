@@ -19,10 +19,10 @@
         display: block;
         background-color:#2fc19e;
         position:fixed;
-        width:100%;
-        height:100%;
-        top:0px;
-        left:0px;
+        top:0;
+        left:0;
+        bottom:0;
+        right:0;
         --app-grid-columns:2;
         --app-grid-expandible-item-columns: 2;
         --app-grid-item-height:10%;
@@ -30,12 +30,26 @@
       paper-button{
         margin:0px;
       }
+      .loginBoxContainer{
+        position:relative;
+        width:100%;
+        height:100%;
+      }
       .loginBox{
-        width:25%;
-        margin:10% 37.5% 0% 37.5%;
+        max-width:320px;
+        max-height:640px;
+        position:absolute;
+        top:50%;
+        left:50%;
+        transform:translate(-50%, -50%);
       }
       .registerBox{
-        margin:10% 25% 0% 25%;
+        max-width:320px;
+        max-height:640px;
+        position:absolute;
+        top:50%;
+        left:50%;
+        transform:translate(-50%, -50%);
         background-color:#7e57c2;
         color:#FFFFFF;
       }
@@ -114,6 +128,10 @@
       }
       #forgotButton{
         @apply(--app-grid-expandible-item);
+        opacity:.5;
+      }
+      #forgotButton:hover{
+        opacity:1;
       }
       #forgotSection{
         @apply(--app-grid-expandible-item);
@@ -128,74 +146,125 @@
         padding:20px;
       }
     </style>
-    <span hidden="{{registerHidden(state)}}">
-      <paper-card
-        elevation="3"
-        class="app-grid registerBox">
+    <div class="loginBoxContainer">
 
-        <div class="registerHeader">
-          <p>
-            register
-          </p>
-        </div>
+      <span hidden="{{registerHidden(state)}}">
+        <paper-card
+          elevation="3"
+          class="app-grid registerBox">
 
-        <paper-button class="toggleToLogin" on-tap="toggleState">Login</paper-button>
-        <paper-input class="registerInput" label="care home name" value="{{newAccount.home}}"></paper-input>
-        <paper-input class="registerInput" label="email" value="{{newAccount.username}}"></paper-input>
-        <paper-input class="registerInput" label="password" type="password" value="{{newAccount.password}}"></paper-input>
-        <paper-button class="registerButton" on-tap="createNewAccount">Create an Account</paper-button>
+          <div class="registerHeader">
+            <p>
+              register
+            </p>
+          </div>
 
-      </paper-card>
-    </span>
+          <paper-button class="toggleToLogin" on-tap="toggleState">Login</paper-button>
+          <paper-input
+            id="registerHome"
+            on-valid="valid"
+            class="registerInput"
+            label="Care Home Name"
+            value="{{newAccount.home}}"
+            required
+            auto-validate
+            pattern="[a-zA-Z0-9\.\s]*"
+            error-message="Invalid home name.">
+          </paper-input>
+          <paper-input
+            id="registerUsername"
+            class="registerInput"
+            label="Email"
+            value="{{newAccount.username}}"
+            required
+            auto-validate
+            pattern="[a-zA-Z0-9_\.\+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-\.]+"
+            error-message="Please enter a valid email.">
+          </paper-input>
+          <paper-input
+            id="registerPassword"
+            class="registerInput"
+            label="Password"
+            type="password"
+            value="{{newAccount.password}}"
+            required
+            auto-validate
+            pattern="^(?=.*\d).{8,16}$"
+            error-message="Password must be between 8 and 16 characters long and include at least one number.">
+          </paper-input>
+          <paper-input
+            id="registerPasswordConfirm"
+            class="registerInput"
+            label="Confirm Password"
+            type="password"
+            value="{{newAccount.passwordConfirm}}"
+            required
+            auto-validate
+            pattern="{{newAccount.password}}"
+            error-message="Passwords must match">
+          </paper-input>
+          <paper-button class="registerButton" on-tap="createNewAccount">Create an Account</paper-button>
 
-    <span hidden="{{loginHidden(state)}}">
+        </paper-card>
+      </span>
 
-      <paper-card
-        elevation="3"
-        class="app-grid loginBox">
+      <span hidden="{{loginHidden(state)}}">
 
-        <div class="loginHeader">
-          <p>
-            log in
-          </p>
-        </div>
+        <paper-card
+          elevation="3"
+          class="app-grid loginBox">
 
-        <paper-button class="toggleToRegister" on-tap="toggleState">Register</paper-button>
-        <paper-input class="loginInput" label="username" value="{{username}}"></paper-input>
-        <paper-input class="loginInput" type="password" label="password" value="{{password}}"></paper-input>
-        <paper-button class="loginButton" on-tap="emailSignIn">Login</paper-button>
-        <paper-button id="forgotButton" on-tap="openForgotPass">Forgot Password?</paper-button>
-        <iron-collapse id="forgotSection">
+          <div class="loginHeader">
+            <p>
+              log in
+            </p>
+          </div>
 
-          <p>
-            Please enter your email below and click reset password. A password reset email will be sent to your account email.
-          </p>
-          <paper-input label="Email Address" value="{{forgotEmail}}"></paper-input>
+          <paper-button class="toggleToRegister" on-tap="toggleState">Register</paper-button>
+          <paper-input
+            class="loginInput"
+            label="username"
+            value="{{username}}"
+            required
+            auto-validate
+            pattern="[a-zA-Z0-9_\.\+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-\.]+"
+            error-message="Please enter a valid email."></paper-input>
+          <paper-input class="loginInput" type="password" label="password" value="{{password}}"></paper-input>
+          <paper-button class="loginButton" on-tap="emailSignIn">Login</paper-button>
+          <paper-button id="forgotButton" on-tap="openForgotPass">Forgot Password?</paper-button>
+          <iron-collapse id="forgotSection">
 
-          <paper-button on-tap="resetPass">reset password</paper-button>
+            <p>
+              Please enter your email below and click reset password. A password reset email will be sent to your account email.
+            </p>
+            <paper-input label="Email Address" value="{{forgotEmail}}"></paper-input>
 
-        </iron-collapse>
+            <paper-button on-tap="resetPass">reset password</paper-button>
 
-        <iron-collapse id="forgotSuccess">
+          </iron-collapse>
 
-          Success! Your password reset email has been sent to [[forgotEmail]]. Please allow 5 minutes before trying to send the password email again.
+          <iron-collapse id="forgotSuccess">
 
-        </iron-collapse>
+            Success! Your password reset email has been sent to [[forgotEmail]]. Please allow 5 minutes before trying to send the password email again.
 
-        <iron-collapse id="forgotError">
-          <p>
-            Oops! Something went wrong! The error is:
-            [[error]]
-          </p>
-          <p>
-            Please try again, contact your care home administrator, or contact support.
-          </p>
+          </iron-collapse>
 
-        </iron-collapse>
+          <iron-collapse id="forgotError">
+            <p>
+              Oops! Something went wrong! The error is:
+              [[error]]
+            </p>
+            <p>
+              Please try again, contact your care home administrator, or contact support.
+            </p>
 
-      </paper-card>
+          </iron-collapse>
 
-    </span>
+        </paper-card>
+
+      </span>
+
+    </div>
 
   </template>
 
@@ -230,8 +299,30 @@
       observers:[
         "queryEdit(query400)"
       ],
+      validateInputs:function(){
+        var validArray=[];
+        var result=false;
+        validArray.push(this.$.registerHome.validate());
+        validArray.push(this.$.registerUsername.validate());
+        validArray.push(this.$.registerPassword.validate());
+        validArray.push(this.$.registerPasswordConfirm.validate());
+        for(i=0; i<validArray.length; i++){
+          if(validArray[i]===true){
+            result=true;
+          } else {
+            result=false;
+            break;
+          };
+        };
+        return result;
+      },
       createNewAccount:function(){
-        this.fire('createNewAccount',this.newAccount);
+        console.log(this.validateInputs());
+        if(this.validateInputs()){
+          this.fire('createNewAccount',this.newAccount);
+        } else {
+          this.fire("openToast", {toastText:"Your entered details are invalid, or you have not entered a username or password."})
+        };
       },
       //computed binding to show correct card
       registerHidden:function(state){
