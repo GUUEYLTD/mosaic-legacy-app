@@ -72,39 +72,15 @@ patient
       <custom-cell>[[rowdata]]</custom-cell>
 
       <custom-cell>
-        <paper-checkbox
-          id="[[rowdata]]"
-          on-change="checkboxChanged"
-          value="daily"
-          checked="{{mainTableData.daily}}">
-        </paper-checkbox>
-      </custom-cell>
-
-      <custom-cell>
-        <paper-checkbox
-          id="{{rowdata}}"
-          on-change="checkboxChanged"
-          value="weekly"
-          checked="{{mainTableData.weekly}}">
-        </paper-checkbox>
-      </custom-cell>
-
-      <custom-cell>
-        <paper-checkbox
-          id="[[rowdata]]"
-          on-change="checkboxChanged"
-          value="biWeekly"
-          checked="{{mainTableData.biWeekly}}">
-        </paper-checkbox>
-      </custom-cell>
-
-      <custom-cell>
-        <paper-checkbox
-          id="[[rowdata]]"
-          on-change="checkboxChanged"
-          value="monthly"
-          checked="{{mainTableData.monthly}}">
-        </paper-checkbox>
+        <paper-dropdown-menu label="Frequency">
+          <paper-listbox attr-for-selected="label" selected="{{frequency}}" class="dropdown-content">
+            <paper-item label="daily">Daily</paper-item>
+            <paper-item label="weekly">Weekly</paper-item>
+            <paper-item label="biWeekly">Bi-Weekly</paper-item>
+            <paper-item label="monthly">Monthly</paper-item>
+            <paper-item label="yearly">Yearly</paper-item>
+          </paper-listbox>
+        </paper-dropdown-menu>
       </custom-cell>
 
       <custom-cell class="comment">
@@ -141,11 +117,51 @@ patient
         mainTableData:{
           type:Object,
         },
+        frequency:{
+          type:String,
+          observer:"dropdownChanged"
+        }
       },
       observers:[
         "editQuery(query1660)",
-        "checkRowData(mainTableData)"
+        "checkRowData(mainTableData)",
+        "populateRow(mainTableData)"
       ],
+      populateRow:function(data){
+        for(x in data){
+          if(data[x]===true){
+            this.frequency=x;
+          };
+        };
+      },
+      dropdownChanged:function(frequency){
+        var frequencyArray=[
+          "daily",
+          "weekly",
+          "biWeekly",
+          "monthly",
+          "yearly"
+        ];
+        //horrible workaround due to bad previous method of saving data with checkboxes... i'm sorry future dev...
+        if(frequency!=null){
+          var path=this.tableroute;
+          this.$.tableDB.path=null;
+          this.$.tableDB.data=null;
+          this.$.tableDB.data=true;
+          this.$.tableDB.save(path,frequency)
+            .then(function(){
+              for(i=0; i<frequencyArray.length; i++){
+                if(frequencyArray[i]!=frequency){
+                  this.$.tableDB.path=null;
+                  this.$.tableDB.data=null;
+                  this.$.tableDB.data=false;
+                  this.$.tableDB.save(path,frequencyArray[i]);
+                };
+              };
+            }.bind(this));
+
+        };
+      },
       checkboxChanged:function(e){
         this.$.tableDB.path=null;
         this.$.tableDB.data=null;

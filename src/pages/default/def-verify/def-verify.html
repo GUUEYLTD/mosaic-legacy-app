@@ -207,12 +207,16 @@
             handleResetPassword:function(actionCode){
               this.showResetPassForm=true;
               var accountEmail;
+              console.log("handling password reset");
               //verify password reset code
               this.$.auth.auth.verifyPasswordResetCode(actionCode)
                 .then(function(email){
+                  console.log("password reset code verified");
+                  this.passwordSet=true;
                   this.accountEmail=email;
                 }.bind(this))
                 .catch(function(error){
+                  console.log("password reset code verify error :"+error);
                   this.resetVerifyError=true;
                   this.resetVerifyErrorMessage=error;
                 }.bind(this));
@@ -220,15 +224,17 @@
             changePassword:function(){
               this.$.auth.auth.confirmPasswordReset(this.actionCode, this.newPassword)
                 .then(function(resp){
-                  this.passwordSet=true;
+                  console.log("password change successful :"+resp);
+                  this.passwordSet=false;
                   this.resetVerifySuccess=true;
                   this.resetVerifyMessage=resp;
-                })
+                }.bind(this))
                 .catch(function(error){
-                  this.passwordSet=true;
+                  console.log("password change not successful :"+error);
+                  this.passwordSet=false;
                   this.resetVerifyError=true;
                   this.resetVerifyMessage=error;
-                });
+                }.bind(this));
             },
             handleRecoverEmail:function(actionCode){
               this.showRecoverEmailForm=true;

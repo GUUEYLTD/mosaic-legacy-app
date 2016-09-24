@@ -35,7 +35,8 @@
     <style include="paper-time-picker-dialog-style"></style>
     <style include="app-grid-style">
       :host{
-
+        --app-grid-columns:2;
+        --app-grid-expandible-item-columns:2;
       }
       paper-card{
         width:80%;
@@ -130,13 +131,31 @@
       .timeSection *{
         width:50%;
       }
+      .medModalHeader{
+        margin-top:0 !important;
+        background-color:#3d4ba8;
+        color:#FFF;
+      }
+      .medModalHeader h2{
+        padding:15px;
+      }
+      .dialogHalf{
+        width:125px;
+        display:inline-block;
+      }
+      .dialogFull{
+        width:250px;
+      }
     </style>
 
     <paper-dialog id="medModal" class="paper-time-picker-dialog">
 
+      <div class="medModalHeader">
         <h2>Add Medication</h2>
+      </div>
 
         <paper-input
+          class="dialogFull"
           label="Medication Name"
           value="{{newMed.medicine}}"
           required
@@ -146,6 +165,7 @@
         </paper-input>
 
         <vaadin-combo-box
+          class="dialogHalf"
           allow-custom-status
           label="Method"
           value="{{newMed.method}}"
@@ -156,12 +176,19 @@
         </vaadin-combo-box>
         <!--need units of meds-->
         <paper-input
+          class="dialogHalf"
           label="dosage"
           value="{{newMed.dosage}}"
           required
           auto-validate
           pattern="\d{1,4}[a-zA-Z\s]*"
           error-message="Please enter in the following format: (number) (units).">
+        </paper-input>
+
+        <paper-input
+          class="dialogFull"
+          label="Comments"
+          value="{{newMed.comment}}">
         </paper-input>
 
         <div class="timeSection">
@@ -183,7 +210,9 @@
 
     <paper-dialog id="editMedModal">
 
-      <h2>Edit Medication</h2>
+      <div class="medModalHeader">
+        <h2>Edit Medication</h2>
+      </div>
 
       <paper-input
         label="Medication Name"
