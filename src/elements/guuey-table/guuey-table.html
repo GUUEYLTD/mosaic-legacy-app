@@ -65,26 +65,28 @@ home(string)
         margin:20px 5% 20px 5%;
       }
       table{
-        width:100%;
         background-color:var(--table-background-color);
+        width:100%;
       }
       tbody{
         display:var(--tbody-display);
       }
       thead tr{
+        width:100%;
         position:var(--thead-tr-position);
         display:var(--thead-tr-display);
       }
       td{
         width:var(--thead-tr-td-width);
       }
-      th{
+      td,th{
+        width:33%;
+        width:var(--thead-tr-td-width);
+        min-width:var(--td-th-min-width);
         text-align:left;
       }
-      td,th{
-        min-width:var(--td-th-min-width);
-      }
       td,th:last-of-type{
+        max-width:200px;
         width:var(--td-th-last-width);
       }
     </style>
@@ -224,9 +226,9 @@ home(string)
           this.customStyle["--tbody-display"]="block";
           this.customStyle["--thead-tr-position"]="relative";
           this.customStyle["--thead-tr-display"]="block";
-          this.customStyle["--thead-tr-td-width"]="33.3%";
-          this.customStyle["--td-th-min-width"]="33.3%";
-          this.customStyle["--td-th-last-width"]="33.3%";
+          this.customStyle["--thead-tr-td-width"]="150px";
+          this.customStyle["--td-th-min-width"]="150px";
+          this.customStyle["--td-th-last-width"]="150px";
           this.updateStyles();
         }
       },
