@@ -199,15 +199,13 @@
           value="{{newMed.comment}}">
         </paper-input>
 
-        <div class="timeSection">
+        <guuey-time-chunk-selector
+          value="{{newMed.timeChunk}}">
+        </guuey-time-chunk-selector>
 
-          <span>
-            Time: [[newMed.time]]
-          </span>
-
-          <paper-button on-tap="timeDialog">edit time</paper-button>
-
-        </div>
+        <guuey-weekday-selector
+          value="{{newMed.weekdays}}">
+        </guuey-weekday-selector>
 
         <div class="buttons">
           <paper-button dialog-dismiss>Cancel</paper-button>
@@ -223,15 +221,17 @@
       </div>
 
       <paper-input
+        class="dialogFull"
         label="Medication Name"
         value="{{newMedEdit.medicine}}"
-        equired
+        required
         auto-validate
         pattern="[a-zA-Z\s]*"
         error-message="Please enter a valid medicine name.">
       </paper-input>
 
       <vaadin-combo-box
+        class="dialogHalf"
         allow-custom-status
         label="Method"
         value="{{newMedEdit.method}}"
@@ -240,8 +240,9 @@
         auto-validate
         error-message="Please select a method.">
       </vaadin-combo-box>
-
+      <!--need units of meds-->
       <paper-input
+        class="dialogHalf"
         label="dosage"
         value="{{newMedEdit.dosage}}"
         required
@@ -250,19 +251,23 @@
         error-message="Please enter in the following format: (number) (units).">
       </paper-input>
 
-      <div class="timeSection">
+      <paper-input
+        class="dialogFull"
+        label="Comments"
+        value="{{newMedEdit.comment}}">
+      </paper-input>
 
-        <span>
-          Time: [[newMedEdit.time]]
-        </span>
+      <guuey-time-chunk-selector
+        value="{{newMedEdit.timeChunk}}">
+      </guuey-time-chunk-selector>
 
-        <paper-button on-tap="editTimeDialog">edit time</paper-button>
-
-      </div>
+      <guuey-weekday-selector
+        value="{{newMedEdit.weekdays}}">
+      </guuey-weekday-selector>
 
       <div class="buttons">
         <paper-button dialog-dismiss>Cancel</paper-button>
-        <paper-button on-tap="saveEditMed">Save</paper-button>
+        <paper-button on-tap="saveMedEdit">Save</paper-button>
       </div>
 
     </paper-dialog>
@@ -592,7 +597,17 @@
         },
         newMed:{
           type:Object,
-          value:{}
+          value:{
+            weekdays:[
+              "mo",
+              "tu",
+              "we",
+              "th",
+              "fr",
+              "sa",
+              "so"
+            ]
+          }
         },
       },
       timeTarget:{
@@ -674,16 +689,16 @@
         this.$.night.toggle();
       },
       filterMorning:function(item){
-        return item.timeChunk==="morning";
+        return item.timeChunk.indexOf("morning")!=-1;
       },
       filterAfternoon:function(item){
-        return item.timeChunk==="afternoon";
+        return item.timeChunk.indexOf("afternoon")!=-1;
       },
       filterEvening:function(item){
-        return item.timeChunk==="evening";
+        return item.timeChunk.indexOf("evening")!=-1;
       },
       filterNight:function(item){
-        return item.timeChunk==="night";
+        return item.timeChunk.indexOf("night")!=-1;
       },
       convertTime:function(rawTime){
         if(rawTime>=60*5 && rawTime<60*12){

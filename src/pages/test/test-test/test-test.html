@@ -11,51 +11,62 @@
     </firebase-document>
 
     <style>
-
-    paper-card{
-      width:50%;
-      margin:20px 25% 20px 25%;
-    }
-    .addGoalHeader{
-      color:#FFF;
-      background-color:#673AB7;
-      margin-top:0px !important;
-    }
-    .addGoalHeader h2{
-      margin-top:0px;
-      padding:15px;
-    }
-    #dropdownContent{
-      background-color:transparent;
-      border:1px solid grey;
-      flex-grow:1;
-
-    }
-    #dropdownIcon{
-      border:1px solid grey;
-      padding:5px;
-    }
-    .guueyDropdown{
-      width:50%;
-      border: 1px solid grey;
-      display:flex;
-      flex-direction:row;
-      align-items:stretch;
-    }
+      paper-card{
+        width:50%;
+        margin:20px 25% 20px 25%;
+      }
+      #timeChunks{
+        display:flex;
+        flex-direction:row;
+      }
+      paper-item{
+        display:inline-block;
+        flex-grow:1;
+        text-transform:uppercase;
+        text-align: center;
+        --paper-item-selected:{
+          border:2px solid green;
+          color:green;
+        }
+        --paper-item:{
+          border:1px solid grey;
+          color:grey;
+        }
+      }
+      .paperItemText{
+        padding:10px;
+        margin:0;
+      }
+      #weekdays paper-item{
+        display:inline-block;
+        flex-grow:1;
+        text-transform:uppercase;
+        text-align: center;
+        --paper-item-selected:{
+          border:2px solid green;
+          color:green;
+        }
+        --paper-item:{
+          border:1px solid grey;
+          color:grey;
+        }
+      }
+      .checkBoxLabel{
+        display:inline-block;
+        text-transform:uppercase;
+      }
     </style>
 
     <paper-card>
 
-      <div class="addGoalHeader">
-        <h2>Add New Goal</h2>
-      </div>
+      <guuey-time-chunk-selector
+        value="{{testData.timeChunk}}">
+      </guuey-time-chunk-selector>
 
-      <guuey-dropdown
-        options="[[options]]"
-        val="{{testData.test}}"
-        icon="av:playlist-add-check">
-      </guuey-dropdown>
-      {{testData.test}}
+      <guuey-weekday-selector
+        value="{{testData.weekdays}}">
+      </guuey-weekday-selector>
+
     </paper-card>
   </template>
 
@@ -65,41 +76,13 @@
 
       is: 'test-test',
       ready:function(){
+        this.addEventListener("iron-select", this.ironSelected)
+      },
+
+      ironSelected:function(){
 
       },
-      properties:{
-        guueyVal:{
-          type:String,
-          value:"bob"
-        },
-        options:{
-          type:Array,
-          value:[
-            "bob",
-            "dirk",
-            "gertrude"
-          ]
-        }
-      },
-      setValAgain:function(){
-        console.log("hitting");
-        this.val="two";
-      },
-      setVal:function(e){
-        var dropdown=this.$.dropdownContent;
-        var selected=dropdown.options[dropdown.selectedIndex].value;
-        console.log(this.$.dropdownContent.selectedIndex);
-        console.log(dropdown.options[dropdown.selectedIndex].value);
-        this.val=selected;
-      },
-      _computeSelected:function(option){
-        if(option===this.val){
-          console.log("stuff");
-          return true;
-        } else {
-          return false;
-        };
-      }
+
     });
 
   </script>

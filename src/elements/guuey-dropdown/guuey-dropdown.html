@@ -4,7 +4,9 @@
   <template>
 
     <style>
-
+    :host{
+      padding:5px;
+    }
     #dropdownContent{
       background-color:transparent;
       border:1px solid grey;
@@ -15,14 +17,22 @@
       padding:5px;
     }
     .guueyDropdown{
-      width:50%;
       border: 1px solid grey;
       display:flex;
       flex-direction:row;
       align-items:stretch;
     }
+    #dropdownLabel{
+      text-transform:uppercase;;
+      font-size:10px;
+      opacity:.7;
+      margin-bottom:5px;
+      padding-bottom:0px;
+    }
     </style>
-
+    <p id="dropdownLabel">
+      [[label]]
+    </p>
     <div class="guueyDropdown">
       <iron-icon id="dropdownIcon" icon="[[icon]]"></iron-icon>
       <select id="dropdownContent" on-change="setVal">
@@ -52,7 +62,7 @@
 
       },
       properties:{
-        val:{
+        value:{
           type:String,
           value:"",
           notify:true
@@ -61,6 +71,10 @@
           type:Array
         },
         icon:{
+          type:String,
+          value:""
+        },
+        label:{
           type:String,
           value:""
         }

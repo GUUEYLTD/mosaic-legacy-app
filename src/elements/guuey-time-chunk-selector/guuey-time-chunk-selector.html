@@ -1,0 +1,78 @@
+<link rel="import" href="dependencies.html" />
+<dom-module id="guuey-time-chunk-selector">
+
+  <template>
+
+    <style>
+
+      #timeChunks{
+        display:flex;
+        flex-direction:row;
+      }
+      paper-item{
+        display:inline-block;
+        flex-grow:1;
+        text-transform:uppercase;
+        text-align: center;
+        --paper-item-selected:{
+          border:2px solid green;
+          color:green;
+        }
+        --paper-item:{
+          border:1px solid grey;
+          color:grey;
+        }
+      }
+      .paperItemText{
+        padding:10px;
+        margin:0;
+      }
+    </style>
+
+    <iron-selector
+      id="timeChunks"
+      multi
+      attr-for-selected="value"
+      selected-values="{{value}}">
+      <paper-item value="morning">
+        <p class="paperItemText">
+          morning
+        </p>
+      </paper-item>
+      <paper-item value="afternoon">
+        <p class="paperItemText">
+          afternoon
+        </p>
+      </paper-item>
+      <paper-item value="evening">
+        <p class="paperItemText">
+          evening
+        </p>
+      </paper-item>
+      <paper-item value="night">
+        <p class="paperItemText">
+          night
+        </p>
+      </paper-item>
+    </iron-selector>
+
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is: 'guuey-time-chunk-selector',
+      properties:{
+        value:{
+          type:String,
+          value:"",
+          notify:true
+        }
+      }
+
+    });
+
+  </script>
+
+</dom-module>

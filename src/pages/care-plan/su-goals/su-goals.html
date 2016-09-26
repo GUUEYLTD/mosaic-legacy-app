@@ -248,6 +248,9 @@
       td,th:last-of-type{
         width:var(--td-th-last-width);
       }
+      .divider{
+        border-bottom:1px solid grey;
+      }
     </style>
 
     <paper-dialog id="addGoalModal">
@@ -256,6 +259,16 @@
         <h2>Add New Goal</h2>
       </div>
 
+      <guuey-dropdown
+        options="[[goalTypes]]"
+        value="{{goalData.category}}"
+        label="category"
+        icon="av:playlist-add-check">
+      </guuey-dropdown>
+
+      <div class="divider">
+
+      </div>
 
     </paper-dialog>
 
