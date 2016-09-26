@@ -2,27 +2,61 @@
 <dom-module id="test-test">
 
   <template>
-    <firebase-auth
-      id="auth"
-      app-name="main"
-      user="{{user2}}"
-      signed-in="{{signedIn2}}"
-      status-known="{{statusKnown2}}"
-      on-error="handleError">
-    </firebase-auth>
 
-    [[user2.email]]
+    <firebase-document
+      id="testDB"
+      path="homes/[[home]]/patients/[[patient]]/test"
+      data="{{testData}}"
+      app-name="main">
+    </firebase-document>
 
-    <paper-button on-tap="resetPass">change pass</paper-button>
+    <style>
 
-    <paper-button on-tap="verifyEmail">verify email</paper-button>
+    paper-card{
+      width:50%;
+      margin:20px 25% 20px 25%;
+    }
+    .addGoalHeader{
+      color:#FFF;
+      background-color:#673AB7;
+      margin-top:0px !important;
+    }
+    .addGoalHeader h2{
+      margin-top:0px;
+      padding:15px;
+    }
+    #dropdownContent{
+      background-color:transparent;
+      border:1px solid grey;
+      flex-grow:1;
 
-    <paper-input value="{{newEmail}}" label="new email"></paper-input>
+    }
+    #dropdownIcon{
+      border:1px solid grey;
+      padding:5px;
+    }
+    .guueyDropdown{
+      width:50%;
+      border: 1px solid grey;
+      display:flex;
+      flex-direction:row;
+      align-items:stretch;
+    }
+    </style>
 
-    <paper-button on-tap="changeEmail">change email</paper-button>
+    <paper-card>
 
-    <paper-button on-tap="updateField">update user field</paper-button>
+      <div class="addGoalHeader">
+        <h2>Add New Goal</h2>
+      </div>
 
+      <guuey-dropdown
+        options="[[options]]"
+        val="{{testData.test}}"
+        icon="av:playlist-add-check">
+      </guuey-dropdown>
+      {{testData.test}}
+    </paper-card>
   </template>
 
   <script>
@@ -30,47 +64,41 @@
     Polymer({
 
       is: 'test-test',
-      observers:[
-        "checkStatus(statusKnown2)"
-      ],
-      resetPass:function(){
-        this.$.auth.auth.sendPasswordResetEmail(this.user2.email)
-          .then(function() {
-          console.log("email sent");
-          }, function(error) {
-          console.log(error);
-          });
+      ready:function(){
+
       },
-      verifyEmail:function(){
-        this.$.auth.user.sendEmailVerification()
-          .then(function() {
-          console.log("email sent");
-        }.bind(this), function(error) {
-          console.log(error);
-        }.bind(this));
+      properties:{
+        guueyVal:{
+          type:String,
+          value:"bob"
+        },
+        options:{
+          type:Array,
+          value:[
+            "bob",
+            "dirk",
+            "gertrude"
+          ]
+        }
       },
-      changeEmail:function(){
-        this.$.auth.user.updateEmail(this.newEmail)
-          .then(function(){
-            console.log("email changed");
-          }, function(error){
-            console.log(error);
-          });
+      setValAgain:function(){
+        console.log("hitting");
+        this.val="two";
       },
-      checkStatus:function(status){
-        if(status){
-          console.log(this.user2);
-          console.log(this.user2.emailVerified);
+      setVal:function(e){
+        var dropdown=this.$.dropdownContent;
+        var selected=dropdown.options[dropdown.selectedIndex].value;
+        console.log(this.$.dropdownContent.selectedIndex);
+        console.log(dropdown.options[dropdown.selectedIndex].value);
+        this.val=selected;
+      },
+      _computeSelected:function(option){
+        if(option===this.val){
+          console.log("stuff");
+          return true;
+        } else {
+          return false;
         };
-      },
-      updateField:function(){
-        this.$.auth.user.updateProfile({
-          emailVerified:false
-        }).then(function() {
-          console.log("updated");
-        }, function(error) {
-          console.log(error);
-        });
       }
     });
 
