@@ -1,0 +1,84 @@
+<link rel="import" href="dependencies.html" />
+<dom-module id="guuey-dropdown">
+
+  <template>
+
+    <style>
+
+    #dropdownContent{
+      background-color:transparent;
+      border:1px solid grey;
+      flex-grow:1;
+    }
+    #dropdownIcon{
+      border:1px solid grey;
+      padding:5px;
+    }
+    .guueyDropdown{
+      width:50%;
+      border: 1px solid grey;
+      display:flex;
+      flex-direction:row;
+      align-items:stretch;
+    }
+    </style>
+
+    <div class="guueyDropdown">
+      <iron-icon id="dropdownIcon" icon="[[icon]]"></iron-icon>
+      <select id="dropdownContent" on-change="setVal">
+
+        <option value="">
+          Select
+        </option>
+
+        <template is="dom-repeat" items="[[options]]" as="optionVal">
+
+          <option value=[[optionVal]] selected="{{_computeSelected(optionVal, val)}}">
+            [[optionVal]]
+          </option>
+
+        </template>
+      </select>
+    </div>
+
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is: 'guuey-dropdown',
+      ready:function(){
+
+      },
+      properties:{
+        val:{
+          type:String,
+          value:"",
+          notify:true
+        },
+        options:{
+          type:Array
+        },
+        icon:{
+          type:String,
+          value:""
+        }
+      },
+      setVal:function(e){
+        var dropdown=this.$.dropdownContent;
+        var selected=dropdown.options[dropdown.selectedIndex].value;
+        this.val=selected;
+      },
+      _computeSelected:function(option){
+        if(option===this.val){
+          return true;
+        } else {
+          return false;
+        };
+      }
+    });
+
+  </script>
+
+</dom-module>

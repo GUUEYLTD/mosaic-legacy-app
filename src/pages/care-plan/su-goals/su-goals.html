@@ -197,6 +197,14 @@
       #goalModal{
         margin:0;
       }
+      .addGoalHeader{
+        color:#FFF;
+        background-color:#673AB7;
+        margin-top:0px !important;
+      }
+      .addGoalHeader h2{
+        padding:15px;
+      }
       .tableScrollLabel{
         font-weight:bold;
         text-transform:uppercase;
@@ -241,6 +249,15 @@
         width:var(--td-th-last-width);
       }
     </style>
+
+    <paper-dialog id="addGoalModal">
+
+      <div class="addGoalHeader">
+        <h2>Add New Goal</h2>
+      </div>
+
+
+    </paper-dialog>
 
     <!--dialogue that works to add labels for custom text input area-->
     <paper-dialog horizontal-align="left" vertical-align="top" id="goalModal">
@@ -649,7 +666,7 @@
             this.goalUID=this.$.goalDB.path.slice(path.length+2);
             //set the db path to query steps as they are created
             this.$.stepsDB.path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalUID+"/steps";
-            this.goalSelected=true;
+            this.$.addGoalModal.open();
           }.bind(this));
       },
       editGoal:function(e){
