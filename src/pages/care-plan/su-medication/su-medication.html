@@ -9,8 +9,20 @@
     </firebase-document>
 
     <firebase-document
+      id="timeDB"
+      app-name="main">
+    </firebase-document>
+
+    <firebase-document
+      id="timesDB"
+      app-name="main"
+      path="homes/[[home]]/patients/[[patient]]/medicationOutline/timeChunks"
+      data="{{timesData}}">
+    </firebase-document>
+
+    <firebase-document
       id="medsDB"
-      path="homes/[[home]]/patients/[[patient]]/medicationOutline"
+      path="homes/[[home]]/patients/[[patient]]/medicationOutline/medications"
       data="{{medsDataLive}}"
       app-name="main">
     </firebase-document>
@@ -67,13 +79,34 @@
       }
       .timeChunkBar{
         background-color:#E0E0E0;
-        width:100%;
         margin:20px 0 20px 0;
         padding:30px;
         color:#009688;
         background-repeat:no-repeat;
         background-size:40px 40px;
         background-position:20px;
+        text-align:center;
+        display:flex;
+        flex-direction:row;
+      }
+      .timeChunkLabel{
+        flex-grow:1;
+        text-transform:uppercase;
+      }
+      .timeChunkLabel:hover{
+        cursor:pointer;
+      }
+      .timeChunkTime{
+        color:#000;
+        opacity:.5;
+        font-weight:bold;
+        font-size:20px;
+        text-transform:uppercase;
+      }
+      .timeChunkButton{
+        color:#000;
+        opacity:.5;
+
       }
       .tableScrollLabel{
         font-weight:bold;
@@ -94,8 +127,14 @@
         width:100%;
         background-color:var(--table-background-color);
       }
+      table {
+        border-collapse:collapse;
+      }
       tbody{
         display:var(--tbody-display);
+      }
+      tr{
+        border-bottom:1px solid #F0F0F0;
       }
       thead tr{
         position:var(--thead-tr-position);
@@ -108,7 +147,7 @@
         text-align:left;
       }
       td,th{
-
+        padding:5px;
       }
       td,th{
         min-width:var(--td-th-min-width);
@@ -154,7 +193,31 @@
       .dialogFull{
         width:250px;
       }
+      #timeChunkModal{
+        margin:0;
+      }
+      #timeChunkModal paper-item{
+        margin:0 !important;
+        text-transform:uppercase;
+      }
+      #timeChunkModal paper-item:hover{
+        cursor:pointer;
+      }
+      .commentButton{
+        color:green;
+      }
     </style>
+
+    <paper-dialog
+      id="timeChunkModal"
+      horizontal-align="right"
+      vertical-align="top"
+      no-overlap>
+
+      <paper-item on-tap="editTimeDialog">edit time</paper-item>
+      <paper-item on-tap="toggleNotifications">turn on notifications</paper-item>
+
+    </paper-dialog>
 
     <paper-dialog id="medModal" class="paper-time-picker-dialog">
 
@@ -217,7 +280,7 @@
     <paper-dialog id="editMedModal">
 
       <div class="medModalHeader">
-        <h2>Edit Medication</h2>
+        <h2>Edit/View Medication</h2>
       </div>
 
       <paper-input
@@ -267,21 +330,7 @@
 
       <div class="buttons">
         <paper-button dialog-dismiss>Cancel</paper-button>
-        <paper-button on-tap="saveMedEdit">Save</paper-button>
-      </div>
-
-    </paper-dialog>
-
-    <paper-dialog id="timeDialog" class="paper-time-picker-dialog">
-
-      <paper-time-picker
-        id="timePicker"
-        time="{{newMed.time}}">
-      </paper-time-picker>
-
-      <div class="buttons">
-        <paper-button dialog-dismiss>Cancel</paper-button>
-        <paper-button dialog-dismiss>Save Changes</paper-button>
+        <paper-button on-tap="saveEditMed">Save</paper-button>
       </div>
 
     </paper-dialog>
@@ -290,12 +339,12 @@
 
       <paper-time-picker
         id="editTimePicker"
-        time="{{newMedEdit.time}}">
+        time="{{newTime}}">
       </paper-time-picker>
 
       <div class="buttons">
         <paper-button dialog-dismiss>Cancel</paper-button>
-        <paper-button dialog-dismiss>Save Changes</paper-button>
+        <paper-button on-tap="saveEditTime">Save Changes</paper-button>
       </div>
 
     </paper-dialog>
@@ -315,7 +364,20 @@
           on-tap="startNewMed">
         </paper-fab>
 
-        <paper-button class="timeChunkBar timeChunkMorning" on-tap="toggleMorning">morning</paper-button>
+        <paper-item class="timeChunkBar timeChunkMorning">
+          <P class="timeChunkLabel" on-tap="toggleMorning">
+            morning
+          </P>
+          <p class="timeChunkTime">
+            {{_computeTime(timesData, 'morning')}}
+          </p>
+          <paper-icon-button
+            class="timeChunkButton"
+            icon="icons:more-vert"
+            time-chunk="morning"
+            on-tap="timeChunkOptions">
+          </paper-icon-button>
+        </paper-item>
         <iron-collapse id="morning" opened>
           <div class="tableContainer">
 
@@ -336,7 +398,7 @@
                     Dosage
                   </th>
                   <th>
-                    Time
+                    Comment
                   </th>
                   <th>
                     Edit
@@ -361,7 +423,13 @@
                       [[med.dosage]]
                     </td>
                     <td>
-                      [[med.time]]
+                      <span hidden="[[!med.comment]]">
+                        <paper-icon-button
+                          class="commentButton"
+                          icon="communication:comment"
+                          on-tap="editMed">
+                        </paper-icon-button>
+                      </span>
                     </td>
                     <td>
                       <paper-icon-button on-tap="editMed" icon="editor:editor:mode-edit"></paper-icon-button>
@@ -376,7 +444,20 @@
 
         </iron-collapse>
 
-        <paper-button class="timeChunkBar timeChunkAfternoon" on-tap="toggleAfternoon">afternoon</paper-button>
+        <paper-item class="timeChunkBar timeChunkAfternoon">
+          <P class="timeChunkLabel" on-tap="toggleAfternoon">
+            afternoon
+          </P>
+          <p class="timeChunkTime">
+            {{_computeTime(timesData, 'afternoon')}}
+          </p>
+          <paper-icon-button
+            class="timeChunkButton"
+            icon="icons:more-vert"
+            time-chunk="afternoon"
+            on-tap="timeChunkOptions">
+          </paper-icon-button>
+        </paper-item>
         <iron-collapse id="afternoon">
 
           <div class="tableContainer">
@@ -398,7 +479,7 @@
                     Dosage
                   </th>
                   <th>
-                    Time
+                    Comment
                   </th>
                   <th>
                     Edit
@@ -423,7 +504,13 @@
                       [[med.dosage]]
                     </td>
                     <td>
-                      [[med.time]]
+                      <span hidden="[[!med.comment]]">
+                        <paper-icon-button
+                          class="commentButton"
+                          icon="communication:comment"
+                          on-tap="editMed">
+                        </paper-icon-button>
+                      </span>
                     </td>
                     <td>
                       <paper-icon-button on-tap="editMed" icon="editor:editor:mode-edit"></paper-icon-button>
@@ -438,7 +525,20 @@
 
         </iron-collapse>
 
-        <paper-button class="timeChunkBar timeChunkEvening" on-tap="toggleEvening">evening</paper-button>
+        <paper-item class="timeChunkBar timeChunkEvening">
+          <P class="timeChunkLabel" on-tap="toggleEvening">
+            evening
+          </P>
+          <p class="timeChunkTime">
+            {{_computeTime(timesData, 'evening')}}
+          </p>
+          <paper-icon-button
+            class="timeChunkButton"
+            icon="icons:more-vert"
+            time-chunk="evening"
+            on-tap="timeChunkOptions">
+          </paper-icon-button>
+        </paper-item>
         <iron-collapse id="evening">
 
           <div class="tableContainer">
@@ -460,7 +560,7 @@
                     Dosage
                   </th>
                   <th>
-                    Time
+                    Comment
                   </th>
                   <th>
                     Edit
@@ -485,7 +585,13 @@
                       [[med.dosage]]
                     </td>
                     <td>
-                      [[med.time]]
+                      <span hidden="[[!med.comment]]">
+                        <paper-icon-button
+                          class="commentButton"
+                          icon="communication:comment"
+                          on-tap="editMed">
+                        </paper-icon-button>
+                      </span>
                     </td>
                     <td>
                       <paper-icon-button on-tap="editMed" icon="editor:editor:mode-edit"></paper-icon-button>
@@ -500,7 +606,20 @@
 
         </iron-collapse>
 
-        <paper-button class="timeChunkBar timeChunkNight" on-tap="toggleNight">night</paper-button>
+        <paper-item class="timeChunkBar timeChunkNight">
+          <P class="timeChunkLabel" on-tap="toggleNight">
+            night
+          </P>
+          <p class="timeChunkTime">
+            {{_computeTime(timesData, 'night')}}
+          </p>
+          <paper-icon-button
+            class="timeChunkButton"
+            icon="icons:more-vert"
+            time-chunk="night"
+            on-tap="timeChunkOptions">
+          </paper-icon-button>
+        </paper-item>
         <iron-collapse id="night">
 
           <div class="tableContainer">
@@ -522,7 +641,7 @@
                     Dosage
                   </th>
                   <th>
-                    Time
+                    Comment
                   </th>
                   <th>
                     Edit
@@ -547,7 +666,13 @@
                       [[med.dosage]]
                     </td>
                     <td>
-                      [[med.time]]
+                      <span hidden="[[!med.comment]]">
+                        <paper-icon-button
+                          class="commentButton"
+                          icon="communication:comment"
+                          on-tap="editMed">
+                        </paper-icon-button>
+                      </span>
                     </td>
                     <td>
                       <paper-icon-button on-tap="editMed" icon="editor:editor:mode-edit"></paper-icon-button>
@@ -575,6 +700,9 @@
       ready:function(){
         this.fire("pageLoaded", {page:this.page});
         this.addEventListener("print", this.print);
+        this.$.timesDB.ref.on("value",function(snapshot){
+          this.timeChunkTimeCheck(snapshot);
+        }.bind(this));
       },
       properties:{
         page:{
@@ -613,11 +741,17 @@
       timeTarget:{
         type:Object
       },
+      defaultTimeChunkTimes:{
+        type:Object,
+        value:{
+          morning:"09:00",
+          afternoon:"13:00",
+          evening:"19:00",
+          night:"01:00"
+        }
+      },
       observers:[
-        "newTime(timeTarget.time, timeTarget.$key)",
-        "setTime(newMed.time)",
-        "setTimeEdit(newMedEdit.time)",
-        "editQuery(query1000, query640)"
+        "editQuery(query1000 , query640)"
       ],
       startNewMed:function(){
         this.$.medModal.toggle();
@@ -640,7 +774,7 @@
         this.$.medDB.data.log={};
         this.$.medDB.data.log.user=this.user.uid;
         this.$.medDB.data.log.time=Date.now();
-        this.$.medDB.save("homes/"+this.home+"/patients/"+this.patient+"/medicationOutline/"+editPath, null);
+        this.$.medDB.save("homes/"+this.home+"/patients/"+this.patient+"/medicationOutline/medications/"+editPath, null);
         this.$.editMedModal.toggle();
         this.newMedEdit={};
         this.hideEditingMed=true;
@@ -648,7 +782,7 @@
       saveMed:function(e){
         this.$.medDB.path=null;
         this.$.medDB.data={};
-        this.$.medDB.save("homes/"+this.home+"/patients/"+this.patient+"/medicationOutline", null)
+        this.$.medDB.save("homes/"+this.home+"/patients/"+this.patient+"/medicationOutline/medications", null)
           .then(function(){
             this.$.medDB.data.med=this.newMed;
             this.$.medDB.data.log={};
@@ -670,6 +804,12 @@
         var rawTime=this.$.timePicker.rawValue;
         var timeChunk=this.convertTime(rawTime);
         this.newMed.timeChunk=timeChunk;
+      },
+      timeChunkOptions:function(e){
+        var timeChunk=e.target.getAttribute("time-chunk");
+        this.timeChunkTarget=timeChunk;
+        this.$.timeChunkModal.positionTarget=e.target;
+        this.$.timeChunkModal.open();
       },
       setTimeEdit:function(time){
         var rawTime=this.$.editTimePicker.rawValue;
@@ -765,26 +905,47 @@
         var currentMedList=[];
         var now = Date.now();
         for(x in meds){
-          var med=meds[x];
-          var medCandidate=null;
-          for(y in med){
-            var medHistory=med[y];
-            if(medHistory.log){
-              medTime = medHistory.log.time;
-              if(medCandidate!=null){
-                if(medCandidate.log.time<medTime){
+          if(x!="timeChunks"){
+            var med=meds[x];
+            var medCandidate=null;
+            for(y in med){
+              var medHistory=med[y];
+              if(medHistory.log){
+                medTime = medHistory.log.time;
+                if(medCandidate!=null){
+                  if(medCandidate.log.time<medTime){
+                    medCandidate=medHistory;
+                  };
+                } else {
                   medCandidate=medHistory;
                 };
-              } else {
-                medCandidate=medHistory;
               };
             };
-          };
-          medCandidate=medCandidate.med;
-          medCandidate.parent=x;
-          currentMedList.push(medCandidate);
+            medCandidate=medCandidate.med;
+            medCandidate.parent=x;
+            currentMedList.push(medCandidate);
+          }
         };
         return currentMedList;
+      },
+      _computeTime:function(timeData, timeChunk){
+        var newestCandidate;
+        var currentChunk=timeData[timeChunk];
+        for(x in currentChunk){
+          var candidate=currentChunk[x];
+          if(newestCandidate!=null){
+            if(newestCandidate.log.time<candidate.log.time){
+              newestCandidate=candidate;
+            }
+          } else {
+            newestCandidate=candidate;
+          };
+        };
+        if(newestCandidate){
+          return newestCandidate.time;
+        } else {
+          return "loading...";
+        }
       },
       editQuery:function(query1000, query640){
         if(query640){
@@ -841,10 +1002,78 @@
         };
       },
       editTimeDialog:function(){
+        this.$.timeChunkModal.close();
         this.$.editTimeDialog.toggle();
+      },
+      saveEditTime:function(){
+        this.$.timeDB.path=null;
+        this.$.timeDB.data={};
+        var path="homes/"+this.home+"/patients/"+this.patient+"/medicationOutline/timeChunks/"+this.timeChunkTarget;
+        var now=Date.now();
+        this.$.timeDB.data={
+          log:{
+            user:this.user.uid,
+            time:now
+          },
+          time:this.newTime
+        };
+        this.$.timeDB.save(path, null)
+          .then(function(val){
+            this.$.editTimeDialog.close();
+            this.newTime=null;
+          }.bind(this))
+          .catch(function(error){
+            this.fire("openToast", {toastText:"Error saving new time: "+error});
+          }.bind(this));
       },
       timeDialog:function(){
         this.$.timeDialog.toggle();
+      },
+      timeChunkTimeCheck:function(data){
+        var now=Date.now();
+        data=data.val();
+        if(data===null){
+          var path="homes/"+this.home+"/patients/"+this.patient+"/medicationOutline/";
+          this.$.timeDB.data={
+            morning:{
+              genesis:{
+                log:{
+                  user:"system logged in as: "+this.user.uid,
+                  time:now
+                },
+                time:"09:00"
+              }
+            },
+            afternoon:{
+              genesis:{
+                log:{
+                  user:"system logged in as: "+this.user.uid,
+                  time:now
+                },
+                time:"13:00"
+              }
+            },
+            evening:{
+              genesis:{
+                log:{
+                  user:"system logged in as: "+this.user.uid,
+                  time:now
+                },
+                time:"19:00"
+              }
+            },
+            night:{
+              genesis:{
+                log:{
+                  user:"system logged in as: "+this.user.uid,
+                  time:now
+                },
+                time:"01:00"
+              }
+            },
+          };
+          this.$.timeDB.save(path,"timeChunks");
+        };
       }
   });
 

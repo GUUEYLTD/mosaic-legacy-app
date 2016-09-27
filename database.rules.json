@@ -44,9 +44,18 @@
           ".write": "root.child('homes').child($home).child('users').child(auth.uid).child('home').val()===$home",
           "$patient": {
             "medicationOutline": {
-              "$med": {
-                "$medHistory": {
-                  ".validate": "!data.exists()"
+              "timeChunks":{
+                "$timeChunk":{
+                  "$timeEntry":{
+                    ".validate":"!data.exists()"
+                  }
+                }
+              },
+              "medications":{
+                "$med": {
+                  "$medHistory": {
+                    ".validate": "!data.exists()"
+                  }
                 }
               }
             }
