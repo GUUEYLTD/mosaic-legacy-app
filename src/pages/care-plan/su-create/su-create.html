@@ -99,11 +99,10 @@
 
         <guuey-date-input
           label="Date of Birth"
-          route="/homes/{{home}}/patients/{{patient}}/personalProfile/dob"
+          value="{{newPatientData.dob}}"
           tabindex="3"
           required
           auto-validate
-          guuey-date={{guueyDOB}}
           error-message="Please enter a date by clicking on tapping/clicking on this field.">
         </guuey-date-input>
 
@@ -119,11 +118,10 @@
 
         <guuey-date-input
           label="Date of Assessment"
-          route="/homes/{{home}}/patients/{{patient}}/personalProfile/dateAssessed"
+          value="{{newPatientData.dateAssessed}}"
           tabindex="5"
           required
           auto-validate
-          guuey-date="{{guueyDOA}}"
           error-message="Please enter a date by clicking on tapping/clicking on this field.">
         </guuey-date-input>
 
@@ -586,10 +584,10 @@
         } else if(!data.lName){
           this.fire("openToast", {toastText: "Last name is required before saving the new service user."});
           return;
-        } else if(!this.guueyDOB){
+        } else if(!data.dob){
           this.fire("openToast", {toastText: "Date of birth is required before saving the new service user."});
           return;
-        } else if(!this.guueyDOA){
+        } else if(!data.dateAssessed){
           this.fire("openToast", {toastText: "Date of assessment is required before saving the new service user."});
           return;
         } else if(!data.partnership){

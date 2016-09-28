@@ -240,17 +240,15 @@
             <div class="container app-grid">
 
               <paper-input
-                label="Service user's name"
-                value="{{agreeData.suName}}"
-                required
-                auto-validate
-                pattern="[a-zA-Z\s\.]*"
-                error-message="Please enter a name without special characters.">
+                class="agreement"
+                label="Service User's Name"
+                value="{{_computeServiceUserAgree(suBasicInfo)}}"
+                disabled>
               </paper-input>
 
               <guuey-date-input
-                route="/homes/[[home]]/patients/[[patient]]/carePlan/statementOfServiceUser/suDate"
-                label="Date">
+                value="{{agreeData.suDate}}"
+                label="Service User Agreement Date">
               </guuey-date-input>
 
               <div class="buttonContainer">
@@ -270,8 +268,8 @@
               </paper-input>
 
               <guuey-date-input
-                route="/homes/[[home]]/patients/[[patient]]/carePlan/statementOfServiceUser/swDate"
-                label="Date">
+                value="{{agreeData.swDate}}"
+                label="Service Worker Agreement Date">
               </guuey-date-input>
 
               <paper-input
@@ -284,8 +282,8 @@
               </paper-input>
 
               <guuey-date-input
-                route="homes/[[home]]/patients/[[patient]]/carePlan/statementOfServiceUser/agreementGivenDate"
-                label="Date">
+                value="{{agreeData.agreementGivenDate}}"
+                label="Date Agreement Given">
               </guuey-date-input>
 
               <paper-input
@@ -306,7 +304,7 @@
               </guuey-notify>
 
               <guuey-date-input
-                route="homes/[[home]]/patients/[[patient]]/carePlan/statementOfServiceUser/nextReviewDate"
+                value="{{nextReviewDate}}"
                 label="Next Review Date">
               </guuey-date-input>
 
@@ -400,6 +398,11 @@
         "queryEdit(query640)",
         "requirementsMet(agreeData)"
       ],
+      _computeServiceUserAgree:function(suIndexData){
+        var fullName=suIndexData.fName+" "+suIndexData.lName;
+        this.agreeData.suName=fullName;
+        return fullName;
+      },
       suConfirm:function(){
         this.$.confirmDB.path=null;
         this.$.confirmDB.data=true;

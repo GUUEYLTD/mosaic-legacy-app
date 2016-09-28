@@ -5,67 +5,73 @@
 
     <firebase-document
       id="testDB"
-      path="homes/[[home]]/patients/[[patient]]/test"
+      path="homes/[[home]]/patients/test/test"
       data="{{testData}}"
       app-name="main">
     </firebase-document>
 
-    <style>
+    <style include="paper-date-picker-dialog-style">
+      .sectionHeading{
+        background-color:#42c6ff;
+        width:100%;
+        margin:0px !important;
+        padding:0px;
+      }
+      .sectionHeadingText{
+        font-size: 24px;
+        color:#FFFFFF;
+        margin:0px;
+        padding:20px;
+      }
+      .subHeadingText{
+        color:#FFFFFF;
+        margin:0px;
+        padding:20px;
+      }
+      .inputWrapper{
+        padding:16px;
+      }
       paper-card{
-        width:50%;
-        margin:20px 25% 20px 25%;
+        width:90%;
+        margin:20px 5% 20px 5%;
       }
-      #timeChunks{
-        display:flex;
-        flex-direction:row;
+      .toggleButton{
+        padding-top:50px;
       }
-      paper-item{
-        display:inline-block;
-        flex-grow:1;
-        text-transform:uppercase;
-        text-align: center;
-        --paper-item-selected:{
-          border:2px solid green;
-          color:green;
-        }
-        --paper-item:{
-          border:1px solid grey;
-          color:grey;
-        }
+      .dialogButtons{
+        text-align:center;
       }
-      .paperItemText{
-        padding:10px;
+      paper-button{
+        background-color:#41847d;
+        color:#FFFFFF;
+        font-weight:bold;
         margin:0;
       }
-      #weekdays paper-item{
-        display:inline-block;
-        flex-grow:1;
+      .label{
         text-transform:uppercase;
-        text-align: center;
-        --paper-item-selected:{
-          border:2px solid green;
-          color:green;
-        }
-        --paper-item:{
-          border:1px solid grey;
-          color:grey;
-        }
+        opacity:.7;
+        font-size:12px;
+        font-weight:bold;
+        margin:0;
+        padding:5px;
       }
-      .checkBoxLabel{
-        display:inline-block;
-        text-transform:uppercase;
+      .container{
+        display:flex;
+        flex-direction:column;
+        padding:5px;
       }
+
     </style>
 
     <paper-card>
 
-      <guuey-time-chunk-selector
-        value="{{testData.timeChunk}}">
-      </guuey-time-chunk-selector>
+      <guuey-date-input
+        id="testInput"
+        label="example label"
+        value={{testData.date}}>
+      </guuey-date-input>
 
-      <guuey-weekday-selector
-        value="{{testData.weekdays}}">
-      </guuey-weekday-selector>
+      <paper-checkbox checked="{{testData.checked}}"></paper-checkbox>
 
     </paper-card>
   </template>
@@ -76,13 +82,85 @@
 
       is: 'test-test',
       ready:function(){
-        this.addEventListener("iron-select", this.ironSelected)
-      },
-
-      ironSelected:function(){
 
       },
-
+      openDialog:function(){
+        this.$.dateDialog.open();
+      },
+      _computeDate:function(date){
+        date=date.toString();
+        return date.slice(3,15);
+      },
+      readableWeekday:function(digit){
+        switch(digit){
+          case 0:
+            return "Sunday";
+            break;
+          case 1:
+            return "Monday";
+            break;
+          case 2:
+            return "Tuesday";
+            break;
+          case 3:
+            return "Wednesday";
+            break;
+          case 4:
+            return "Thursday";
+            break;
+          case 5:
+            return "Friday";
+            break;
+          case 6:
+            return "Saturday";
+            break;
+          default:
+            return;
+            break;
+        }
+      },
+      readableMonth:function(digit){
+        switch(digit){
+          case 0:
+            return "Jan";
+            break;
+          case 1:
+            return "Feb";
+            break;
+          case 2:
+            return "Mar";
+            break;
+          case 3:
+            return "Apr";
+            break;
+          case 4:
+            return "May";
+          case 5:
+            return "Jun";
+            break;
+          case 6:
+            return "Jul";
+            break;
+          case 7:
+            return "Aug";
+            break;
+          case 8:
+            return "Sep";
+            break;
+          case 9:
+            return "Oct";
+            break;
+          case 10:
+            return "Nov";
+            break;
+          case 11:
+            return "Dec";
+            break;
+          default:
+            return;
+            break;
+        }
+      }
     });
 
   </script>

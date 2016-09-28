@@ -224,9 +224,8 @@
         <div class="inputWrapper" hidden="[[!riskSelected]]">
 
           <guuey-date-input
-            route="/homes/[[home]]/patients/[[patient]]/riskAssessment/[[riskUID]]/date"
-            label="Date"
-            guuey-date="{{guueyDOR}}">
+            value="{{riskData.date}}"
+            label="Date of risk assessment">
           </guuey-date-input>
 
           <guuey-text-input

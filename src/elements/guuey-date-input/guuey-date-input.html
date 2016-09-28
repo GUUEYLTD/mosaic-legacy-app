@@ -1,121 +1,83 @@
-<!--
-a simple element for date input that pops up a calendar when tapped
-saves the calendar input to the text input area
-arguments:
-route(string)
-  location to save in database REQUIRED
-label(string)
-  the label on the text input to display
--->
 <link rel="import" href="dependencies.html" />
-
 <dom-module id="guuey-date-input">
+
   <template>
 
-    <firebase-document
-      id="dateDB"
-      app-name="main"
-      path="[[route]]"
-      data="{{dateDataLive}}">
-    </firebase-document>
-
-    <app-indexeddb-mirror
-      key="dateDB|[[route]]"
-      data="{{dateDataLive}}"
-      persisted-data="{{dateData}}"
-      worker-url="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
-    </app-indexeddb-mirror>
-
     <style include="paper-date-picker-dialog-style">
-      .sectionHeading{
-        background-color:#42c6ff;
-        width:100%;
-        margin:0px !important;
-        padding:0px;
-      }
-      .sectionHeadingText{
-        font-size: 24px;
-        color:#FFFFFF;
-        margin:0px;
-        padding:20px;
-      }
-      .subHeadingText{
-        color:#FFFFFF;
-        margin:0px;
-        padding:20px;
-      }
-      .inputWrapper{
-        padding:16px;
-      }
-      paper-card{
-        width:90%;
-        margin:20px 5% 20px 5%;
-      }
-      .toggleButton{
-        padding-top:50px;
-      }
-      .dialogButtons{
-        text-align:center;
-      }
-    </style>
-    <paper-dialog id="dateDialog" class="paper-date-picker-dialog">
-      <paper-date-picker id="paperDate" date={{date}}></paper-date-picker>
-      <div class="buttons">
-        <paper-button dialog-dismiss>Cancel</paper-button>
-        <paper-button dialog-dismiss>Save</paper-button>
-      </div>
-    </paper-dialog>
 
-    <paper-input
-      on-tap="enterDate"
-      label="[[label]]"
-      value="{{_computeDate(dateData)}}"
-      required
-      auto-validate
-      error-message="Please enter a date by clicking on tapping/clicking on this field.">
-    </paper-input>
+      paper-button{
+        background-color:#41847d;
+        color:#FFFFFF;
+        font-weight:bold;
+        margin:0;
+      }
+      .label{
+        text-transform:uppercase;
+        opacity:.7;
+        font-size:12px;
+        font-weight:bold;
+        margin:0;
+        padding:5px;
+      }
+      .container{
+        display:flex;
+        flex-direction:column;
+        padding:5px;
+      }
+
+    </style>
+
+      <paper-dialog id="dateDialog" class="paper-date-picker-dialog">
+        <paper-date-picker id="paperDate" date={{date}}></paper-date-picker>
+        <div class="buttons">
+          <paper-button on-tap="cancelDate">Cancel</paper-button>
+          <paper-button on-tap="saveDate">Save</paper-button>
+        </div>
+      </paper-dialog>
+      <div class="container">
+        <p class="label">
+          [[label]]
+        </p>
+        <paper-button on-tap="openDialog">{{_computeDate(value)}}</paper-button>
+      </div>
 
   </template>
 
   <script>
 
     Polymer({
-      is:'guuey-date-input',
+
+      is: 'guuey-date-input',
       properties:{
-        route:{
+        value:{
           type:String,
-        },
-        date:{
-          observer:"_dateChanged",
-          type:Object
-        },
-        label:{
-          type:String
-        },
-        guueyDate:{
-          type:String,
+          value:"",
           notify:true
+        },
+        lable:{
+          type:String,
+          value:""
         }
       },
-      enterDate:function(){
+      openDialog:function(){
         this.$.dateDialog.open();
-        this.dateEdit=true;
       },
-      _dateChanged:function(){
-        if(this.dateEdit){
-          this.stringDate=this.date.toString();
-          this.$.dateDB.setStoredValue(this.route, this.stringDate);
-        }
-      },
-      _computeDate:function(date){
-        if(typeof date==="string"){
-          this.guueyDate=date.slice(3,15);
-          return date.slice(3,15);
+      _computeDate:function(value){
+        if(value){
+          return value.slice(3,15);
         } else {
-          return null;
+          return "Date not set";
         };
+      },
+      saveDate:function(){
+        this.value=this.date.toString();
+        this.$.dateDialog.close();
+      },
+      cancelDate:function(){
+        this.$.dateDialog.close();
       }
     });
 
   </script>
+
 </dom-module>

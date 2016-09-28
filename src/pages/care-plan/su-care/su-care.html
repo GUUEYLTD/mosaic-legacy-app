@@ -45,6 +45,13 @@
       app-name="main">
     </firebase-document>
 
+    <firebase-query
+      id="usersDB"
+      app-name="main"
+      path="homes/[[home]]/users"
+      data="{{usersData}}">
+    </firebase-query>
+
     <!--db connection to get all care plan info for printing-->
     <firebase-document
       id="printDB"
@@ -127,7 +134,7 @@
         top:var(--main-fab-top);
         right:var(--main-fab-right);
       }
-      .app-grid paper-input, guuey-date-input{
+      .app-grid paper-input, vaadin-combo-box, guuey-date-input{
         padding:20px;
         @apply(--app-grid-expandible-item);
       }
@@ -166,7 +173,8 @@
       <su-header
         page="Care Plan"
         home="[[home]]"
-        patient="[[patient]]">
+        patient="[[patient]]"
+        su-index-data="{{suBasicInfo}}">
       </su-header>
 
       <div class="mainContainer">
@@ -225,17 +233,13 @@
               <paper-input
                 class="agreement"
                 label="Service User's Name"
-                value="{{agreeData.suName}}"
-                required
-                auto-validate
-                pattern="[a-zA-Z\s\.]*"
-                error-message="Please enter a name without special characters.">
+                value="{{_computeServiceUserAgree(suBasicInfo)}}"
+                disabled>
               </paper-input>
 
               <guuey-date-input
-                route="/homes/[[home]]/patients/[[patient]]/carePlan/statementOfServiceUser/suDate"
-                label="Date"
-                guuey-date="{{guueySUDOA}}">
+                value="{{agreeData.suDate}}"
+                label="date of service user agreement">
               </guuey-date-input>
 
               <div class="agreeButtons">
@@ -248,20 +252,21 @@
             </div>
 
             <div class="app-grid">
-              <paper-input
-                class="agreement"
+
+              <vaadin-combo-box
+                class="dropdown"
                 label="Care Home Staff Member"
+                items="[[userList]]"
                 value="{{agreeData.swName}}"
                 required
                 auto-validate
                 pattern="[a-zA-Z\s\.]*"
                 error-message="Please enter a staff name without special characters">
-              </paper-input>
+              </vaadin-combo-box>
 
               <guuey-date-input
-                route="/homes/[[home]]/patients/[[patient]]/carePlan/statementOfServiceUser/swDate"
-                label="Date"
-                guuey-date="{{guueySWDOA}}">
+                value="{{agreeData.swDate}}"
+                label="date of service worker agreement">
               </guuey-date-input>
 
               <div class="agreeButtons">
@@ -377,6 +382,9 @@
       ready:function(){
         this.fire("pageLoaded", {page:this.page});
         this.addEventListener("print", this.print);
+        this.$.usersDB.query.on("value", function(snapshot){
+          this.updateUsers(snapshot);
+        }.bind(this));
       },
       properties:{
         page:{
@@ -436,6 +444,25 @@
         "requirementsMet(agreeData)"
 
       ],
+      updateUsers:function(snapshot){
+        var tempList=[];
+        if(snapshot.val()){
+          var data=snapshot.val();
+          for(x in data){
+            if(data[x].displayName){
+              tempList.push(data[x].displayName);
+            } else {
+              tempList.push(data[x].email);
+            };
+          };
+        };
+        this.userList=tempList;
+      },
+      _computeServiceUserAgree:function(suIndexData){
+        var fullName=suIndexData.fName+" "+suIndexData.lName;
+        this.agreeData.suName=fullName;
+        return fullName;
+      },
       suAgreeUpdate:function(e){
         this.$.formDB.path=null;
         this.$.formDB.data=true;
@@ -586,11 +613,10 @@
         return newText;
       },
       requirementsMet:function(data){
-        //suAgree suName guueySUDOA swAgree swName guueySWDOA
         if(!data.suName){
           this.fire("openToast", {toastText:"Please enter a service user for the agreement."});
           return false;
-        } else if(!this.guueySUDOA){
+        } else if(!this.agreeData.suDate){
           this.fire("openToast", {toastText:"Please enter a date for when the service user agreed."});
           return false;
         } else if(!data.suAgree){
@@ -599,7 +625,7 @@
         } else if(!data.swName){
           this.fire("openToast", {toastText:"Please enter a staff worker name for the agreement."});
           return false;
-        } else if(!this.guueySWDOA){
+        } else if(!this.agreeData.swDate){
           this.fire("openToast", {toastText:"Please enter a date for when the staff worker agreed."});
           return false;
         } else if(!data.swAgree){

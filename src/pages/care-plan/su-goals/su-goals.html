@@ -44,6 +44,13 @@
       data="{{stepData}}">
     </firebase-document>
 
+    <firebase-query
+      id="usersDB"
+      app-name="main"
+      path="homes/[[home]]/users"
+      data="{{usersData}}">
+    </firebase-query>
+
     <!--print db-->
     <firebase-document
       id="printDB"
@@ -119,13 +126,17 @@
       }
       .goalStepsText{
         position:absolute;
-        bottom:10%;
-        right:5%;
+        bottom:5%;
+        left:30%;
       }
       .stepsFab{
         position:absolute;
-        bottom:10%;
+        bottom:5%;
         left:5%;
+      }
+      .goalProgress{
+        width:100%;
+
       }
       .mainFab{
         position:absolute;
@@ -259,12 +270,115 @@
         <h2>Add New Goal</h2>
       </div>
 
-      <guuey-dropdown
-        options="[[goalTypes]]"
-        value="{{goalData.category}}"
-        label="category"
-        icon="av:playlist-add-check">
-      </guuey-dropdown>
+        <vaadin-combo-box
+          allow-custom-value
+          label="Category"
+          items="[[goalTypes]]"
+          value="{{goalData.category}}"
+          class="detailBarInput">
+        </vaadin-combo-box>
+
+        <guuey-date-input
+          value="{{goalData.startDate}}"
+          label="Start Date">
+        </guuey-date-input>
+
+        <guuey-notify
+          home="[[home]]"
+          notify-route="homes/[[home]]/patients/[[patient]]/personalGoals/[[goalUID]]/finishDate"
+          condition-type="guuey-date"
+          notify-condition="true"
+          notify-message="[[suBasicInfo.fName]] [[suBasicInfo.lName]]'s [[goalData.category]] goal completion date is soon."
+          notify-url="/[[home]]/care-plan/su-goals/[[patient]]">
+        </guuey-notify>
+
+        <guuey-date-input
+          value="{{goalData.finishDate}}"
+          label="Estimated Finish Date">
+        </guuey-date-input>
+
+        <vaadin-combo-box
+          label="coordinator"
+          items="[[userList]]"
+          value="{{goalData.coordinator}}">
+        </vaadin-combo-box>
+
+        <paper-input
+          label="Goal Description"
+          value="{{goalData.description}}"
+          required
+          auto-validate
+          pattern="[a-zA-Z\s\.\d]*"
+          error-message="Please enter a description without special characters.">
+        </paper-input>
+        <div class="tableContainer">
+
+          <p class="tableScrollLabel">
+            swipe left scrolls table
+          </p>
+
+          <table>
+            <thead>
+              <tr>
+                <th>
+                  Step #
+                </th>
+                <th>
+                  Description
+                </th>
+                <th>
+                  Completed?
+                </th>
+                <th>
+                  Edit
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <template
+                is="dom-repeat"
+                items="[[stepsData]]"
+                as="step"
+                sort="_sortSteps"
+                observe="order">
+                <tr>
+                  <td>
+                    <center>
+                      <paper-fab label="[[step.order]]"></paper-fab>
+                    </center>
+                  </td>
+                  <td>
+                    [[step.description]]
+                  </td>
+                  <td>
+                    <paper-checkbox on-change="checkboxChanged" checked="{{step.completed}}"></paper-checkbox>
+                  </td>
+                  <td>
+                    <paper-icon-button icon="editor:border-color" class="editButton" on-tap="editStep">edit</paper-icon-button>
+                  </td>
+                </tr>
+              </template>
+              <tr>
+                <td>
+                  <center>
+                    <paper-fab icon="icons:add" on-tap="addStep"></paper-fab>
+                  </center>
+                </td>
+                <td>
+                  Add a new step.
+                </td>
+                <td>
+                  <paper-checkbox disabled checked></paper-checkbox>
+                </td>
+                <td>
+                  <paper-icon-button disabled icon="editor:border-color" class="editButton" on-tap="editStep">edit</paper-icon-button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+        </div>
+
 
       <div class="divider">
 
@@ -341,101 +455,7 @@
           <!--default placeholder if user has not put any goals in yet...-->
           <!--
           <div hidden="{{queryCount}}">
-            <div class="col s4">
-              <paper-card elevation="3" class="goalBox">
-                <div style="background-image:url(../../../../images/other.png)" class="goalHeading">
-                  <p class="goalLabel">
-                    Your Goals Here
-                  </p>
-                </div>
-                <div class="goalDescription">
-                    You can add preset goal categories or custom goal categories when pressing the "+" button on the top right of the screen.
-                </div>
-                <paper-icon-button
-                  icon="icons:more-vert"
-                  class="goalMore"
-                  on-tap="toggleEditModal"
-                  disabled>
-                </paper-icon-button>
 
-                <div class="goalSteps">
-
-                  <div class="stepsFab">
-                    <paper-fab label="0"></paper-fab>
-                  </div>
-
-                  <p class="goalStepsText">
-                    STEPS
-                  </p>
-
-                </div>
-
-              </paper-card>
-            </div>
-
-            <div class="col s4">
-              <paper-card elevation="3" class="goalBox">
-                <div style="background-image:url(../../../../images/other.png)" class="goalHeading">
-                  <p class="goalLabel">
-                    Goal Category Name
-                  </p>
-                </div>
-                <div class="goalDescription">
-                    A brief description of the service user's goal.
-                </div>
-                <paper-icon-button
-                  icon="icons:more-vert"
-                  class="goalMore"
-                  on-tap="toggleEditModal"
-                  disabled>
-                </paper-icon-button>
-
-                <div class="goalSteps">
-
-                  <div class="stepsFab">
-                    <paper-fab label="0"></paper-fab>
-                  </div>
-
-                  <p class="goalStepsText">
-                    STEPS
-                  </p>
-
-                </div>
-
-              </paper-card>
-            </div>
-
-            <div class="col s4">
-              <paper-card elevation="3" class="goalBox">
-                <div style="background-image:url(../../../../images/other.png)" class="goalHeading">
-                  <p class="goalLabel">
-                    Making A Goal
-                  </p>
-                </div>
-                <div class="goalDescription">
-                    Making a goal is very easy. Just click the button above.
-                </div>
-                <paper-icon-button
-                  icon="icons:more-vert"
-                  class="goalMore"
-                  on-tap="toggleEditModal"
-                  disabled>
-                </paper-icon-button>
-
-                <div class="goalSteps">
-
-                  <div class="stepsFab">
-                    <paper-fab label="0"></paper-fab>
-                  </div>
-
-                  <p class="goalStepsText">
-                    STEPS
-                  </p>
-
-                </div>
-
-              </paper-card>
-            </div>
 
           </div>
           -->
@@ -464,12 +484,19 @@
                     on-tap="toggleEditModal">
                   </paper-icon-button>
 
-                  <div class="goalSteps">
 
-                      <paper-fab
-                        label="{{_computeSteps(goal.steps)}}"
-                        class="stepsFab">
-                      </paper-fab>
+                  <div class="goalSteps">
+                    <paper-progress
+                      class="goalProgress"
+                      min="0"
+                      max="{{_computeSteps(goal.steps)}}"
+                      value="{{_computeCompleteSteps(goal.steps)}}">
+                    </paper-progress>
+
+                    <paper-fab
+                      label="{{_computeSteps(goal.steps)}}"
+                      class="stepsFab">
+                    </paper-fab>
 
                     <p class="goalStepsText">
                       STEPS
@@ -504,9 +531,8 @@
         <div class="inputContainer">
 
           <guuey-date-input
-            route="homes/[[home]]/patients/[[patient]]/personalGoals/[[goalUID]]/startDate"
-            label="Start Date"
-            guuey-date="{{guueySD}}">
+            value="{{goalData.startDate}}"
+            label="Start Date">
           </guuey-date-input>
 
           <guuey-notify
@@ -519,19 +545,15 @@
           </guuey-notify>
 
           <guuey-date-input
-            route="homes/[[home]]/patients/[[patient]]/personalGoals/[[goalUID]]/finishDate"
-            label="Estimated Finish Date"
-            guuey-date="{{guueyFD}}">
+            value="{{goalData.finishDate}}"
+            label="Estimated Finish Date">
           </guuey-date-input>
 
-          <paper-input
+          <vaadin-combo-box
             label="coordinator"
-            value="{{goalData.coordinator}}"
-            required
-            auto-validate
-            pattern="[a-zA-Z\s\.]*"
-            error-message="Please enter a coordinator name.">
-          </paper-input>
+            items="[[userList]]"
+            value="{{goalData.coordinator}}">
+          </vaadin-combo-box>
 
         </div>
 
@@ -579,7 +601,7 @@
                 items="[[stepsData]]"
                 as="step"
                 sort="_sortSteps"
-                observe="order">
+                observe="order description">
                 <tr>
                   <td>
                     <center>
@@ -588,11 +610,14 @@
                   </td>
                   <td>
                     [[step.description]]
+                    <paper-input value="{{step.description}}"></paper-input>
                   </td>
                   <td>
                     <paper-checkbox
-                      checked="[[step.completed]]">
+                      on-change="checkboxChanged"
+                      checked="{{step.completed}}">
                     </paper-checkbox>
+
                   </td>
                   <td>
                     <paper-icon-button icon="editor:border-color" class="editButton" on-tap="editStep">edit</paper-icon-button>
@@ -634,6 +659,9 @@
       ready:function(){
         this.fire("pageLoaded", {page:this.page});
         this.addEventListener("print", this.print);
+        this.$.usersDB.query.on("value", function(snapshot){
+          this.updateUsers(snapshot);
+        }.bind(this));
       },
       properties:{
         page:{
@@ -663,12 +691,29 @@
             "Other"
           ]
         },
-
+        userList:{
+          type:Array,
+          value:[]
+        }
       },
       observers:[
         "editQuery(query1200, query850, query950, query640)",
         "requirementsMet(goalsData)"
       ],
+      updateUsers:function(snapshot){
+        var tempList=[];
+        if(snapshot.val()){
+          var data=snapshot.val();
+          for(x in data){
+            if(data[x].displayName){
+              tempList.push(data[x].displayName);
+            } else {
+              tempList.push(data[x].email);
+            };
+          };
+        };
+        this.userList=tempList;
+      },
       addGoal:function(){
         this.$.goalDB.path=null;
         this.$.goalDB.data={};
@@ -722,6 +767,17 @@
           stepCount++;
         }
         return stepCount;
+      },
+      _computeCompleteSteps:function(steps){
+        var completeCount=0;
+        for(x in steps){
+          if(steps[x].completed){
+            if(steps[x].completed===true){
+              completeCount++;
+            };
+          };
+        };
+        return completeCount;
       },
       _computeGoalImage:function(cat){
         switch(cat) {
@@ -810,6 +866,12 @@
         }
         return newText;
       },
+      checkboxChanged:function(e){
+        var checkBool=e.model.step.completed;
+        var stepID=e.model.step.$key;
+        var path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalUID+"/steps/"+stepID+"/completed";
+        this.$.stepDB.setStoredValue(path, checkBool);
+      },
       requirementsMet:function(data){
         //change case
         this.$.goalsDB.query.on("child_changed",function(){
@@ -817,10 +879,10 @@
           if(!goalData.category){
             this.fire("openToast", {toastText:"Goal category is required."});
             return false;
-          } else if(!this.guueySD){
+          } else if(!goalData.startDate){
             this.fire("openToast", {toastText:"Goal start date is required."});
             return false;
-          } else if(!this.guueyFD){
+          } else if(!goalData.finishDate){
             this.fire("openToast", {toastText:"Goal finish date is required."});
             return false;
           } else if(!goalData.coordinator){

@@ -22,7 +22,7 @@
           }
         },
         "users": {
-          ".read": "data.child(auth.uid).child('home').val()===$home && data.child(auth.uid).child('role').val()==='admin' || data.child(auth.uid).child('role').val()==='manager'",
+          ".read": "data.child(auth.uid).child('home').val()===$home",
           ".write": "data.child(auth.uid).child('home').val()===$home && data.child(auth.uid).child('role').val()==='admin' || data.child(auth.uid).child('role').val()==='manager'",
           "$user": {
             ".read": "auth.uid===$user",
