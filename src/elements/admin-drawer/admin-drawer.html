@@ -6,16 +6,25 @@
     <style>
       app-header {
         background-color: var(--app-primary-color);
-        color: #fff;
+        color: #FFFFFF;
       }
       app-header paper-icon-button {
         --paper-icon-button-ink-color: white;
       }
       app-drawer{
         z-index:50;
-        color:#303030
+        color:#FFFFFF;
+        --app-drawer-content-container:{
+          background-color:#37474F;
+        }
       }
-
+      app-toolbar{
+        --app-toolbar-font-size:14px;
+      }
+      paper-listbox{
+        background-color:#37474F;
+        color:#FFFFFF;
+      }
       .drawer-list {
         margin: 0 20px;
       }
@@ -35,18 +44,52 @@
         padding-left: 32px;
       }
       app-toolbar{
-        background-color:#fad100;
-        min-height:100px;
+        background-color:#263238;
+        min-height:150px;
       }
       paper-listbox a{
         text-decoration:none;
         color:inherit;
       }
+      .username{
+        margin:20px 0 20px 20px;
+      }
+      .divider{
+        height:1px;
+        width:100%;
+        background-color:grey;
+      }
+      paper-toggle-button{
+        display:inline-block;
+        --paper-toggle-button-checked-bar-color:  var(--paper-green-500);
+        --paper-toggle-button-checked-button-color:  var(--paper-green-500);
+        --paper-toggle-button-checked-ink-color: var(--paper-green-500);
+        --paper-toggle-button-unchecked-bar-color:  var(--paper-red-900);
+        --paper-toggle-button-unchecked-button-color:  var(--paper-red-900);
+        --paper-toggle-button-unchecked-ink-color: var(--paper-red-900);
+      }
+      .toggleLabel{
+        flex-grow: 1;
+      }
+      iron-image{
+        height:50px;
+        width:50px;
+        border-radius:50%;
+        margin-left:20px;
+        margin-top:20px;
+      }
     </style>
 
     <app-drawer id="adminDrawer" position="start" opened="{{opened}}">
       <app-toolbar>
-        {{email}}
+        <iron-image
+          src="../../../images/defaultAvatar.png"
+          top-item
+          sizing="cover">
+        </iron-image>
+        <p class="username" bottom-item>
+          {{email}}
+        </p>
       </app-toolbar>
       <paper-listbox>
         <a on-tap="close" href="/{{home}}/admin/ad-dash/{{admin}}" tabindex="-1">
@@ -104,6 +147,20 @@
         </a>
 
       </paper-listbox>
+      <div class="divider"></div>
+      <paper-listbox>
+        <paper-item>
+          <p class="toggleLabel">
+            Version control
+          </p>
+          <paper-toggle-button
+            name="Version Control"
+            toggles
+            value="{{vcActive}}">
+          </paper-toggle-button>
+        </paper-item>
+      </paper-listbox>
+
     </app-drawer>
 
   </template>
