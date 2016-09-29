@@ -71,7 +71,7 @@ fieldDisabled(boolean)
           <div class="inputWrapper">
             <paper-textarea
               label="Please fill in this form"
-              value="{{inputData.info}}">
+              value="{{value}}">
             </paper-textarea>
           </div>
         </div>
@@ -93,16 +93,10 @@ fieldDisabled(boolean)
         label2:{
           type:String,
         },
-        guueyText:{
+        value:{
           type:String,
           notify:true
         }
-      },
-      observers:[
-        "_inputChanged(inputData.info)"
-      ],
-      _inputChanged:function(data){
-        this.guueyText=data;
       }
     });
 

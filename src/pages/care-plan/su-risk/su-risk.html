@@ -65,12 +65,6 @@
         width:80%;
         margin:-50px 10% 50px 10%;
       }
-      .riskHeading{
-        text-align:center;
-        font-size:24px;
-        height:10%;
-        margin:4%;
-      }
       .riskDescription{
         text-align:center;
         font-size:18px;
@@ -81,7 +75,36 @@
       }
       .riskBox{
         margin:20px;
+        padding: 0 !important;
       }
+      .riskHeading{
+        width:100%;
+        height:40%;
+        margin-top:0 !important;
+        margin-bottom:4%;
+        position:relative;
+        background-repeat:no-repeat;
+        background-size:cover;
+        background-position:bottom right;
+      }
+      .riskLabel{
+        width:25%;
+        position:absolute;
+        bottom:10px;
+        left:10px;
+        padding:0px;
+        margin:0px;
+        font-weight:bold;
+        color:#FFFFFF;
+        font-size:20px;
+      }
+      .riskCardText{
+        padding:10px;
+      }
+      .dateContainer{
+        padding:10px;
+      }
+
       .mainFab{
         position:absolute;
         right:-25px;
@@ -103,7 +126,80 @@
         margin: 4% 20% 4% 20%;
         height:10%;
       }
+      .addRiskHeader{
+        color:#FFF;
+        background-color:#673AB7;
+        margin-top:0px !important;
+      }
+      .addRiskHeader h2{
+        padding:15px;
+      }
+      #addRiskDialog{
+        padding:20px;
+      }
+      .riskMore{
+        position:absolute;
+        top:10px;
+        right:10px;
+        color:#FFFFFF;
+      }
     </style>
+
+    <paper-dialog horizontal-align="left" vertical-align="top" id="editModal">
+      <paper-button on-tap="editRisk">edit</paper-button>
+      <br />
+      <paper-button on-tap="deleteRisk">delete</paper-button>
+    </paper-dialog>
+
+    <paper-dialog id="addRiskDialog">
+      <div class="addRiskHeader">
+        <h2>Add New Goal</h2>
+      </div>
+
+      <vaadin-combo-box
+        label="Category"
+        items="[[riskTypes]]"
+        value="{{riskData.category}}">
+      </vaadin-combo-box>
+
+      <guuey-date-input
+        value="{{riskData.date}}"
+        label="Date of risk assessment">
+      </guuey-date-input>
+
+      <paper-textarea
+        label="Background of Risk"
+        value="{{riskData.backgroundOfRisk}}">
+      </paper-textarea>
+
+      <paper-textarea
+        label="Risk Identified"
+        value="{{riskData.riskIdentified}}">
+      </paper-textarea>
+
+      <paper-textarea
+        label="Crisis Plan"
+        value="{{riskData.crisisPlan}}">
+      </paper-textarea>
+
+      <vaadin-combo-box
+        label="Agreed Frequencey of Evaluation"
+        items="[[evalFreq]]"
+        value="{{riskData.agreedFrequencyOfEvaluation}}">
+      </vaadin-combo-box>
+
+      <guuey-date-input
+        value="{{riskData.evaluation}}"
+        label="Date of risk evaluation">
+      </guuey-date-input>
+
+      <guuey-slider
+        value="{{riskData.riskLevel}}">
+      </guuey-slider>
+      <paper-button on-tap="cancelNewRisk">cancel</paper-button>
+      <paper-button on-tap="saveNewRisk">save</paper-button>
+
+    </paper-dialog>
 
     <paper-card class="mainCard" elevation="3">
       <su-header
@@ -142,56 +238,7 @@
 
           <!--
           <div hidden="{{queryCount}}">
-            <div class="col s4">
-              <paper-card elevation="3" class="riskBox">
 
-                <div class="riskHeading">
-                  Your Date Here
-                </div>
-
-                <div class="riskDescription">
-                    This is an example. Click on the "+" button on the top right of the screen in order to start a new risk assessment for this service user.
-                </div>
-
-                  <paper-button disabled class="guuey-button" on-tap="editRisk">edit</paper-button>
-                  <paper-button disabled class="guuey-button" on-tap="deleteRisk">delete</paper-button>
-
-              </paper-card>
-            </div>
-
-            <div class="col s4">
-              <paper-card elevation="3" class="riskBox">
-
-                <div class="riskHeading">
-                  Another Example
-                </div>
-
-                <div class="riskDescription">
-                    Your description of the risk assessment will display here after creating a risk assessment.
-                </div>
-
-                  <paper-button class="guuey-button" on-tap="editRisk">edit</paper-button>
-                  <paper-button class="guuey-button" on-tap="deleteRisk">delete</paper-button>
-
-              </paper-card>
-            </div>
-
-            <div class="col s4">
-              <paper-card elevation="3" class="riskBox">
-
-                <div class="riskHeading">
-                  EXAMPLE Aug 15 2015
-                </div>
-
-                <div class="riskDescription">
-                    The service user was assessed and...
-                </div>
-
-                  <paper-button class="guuey-button" on-tap="editRisk">edit</paper-button>
-                  <paper-button class="guuey-button" on-tap="deleteRisk">delete</paper-button>
-
-              </paper-card>
-            </div>
           </div>
           -->
 
@@ -202,16 +249,36 @@
 
               <paper-card elevation="3" class="riskBox">
 
-                <div class="riskHeading">
+                <div style="background-image:url(../../../../{{_computeRiskImage(risk.category)}})" class="riskHeading">
+                  <p class="riskLabel">
+                    [[risk.category]]
+                  </p>
+                </div>
+
+                <guuey-slider value="{{risk.riskLevel}}">
+                </guuey-slider>
+
+                <p class="riskCardText">
+                  [[risk.riskIdentified]]
+                </p>
+
+                <div style="border-bottom:1px solid grey; width:100%;" class="divider">
+
+                </div>
+                <div class="dateContainer">
+                  <p class="dateHeader">
+                    Date of Assessment
+                  </p>
                   {{_computeDate(risk.date)}}
+                  <br />
+                  {{_computeDate(risk.evaluation)}}
                 </div>
+                <paper-icon-button
+                  icon="icons:more-vert"
+                  class="riskMore"
+                  on-tap="toggleEditModal">
+                </paper-icon-button>
 
-                <div class="riskDescription">
-                    {{risk.backgroundOfRisk.info}}
-                </div>
-
-                  <paper-button class="guuey-button" on-tap="editRisk">edit</paper-button>
-                  <paper-button class="guuey-button" on-tap="deleteRisk">delete</paper-button>
 
               </paper-card>
 
@@ -223,45 +290,47 @@
 
         <div class="inputWrapper" hidden="[[!riskSelected]]">
 
+          <vaadin-combo-box
+            label="Category"
+            items="[[riskTypes]]"
+            value="{{riskData.category}}">
+          </vaadin-combo-box>
+
           <guuey-date-input
             value="{{riskData.date}}"
             label="Date of risk assessment">
           </guuey-date-input>
 
           <guuey-text-input
-            route="/homes/[[home]]/patients/[[patient]]/riskAssessment/[[riskUID]]/backgroundOfRisk"
-            label="Background of Risk"
-            label2=""
-            guuey-text="{{guueyInput0}}">
+            value="{{riskData.backgroundOfRisk}}"
+            label="Background of Risk">
           </guuey-text-input>
 
           <guuey-text-input
-            route="/homes/[[home]]/patients/[[patient]]/riskAssessment/[[riskUID]]/riskIdentified"
-            label="Risk Identified"
-            label2=""
-            guuey-text="{{guueyInput1}}">
+            value="{{riskData.riskIdentified}}"
+            label="Risk Identified">
           </guuey-text-input>
 
           <guuey-text-input
-            route="/homes/[[home]]/patients/[[patient]]/riskAssessment/[[riskUID]]/crisisPlan"
+            value="{{riskData.crisisPlan}}"
             label="crisis Plan"
-            label2="How to Address"
-            guuey-text="{{guueyInput2}}">
+            label2="How to Address">
           </guuey-text-input>
 
-          <guuey-text-input
-            route="/homes/[[home]]/patients/[[patient]]/riskAssessment/[[riskUID]]/agreedFrequencyOfEvaluation"
+          <vaadin-combo-box
             label="Agreed Frequencey of Evaluation"
-            label2=""
-            guuey-text="{{guueyInput3}}">
-          </guuey-text-input>
+            items="[[evalFreq]]"
+            value="{{riskData.agreedFrequencyOfEvaluation}}">
+          </vaadin-combo-box>
 
-          <guuey-text-input
-            route="/homes/[[home]]/patients/[[patient]]/riskAssessment/[[riskUID]]/evaluation"
-            label="Evaluation"
-            label2="{{riskData.date}}"
-            guuey-text="{{guueyInput4}}">
-          </guuey-text-input>
+          <guuey-date-input
+            value="{{riskData.evaluation}}"
+            label="Date of risk evaluation">
+          </guuey-date-input>
+
+          <guuey-slider
+            value="{{riskData.riskLevel}}">
+          </guuey-slider>
 
         </div>
 
@@ -297,12 +366,41 @@
         riskSelected:{
           type:Boolean,
           value:false
+        },
+        evalFreq:{
+          type:Array,
+          value:[
+            "daily",
+            "weekly",
+            "bi-weekly",
+            "monthly",
+            "bi-monthly",
+            "yearly"
+          ]
+        },
+        riskTypes:{
+          type:Array,
+          value:[
+            "Moving & Handling",
+            "Slips & Trips",
+            "Violence & Agression",
+            "Falls From Windows & Balconies",
+            "Scalding & Burning",
+            "Bedrail Entrapment",
+            "Legionella",
+            "Other"
+          ]
         }
       },
       observers:[
         "editQuery(query1300, query1100, query750, query640)",
         "requirementsMet(risksData)"
       ],
+      toggleEditModal:function(e){
+        this.$.editModal.positionTarget = e.target;
+        this.riskUID=e.model.risk.$key;
+        this.$.editModal.toggle();
+      },
       //is this useless???? i think so... test later
       editField:function(event){
         event.model.set('item.name','stuff');
@@ -313,22 +411,33 @@
       addRisk:function(){
         this.$.riskDB.path=null;
         this.$.riskDB.data={};
+        this.$.addRiskDialog.open();
+      },
+      saveNewRisk:function(){
         var path="/homes/"+this.home+"/patients/"+this.patient+"/riskAssessment";
         this.$.riskDB.save(path, null)
-          .then(function(){
-            //save new risk uid for paths to db for new steps and querying steps
-            this.riskUID=this.$.riskDB.path.slice(path.length+2);
-            this.riskSelected=true;
+          .then(function(val){
+            this.$.addRiskDialog.close();
+            this.fire("openToast",{toastText:"New risk assessment saved."});
+          }.bind(this))
+          .catch(function(error){
+            this.$.addRiskDialog.close();
+            this.fire("openToast",{toastText:"There was an error saving the new risk: "+error});
           }.bind(this));
       },
+      cancelNewRisk:function(){
+        this.$.addRiskDialog.close();
+        this.$.riskDB.data={};
+      },
       editRisk:function(e){
-        this.riskUID=e.model.risk.$key;
         this.riskSelected=true;
-        this.$.riskDB.path="/homes/"+this.home+"/patients/"+this.patient+"/riskAssessment/"+e.model.risk.$key;
+        this.$.riskDB.path="/homes/"+this.home+"/patients/"+this.patient+"/riskAssessment/"+this.riskUID;
+        this.$.editModal.close();
       },
       deleteRisk:function(e){
-        var path="/homes/"+this.home+"/patients/"+this.patient+"/riskAssessment/"+e.model.risk.$key;
+        var path="/homes/"+this.home+"/patients/"+this.patient+"/riskAssessment/"+this.riskUID;
         this.$.riskDB.setStoredValue(path, null);
+        this.$.editModal.close();
       },
       finishRisk:function(e){
         this.riskSelected=false;
@@ -338,6 +447,35 @@
           return date.slice(3,15);
         } else {
           return null;
+        };
+      },
+      _computeRiskImage:function(cat){
+
+        switch(cat) {
+          case "Moving & Handling":
+              return "images/accommodation.png";
+              break;
+          case "Slips & Trips":
+              return "images/financeAndBudget.png";
+              break;
+          case "Violence & Agression":
+              return "images/socialSkills.png";
+              break;
+          case "Falls From Windows & Balconies":
+              return "images/medicalTreatment.png";
+              break;
+          case "scalding & Burning":
+              return "images/mentalHealth.png";
+              break;
+          case "Bedrail Entrapment":
+              return "images/mentalHealth.png";
+              break;
+          case "Legionella":
+              return "images/mentalHealth.png";
+              break;
+          default:
+              return "images/other.png";
+              break;
         };
       },
       _computeQueryCount:function(goal){

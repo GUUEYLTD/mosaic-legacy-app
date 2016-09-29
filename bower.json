@@ -48,7 +48,8 @@
     "paper-progress": "PolymerElements/paper-progress#^1.0.10",
     "app-storage": "PolymerElements/app-storage#^0.9.4",
     "paper-menu-button": "PolymerElements/paper-menu-button#^1.5.1",
-    "paper-menu": "PolymerElements/paper-menu#^1.2.2"
+    "paper-menu": "PolymerElements/paper-menu#^1.2.2",
+    "paper-slider": "PolymerElements/paper-slider#^1.0.11"
   },
   "devDependencies": {
     "web-component-tester": "^4.0.0"

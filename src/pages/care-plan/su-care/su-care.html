@@ -4,6 +4,13 @@
 
   <template>
     <!--db for agreement section-->
+
+    <firebase-document
+      id="careDB"
+      app-name="main"
+      data="{{careData}}"
+      path="/homes/[[home]]/patients/[[patient]]/carePlan">
+    </firebase-document>
     <firebase-document
       id="agreeDB"
       app-name="main"
@@ -282,39 +289,38 @@
         </paper-card>
 
     <guuey-text-input
-      route="homes/[[home]]/patients/[[patient]]/carePlan/aboutMeAndMyLife"
+      value="{{careData.careData}}"
       label="About me and my life"
       label2="Fill in the information about where you were born, studied, lived etc.">
     </guuey-text-input>
     <guuey-text-input
-      route="homes/[[home]]/patients/[[patient]]/carePlan/myStrengthsAndAbilities"
+      value="{{careData.myStrengthsAndAbilities}}"
       label="My strengths and abilities"
       label2="Name the activities that you are good at.">
     </guuey-text-input>
     <guuey-text-input
-      route="homes/[[home]]/patients/[[patient]]/carePlan/myHobbies"
+      value="{{careData.myHobbies}}"
       label="My hobbies"
       label2="Name the things you enjoy doing.">
     </guuey-text-input>
     <guuey-text-input
-      route="homes/[[home]]/patients/[[patient]]/carePlan/wellness"
+      value="{{careData.wellness}}"
       label="Wellness"
       label2="A description of an individual when they are well">
     </guuey-text-input>
     <guuey-text-input
-      route="homes/[[home]]/patients/[[patient]]/carePlan/dailyMaintenance"
+      value="{{careData.dailyMaintenance}}"
       label="Daily maintenance"
       label2="List of things an individual needs to do weekly/daily to stay well. More specific than wellness box.">
     </guuey-text-input>
     <guuey-text-input
-      route="homes/[[home]]/patients/[[patient]]/carePlan/triggers"
+      value="{{careData.triggers}}"
       label="Triggers"
       label2="List of things an individual needs to do weekly/daily/monthly to stay well. More specific than wellness box.">
     </guuey-text-input>
     <guuey-text-input
-      route="homes/[[home]]/patients/[[patient]]/carePlan/crisisOrContingencyPlan"
-      label="Crisis or contigency plan"
-      label2="STILL NEED TEXT FOR THIS">
+      value="{{careData.crisisOrContingencyPlan}}"
+      label="Crisis or contigency plan">
     </guuey-text-input>
 
   <guuey-table

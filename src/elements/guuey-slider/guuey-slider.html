@@ -1,21 +1,9 @@
 <link rel="import" href="dependencies.html" />
-<dom-module id="test-test">
+<dom-module id="guuey-slider">
 
   <template>
 
-    <firebase-document
-      id="testDB"
-      path="homes/[[home]]/patients/test/test"
-      data="{{testData}}"
-      app-name="main">
-    </firebase-document>
-
-    <style include="paper-date-picker-dialog-style">
-
-      paper-card{
-        width:90%;
-        margin:20px 5% 20px 5%;
-      }
+    <style>
       .sliderContainer{
         display:flex;
         flex-direction:row;
@@ -60,13 +48,12 @@
       }
     </style>
 
-    <paper-card>
       <div class="sliderContainer">
         <p class="dangerLabel">
-          {{_computeDanger(testData.slider)}}
+          {{_computeDanger(value)}}
         </p>
         <div class="innerContainer">
-          <paper-slider id="slider" max-markers="5" snaps step="1" min="1" max="5" value="{{testData.slider}}"></paper-slider>
+          <paper-slider id="slider" max-markers="5" snaps step="1" min="1" max="5" value="{{value}}"></paper-slider>
           <p class="spectrumDescriptor" id="noRisk">
             no risk
           </p>
@@ -75,24 +62,25 @@
           </p>
         </div>
       </div>
-    </paper-card>
+
   </template>
 
   <script>
 
     Polymer({
 
-      is: 'test-test',
+      is: 'guuey-slider',
       ready:function(){
         this.addEventListener("immediate-value-change", this.updateSliderColor);
       },
       properties:{
-        testData:{
+        value:{
           type:Number,
+          notify:true
         }
       },
       observers:[
-        "slidercolorChange(testData.slider)"
+        "slidercolorChange(value)"
       ],
       updateSliderColor:function(){
         switch(this.$.slider.immediateValue){
@@ -207,7 +195,7 @@
           default:
             this.customStyle['--danger-label-color']='blue';
             this.updateStyles();
-            return "Loading..."
+            return "Not Set"
             break;
         };
       }

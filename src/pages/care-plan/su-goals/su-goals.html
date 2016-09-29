@@ -98,7 +98,6 @@
         top:10px;
         right:10px;
         color:#FFFFFF;
-
       }
       .goalBox{
         margin:20px;
@@ -205,7 +204,7 @@
       .editButton{
         margin-top:-20px;
       }
-      #goalModal{
+      #editModal{
         margin:0;
       }
       .addGoalHeader{
@@ -379,21 +378,17 @@
 
         </div>
 
-
-      <div class="divider">
-
-      </div>
+        <paper-button on-tap="cancelNewGoal">cancel</paper-button>
+        <paper-button on-tap="saveNewGoal">save</paper-button>
 
     </paper-dialog>
 
-    <!--dialogue that works to add labels for custom text input area-->
-    <paper-dialog horizontal-align="left" vertical-align="top" id="goalModal">
+    <paper-dialog horizontal-align="left" vertical-align="top" id="editModal">
       <paper-button on-tap="editGoal">edit</paper-button>
       <br />
       <paper-button on-tap="deleteGoal">delete</paper-button>
     </paper-dialog>
 
-    <!--dialogue that works to add comments to a table row-->
     <paper-dialog id="stepModal">
       <h2>Add/update Step</h2>
       <paper-input
@@ -412,8 +407,8 @@
         pattern="\d{1,1}"
         error-message="Please enter a step from 1 to 9">
       </paper-input>
-      <paper-button dialog-dismiss>cancel</paper-button>
-      <paper-button dialog-dismiss>save</paper-button>
+      <paper-button on-tap="cancelNewStep">cancel</paper-button>
+      <paper-button on-tap="saveNewStep">save</paper-button>
     </paper-dialog>
 
     <paper-card class="mainCard" elevation="3">
@@ -716,27 +711,49 @@
       },
       addGoal:function(){
         this.$.goalDB.path=null;
-        this.$.goalDB.data={};
+        this.goalData={};
         var path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals";
         this.$.goalDB.save(path, null)
           .then(function(){
             //save new goal uid for paths to db for new steps and querying steps
             this.goalUID=this.$.goalDB.path.slice(path.length+2);
-            //set the db path to query steps as they are created
-            this.$.stepsDB.path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalUID+"/steps";
             this.$.addGoalModal.open();
+            //reset and use the path later
+            this.$.stepsDB.path=path+"/"+this.goalUID+"/steps";
+            this.$.goalDB.path=null;
+            this.goalData={steps:{}};
           }.bind(this));
+      },
+      saveNewGoal:function(){
+        var path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals";
+        this.$.goalDB.save(path,this.goalUID)
+          .then(function(val){
+            this.fire("openToast",{toastText:"New Goal Saved."});
+            this.$.addGoalModal.close();
+            this.$.goalDB.data={};
+          }.bind(this))
+          .catch(function(error){
+            this.fire("openToast",{toastText:"There was an error saving your goal: "+error});
+            this.$.addGoalModal.close();
+            this.$.goalDB.data={};
+          }.bind(this));
+      },
+      cancelNewGoal:function(){
+        this.$.goalDB.data={};
+        this.$.stepDB.data={};
+        this.$.stepsDB.data=[];
+        this.$.addGoalModal.close();
       },
       editGoal:function(e){
          this.$.goalDB.path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalUID;
          this.$.stepsDB.path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalUID+"/steps";
          this.goalSelected=true;
-         this.$.goalModal.toggle();
+         this.$.editModal.toggle();
       },
       deleteGoal:function(e){
         var path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalUID;
         this.$.goalDB.setStoredValue(path, null);
-        this.$.goalModal.toggle();
+        this.$.editModal.toggle();
       },
       finishGoal:function(e){
         this.goalSelected=false;
@@ -747,9 +764,25 @@
         var path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalUID+"/steps";
         this.$.stepDB.save(path, null)
           .then(function(){
-            var stepUID=this.$.stepDB.path.slice(path.length+2);
-            this.$.stepModal.toggle();
+            this.stepUID=this.$.stepDB.path.slice(path.length+2);
+            this.$.stepModal.open();
+            //reset the db path and save the path for later
+            this.$.stepDB.path=null;
           }.bind(this));
+      },
+      saveNewStep:function(){
+        var path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalUID+"/steps";
+        this.$.stepDB.save(path, this.stepUID)
+          .then(function(val){
+            this.$.stepModal.close();
+          }.bind(this))
+          .catch(function(error){
+            this.$.stepModal.close();
+          }.bind(this));
+      },
+      cancelNewStep:function(){
+        this.$.stepModal.close();
+        this.$.stepData={};
       },
       editStep:function(e){
         var stepID = e.model.step.$key;
@@ -801,9 +834,9 @@
         };
       },
       toggleEditModal:function(e){
-        this.$.goalModal.positionTarget = e.target;
+        this.$.editModal.positionTarget = e.target;
         this.goalUID = e.model.goal.$key;
-        this.$.goalModal.toggle();
+        this.$.editModal.toggle();
       },
 
       _computeQueryCount:function(goal){
