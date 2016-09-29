@@ -242,7 +242,7 @@
           </div>
           -->
 
-          <template is="dom-repeat" items="[[risksData]]" as="risk">
+          <template is="dom-repeat" items="{{risksData}}" as="risk">
             {{_computeQueryCount(risk)}}
 
             <div class="riskContainer" hidden="[[riskSelected]]">
@@ -269,9 +269,9 @@
                   <p class="dateHeader">
                     Date of Assessment
                   </p>
-                  {{_computeDate(risk.date)}}
+                  <iron-icon icon="editor:insert-invitation"></iron-icon>{{_computeDate(risk.date)}}
                   <br />
-                  {{_computeDate(risk.evaluation)}}
+                  <iron-icon icon="icons:update"></iron-icon>{{_computeDate(risk.evaluation)}}
                 </div>
                 <paper-icon-button
                   icon="icons:more-vert"
@@ -446,35 +446,35 @@
         if(typeof date==="string"){
           return date.slice(3,15);
         } else {
-          return null;
+          return "Date not set";
         };
       },
       _computeRiskImage:function(cat){
 
         switch(cat) {
           case "Moving & Handling":
-              return "images/accommodation.png";
+              return "images/risks/movingHandling.png";
               break;
           case "Slips & Trips":
-              return "images/financeAndBudget.png";
+              return "images/risks/slipsTrips.png";
               break;
           case "Violence & Agression":
-              return "images/socialSkills.png";
+              return "images/risks/violenceAgression.png";
               break;
           case "Falls From Windows & Balconies":
-              return "images/medicalTreatment.png";
+              return "images/risks/falls.png";
               break;
-          case "scalding & Burning":
-              return "images/mentalHealth.png";
+          case "Scalding & Burning":
+              return "images/risks/scaldingBurning.png";
               break;
           case "Bedrail Entrapment":
-              return "images/mentalHealth.png";
+              return "images/risks/bedrailEntrapment.png";
               break;
           case "Legionella":
-              return "images/mentalHealth.png";
+              return "images/risks/legionella.png";
               break;
           default:
-              return "images/other.png";
+              return "images/risks/other.png";
               break;
         };
       },

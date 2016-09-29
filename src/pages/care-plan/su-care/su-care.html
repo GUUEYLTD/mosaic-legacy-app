@@ -170,8 +170,8 @@
         auto-validate
         error-message="Please describe the custom section">
       </paper-input>
-      <paper-button dialog-dismiss>cancel</paper-button>
-      <paper-button dialog-dismiss>save</paper-button>
+      <paper-button on-tap="cancelNewSection">cancel</paper-button>
+      <paper-button on-tap="saveNewSection">save</paper-button>
     </paper-dialog>
 
     <!--start of organized section-->
@@ -192,7 +192,7 @@
           on-tap="createNewSection">
         </paper-fab>
 
-        <template is="dom-repeat" items="[[customDataQuery]]" as="custom">
+        <template is="dom-repeat" items="{{customDataQuery}}" as="custom">
           <guuey-custom-text-input
             value="{{custom.info}}"
             label="{{custom.label}}"
@@ -485,11 +485,24 @@
       createNewSection:function(){
         this.$.customInput.path=null;
         this.$.customInput.data={};
+        this.$.customSectionModal.open();
+      },
+      saveNewSection:function(){
         var path="/homes/"+this.home+"/patients/"+this.patient+"/carePlan/custom"
         this.$.customInput.save(path, null)
           .then(function(){
-            this.$.customSectionModal.toggle();
-          }.bind(this));
+            this.$.customSectionModal.close();
+            this.fire("openToast",{toastText:"New custom section saved."});
+          }.bind(this))
+          .catch(function(error){
+            this.$.customSectionModal.close();
+            this.fire("openToast",{toastText:"There was an error saving your custom section: "+error});
+          });
+      },
+      cancelNewSection:function(){
+        this.$.customInput.path=null;
+        this.$.customInput.data={};
+        this.$.customSectionModal.close();
       },
       print:function(e){
         var date="Thu Jul 14 2016 00:00:00 GMT+0200 (CEST)";

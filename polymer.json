@@ -20,6 +20,7 @@
   "src/pages/default/def-login/def-login.html",
   "src/pages/default/def-home/def-home.html",
   "src/pages/default/def-verify/def-verify.html",
+  "src/pages/default/def-error/def-error.html",
   "src/pages/test/test-test/test-test.html"
   ],
   "sourceGlobs": [
