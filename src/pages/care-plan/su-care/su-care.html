@@ -194,12 +194,15 @@
 
         <template is="dom-repeat" items="[[customDataQuery]]" as="custom">
           <guuey-custom-text-input
-            route="/homes/[[home]]/patients/[[patient]]/carePlan/custom/{{custom.$key}}"
+            value="{{custom.info}}"
             label="{{custom.label}}"
             label2="{{custom.label2}}">
           </guuey-custom-text-input>
         </template>
 
+        <!--
+        {{careData}}
+        -->
         <guuey-list-input
           home="[[home]]"
           patient="[[patient]]"

@@ -2,7 +2,7 @@
 a simple element for text input that is styled to guuey specs
 arguments:
 route(string)
-  location to save in database REQUIRED
+  value(string) the value that will  be reflected to parent
 label(string)
   the main text that will show in the heading area
 label2(string)
@@ -13,19 +13,6 @@ fieldDisabled(boolean)
 <link rel="import" href="dependencies.html" />
 <dom-module id="guuey-custom-text-input">
   <template>
-    <firebase-document
-      id="guueyInputDB"
-      app-name="main"
-      data="{{inputDataLive}}"
-      path="{{route}}">
-    </firebase-document>
-
-    <app-indexeddb-mirror
-      key="guueyCustomInputDB|[[route]]"
-      data="{{inputDataLive}}"
-      persisted-data="{{inputData}}"
-      worker-url="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
-    </app-indexeddb-mirror>
 
     <iron-media-query
       query="max-width:1400px"
@@ -88,16 +75,16 @@ fieldDisabled(boolean)
           </p>
         </span>
         <span hidden="[[editDisabled]]">
-          <paper-input class="labelEdit" label="name" value="{{inputData.label}}"></paper-input>
-          <paper-input class="labelEdit" label="description" value="{{inputData.label2}}"></paper-input>
+          <paper-input class="labelEdit" label="name" value="{{label}}"></paper-input>
+          <paper-input class="labelEdit" label="description" value="{{label2}}"></paper-input>
         </span>
       </div>
       <div class="app-grid">
         <div class="contentColumn">
           <div class="inputWrapper">
             <paper-textarea
-              label="Please fill in this form"
-              value="{{inputData.info}}">
+              label="Custom field"
+              value="{{value}}">
             </paper-textarea>
           </div>
         </div>
@@ -119,14 +106,17 @@ fieldDisabled(boolean)
     Polymer({
       is:'guuey-custom-text-input',
       properties:{
-        route:{
-          type:String,
-        },
         label:{
           type:String,
+          notify:true
         },
         label2:{
           type:String,
+          notify:true
+        },
+        value:{
+          type:String,
+          notify:true
         },
         editDisabled:{
           type:Boolean,

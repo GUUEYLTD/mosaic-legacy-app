@@ -171,10 +171,9 @@
 
             <template is="dom-repeat" items="{{customDataQuery}}" as="custom">
               <guuey-custom-text-input
-                route="/homes/[[home]]/patients/[[patient]]/carePlan/custom/{{custom.$key}}"
-                label="[[custom.label]]"
-                label2="[[custom.label2]]"
-                >
+                value="{{custom.info}}"
+                label="{{custom.label}}"
+                label2="{{custom.label2}}">
               </guuey-custom-text-input>
             </template>
 
@@ -232,7 +231,7 @@
             </guuey-list-input>
 
             <guuey-text-input
-              route="homes/[[home]]/patients/[[patient]]/carePlanReview/reviewSummary"
+              route="homes/[[home]]/patients/[[patient]]/carePlanReview/"
               label="Review Summary"
               label2="Include progress made from previous review i.e. areas of improvement from &quot; areas of concern&quot;">
             </guuey-text-input>

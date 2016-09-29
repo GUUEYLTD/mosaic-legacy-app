@@ -403,7 +403,11 @@
           <paper-icon-button class="backButton" icon="hardware:keyboard-backspace" on-tap="goBack"></paper-icon-button>
         </div>
         <!--page templates are loded in here inside iron pages-->
-        <iron-pages role="main" selected="[[page]]" attr-for-selected="name">
+        <iron-pages
+          role="main"
+          selected="[[page]]"
+          attr-for-selected="name"
+          fallback-selection="def-error">
           <!--custom pages built for the app names attached in order to know which to display according to route-->
           <!--page selected style only shows when the drawer item has been clicked twice need to fix this..-->
           <!--login page-->
@@ -412,6 +416,8 @@
           <def-home page="[[page]]" home="[[home]]" name="def-home" signed-in="[[signedIn]]"></def-home>
           <!--default page if not verified-->
           <def-verify page="[[page]]" home="[[home]]" name="def-verify"></def-verify>
+          <!--error 404 page-->
+          <def-error name="def-error"></def-error>
           <!--other pages for care plan-->
           <su-home page="[[page]]" patient="[[param]]" home="[[home]]" name="su-home"></su-home>
           <su-profile page="[[page]]" patient="[[param]]" home="[[home]]" name="su-profile"></su-profile>
@@ -471,6 +477,7 @@
         this.addEventListener('dbLoaded', this.disableDBLoading);
         this.addEventListener('pageLoading', this.enablePageLoading);
         this.addEventListener('pageLoaded', this.disablePageLoading);
+        this.fire("pageLoaded",{page:this.page});
       },
       //create new service user for an already existing home
       createNewUser:function(e){
@@ -680,14 +687,21 @@
         };
         if(page==="def-home" && !this[page]){
           this.enableDBLoading();
-          this.disablePageLoading();
         } else {
           this.disableDBLoading();
+        };
+        if(page!="def-home" && !this[page]){
           this.enablePageLoading();
         };
         // load page import on demand.
         this.importHref(
-          this.resolveUrl('pages/'+this.category+'/' + page +'/'+page+'.html'), this.ensureLayout(this.page), null, false);
+          this.resolveUrl('pages/'+this.category+'/' + page +'/'+page+'.html'),
+          function(){
+            this.ensureLayout(this.page)
+          },
+          function(){
+            this.errorRedirect()
+          }, false);
       },
       _paramChanged:function(param){
         this.param=this.paramData.param || '';
@@ -825,6 +839,10 @@
           //this.$.notifyBadge.updatePosition();
           //this.$.appHeader.resetLayout();
         };
+      },
+      errorRedirect:function(){
+        this.set("catData.category", "default");
+        this.set("pageData.page", "def-error");
       },
       _computeNotificationCount:function(notifiesData){
         this.$.notifyDB.query

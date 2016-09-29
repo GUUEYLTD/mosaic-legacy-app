@@ -92,7 +92,7 @@
 
         <template is="dom-repeat" items="{{customDataQuery}}" as="custom">
           <guuey-custom-text-input
-            route="/homes/[[home]]/patients/[[patient]]/preAdmissionAssessment/custom/{{custom.$key}}"
+            value="{{custom.info}}"
             label="{{custom.label}}"
             label2="{{custom.label2}}"
             >
