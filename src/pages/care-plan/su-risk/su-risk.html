@@ -528,7 +528,7 @@
         }
         return newText;
       },
-      requirementsMet(data){
+      requirementsMet:function(data){
         //change case
         this.$.risksDB.query.on("child_changed",function(){
           var riskData = this.$.riskDB.data;

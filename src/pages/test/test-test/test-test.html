@@ -1,7 +1,6 @@
 <link rel="import" href="../../../../bower_components/polymer/polymer.html" />
 <link rel="import" href="../../../../bower_components/paper-card/paper-card.html" />
-<link rel="import" href="../../../../bower_components/polymerfire/firebase-document.html" />
-<link rel="import" href="test-table.html" />
+<link rel="import" href="../../../elements/guuey-table/guuey-table.html" />
 <dom-module id="test-test">
 
   <template>
@@ -23,13 +22,13 @@
     </style>
 
     <paper-card>
-      <test-table
+      <guuey-table
         label="Test Questionnaire"
         label2="Test description"
         path="homes/[[home]]/patients/test/table"
         table-category="Tests"
         input-values="[[inputValues]]">
-      </test-table>
+      </guuey-table>
 
     </paper-card>
 

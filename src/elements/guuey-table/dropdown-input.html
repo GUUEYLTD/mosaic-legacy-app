@@ -52,7 +52,7 @@
       field:{
         type:String
       },
-      _dataChanged(rowInputs, input, field){
+      _dataChanged:function(rowInputs, input, field){
         if(rowInputs[input+field]){
           var value=rowInputs[input+field];
           if(this.value !==value){
