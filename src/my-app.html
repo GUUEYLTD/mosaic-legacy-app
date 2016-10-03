@@ -700,10 +700,10 @@
         this.importHref(
           this.resolveUrl('pages/'+this.category+'/' + page +'/'+page+'.html'),
           function(){
-            this.ensureLayout(this.page)
+            this.ensureLayout(this.page);
           },
           function(){
-            this.errorRedirect()
+            this.errorRedirect();
           }, false);
       },
       _paramChanged:function(param){

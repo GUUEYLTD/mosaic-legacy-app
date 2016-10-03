@@ -204,10 +204,8 @@
         {{careData}}
         -->
         <guuey-list-input
-          home="[[home]]"
-          patient="[[patient]]"
-          label="Proposed Care & Support"
-          listroute="homes/[[home]]/patients/[[patient]]/carePlan/careAndSuppProp">
+          value="{{careData.careAndSuppProp}}"
+          label="Proposed Care & Support">
         </guuey-list-input>
 
         <!--statement of service user section-->
@@ -352,22 +350,16 @@
 
   <guuey-list-input
     class="halfSizeLeft"
-    home="[[home]]"
-    patient="[[patient]]"
+    value="{{careData.whatWillTheServiceUserDo}}"
     label="What service will the service user do?"
-    label2="i.e. agree to the following"
-    listroute="homes/[[home]]/patients/[[patient]]/carePlan/whatWillTheServiceUserDo"
-    section="{{whatWillTheServiceUserDo}}">
+    label2="i.e. agree to the following">
   </guuey-list-input>
 
   <guuey-list-input
     class="halfSizeRight"
-    home="[[home]]"
-    patient="[[patient]]"
+    value="{{careData.interventionByStaff}}"
     label="Intervention by staff"
-    label2="what will the staff do?"
-    listroute="homes/[[home]]/patients/[[patient]]/carePlan/interventionByStaff"
-    section="{{interventionByStaff}}">
+    label2="what will the staff do?">
   </guuey-list-input>
 
       </div>

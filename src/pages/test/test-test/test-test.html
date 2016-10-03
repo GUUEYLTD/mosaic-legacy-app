@@ -1,14 +1,16 @@
 <link rel="import" href="../../../../bower_components/polymer/polymer.html" />
 <link rel="import" href="../../../../bower_components/paper-card/paper-card.html" />
-<link rel="import" href="../../../elements/guuey-table/guuey-table.html" />
+<link rel="import" href="../../../../bower_components/polymerfire/firebase-document.html" />
+<link rel="import" href="../../../elements/guuey-list-input/guuey-list-input.html" />
+<link rel="import" href="new-list.html" />
 <dom-module id="test-test">
 
   <template>
 
     <firebase-document
       id="tableDB"
-      path="{{path}}"
-      data="{{rowInputs}}"
+      path="homes/[[home]]/patients/test"
+      data="{{testData}}"
       app-name="main">
     </firebase-document>
 
@@ -22,13 +24,18 @@
     </style>
 
     <paper-card>
-      <guuey-table
-        label="Test Questionnaire"
-        label2="Test description"
-        path="homes/[[home]]/patients/test/table"
-        table-category="Tests"
-        input-values="[[inputValues]]">
-      </guuey-table>
+      <guuey-list-input
+        home="[[home]]"
+        patient="[[patient]]"
+        label="Test List"
+        listroute="homes/[[home]]/patients/test/list">
+      </guuey-list-input>
+
+      <new-list
+        value="{{testData.list}}"
+        label="test list"
+        label2="test list description">
+      </new-list>
 
     </paper-card>
 

@@ -24,6 +24,24 @@
         flex-direction:column;
         padding:5px;
       }
+      paper-input{
+        --paper-input-container-disabled:{
+          opacity:1;
+          z-index:1;
+        }
+        --paper-input-container-underline-disabled:{
+          border-bottom: 1px solid #6A49B2;
+        }
+        --paper-input-container-label:{
+          color:#6A49B2;
+        }
+        --paper-input-container-input:{
+          color:#6A49B2;
+        }
+      }
+      .buttonWrapper{
+        z-index:2;
+      }
 
     </style>
 
@@ -34,11 +52,10 @@
           <paper-button on-tap="saveDate">Save</paper-button>
         </div>
       </paper-dialog>
-      <div class="container">
-        <p class="label">
-          [[label]]
-        </p>
-        <paper-button on-tap="openDialog">{{_computeDate(value)}}</paper-button>
+
+        <div on-tap="openDialog" class="buttonWrapper">
+          <paper-input label="[[label]]" value="{{_computeDate(value)}}" disabled></paper-input>
+        </div>
       </div>
 
   </template>
@@ -51,7 +68,6 @@
       properties:{
         value:{
           type:String,
-          value:"",
           notify:true
         },
         lable:{

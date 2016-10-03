@@ -130,7 +130,9 @@ fieldDisabled(boolean)
         this.editDisabled=!this.editDisabled;
       },
       deleteCustom:function(e){
-        this.$.guueyInputDB.destroy();
+        this.value=null;
+        this.label=null;
+        this.label2=null;
       },
       editQuery:function(query1400){
         if(query1400){
