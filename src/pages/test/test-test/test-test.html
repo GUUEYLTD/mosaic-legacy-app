@@ -1,81 +1,38 @@
-<link rel="import" href="dependencies.html" />
+<link rel="import" href="../../../../bower_components/polymer/polymer.html" />
+<link rel="import" href="../../../../bower_components/paper-card/paper-card.html" />
+<link rel="import" href="../../../../bower_components/polymerfire/firebase-document.html" />
+<link rel="import" href="test-table.html" />
 <dom-module id="test-test">
 
   <template>
 
     <firebase-document
-      id="testDB"
-      path="homes/[[home]]/patients/test/test"
-      data="{{testData}}"
+      id="tableDB"
+      path="{{path}}"
+      data="{{rowInputs}}"
       app-name="main">
     </firebase-document>
 
-    <style include="paper-date-picker-dialog-style">
+    <style>
 
       paper-card{
         width:90%;
         margin:20px 5% 20px 5%;
       }
-      .sliderContainer{
-        display:flex;
-        flex-direction:row;
-        padding:10px;
-      }
-      .innerContainer{
-        position:relative;
-        flex-grow:1;
-      }
-      .dangerLabel{
-        color:blue;
-        color:var(--danger-label-color);
-        text-transform:uppercase;
-        margin:0;
-        padding:0;
-        align-self: center;
-        padding:0 0 15px 10px;
-      }
-      #slider{
-        align-self: center;
-        width:100%;
-        --paper-slider-height:5px;
-        padding-bottom:15px;
-      }
-      .spectrumDescriptor{
-        text-transform:uppercase;
-        margin:0;
-        padding:0;
-        font-size:10px;
-      }
-      #noRisk{
-        position:absolute;
-        bottom:5px;
-        left:5px;
-        color:blue;
-      }
-      #danger{
-        position:absolute;
-        bottom:5px;
-        right:5px;
-        color:red;
-      }
+
     </style>
 
     <paper-card>
-      <div class="sliderContainer">
-        <p class="dangerLabel">
-          {{_computeDanger(testData.slider)}}
-        </p>
-        <div class="innerContainer">
-          <paper-slider id="slider" max-markers="5" snaps step="1" min="1" max="5" value="{{testData.slider}}"></paper-slider>
-          <p class="spectrumDescriptor" id="noRisk">
-            no risk
-          </p>
-          <p class="spectrumDescriptor" id="danger">
-            danger
-          </p>
-        </div>
-      </div>
+      <test-table
+        label="Test Questionnaire"
+        label2="Test description"
+        path="homes/[[home]]/patients/test/table"
+        table-category="Tests"
+        input-values="[[inputValues]]">
+      </test-table>
+
     </paper-card>
+
   </template>
 
   <script>
@@ -83,134 +40,24 @@
     Polymer({
 
       is: 'test-test',
-      ready:function(){
-        this.addEventListener("immediate-value-change", this.updateSliderColor);
-      },
       properties:{
-        testData:{
-          type:Number,
+        inputValues:{
+          type:Array,
+          value:[
+            "thing1",
+            "thing2",
+            "thing3",
+            "thing4"
+          ]
         }
       },
       observers:[
-        "slidercolorChange(testData.slider)"
+        "dataChanged(testData.*)"
       ],
-      updateSliderColor:function(){
-        switch(this.$.slider.immediateValue){
-          case 1:
-            this.customStyle['--paper-slider-active-color']="blue";
-            this.customStyle['--paper-slider-knob-color']="blue";
-            this.customStyle['--paper-slider-pin-color']="blue";
-            this.updateStyles();
-            break;
-          case 2:
-            this.customStyle['--paper-slider-active-color']="green";
-            this.customStyle['--paper-slider-knob-color']="green";
-            this.customStyle['--paper-slider-pin-color']="green";
-            this.updateStyles();
-            break;
-          case 3:
-            this.customStyle['--paper-slider-active-color']="yellow";
-            this.customStyle['--paper-slider-knob-color']="yellow";
-            this.customStyle['--paper-slider-pin-color']="yellow";
-            this.updateStyles();
-            break;
-          case 4:
-            this.customStyle['--paper-slider-active-color']="orange";
-            this.customStyle['--paper-slider-knob-color']="orange";
-            this.customStyle['--paper-slider-pin-color']="orange";
-            this.updateStyles();
-            break;
-          case 5:
-            this.customStyle['--paper-slider-active-color']="red";
-            this.customStyle['--paper-slider-knob-color']="red";
-            this.customStyle['--paper-slider-pin-color']="red";
-            this.updateStyles();
-            break;
-
-          default:
-            this.customStyle['--paper-slider-active-color']="blue";
-            this.customStyle['--paper-slider-knob-color']="blue";
-            this.customStyle['--paper-slider-pin-color']="blue";
-            this.updateStyles();
-            break;
-        };
-      },
-      slidercolorChange:function(val){
-        switch(val){
-          case 1:
-            this.customStyle['--paper-slider-active-color']="blue";
-            this.customStyle['--paper-slider-knob-color']="blue";
-            this.customStyle['--paper-slider-pin-color']="blue";
-            this.updateStyles();
-            break;
-          case 2:
-            this.customStyle['--paper-slider-active-color']="green";
-            this.customStyle['--paper-slider-knob-color']="green";
-            this.customStyle['--paper-slider-pin-color']="green";
-            this.updateStyles();
-            break;
-          case 3:
-            this.customStyle['--paper-slider-active-color']="yellow";
-            this.customStyle['--paper-slider-knob-color']="yellow";
-            this.customStyle['--paper-slider-pin-color']="yellow";
-            this.updateStyles();
-            break;
-          case 4:
-            this.customStyle['--paper-slider-active-color']="orange";
-            this.customStyle['--paper-slider-knob-color']="orange";
-            this.customStyle['--paper-slider-pin-color']="orange";
-            this.updateStyles();
-            break;
-          case 5:
-            this.customStyle['--paper-slider-active-color']="red";
-            this.customStyle['--paper-slider-knob-color']="red";
-            this.customStyle['--paper-slider-pin-color']="red";
-            this.updateStyles();
-            break;
-
-          default:
-            this.customStyle['--paper-slider-active-color']="blue";
-            this.customStyle['--paper-slider-knob-color']="blue";
-            this.customStyle['--paper-slider-pin-color']="blue";
-            this.updateStyles();
-            break;
-        };
-      },
-      _computeDanger:function(danger){
-        var dangerText="";
-        switch(danger){
-          case 1:
-            this.customStyle['--danger-label-color']='blue';
-            this.updateStyles();
-            return "No Risk";
-            break;
-          case 2:
-            this.customStyle['--danger-label-color']='green';
-            this.updateStyles();
-            return "Low Risk";
-            break;
-          case 3:
-            this.customStyle['--danger-label-color']='yellow';
-            this.updateStyles();
-            return "Medium Risk";
-            break;
-          case 4:
-            this.customStyle['--danger-label-color']='orange';
-            this.updateStyles();
-            return "High Risk";
-            break;
-          case 5:
-            this.customStyle['--danger-label-color']='red';
-            this.updateStyles();
-            return "Very High Risk!";
-            break;
-          default:
-            this.customStyle['--danger-label-color']='blue';
-            this.updateStyles();
-            return "Loading..."
-            break;
-        };
+      dataChanged:function(testData){
+        //console.log(testData.base);
       }
+
     });
 
   </script>

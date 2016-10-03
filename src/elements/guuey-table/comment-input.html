@@ -1,0 +1,61 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html" />
+<link rel="import" href="../../../bower_components/paper-input/paper-textarea.html" />
+
+<dom-module id="comment-input">
+
+  <style>
+
+
+
+  </style>
+
+  <template>
+
+    <paper-textarea label="Comment" value="{{value}}"></paper-textarea>
+
+  </template>
+
+  <script>
+
+    Polymer({
+      is:"comment-input",
+      properties:{
+        input:{
+          type:String
+        },
+        rowInputs:{
+          notify:true,
+          type:Object
+        },
+        value:{
+          type:String,
+          observer:"_valueChanged"
+        }
+      },
+      observers:[
+        "_dataChanged(rowInputs, input, field)"
+      ],
+      field:{
+        type:String
+      },
+      _dataChanged(rowInputs, input, field){
+        if(rowInputs[input+field]){
+          var value=rowInputs[input+field];
+          if(this.value !==value){
+            this.value=value;
+          };
+        };
+      },
+      _valueChanged:function(value){
+        var rowInputs=this.rowInputs;
+        var input=this.input;
+        var field=this.field;
+        if(rowInputs && rowInputs && rowInputs[input+field]!==value){
+          this.set("rowInputs."+input+field, value);
+        }
+      }
+    });
+
+  </script>
+
+</dom-module>

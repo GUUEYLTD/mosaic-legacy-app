@@ -1,0 +1,75 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html" />
+<link rel="import" href="../../../bower_components/vaadin-combo-box/vaadin-combo-box.html" />
+
+<dom-module id="dropdown-input">
+
+  <style>
+
+  vaadin-combo-box{
+    overflow:hidden;
+  }
+
+  </style>
+
+  <template>
+
+    <vaadin-combo-box
+      label="Frequency"
+      items="[[frequencies]]"
+      value="{{value}}">
+    </vaadin-combo-box>
+
+  </template>
+
+  <script>
+
+    Polymer({
+      is:"dropdown-input",
+      properties:{
+        frequencies:{
+          type:Array,
+          value:[
+            "Daily",
+            "Weekly",
+            "Yearly"
+          ]
+        },
+        input:{
+          type:String
+        },
+        rowInputs:{
+          notify:true,
+          type:Object
+        },
+        value:{
+          type:String,
+          observer:"_valueChanged"
+        }
+      },
+      observers:[
+        "_dataChanged(rowInputs, input, field)"
+      ],
+      field:{
+        type:String
+      },
+      _dataChanged(rowInputs, input, field){
+        if(rowInputs[input+field]){
+          var value=rowInputs[input+field];
+          if(this.value !==value){
+            this.value=value;
+          };
+        };
+      },
+      _valueChanged:function(value){
+        var rowInputs=this.rowInputs;
+        var input=this.input;
+        var field=this.field;
+        if(rowInputs && rowInputs && rowInputs[input+field]!==value){
+          this.set("rowInputs."+input+field, value);
+        }
+      }
+    });
+
+  </script>
+
+</dom-module>

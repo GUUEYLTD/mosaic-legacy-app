@@ -53,7 +53,7 @@
           {{_computeDanger(value)}}
         </p>
         <div class="innerContainer">
-          <paper-slider id="slider" max-markers="5" snaps step="1" min="1" max="5" value="{{value}}"></paper-slider>
+          <paper-slider id="slider" max-markers="3" snaps step="1" min="1" max="3" value="{{value}}"></paper-slider>
           <p class="spectrumDescriptor" id="noRisk">
             no risk
           </p>
@@ -85,40 +85,27 @@
       updateSliderColor:function(){
         switch(this.$.slider.immediateValue){
           case 1:
-            this.customStyle['--paper-slider-active-color']="blue";
-            this.customStyle['--paper-slider-knob-color']="blue";
-            this.customStyle['--paper-slider-pin-color']="blue";
+            this.customStyle['--paper-slider-active-color']="#43A047";
+            this.customStyle['--paper-slider-knob-color']="#43A047";
+            this.customStyle['--paper-slider-pin-color']="#43A047";
             this.updateStyles();
             break;
           case 2:
-            this.customStyle['--paper-slider-active-color']="green";
-            this.customStyle['--paper-slider-knob-color']="green";
-            this.customStyle['--paper-slider-pin-color']="green";
+            this.customStyle['--paper-slider-active-color']="#F57C00";
+            this.customStyle['--paper-slider-knob-color']="#F57C00";
+            this.customStyle['--paper-slider-pin-color']="#F57C00";
             this.updateStyles();
             break;
           case 3:
-            this.customStyle['--paper-slider-active-color']="yellow";
-            this.customStyle['--paper-slider-knob-color']="yellow";
-            this.customStyle['--paper-slider-pin-color']="yellow";
+            this.customStyle['--paper-slider-active-color']="#E53935";
+            this.customStyle['--paper-slider-knob-color']="#E53935";
+            this.customStyle['--paper-slider-pin-color']="#E53935";
             this.updateStyles();
             break;
-          case 4:
-            this.customStyle['--paper-slider-active-color']="orange";
-            this.customStyle['--paper-slider-knob-color']="orange";
-            this.customStyle['--paper-slider-pin-color']="orange";
-            this.updateStyles();
-            break;
-          case 5:
-            this.customStyle['--paper-slider-active-color']="red";
-            this.customStyle['--paper-slider-knob-color']="red";
-            this.customStyle['--paper-slider-pin-color']="red";
-            this.updateStyles();
-            break;
-
           default:
-            this.customStyle['--paper-slider-active-color']="blue";
-            this.customStyle['--paper-slider-knob-color']="blue";
-            this.customStyle['--paper-slider-pin-color']="blue";
+            this.customStyle['--paper-slider-active-color']="#43A047";
+            this.customStyle['--paper-slider-knob-color']="#43A047";
+            this.customStyle['--paper-slider-pin-color']="#43A047";
             this.updateStyles();
             break;
         };
@@ -126,40 +113,27 @@
       slidercolorChange:function(val){
         switch(val){
           case 1:
-            this.customStyle['--paper-slider-active-color']="blue";
-            this.customStyle['--paper-slider-knob-color']="blue";
-            this.customStyle['--paper-slider-pin-color']="blue";
+            this.customStyle['--paper-slider-active-color']="#43A047";
+            this.customStyle['--paper-slider-knob-color']="#43A047";
+            this.customStyle['--paper-slider-pin-color']="#43A047";
             this.updateStyles();
             break;
           case 2:
-            this.customStyle['--paper-slider-active-color']="green";
-            this.customStyle['--paper-slider-knob-color']="green";
-            this.customStyle['--paper-slider-pin-color']="green";
+            this.customStyle['--paper-slider-active-color']="#F57C00";
+            this.customStyle['--paper-slider-knob-color']="#F57C00";
+            this.customStyle['--paper-slider-pin-color']="#F57C00";
             this.updateStyles();
             break;
           case 3:
-            this.customStyle['--paper-slider-active-color']="yellow";
-            this.customStyle['--paper-slider-knob-color']="yellow";
-            this.customStyle['--paper-slider-pin-color']="yellow";
+            this.customStyle['--paper-slider-active-color']="#E53935";
+            this.customStyle['--paper-slider-knob-color']="#E53935";
+            this.customStyle['--paper-slider-pin-color']="#E53935";
             this.updateStyles();
             break;
-          case 4:
-            this.customStyle['--paper-slider-active-color']="orange";
-            this.customStyle['--paper-slider-knob-color']="orange";
-            this.customStyle['--paper-slider-pin-color']="orange";
-            this.updateStyles();
-            break;
-          case 5:
-            this.customStyle['--paper-slider-active-color']="red";
-            this.customStyle['--paper-slider-knob-color']="red";
-            this.customStyle['--paper-slider-pin-color']="red";
-            this.updateStyles();
-            break;
-
           default:
-            this.customStyle['--paper-slider-active-color']="blue";
-            this.customStyle['--paper-slider-knob-color']="blue";
-            this.customStyle['--paper-slider-pin-color']="blue";
+            this.customStyle['--paper-slider-active-color']="#43A047";
+            this.customStyle['--paper-slider-knob-color']="#43A047";
+            this.customStyle['--paper-slider-pin-color']="#43A047";
             this.updateStyles();
             break;
         };
@@ -168,32 +142,22 @@
         var dangerText="";
         switch(danger){
           case 1:
-            this.customStyle['--danger-label-color']='blue';
-            this.updateStyles();
-            return "No Risk";
-            break;
-          case 2:
-            this.customStyle['--danger-label-color']='green';
+            this.customStyle['--danger-label-color']='#43A047';
             this.updateStyles();
             return "Low Risk";
             break;
-          case 3:
-            this.customStyle['--danger-label-color']='yellow';
+          case 2:
+            this.customStyle['--danger-label-color']='#F57C00';
             this.updateStyles();
             return "Medium Risk";
             break;
-          case 4:
-            this.customStyle['--danger-label-color']='orange';
+          case 3:
+            this.customStyle['--danger-label-color']='#E53935';
             this.updateStyles();
             return "High Risk";
             break;
-          case 5:
-            this.customStyle['--danger-label-color']='red';
-            this.updateStyles();
-            return "Very High Risk!";
-            break;
           default:
-            this.customStyle['--danger-label-color']='blue';
+            this.customStyle['--danger-label-color']='#43A047';
             this.updateStyles();
             return "Not Set"
             break;

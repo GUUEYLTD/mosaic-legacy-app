@@ -1,12 +1,17 @@
-<link rel="import" href="dependencies.html" />
+<link rel="import" href="../../../../bower_components/polymer/polymer.html" />
+<link rel="import" href="../../../../bower_components/polymerfire/firebase-document.html" />
+<link rel="import" href="../../../../bower_components/paper-input/paper-input.html" />
+<link rel="import" href="../../../../bower_components/iron-media-query/iron-media-query.html" />
+<link rel="import" href="dropdown-input.html" />
+<link rel="import" href="comment-input.html" />
 
-<dom-module id="guuey-table">
+<dom-module id="test-table">
 
   <template>
 
     <firebase-document
       id="tableDB"
-      path="{{path}}"
+      path="[[path]]"
       data="{{rowInputs}}"
       app-name="main">
     </firebase-document>
@@ -152,7 +157,7 @@
   <script>
 
     Polymer({
-      is:"guuey-table",
+      is:"test-table",
       properties:{
         frequencies:{
           type:Array,

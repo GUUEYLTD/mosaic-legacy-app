@@ -78,6 +78,13 @@
         margin-left:20px;
         margin-top:20px;
       }
+      .adrawer-list:{
+        color:#FFFFFF;
+      }
+      .adrawer-list a.iron-selected {
+        color:#FAD100;
+        font-weight: bold;
+      }
     </style>
 
     <app-drawer id="adminDrawer" position="start" opened="{{opened}}">
@@ -92,60 +99,61 @@
         </p>
       </app-toolbar>
       <paper-listbox>
-        <a on-tap="close" href="/{{home}}/admin/ad-dash/{{admin}}" tabindex="-1">
-          <paper-item>
-            <paper-icon-item>
-              <iron-icon icon="icons:dashboard" item-icon></iron-icon>
-              Dashboard
-            </paper-icon-item>
-          </paper-item>
-        </a>
+        <iron-selector selected="[[page]]" attr-for-selected="name" class="adrawer-list" role="navigation">
+          <a name="ad-dash" on-tap="close" href="/{{home}}/admin/ad-dash/{{admin}}" tabindex="-1">
+            <paper-item>
+              <paper-icon-item>
+                <iron-icon icon="icons:dashboard" item-icon></iron-icon>
+                Dashboard
+              </paper-icon-item>
+            </paper-item>
+          </a>
 
-        <a on-tap="close" href="/{{home}}/admin/ad-profile/{{admin}}" tabindex="-1">
-          <paper-item>
-            <paper-icon-item>
-              <iron-icon icon="social:location-city" item-icon></iron-icon>
-              Company Profile
-            </paper-icon-item>
-          </paper-item>
-        </a>
+          <a name="ad-profile" on-tap="close" href="/{{home}}/admin/ad-profile/{{admin}}" tabindex="-1">
+            <paper-item>
+              <paper-icon-item>
+                <iron-icon icon="social:location-city" item-icon></iron-icon>
+                Company Profile
+              </paper-icon-item>
+            </paper-item>
+          </a>
 
-        <a on-tap="close" href="/{{home}}/admin/ad-payment/{{admin}}" tabindex="-1">
-          <paper-item>
-            <paper-icon-item>
-              <iron-icon icon="icons:payment" item-icon></iron-icon>
-              Payment
-            </paper-icon-item>
-          </paper-item>
-        </a>
+          <a name="ad-payment" on-tap="close" href="/{{home}}/admin/ad-payment/{{admin}}" tabindex="-1">
+            <paper-item>
+              <paper-icon-item>
+                <iron-icon icon="icons:payment" item-icon></iron-icon>
+                Payment
+              </paper-icon-item>
+            </paper-item>
+          </a>
 
-        <a on-tap="close" href="/{{home}}/admin/ad-users/{{admin}}" tabindex="-1">
-          <paper-item>
-            <paper-icon-item>
-              <iron-icon icon="social:group" item-icon></iron-icon>
-              Users
-            </paper-icon-item>
-          </paper-item>
-        </a>
+          <a name="ad-users" on-tap="close" href="/{{home}}/admin/ad-users/{{admin}}" tabindex="-1">
+            <paper-item>
+              <paper-icon-item>
+                <iron-icon icon="social:group" item-icon></iron-icon>
+                Users
+              </paper-icon-item>
+            </paper-item>
+          </a>
 
-        <a on-tap="close" href="/{{home}}/admin/ad-settings/{{admin}}" tabindex="-1">
-          <paper-item>
-            <paper-icon-item>
-              <iron-icon icon="icons:settings" item-icon></iron-icon>
-              Settings
-            </paper-icon-item>
-          </paper-item>
-        </a>
+          <a name="ad-settings" on-tap="close" href="/{{home}}/admin/ad-settings/{{admin}}" tabindex="-1">
+            <paper-item>
+              <paper-icon-item>
+                <iron-icon icon="icons:settings" item-icon></iron-icon>
+                Settings
+              </paper-icon-item>
+            </paper-item>
+          </a>
 
-        <a on-tap="close" href="/{{home}}/admin/ad-support/{{admin}}" tabindex="-1">
-          <paper-item>
-            <paper-icon-item>
-              <iron-icon icon="communication:live-help" item-icon></iron-icon>
-              Support
-            </paper-icon-item>
-          </paper-item>
-        </a>
-
+          <a name="ad-support" on-tap="close" href="/{{home}}/admin/ad-support/{{admin}}" tabindex="-1">
+            <paper-item>
+              <paper-icon-item>
+                <iron-icon icon="communication:live-help" item-icon></iron-icon>
+                Support
+              </paper-icon-item>
+            </paper-item>
+          </a>
+        </iron-selector>
       </paper-listbox>
       <div class="divider"></div>
       <paper-listbox>
