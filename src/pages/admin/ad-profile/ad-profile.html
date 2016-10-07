@@ -4,11 +4,20 @@
 
   <template>
     <firebase-document
-    id="careHomeProfileDB"
-    path="/homes/{{home}}/details"
-    data="{{careHomeProfile}}"
-    app-name="main">
-  </firebase-document>
+      id="careHomeProfileDB"
+      path="/homes/{{home}}/details"
+      data="{{careHomeProfile}}"
+      app-name="main">
+    </firebase-document>
+
+  <firebase-storage
+    id="storage"
+    app-name="main"
+    set-name="false"
+    path="uploads/[[home]]/home-image.png"
+    use64="true"
+    url="{{homeImage}}">
+  </firebase-storage>
 
   <iron-media-query
     query="(max-width:600px)"
@@ -45,7 +54,7 @@
         background-color:lightgray;
         border: 1px solid grey;
       }
-      #imageButton{
+      .imageButton{
         position:absolute;
         bottom:5%;
         right:5%;
@@ -62,19 +71,19 @@
         <div class="imageWrapper">
 
           <iron-image
+            id="homeImage"
             class="businessImage"
             sizing="cover"
             preload
             fade
-            src="{{careHomeProfile.profileImage}}"
+            src="[[homeImage]]"
             hidden>
           </iron-image>
 
-          <paper-icon-button
-            id="imageButton"
-            on-tap="_onAddFilesClick"
-            icon="image:camera-alt">
-          </paper-icon-button>
+          <guuey-photo-editor
+            class="imageButton"
+            value="{{homePhoto}}">
+          </guuey-photo-editor>
 
         </div>
 
@@ -109,13 +118,6 @@
           pattern="[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,}"
           error-message="Please enter a valid website address">
         </paper-input>
-
-        <input
-          id="imageInput"
-          type="file"
-          on-change="_inputChanged"
-          hidden>
-        </input>
 
         <paper-input
           label="Number of Employees"
@@ -177,23 +179,32 @@
       is: 'ad-profile',
       ready:function(){
         this.fire("pageLoaded", {page:this.page});
+        this.$.storage._downloadFile(this.$.storage.path);
       },
       properties:{
         home:{
           type:String,
         },
+        homePhoto:{
+          type:String,
+          observer:"_inputChanged"
+        }
       },
       observers:[
         "editQuery(query600)",
         "_computeImage(careHomeProfile.profileImage)"
       ],
-      _inputChanged:function(e){
-        var reader= new FileReader();
-        var file=e.target.files[0];
-        reader.readAsDataURL(file);
-        reader.addEventListener("load", function () {
-          this.$.careHomeProfileDB.setStoredValue("/homes/"+this.home+"/details/profileImage", reader.result);
-        }.bind(this), false);
+      _inputChanged:function(image) {
+        console.log(image);
+        this.$.storage._uploadFile(image)
+        .then(function(fileLoc) {
+          Polymer.dom(this.$.homeImage).setAttribute("src", fileLoc);
+          this.fileLoc=fileLoc;
+          console.log(fileLoc);
+        }.bind(this))
+        .catch(function(error){
+
+        });
       },
       _onAddFilesClick: function(e) {
         if (document.createEvent) {

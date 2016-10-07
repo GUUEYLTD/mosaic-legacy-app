@@ -288,8 +288,6 @@ image editor
         this.$.editDialog.open();
       },
       rotate:function(config){
-        console.log("rotating");
-        console.log(config);
         var width=this.$.resizeContainer.offsetWidth-2;
         var height=this.$.resizeContainer.offsetHeight-2;
         this.rotate_canvas.width = height
@@ -329,10 +327,8 @@ image editor
         this.save_canvas.height = width
         var src;
         if(this.rotated || this. cropped){
-          console.log("choosing alt");
           src=this.alt_image;
         } else {
-          console.log("choosing orig")
           src=this.image_target;
         };
         this.save_canvas.getContext("2d").drawImage(src, 0, 0, width, height, 0, 0, width, height);
@@ -356,7 +352,6 @@ image editor
         this.$.editDialog.close();
       },
       startResize:function(e){
-        console.log("starting resize");
         e.preventDefault();
         e.stopPropagation();
         this.saveEventState(e);
@@ -366,7 +361,6 @@ image editor
         this.addEventListener("touchend", this.endResize);
       },
       endResize:function(e){
-        console.log("ending resize");
         e.preventDefault();
         this.removeEventListener("mouseup", this.endResize);
         this.removeEventListener("touchend", this.endResize);
@@ -374,7 +368,6 @@ image editor
         this.removeEventListener("touchmove", this.resizing);
       },
       resizing:function(e){
-        console.log("resizing");
         var isSE=this.checkElementClass(this.event_state.currentTarget,"resize-handle-se");
         var isSW=this.checkElementClass(this.event_state.currentTarget,"resize-handle-sw");
         var isNE=this.checkElementClass(this.event_state.currentTarget,"resize-handle-ne");
@@ -426,7 +419,6 @@ image editor
         };
       },
       resizeImage:function(width, height){
-        console.log("perfroming resize");
         this.resize_canvas.width = width;
         this.resize_canvas.height = height;
         var src;
@@ -439,7 +431,6 @@ image editor
         this.image_target.src=this.resize_canvas.toDataURL("image/png");
       },
       startMoving:function(e){
-        console.log("started moving");
         e.preventDefault();
         e.stopPropagation();
         this.saveEventState(e);
@@ -449,7 +440,6 @@ image editor
         this.addEventListener("touchend", this.endMoving);
       },
       endMoving:function(e){
-        console.log("ended moving");
         e.preventDefault();
         this.removeEventListener("mouseup", this.endMoving);
         this.removeEventListener("touchend", this.endMoving);
@@ -457,7 +447,6 @@ image editor
         this.removeEventListener("touchmove", this.moving);
       },
       moving:function(e){
-        console.log("moving");
         var mouse={};
         var touches;
         e.preventDefault();
@@ -485,9 +474,7 @@ image editor
         this.image_target.src=this.crop_canvas.toDataURL("image/png");
         this.alt_image.src=this.image_target.src;
         var x=(this.$.editDialog.offsetWidth/2 - this.$.resizeContainer.offsetWidth/2)-100;
-        console.log(x);
         var y=(this.$.editDialog.offsetHeight/2 - this.$.resizeContainer.offsetHeight/2)-100;
-        console.log(y);
         Polymer.dom(this.$.resizeContainer).setAttribute("style", "left: "+x+"px; top: "+y+"px;");
         this.cropped=true;
       },

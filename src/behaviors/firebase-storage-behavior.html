@@ -46,6 +46,14 @@ https://github.com/firebase/polymerfire/blob/master/LICENSE
           type:String,
           value:"",
           notify:true
+        },
+        setName:{
+          type:Boolean,
+          value:true
+        },
+        use64:{
+          type:Boolean,
+          value:false
         }
       },
       __computeStorage: function(app) {
@@ -60,7 +68,22 @@ https://github.com/firebase/polymerfire/blob/master/LICENSE
         return storage.ref(path);
       },
       _uploadFile: function(file, metadata) {
-        var uploadTask = this.storage.ref(this.path + file.name).put(file, metadata);
+        var path=this.path+"/home-image.png";
+        if(this.use64){
+          if(this.setName){
+            file=file.replace(/^data:image\/(png|jpg);base64,/, "");
+            var uploadTask = this.storage.ref(this.path).putString(file, "base64");
+          } else {
+            file=file.replace(/^data:image\/(png|jpg);base64,/, "");
+            var uploadTask = this.storage.ref(path).putString(file, "base64");
+          };
+        } else {
+          if(this.setName){
+            var uploadTask = this.storage.ref(this.path + file.name).put(file, metadata);
+          } else {
+            var uploadTask = this.storage.ref(this.path).put(file, metadata);
+          };
+        };
         return new Promise(function(resolve, reject) {
           uploadTask.on('state_changed', function(snapshot){
             this.progress = snapshot.bytesTransferred / snapshot.totalBytes * 100;

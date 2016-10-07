@@ -32,6 +32,14 @@
       app-name="user2"
       user="{{newUser}}">
     </firebase-auth>
+    <firebase-storage
+      id="storage"
+      app-name="main"
+      set-name="false"
+      path="uploads/[[home]]/home-image.png"
+      use64="true"
+      url="{{homeImage}}">
+    </firebase-storage>
     <!--MOVE THIS WHEN REFACTORING CODE DOES NOT BELONG HERE!-->
     <firebase-document
       id="userDB"
@@ -284,6 +292,10 @@
       #suDrawer{
         background-color:#F5F2F2;
       }
+      #suDrawerImage{
+        width:256px;
+        height:256px;
+      }
     </style>
 
     <div class="loadingOverlay">
@@ -299,28 +311,14 @@
       <admin-drawer id="adminDrawer" home="[[home]]" admin="[[param]]" email="{{user.email}}" opened="{{opened}}"></admin-drawer>
       <!--second drawer to contain target info links (company service user etc...) link up to db later-->
       <app-drawer align="end" id="suDrawer" swipe-open>
+        <iron-image id="suDrawerImage"
+          placeholder="../../../../images/default_home.png"
+          preload
+          fade
+          sizing="contain"
+          src="[[homeImage]]">
+        </iron-image>
         <div class="customContainer" style="height: 100%; overflow: auto;">
-          <app-toolbar>Company Details</app-toolbar>
-          <paper-listbox>
-            <paper-item>
-              <paper-item-body two-line>
-                <div secondary>Company Name</div>
-                <div>[[careHomeProfile.name]]</div>
-              </paper-item-body>
-            </paper-item>
-            <paper-item>
-              <paper-item-body two-line>
-                <div secondary>Number of Service Users</div>
-                <div>12</div>
-              </paper-item-body>
-            </paper-item>
-            <paper-item>
-              <paper-item-body two-line>
-                <div secondary>Notifications</div>
-                <div>4</div>
-              </paper-item-body>
-            </paper-item>
-          </paper-listbox>
 
           <div class="menuLinksContainer">
 
@@ -480,7 +478,9 @@
         this.addEventListener('dbLoaded', this.disableDBLoading);
         this.addEventListener('pageLoading', this.enablePageLoading);
         this.addEventListener('pageLoaded', this.disablePageLoading);
+        this.addEventListener('app-drawer-transitioned', this.resizeDrawerImage);
         this.fire("pageLoaded",{page:this.page});
+        this.$.storage._downloadFile(this.$.storage.path);
       },
       //create new service user for an already existing home
       createNewUser:function(e){
