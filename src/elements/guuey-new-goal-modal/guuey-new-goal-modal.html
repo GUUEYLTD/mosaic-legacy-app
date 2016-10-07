@@ -1,0 +1,274 @@
+<link rel="dependencies.html" />
+
+<dom-module id="guuey-new-goal-modal">
+
+  <style include="paper-dialog-shared-styles">
+
+  .addGoalHeader h2{
+    margin-top:0;
+    padding:15px;
+    background-color:#673AB7;
+    color:#FFFFFF;
+  }
+
+  </style>
+
+  <template>
+
+    <paper-dialog id="newStepModal">
+      <h2>Add/update Step</h2>
+      <paper-input
+        label="describe the step"
+        value="{{newStepData.description}}"
+        required
+        auto-validate
+        pattern="[a-zA-Z\s\.!\d]*"
+        error-message="Please describe the step.">
+      </paper-input>
+      <paper-input
+        label="step number"
+        value="{{newStepData.order}}"
+        required
+        auto-validate
+        pattern="\d{1,1}"
+        error-message="Please enter a step from 1 to 9">
+      </paper-input>
+
+      <paper-checkbox checked="{{newStepData.completed}}">Completed</paper-checkbox>
+
+      <paper-button on-tap="cancelNewStep">cancel</paper-button>
+      <paper-button on-tap="saveNewStep">save</paper-button>
+    </paper-dialog>
+
+    <div class="addGoalHeader">
+      <h2>Add New Goal</h2>
+    </div>
+
+      <vaadin-combo-box
+        allow-custom-value
+        label="Category"
+        items="[[goalTypes]]"
+        value="{{goalData.category}}"
+        class="detailBarInput">
+      </vaadin-combo-box>
+
+      <guuey-date-input
+        value="{{goalData.startDate}}"
+        label="Start Date">
+      </guuey-date-input>
+
+      <guuey-notify
+        home="[[home]]"
+        notify-route="homes/[[home]]/patients/[[patient]]/personalGoals/[[goalUID]]/finishDate"
+        condition-type="guuey-date"
+        notify-condition="true"
+        notify-message="[[suBasicInfo.fName]] [[suBasicInfo.lName]]'s [[goalData.category]] goal completion date is soon."
+        notify-url="/[[home]]/care-plan/su-goals/[[patient]]">
+      </guuey-notify>
+
+      <guuey-date-input
+        value="{{goalData.finishDate}}"
+        label="Estimated Finish Date">
+      </guuey-date-input>
+
+      <vaadin-combo-box
+        label="coordinator"
+        items="[[users]]"
+        value="{{goalData.coordinator}}">
+      </vaadin-combo-box>
+
+      <paper-input
+        label="Goal Description"
+        value="{{goalData.description}}"
+        required
+        auto-validate
+        pattern="[a-zA-Z\s\.\d]*"
+        error-message="Please enter a description without special characters.">
+      </paper-input>
+      <div class="tableContainer">
+
+        <table>
+          <thead>
+            <tr>
+              <th>
+                Step #
+              </th>
+              <th>
+                Description
+              </th>
+              <th>
+                Completed?
+              </th>
+              <th>
+                Edit
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <template
+              is="dom-repeat"
+              items="{{stepArray}}"
+              as="step"
+              sort="_sortSteps"
+              observe="order">
+              <tr>
+                <td>
+                  <center>
+                    <paper-fab label="[[step.order]]"></paper-fab>
+                  </center>
+                </td>
+                <td>
+                  [[step.description]]
+                </td>
+                <td>
+                  <paper-checkbox checked="{{step.completed}}"></paper-checkbox>
+                </td>
+                <td>
+                  <paper-icon-button icon="editor:border-color" class="editButton" on-tap="editNewStep">edit</paper-icon-button>
+                </td>
+              </tr>
+            </template>
+            <tr>
+              <td>
+                <center>
+                  <paper-fab icon="icons:add" on-tap="addNewStep"></paper-fab>
+                </center>
+              </td>
+              <td>
+                Add a new step.
+              </td>
+              <td>
+                <paper-checkbox disabled checked></paper-checkbox>
+              </td>
+              <td>
+                <paper-icon-button disabled icon="editor:border-color" class="editButton" on-tap="editStep">edit</paper-icon-button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+      </div>
+
+      <paper-button on-tap="cancelNewGoal">cancel</paper-button>
+      <paper-button on-tap="saveNewGoal">save</paper-button>
+
+  </template>
+
+  <script>
+
+    Polymer({
+      is:"guuey-new-goal-modal",
+      behaviors: [
+        Polymer.PaperDialogBehavior,
+        Polymer.NeonAnimationRunnerBehavior
+      ],
+
+      listeners: {
+        'neon-animation-finish': '_onNeonAnimationFinish'
+      },
+      properties:{
+        value:{
+          type:Object,
+          value:{},
+          notify:true
+        },
+        update:{
+          type:Boolean,
+          value:false
+        },
+        goalData:{
+          type:Object,
+          value:{steps:{}},
+        },
+        stepArray:{
+          type:Array,
+          value:[]
+        },
+        newStepData:{
+          type:Object,
+          value:{}
+        },
+        goalTypes:{
+          type:Array,
+          value:[
+            "Accommodation",
+            "Finance And Budget",
+            "Social Skills",
+            "Medical Treatment",
+            "Mental Health",
+            "Other"
+          ]
+        },
+        users:{
+          type:Array,
+          value:[]
+        }
+      },
+      //animation functions
+      _renderOpened: function() {
+        this.cancelAnimation();
+        this.playAnimation('entry');
+      },
+      _renderClosed: function() {
+        this.cancelAnimation();
+        this.playAnimation('exit');
+      },
+      _onNeonAnimationFinish: function() {
+        if (this.opened) {
+          this._finishRenderOpened();
+        } else {
+          this._finishRenderClosed();
+        }
+      },
+      //element logic
+      _sortSteps:function(a, b){
+        if (a.order === b.order) return 0;
+        return a.order < b.order ? -1 : 1;
+      },
+      saveNewGoal:function(){
+        this.set("value", this.goalData);
+        this.goalData={steps:{}};
+        this.stepArray=[];
+        this.close();
+      },
+      cancelNewGoal:function(){
+        this.goalData={steps:{}};
+        this.close();
+      },
+      addNewStep:function(){
+        this.newStepData={};
+        this.$.newStepModal.open();
+      },
+      saveNewStep:function(){
+        console.log(this.newStepData);
+        var uid;
+        var date=new Date().valueOf();
+        if(this.newStepData.uid){
+          this.set("stepArray."+this.stepKey+".order", this.newStepData.order);
+          this.set("stepArray."+this.stepKey+".description", this.newStepData.description);
+          this.set("stepArray."+this.stepKey+".uid", this.newStepData.uid);
+          this.set("stepArray."+this.stepKey+".completed", this.newStepData.completed);
+        } else {
+          uid="step"+date;
+          this.newStepData.uid=uid;
+          this.push("stepArray", this.newStepData);
+        };
+        uid="step"+this.newStepData.uid;
+        this.goalData.steps[uid]=this.newStepData;
+        this.$.newStepModal.close();
+        this.newStepData={};
+      },
+      cancelNewStep:function(){
+        this.$.newStepModal.close();
+        this.newStepData={};
+      },
+      editNewStep:function(e){
+        this.stepKey=e.model.index;
+        this.newStepData=e.model.step;
+        this.$.newStepModal.open();
+      },
+    });
+
+  </script>
+
+</dom-module>

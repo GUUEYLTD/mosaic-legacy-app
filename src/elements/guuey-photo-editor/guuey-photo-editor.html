@@ -1,0 +1,538 @@
+<link rel="import" href="dependencies.html" />
+
+<!--
+`image-editor`
+image editor
+
+@demo demo/index.html
+-->
+
+<dom-module id="guuey-photo-editor">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      .resize-container {
+          position: relative;
+          display: inline-block;
+          cursor: move;
+          padding:0 0 0 0 !important;
+          border:1px solid black;
+      }
+
+      .resize-container img {
+          display: block
+      }
+
+      .resize-container:hover img,
+      .resize-container:active img {
+          outline: 2px dashed #7E57C2;
+      }
+      .resize-handle-ne,
+      .resize-handle-ne,
+      .resize-handle-se,
+      .resize-handle-nw,
+      .resize-handle-sw {
+          position: absolute;
+          display: block;
+          width: 40px;
+          height: 40px;
+          background: #7E57C2;
+          z-index: 999;
+      }
+
+      .resize-handle-nw {
+          top: -20px;
+          left: -20px;
+          cursor: nw-resize;
+      }
+
+      .resize-handle-sw {
+          bottom: -20px;
+          left: -20px;
+          cursor: sw-resize;
+      }
+
+      .resize-handle-ne {
+          top: -20px;
+          right: -20px;
+          cursor: ne-resize;
+      }
+
+      .resize-handle-se {
+          bottom: -20px;
+          right: -20px;
+          cursor: se-resize;
+      }
+
+      .resize-image {
+          min-width:200px;
+          min-height:200px;
+      }
+      .overlay {
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          margin-left: -100px;
+          margin-top: -100px;
+          z-index: 999;
+          width: 200px;
+          height: 200px;
+          border: solid 2px #7E57C2;
+          box-sizing: content-box;
+          pointer-events: none;
+      }
+
+      .overlay:after,
+      .overlay:before {
+          content: '';
+          position: absolute;
+          display: block;
+          width: 204px;
+          height: 40px;
+          border-left: dashed 2px #7E57C2;
+          border-right: dashed 2px #7E57C2;
+      }
+
+      .overlay:before {
+          top: 0;
+          margin-left: -2px;
+          margin-top: -40px;
+      }
+
+      .overlay:after {
+          bottom: 0;
+          margin-left: -2px;
+          margin-bottom: -40px;
+      }
+
+      .overlay-inner:after,
+      .overlay-inner:before {
+          content: '';
+          position: absolute;
+          display: block;
+          width: 40px;
+          height: 204px;
+          border-top: dashed 2px #7E57C2;
+          border-bottom: dashed 2px #7E57C2;
+      }
+
+      .overlay-inner:before {
+          left: 0;
+          margin-left: -40px;
+          margin-top: -2px;
+      }
+
+      .overlay-inner:after {
+          right: 0;
+          margin-right: -40px;
+          margin-top: -2px;
+      }
+      .edit-button-container {
+        position:absolute;
+        left:10%;
+        bottom:20px;
+        margin-top:20px;
+        vertical-align:bottom;
+        z-index:999;
+        display:flex;
+        flex-direction:row;
+        width:80%;
+        margin:auto;
+        background-color:#F0F0F0;
+        border: 1px solid black;
+      }
+
+      .edit-button {
+          color: #7E57C2;
+          flex-grow:1;
+          background-color:rgba(240, 240, 240, 0.8);
+      }
+
+      #editDialog {
+        display:relative;
+        padding:100px;
+        background:
+        linear-gradient(-90deg, rgba(0,0,0,.05) 1px, transparent 1px),
+        linear-gradient(rgba(0,0,0,.05) 1px, transparent 1px),
+        linear-gradient(-90deg, rgba(0, 0, 0, .04) 1px, transparent 1px),
+        linear-gradient(rgba(0,0,0,.04) 1px, transparent 1px),
+        linear-gradient(transparent 3px, #f2f2f2 3px, #f2f2f2 78px, transparent 78px),
+        linear-gradient(-90deg, #aaa 1px, transparent 1px),
+        linear-gradient(-90deg, transparent 3px, #f2f2f2 3px, #f2f2f2 78px, transparent 78px),
+        linear-gradient(#aaa 1px, transparent 1px),
+        #f2f2f2;
+      background-size:
+        4px 4px,
+        4px 4px,
+        80px 80px,
+        80px 80px,
+        80px 80px,
+        80px 80px,
+        80px 80px,
+        80px 80px;
+
+        --paper-dialog:{
+          :host > ::content > * {
+            margin-top: 0;
+            padding: 0;
+          }
+
+          :host > ::content > .no-padding {
+            padding: 0;
+          }
+
+          :host > ::content > *:first-child {
+            margin-top: 0;
+          }
+
+          :host > ::content > *:last-child {
+            margin-bottom: 0;
+          }
+        }
+      }
+      #startEditButton{
+        @apply(--guuey-photo-editor-button);
+      }
+    </style>
+      <paper-icon-button id="startEditButton" icon="image:add-a-photo" on-tap="startEdit"></paper-icon-button>
+
+      <paper-dialog id="editDialog">
+
+        <div id="resizeContainer" class="resize-container">
+          <span id="nw" class="resize-handle resize-handle-nw"></span>
+          <span id="ne" class="resize-handle resize-handle-ne"></span>
+          <img id="image" class="resize-image" src="{{value}}" alt="Image" />
+          <span id="se" class="resize-handle resize-handle-se"></span>
+          <span id="sw" class="resize-handle resize-handle-sw"></span>
+        </div>
+        <div id="overlay" class="overlay">
+          <div class="overlay-inner">
+
+          </div>
+        </div>
+        <div class="edit-button-container">
+          <paper-icon-button class="edit-button" icon="image:add-a-photo" on-tap="change"></paper-icon-button>
+          <paper-icon-button class="edit-button" icon="image:rotate-left" on-tap="rotateLeft"></paper-icon-button>
+          <paper-icon-button class="edit-button" icon="image:rotate-right" on-tap="rotateRight"></paper-icon-button>
+          <paper-icon-button class="edit-button" icon="image:crop" on-tap="crop"></paper-icon-button>
+          <paper-icon-button class="edit-button" icon="icons:save" on-tap="save"></paper-icon-button>
+          <paper-icon-button class="edit-button" icon="av:fast-rewind" on-tap="reset"></paper-icon-button>
+          <paper-icon-button class="edit-button" icon="icons:cancel" on-tap="cancel"></paper-icon-button>
+        </div>
+
+        <input
+          id="imageInput"
+          type="file"
+          on-change="_inputChanged"
+          hidden>
+        </input>
+
+      </paper-dialog>
+
+
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'guuey-photo-editor',
+      ready:function(){
+        this.orig_src=new Image(),
+        this.alt_image=new Image();
+        this.image_target=this.$.image;
+        this.event_state={};
+        this.constrain=false;
+        this.min_width=60;
+        this.min_height=60;
+        this.max_width=800;
+        this.max_height=800;
+        this.resize_canvas=document.createElement("canvas");
+        this.rotate_canvas=document.createElement("canvas");
+        this.save_canvas=document.createElement("canvas");
+        //create new image with a copy of original src
+        //original copy is the base of ops
+        this.orig_src.src=this.image_target.src;
+
+        //set listener on resize pointers for when mouse held down
+        this.listen(this.$.se, "mousedown", "startResize");
+        this.listen(this.$.se, "touchstart", "startResize");
+        this.listen(this.$.sw, "mousedown", "startResize");
+        this.listen(this.$.sw, "touchstart", "startResize");
+        this.listen(this.$.nw, "mousedown", "startResize");
+        this.listen(this.$.nw, "touchstart", "startResize");
+        this.listen(this.$.ne, "mousedown", "startResize");
+        this.listen(this.$.ne, "touchstart", "startResize");
+        //set listener on image to start moving
+        this.listen(this.$.image, "mousedown", "startMoving");
+        this.listen(this.$.image, "touchstart", "startMoving");
+      },
+      properties:{
+        editButtonHidden:{
+          //not needed i think
+          type:Boolean,
+          value:false
+        },
+        value:{
+          type:String,
+          notify:true
+        }
+      },
+      startEdit:function(){
+        this.$.editDialog.open();
+      },
+      rotate:function(config){
+        console.log("rotating");
+        console.log(config);
+        var width=this.$.resizeContainer.offsetWidth-2;
+        var height=this.$.resizeContainer.offsetHeight-2;
+        this.rotate_canvas.width = height
+        this.rotate_canvas.height = width
+
+        this.rotate_canvas.getContext("2d").clearRect(0, 0, width, height);
+        this.rotate_canvas.getContext("2d").translate(config.x, config.y);
+        this.rotate_canvas.getContext("2d").rotate(config.r);
+        this.rotate_canvas.getContext("2d").drawImage(this.image_target, 0, 0);
+
+        this.image_target.src=this.rotate_canvas.toDataURL("image/png");
+        this.alt_image.src=this.image_target.src;
+        this.rotated=true;
+
+      },
+      rotateLeft:function(e){
+        var config={
+          x:0,
+          y:this.$.resizeContainer.offsetHeight-2,
+          r:-90 * Math.PI/180
+        };
+        this.rotate(config);
+      },
+      rotateRight:function(e){
+        var config={
+          x:this.$.resizeContainer.offsetWidth-2,
+          y:0,
+          r:90 * Math.PI/180
+        };
+        this.rotate(config);
+
+      },
+      save:function(){
+        var width=this.$.resizeContainer.offsetWidth-2;
+        var height=this.$.resizeContainer.offsetHeight-2;
+        this.save_canvas.width = height
+        this.save_canvas.height = width
+        var src;
+        if(this.rotated || this. cropped){
+          console.log("choosing alt");
+          src=this.alt_image;
+        } else {
+          console.log("choosing orig")
+          src=this.target_image;
+        };
+        this.save_canvas.getContext("2d").drawImage(src, 0, 0, width, height, 0, 0, width, height);
+        this.value=this.save_canvas.toDataURL("image/png");
+        this.$.editDialog.close();
+      },
+      change: function(e) {
+        if (document.createEvent) {
+          this.$.imageInput.value = '';
+          this.$.imageInput.click();
+        }
+      },
+      reset:function(){
+        this.image_target.src=this.orig_src.src;
+        this.alt_image.src="empty";
+        this.rotated=false;
+        this.cropped=false;
+
+      },
+      cancel:function(){
+        this.$.editDialog.close();
+      },
+      startResize:function(e){
+        console.log("starting resize");
+        e.preventDefault();
+        e.stopPropagation();
+        this.saveEventState(e);
+        this.addEventListener("mousemove", this.resizing);
+        this.addEventListener("touchmove", this.resizing);
+        this.addEventListener("mouseup", this.endResize);
+        this.addEventListener("touchend", this.endResize);
+      },
+      endResize:function(e){
+        console.log("ending resize");
+        e.preventDefault();
+        this.removeEventListener("mouseup", this.endResize);
+        this.removeEventListener("touchend", this.endResize);
+        this.removeEventListener("mousemove", this.resizing);
+        this.removeEventListener("touchmove", this.resizing);
+      },
+      resizing:function(e){
+        console.log("resizing");
+        var isSE=this.checkElementClass(this.event_state.currentTarget,"resize-handle-se");
+        var isSW=this.checkElementClass(this.event_state.currentTarget,"resize-handle-sw");
+        var isNE=this.checkElementClass(this.event_state.currentTarget,"resize-handle-ne");
+        var isNW=this.checkElementClass(this.event_state.currentTarget,"resize-handle-nw");
+        var mouse={};
+        var offset=this.getElementOffset(this.$.resizeContainer);
+        mouse.x=(e.clientX || e.pageX || e.originalEvent.touches[0].clientX) - this.$.editDialog.offsetLeft;
+        mouse.y=(e.clientY || e.pageY || e.originalEvent.touches[0].clientY) - this.$.editDialog.offsetTop;
+        var width;
+        var height;
+        var left;
+        var top;
+        // Position image differently depending on the corner dragged and constraints
+        if(isSE){
+          width = mouse.x - this.event_state.container_left;
+          height = mouse.y  - this.event_state.container_top;
+          left = this.event_state.container_left-this.$.editDialog.offsetWidth;
+          top = this.event_state.container_top-this.$.editDialog.offsetHeight;
+        } else if(isSW){
+          width = this.event_state.container_width - (mouse.x - this.event_state.container_left);
+          height = mouse.y  - this.event_state.container_top;
+          left = mouse.x;
+          top = this.event_state.container_top;
+        } else if(isNW){
+          width = this.event_state.container_width - (mouse.x - this.event_state.container_left);
+          height = this.event_state.container_height - (mouse.y - this.event_state.container_top);
+          left = mouse.x;
+          top = mouse.y;
+          if(this.constrain || e.shiftKey){
+            top = mouse.y - ((width / this.orig_src.width * this.orig_src.height) - height);
+          }
+        } else if(isNE){
+          width = mouse.x - this.event_state.container_left;
+          height = this.event_state.container_height - (mouse.y - this.event_state.container_top);
+          left = this.event_state.container_left;
+          top = mouse.y;
+          if(this.constrain || e.shiftKey){
+            top = mouse.y - ((width / this.orig_src.width * this.orig_src.height) - height);
+          }
+        }
+        if(this.constrain || e.shiftKey){
+          height=width/this.orig_src.width*this.orig_src.height;
+        };
+        if(width>this.min_width && height>this.min_height && width<this.max_width && height<this.max_height){
+          this.resizeImage(width, height);
+          //needed for firefox
+          this.$.resizeContainer.offsetLeft=left;
+          this.$.resizeContainer.offsetTop=top;
+        };
+      },
+      resizeImage:function(width, height){
+        console.log("perfroming resize");
+        this.resize_canvas.width = width;
+        this.resize_canvas.height = height;
+        var src;
+        if(this.rotated || this.cropped){
+          src=this.alt_image;
+        } else {
+          src=this.orig_src;
+        };
+        this.resize_canvas.getContext("2d").drawImage(src, 0, 0, width, height);
+        this.image_target.src=this.resize_canvas.toDataURL("image/png");
+      },
+      startMoving:function(e){
+        console.log("started moving");
+        e.preventDefault();
+        e.stopPropagation();
+        this.saveEventState(e);
+        this.addEventListener("mousemove", this.moving);
+        this.addEventListener("touchmove", this.moving);
+        this.addEventListener("mouseup", this.endMoving);
+        this.addEventListener("touchend", this.endMoving);
+      },
+      endMoving:function(e){
+        console.log("ended moving");
+        e.preventDefault();
+        this.removeEventListener("mouseup", this.endMoving);
+        this.removeEventListener("touchend", this.endMoving);
+        this.removeEventListener("mousemove", this.moving);
+        this.removeEventListener("touchmove", this.moving);
+      },
+      moving:function(e){
+        console.log("moving");
+        var mouse={};
+        var touches;
+        e.preventDefault();
+        e.stopPropagation();
+        mouse.x=(e.clientX || e.pageX) + window.scrollX;
+        mouse.y=(e.clientY || e.pageY) + window.scrollY;
+        //100 added in to account for padding
+        var offsetLeft=mouse.x - (this.event_state.mouse_x - this.event_state.container_left+100);
+        var offsetTop=mouse.y - (this.event_state.mouse_y - this.event_state.container_top+100);
+        Polymer.dom(this.$.resizeContainer).setAttribute("style","top: "+offsetTop+"px; left: "+offsetLeft+"px;");
+        Polymer.dom.flush();
+      },
+      crop:function(){
+        var left=this.$.overlay.offsetLeft-this.$.resizeContainer.offsetLeft;
+        var top=this.$.overlay.offsetTop-this.$.resizeContainer.offsetTop;
+        var width=this.$.overlay.offsetWidth;
+        var height=this.$.overlay.offsetHeight;
+
+        this.crop_canvas=document.createElement("canvas");
+        this.crop_canvas.width=width;
+        this.crop_canvas.height=height;
+        this.crop_canvas.getContext("2d").drawImage(this.image_target, left, top, width, height, 0, 0, width, height);
+        //do something else with this later
+        //window.open(this.crop_canvas.toDataURL("image/png"));
+        this.image_target.src=this.crop_canvas.toDataURL("image/png");
+        this.alt_image.src=this.image_target.src;
+        var x=(this.$.editDialog.offsetWidth/2 - this.$.resizeContainer.offsetWidth/2)-100;
+        console.log(x);
+        var y=(this.$.editDialog.offsetHeight/2 - this.$.resizeContainer.offsetHeight/2)-100;
+        console.log(y);
+        Polymer.dom(this.$.resizeContainer).setAttribute("style", "left: "+x+"px; top: "+y+"px;");
+        this.cropped=true;
+      },
+      saveEventState:function(e){
+        this.event_state.container_width=this.$.resizeContainer.offsetWidth;
+        this.event_state.container_height=this.$.resizeContainer.offsetHeight;
+        this.event_state.container_left=this.$.resizeContainer.offsetLeft;
+        this.event_state.container_top=this.$.resizeContainer.offsetTop;
+        this.event_state.mouse_x = (e.clientX || e.pageX) + window.scrollX;
+        this.event_state.mouse_y = (e.clientY || e.pageY) + window.scrollY;
+        /*
+        if(typeof e.originalEvent.touches !== 'undefined'){
+          this.event_state.touches = [];
+          for(i=0; i<e.originalEvent.touches; i++){
+            this.event_state.touches[i] = {};
+            this.event_state.touches[i].clientX = 0+ob.clientX;
+            this.event_state.touches[i].clientY = 0+ob.clientY;
+          };
+        };
+        */
+        this.event_state.currentTarget=e.currentTarget;
+      },
+      getElementOffset:function(element){
+        var de = document.documentElement;
+        var box = element.getBoundingClientRect();
+        var top = box.top + window.pageYOffset - de.clientTop;
+        var left = box.left + window.pageXOffset - de.clientLeft;
+        return { top: top, left: left };
+      },
+      checkElementClass:function(element, className){
+        var classList=element.classList.value;
+        if(classList.indexOf(className)!=-1){
+          return true;
+        } else {
+          return false;
+        }
+      },
+      _inputChanged:function(e){
+        var reader= new FileReader();
+        var file=e.target.files[0];
+        reader.readAsDataURL(file);
+        reader.addEventListener("load", function () {
+          this.image_target.src=reader.result;
+          this.orig_src.src=this.image_target.src;
+          this.alt_image.src="empty";
+          this.rotated=false;
+          this.cropped=false;
+        }.bind(this), false);
+      },
+    });
+  </script>
+</dom-module>

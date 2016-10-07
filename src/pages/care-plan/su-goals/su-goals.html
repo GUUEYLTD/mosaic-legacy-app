@@ -207,14 +207,6 @@
       #editModal{
         margin:0;
       }
-      .addGoalHeader{
-        color:#FFF;
-        background-color:#673AB7;
-        margin-top:0px !important;
-      }
-      .addGoalHeader h2{
-        padding:15px;
-      }
       .tableScrollLabel{
         font-weight:bold;
         text-transform:uppercase;
@@ -263,125 +255,11 @@
       }
     </style>
 
-    <paper-dialog id="addGoalModal">
-
-      <div class="addGoalHeader">
-        <h2>Add New Goal</h2>
-      </div>
-
-        <vaadin-combo-box
-          allow-custom-value
-          label="Category"
-          items="[[goalTypes]]"
-          value="{{goalData.category}}"
-          class="detailBarInput">
-        </vaadin-combo-box>
-
-        <guuey-date-input
-          value="{{goalData.startDate}}"
-          label="Start Date">
-        </guuey-date-input>
-
-        <guuey-notify
-          home="[[home]]"
-          notify-route="homes/[[home]]/patients/[[patient]]/personalGoals/[[goalUID]]/finishDate"
-          condition-type="guuey-date"
-          notify-condition="true"
-          notify-message="[[suBasicInfo.fName]] [[suBasicInfo.lName]]'s [[goalData.category]] goal completion date is soon."
-          notify-url="/[[home]]/care-plan/su-goals/[[patient]]">
-        </guuey-notify>
-
-        <guuey-date-input
-          value="{{goalData.finishDate}}"
-          label="Estimated Finish Date">
-        </guuey-date-input>
-
-        <vaadin-combo-box
-          label="coordinator"
-          items="[[userList]]"
-          value="{{goalData.coordinator}}">
-        </vaadin-combo-box>
-
-        <paper-input
-          label="Goal Description"
-          value="{{goalData.description}}"
-          required
-          auto-validate
-          pattern="[a-zA-Z\s\.\d]*"
-          error-message="Please enter a description without special characters.">
-        </paper-input>
-        <div class="tableContainer">
-
-          <p class="tableScrollLabel">
-            swipe left scrolls table
-          </p>
-
-          <table>
-            <thead>
-              <tr>
-                <th>
-                  Step #
-                </th>
-                <th>
-                  Description
-                </th>
-                <th>
-                  Completed?
-                </th>
-                <th>
-                  Edit
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <template
-                is="dom-repeat"
-                items="[[stepsData]]"
-                as="step"
-                sort="_sortSteps"
-                observe="order">
-                <tr>
-                  <td>
-                    <center>
-                      <paper-fab label="[[step.order]]"></paper-fab>
-                    </center>
-                  </td>
-                  <td>
-                    [[step.description]]
-                  </td>
-                  <td>
-                    <paper-checkbox on-change="checkboxChanged" checked="{{step.completed}}"></paper-checkbox>
-                  </td>
-                  <td>
-                    <paper-icon-button icon="editor:border-color" class="editButton" on-tap="editStep">edit</paper-icon-button>
-                  </td>
-                </tr>
-              </template>
-              <tr>
-                <td>
-                  <center>
-                    <paper-fab icon="icons:add" on-tap="addStep"></paper-fab>
-                  </center>
-                </td>
-                <td>
-                  Add a new step.
-                </td>
-                <td>
-                  <paper-checkbox disabled checked></paper-checkbox>
-                </td>
-                <td>
-                  <paper-icon-button disabled icon="editor:border-color" class="editButton" on-tap="editStep">edit</paper-icon-button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-        </div>
-
-        <paper-button on-tap="cancelNewGoal">cancel</paper-button>
-        <paper-button on-tap="saveNewGoal">save</paper-button>
-
-    </paper-dialog>
+    <guuey-new-goal-modal
+      id="addGoalModal"
+      value="{{newGoal}}"
+      users="[[userList]]">
+    </guuey-new-goal-modal>
 
     <paper-dialog horizontal-align="left" vertical-align="top" id="editModal">
       <paper-button on-tap="editGoal">edit</paper-button>
@@ -407,8 +285,8 @@
         pattern="\d{1,1}"
         error-message="Please enter a step from 1 to 9">
       </paper-input>
-      <paper-button on-tap="cancelNewStep">cancel</paper-button>
-      <paper-button on-tap="saveNewStep">save</paper-button>
+      <paper-button on-tap="cancelStep">cancel</paper-button>
+      <paper-button on-tap="saveStep">save</paper-button>
     </paper-dialog>
 
     <paper-card class="mainCard" elevation="3">
@@ -604,7 +482,6 @@
                     </center>
                   </td>
                   <td>
-                    [[step.description]]
                     <paper-input value="{{step.description}}"></paper-input>
                   </td>
                   <td>
@@ -689,6 +566,11 @@
         userList:{
           type:Array,
           value:[]
+        },
+        newGoal:{
+          type:Object,
+          value:null,
+          observer:"newGoalChanged"
         }
       },
       observers:[
@@ -710,39 +592,24 @@
         this.userList=tempList;
       },
       addGoal:function(){
-        this.$.goalDB.path=null;
-        this.goalData={};
-        var path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals";
-        this.$.goalDB.save(path, null)
-          .then(function(){
-            //save new goal uid for paths to db for new steps and querying steps
-            this.goalUID=this.$.goalDB.path.slice(path.length+2);
-            this.$.addGoalModal.open();
-            //reset and use the path later
-            this.$.stepsDB.path=path+"/"+this.goalUID+"/steps";
-            this.$.goalDB.path=null;
-            this.goalData={steps:{}};
-          }.bind(this));
+        this.$.addGoalModal.open();
       },
-      saveNewGoal:function(){
-        var path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals";
-        this.$.goalDB.save(path,this.goalUID)
-          .then(function(val){
-            this.fire("openToast",{toastText:"New Goal Saved."});
-            this.$.addGoalModal.close();
-            this.$.goalDB.data={};
-          }.bind(this))
-          .catch(function(error){
-            this.fire("openToast",{toastText:"There was an error saving your goal: "+error});
-            this.$.addGoalModal.close();
-            this.$.goalDB.data={};
-          }.bind(this));
-      },
-      cancelNewGoal:function(){
-        this.$.goalDB.data={};
-        this.$.stepDB.data={};
-        this.$.stepsDB.data=[];
-        this.$.addGoalModal.close();
+      newGoalChanged:function(data){
+        if(data!=null){
+          var path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"
+          this.$.goalDB.data=data;
+          this.$.goalDB.save(path, null)
+            .then(function(){
+              this.fire("openToast",{toastText:"new goal saved."});
+              this.$.goalDB.path=null;
+              this.$.goalDB.data={};
+            }.bind(this))
+            .catch(function(error){
+              this.fire("openToast",{toastText:"there was an error saving your new goal: "+error});
+              this.$.goalDB.path=null;
+              this.$.goalDB.data={};
+            });
+        }
       },
       editGoal:function(e){
          this.$.goalDB.path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalUID;
@@ -770,24 +637,26 @@
             this.$.stepDB.path=null;
           }.bind(this));
       },
-      saveNewStep:function(){
+      editStep:function(e){
+        this.stepUID=e.model.step.$key;
+        this.$.stepDB.path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalUID+"/steps/"+this.stepUID;
+        this.$.stepModal.toggle();
+      },
+      saveStep:function(){
         var path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalUID+"/steps";
         this.$.stepDB.save(path, this.stepUID)
-          .then(function(val){
+          .then(function(){
+            this.fire("openToast",{toastText:"new step saved."});
             this.$.stepModal.close();
+            this.$.stepDB.path=null;
+            this.$.stepDB.data={};
           }.bind(this))
           .catch(function(error){
+            this.fire("openToast",{toastText:"there was an error saving your new step: "+error});
             this.$.stepModal.close();
-          }.bind(this));
-      },
-      cancelNewStep:function(){
-        this.$.stepModal.close();
-        this.$.stepData={};
-      },
-      editStep:function(e){
-        var stepID = e.model.step.$key;
-        this.$.stepDB.path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalUID+"/steps/"+stepID;
-        this.$.stepModal.toggle();
+            this.$.stepDB.path=null;
+            this.$.stepDB.data={};
+          });
       },
       //function to sort steps based on order
       _sortSteps:function(a, b){

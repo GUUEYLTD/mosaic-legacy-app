@@ -1,71 +1,51 @@
 <link rel="import" href="../../../../bower_components/polymer/polymer.html" />
-<link rel="import" href="../../../../bower_components/paper-card/paper-card.html" />
 <link rel="import" href="../../../../bower_components/polymerfire/firebase-document.html" />
-<link rel="import" href="../../../elements/guuey-list-input/guuey-list-input.html" />
-<link rel="import" href="new-list.html" />
-<dom-module id="test-test">
+<link rel="import" href="../../../elements/guuey-photo-editor/guuey-photo-editor.html" />
 
+
+<!--
+`image-editor`
+image editor
+
+@demo demo/index.html
+-->
+
+<dom-module id="test-test">
   <template>
 
     <firebase-document
-      id="tableDB"
+      id="test"
+      app-name="main"
       path="homes/[[home]]/patients/test"
-      data="{{testData}}"
-      app-name="main">
+      data="{{testData}}">
     </firebase-document>
 
     <style>
-
-      paper-card{
-        width:90%;
-        margin:20px 5% 20px 5%;
+      :host {
+        display: block;
+      }
+      iron-image{
+        width:200px;
+        height:200px;
+        background-color:red;
       }
 
     </style>
 
-    <paper-card>
-      <guuey-list-input
-        home="[[home]]"
-        patient="[[patient]]"
-        label="Test List"
-        listroute="homes/[[home]]/patients/test/list">
-      </guuey-list-input>
+    <guuey-photo-editor value="{{testData.photo}}"></guuey-photo-editor>
 
-      <new-list
-        value="{{testData.list}}"
-        label="test list"
-        label2="test list description">
-      </new-list>
-
-    </paper-card>
+    <iron-image
+      src="{{testData.photo}}"
+      preload>
+    </iron-image>
 
   </template>
 
   <script>
-
     Polymer({
 
       is: 'test-test',
-      properties:{
-        inputValues:{
-          type:Array,
-          value:[
-            "thing1",
-            "thing2",
-            "thing3",
-            "thing4"
-          ]
-        }
-      },
-      observers:[
-        "dataChanged(testData.*)"
-      ],
-      dataChanged:function(testData){
-        //console.log(testData.base);
-      }
 
     });
-
   </script>
-
 </dom-module>

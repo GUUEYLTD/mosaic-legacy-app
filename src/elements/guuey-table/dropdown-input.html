@@ -14,6 +14,7 @@
   <template>
 
     <vaadin-combo-box
+      allow-custom-value
       label="Frequency"
       items="[[frequencies]]"
       value="{{value}}">
@@ -29,9 +30,11 @@
         frequencies:{
           type:Array,
           value:[
-            "Daily",
-            "Weekly",
-            "Yearly"
+            "daily",
+            "weekly",
+            "bi-weekly",
+            "annually",
+            "bi-annually"
           ]
         },
         input:{

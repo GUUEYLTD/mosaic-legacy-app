@@ -595,6 +595,7 @@
                           .then(function(){
                             this.$.auth.user.sendEmailVerification()
                               .then(function() {
+                                console.log(this.user.email);
                               this.fire("openToast",{toastText:"Email sent."});
                             }.bind(this), function(error) {
                               this.fire("openToast",{toastText:error});

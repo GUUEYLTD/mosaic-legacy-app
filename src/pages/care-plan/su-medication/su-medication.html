@@ -186,11 +186,11 @@
         padding:15px;
       }
       .dialogHalf{
-        width:125px;
+        width:40%;
         display:inline-block;
       }
       .dialogFull{
-        width:250px;
+
       }
       #timeChunkModal{
         margin:0;
@@ -218,7 +218,7 @@
 
     </paper-dialog>
 
-    <paper-dialog id="medModal" class="paper-time-picker-dialog">
+    <paper-dialog id="medModal">
 
       <div class="addMedModalHeader">
         <h2>Add Medication</h2>
@@ -255,11 +255,11 @@
           error-message="Please enter in the following format: (number) (units).">
         </paper-input>
 
-        <paper-input
+        <paper-textarea
           class="dialogFull"
           label="Comments"
           value="{{newMed.comment}}">
-        </paper-input>
+        </paper-textarea>
 
         <guuey-time-chunk-selector
           value="{{newMed.timeChunk}}">
@@ -313,11 +313,11 @@
         error-message="Please enter in the following format: (number) (units).">
       </paper-input>
 
-      <paper-input
+      <paper-textarea
         class="dialogFull"
         label="Comments"
         value="{{newMedEdit.comment}}">
-      </paper-input>
+      </paper-textarea>
 
       <guuey-time-chunk-selector
         value="{{newMedEdit.timeChunk}}">
@@ -472,7 +472,7 @@
                     Medication
                   </th>
                   <th>
-                    Method
+                    Route
                   </th>
                   <th>
                     Dosage
@@ -553,7 +553,7 @@
                     Medication
                   </th>
                   <th>
-                    Method
+                    Route
                   </th>
                   <th>
                     Dosage
@@ -634,7 +634,7 @@
                     Medication
                   </th>
                   <th>
-                    Method
+                    Route
                   </th>
                   <th>
                     Dosage
@@ -781,19 +781,23 @@
       saveMed:function(e){
         this.$.medDB.path=null;
         this.$.medDB.data={};
-        this.$.medDB.save("homes/"+this.home+"/patients/"+this.patient+"/medicationOutline/medications", null)
-          .then(function(){
-            this.$.medDB.data.med=this.newMed;
-            this.$.medDB.data.log={};
-            this.$.medDB.data.log.user=this.user.uid;
-            this.$.medDB.data.log.time=Date.now();
-            this.$.medDB.save(this.$.medDB.path, null)
-              .then(function(){
-                this.newMed={};
-              }.bind(this));
-          }.bind(this));
-        this.$.medModal.toggle();
-        this.hideSaveMed=true;
+        if(this.newMed.timeChunk && this.newMed.medicine){
+          this.$.medDB.save("homes/"+this.home+"/patients/"+this.patient+"/medicationOutline/medications", null)
+            .then(function(){
+              this.$.medDB.data.med=this.newMed;
+              this.$.medDB.data.log={};
+              this.$.medDB.data.log.user=this.user.uid;
+              this.$.medDB.data.log.time=Date.now();
+              this.$.medDB.save(this.$.medDB.path, null)
+                .then(function(){
+                  this.newMed={};
+                }.bind(this));
+            }.bind(this));
+          this.$.medModal.toggle();
+          this.hideSaveMed=true;
+        } else {
+          this.fire("openToast",{toastText:"Please make sure that you have set a name and a time of day (morning, afternoon etc) for this new medication."});
+        };
       },
       newTime:function(time){
         this.newMed.time=time;

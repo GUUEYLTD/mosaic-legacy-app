@@ -1,0 +1,143 @@
+<link rel="import" href="dependencies.html" />
+
+<dom-module id="guuey-signature">
+
+  <template>
+
+    <style>
+      canvas{
+        background-color:#F0F0F0;
+        height:100px;
+        width:300px;
+        display:block;
+      }
+      canvas:hover{
+        cursor:crosshair;
+      }
+      paper-dialog{
+
+      }
+      #signButton{
+        margin:20px;
+        background-color:#009888;
+        color:#FFFFFF;
+      }
+      #signDialog h2{
+        background-color:#7E57C2;
+        color:#FFFFFF;
+        margin:0;
+        padding:15px;
+      }
+      .buttonRow{
+        display:flex;
+        flex-direction:row;
+      }
+      .buttonRow paper-button{
+        display:inline-block;
+        background-color:#009888;
+        color:#FFFFFF;
+        flex-grow:1;
+        text-align:center;
+      }
+      #signature{
+        height:50px;
+        width:150px;
+        background-color:#f6f6f6;
+        border:solid #000000 1px;
+        margin:20px;
+      }
+    </style>
+
+    <paper-dialog on-iron-overlay-opened="resizeCanvas" id="signDialog">
+      <h2>Sign Here</h2>
+
+      <canvas height="100" width="300" id="sig"></canvas>
+
+      <div class="buttonRow">
+        <paper-button on-tap="cancel">cancel</paper-button>
+        <paper-button on-tap="reset">reset</paper-button>
+        <paper-button on-tap="confirm">confirm</paper-button>
+      </div>
+    </paper-dialog>
+
+    <paper-button id="signButton" hidden$="[[_computeHidden(value)]]" on-tap="sign">[[label]]</paper-button>
+
+    <span hidden$="[[!_computeHidden(value)]]">
+
+      <iron-image
+        id="signature"
+        sizing="contain"
+        preload
+        src="[[value]]">
+      </iron-image>
+
+    </span>
+
+  </template>
+
+  <script src="../../../bower_components/signature_pad/signature_pad.min.js"></script>
+  <script>
+
+    Polymer({
+
+      is: 'guuey-signature',
+      properties:{
+        canvas:{
+          type:Object
+        },
+        signaturePad:{
+          type:Object
+        },
+        value:{
+          type:String,
+          notify:true,
+          value:null
+        },
+        label:{
+          type:String,
+          value:"sign"
+        }
+      },
+      ready:function(){
+        this.canvas=this.$.sig;
+        this.signaturePad = new SignaturePad(this.canvas,{
+            minWidth:.5,
+            maxWidth:1,
+            penColor: "rgb(66, 133, 244)"
+        });
+        this.addEventListener("resize", this.resizeCanvas());
+      },
+      resizeCanvas:function() {
+        var ratio =  Math.max(window.devicePixelRatio || 1, 1);
+        this.canvas.width = this.canvas.offsetWidth * ratio;
+        this.canvas.height = this.canvas.offsetHeight * ratio;
+        this.canvas.getContext("2d").scale(ratio, ratio);
+        this.signaturePad.clear();
+      },
+      sign:function(){
+        this.$.signDialog.open();
+      },
+      cancel:function(){
+        this.signaturePad.clear();
+        this.$.signDialog.close();
+      },
+      reset:function(){
+        this.signaturePad.clear();
+        this.value=null;
+      },
+      confirm:function(){
+        this.value=this.signaturePad.toDataURL();
+        this.$.signDialog.close();
+      },
+      _computeHidden:function(value){
+        if(value){
+          return true;
+        } else {
+          return false;
+        };
+      }
+    });
+
+  </script>
+
+</dom-module>

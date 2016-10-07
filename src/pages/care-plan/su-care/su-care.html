@@ -252,9 +252,7 @@
 
               <div class="agreeButtons">
 
-                <paper-button hidden="[[agreeData.suAgree]]" on-tap="suAgreeUpdate">AGREE</paper-button>
-
-                <paper-button hidden="[[!agreeData.suAgree]]">AGREED</paper-button>
+                <guuey-signature value="{{agreeData.suAgree}}" label="tap for service user agreement"></guuey-signature>
 
               </div>
             </div>
@@ -279,9 +277,7 @@
 
               <div class="agreeButtons">
 
-                <paper-button hidden="[[agreeData.swAgree]]" on-tap="swAgreeUpdate">AGREE</paper-button>
-
-                <paper-button hidden="[[!agreeData.swAgree]]">AGREED</paper-button>
+                <guuey-signature value="{{agreeData.swAgree}}" label="tap for service worker agreement"></guuey-signature>
 
               </div>
             </div>
@@ -290,7 +286,7 @@
         </paper-card>
 
     <guuey-text-input
-      value="{{careData.careData}}"
+      value="{{careData.aboutMeAndMyLife}}"
       label="About me and my life"
       label2="Fill in the information about where you were born, studied, lived etc.">
     </guuey-text-input>
