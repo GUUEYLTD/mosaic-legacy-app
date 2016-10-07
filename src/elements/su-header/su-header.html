@@ -141,11 +141,13 @@ setimage(boolean)
         right:5%;
         bottom:5%;
         z-index:2;
-        opacity:.52;
         padding:0;
         margin:0;
         height:20%;
         width:20%;
+        --guuey-photo-editor-button:{
+          opacity:.52;
+        }
       }
       .headerPrint{
         opacity:.54;
@@ -179,13 +181,10 @@ setimage(boolean)
             hidden>
           </input>
 
-          <paper-icon-button
-            id="imageButton"
+          <guuey-photo-editor
             class="imageButton"
-            on-tap="_onAddFilesClick"
-            icon="image:camera-alt"
-            hidden="[[!setimage]]">
-          </paper-icon-button>
+            value="{{suIndexData.image}}">
+          </guuey-photo-editor>
 
       </div>
       <div class="headerInfoRow">

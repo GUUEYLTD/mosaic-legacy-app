@@ -329,8 +329,9 @@ image editor
           src=this.alt_image;
         } else {
           console.log("choosing orig")
-          src=this.target_image;
+          src=this.image_target;
         };
+        console.log(src);
         this.save_canvas.getContext("2d").drawImage(src, 0, 0, width, height, 0, 0, width, height);
         this.value=this.save_canvas.toDataURL("image/png");
         this.$.editDialog.close();
