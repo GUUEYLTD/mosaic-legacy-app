@@ -277,8 +277,12 @@ image editor
         },
         value:{
           type:String,
-          notify:true
+          notify:true,
+          observer:"valueChanged"
         }
+      },
+      valueChanged:function(){
+        this.orig_src.src=this.image_target.src;
       },
       startEdit:function(){
         this.$.editDialog.open();
@@ -331,7 +335,6 @@ image editor
           console.log("choosing orig")
           src=this.image_target;
         };
-        console.log(src);
         this.save_canvas.getContext("2d").drawImage(src, 0, 0, width, height, 0, 0, width, height);
         this.value=this.save_canvas.toDataURL("image/png");
         this.$.editDialog.close();
