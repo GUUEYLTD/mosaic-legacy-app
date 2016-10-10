@@ -70,6 +70,8 @@ image editor
       .resize-image {
           min-width:200px;
           min-height:200px;
+          max-width:800px;
+          max-height:800px;
       }
       .overlay {
           position: absolute;
@@ -292,12 +294,10 @@ image editor
         var height=this.$.resizeContainer.offsetHeight-2;
         this.rotate_canvas.width = height
         this.rotate_canvas.height = width
-
         this.rotate_canvas.getContext("2d").clearRect(0, 0, width, height);
         this.rotate_canvas.getContext("2d").translate(config.x, config.y);
         this.rotate_canvas.getContext("2d").rotate(config.r);
         this.rotate_canvas.getContext("2d").drawImage(this.image_target, 0, 0);
-
         this.image_target.src=this.rotate_canvas.toDataURL("image/png");
         this.alt_image.src=this.image_target.src;
         this.rotated=true;
@@ -374,8 +374,8 @@ image editor
         var isNW=this.checkElementClass(this.event_state.currentTarget,"resize-handle-nw");
         var mouse={};
         var offset=this.getElementOffset(this.$.resizeContainer);
-        mouse.x=(e.clientX || e.pageX || e.originalEvent.touches[0].clientX) - this.$.editDialog.offsetLeft;
-        mouse.y=(e.clientY || e.pageY || e.originalEvent.touches[0].clientY) - this.$.editDialog.offsetTop;
+        mouse.x=(e.clientX || e.pageX || e.touches[0].clientX) - this.$.editDialog.offsetLeft;
+        mouse.y=(e.clientY || e.pageY || e.touches[0].clientY) - this.$.editDialog.offsetTop;
         var width;
         var height;
         var left;
@@ -449,15 +449,41 @@ image editor
       moving:function(e){
         var mouse={};
         var touches;
+        if(e.touches){
+          touches=e.touches;
+        };
         e.preventDefault();
         e.stopPropagation();
-        mouse.x=(e.clientX || e.pageX) + window.scrollX;
-        mouse.y=(e.clientY || e.pageY) + window.scrollY;
+        mouse.x=(e.clientX || e.pageX || e.touches[0].clientX) + window.scrollX;
+        mouse.y=(e.clientY || e.pageY || e.touches[0].clientY) + window.scrollY;
         //100 added in to account for padding
         var offsetLeft=mouse.x - (this.event_state.mouse_x - this.event_state.container_left+100);
         var offsetTop=mouse.y - (this.event_state.mouse_y - this.event_state.container_top+100);
         Polymer.dom(this.$.resizeContainer).setAttribute("style","top: "+offsetTop+"px; left: "+offsetLeft+"px;");
         Polymer.dom.flush();
+
+        // Watch for pinch zoom gesture while moving
+        if(this.event_state.evnt.touches && this.event_state.evnt.touches.length > 1 && touches.length > 1){
+          var width = this.event_state.container_width, height = this.event_state.container_height;
+          var a = this. event_state.touches[0].clientX - this. event_state.touches[1].clientX;
+          a = a * a;
+          var b = this. event_state.touches[0].clientY - this. event_state.touches[1].clientY;
+          b = b * b;
+          var dist1 = Math.sqrt( a + b );
+
+          a = e.touches[0].clientX - touches[1].clientX;
+          a = a * a;
+          b = e.touches[0].clientY - touches[1].clientY;
+          b = b * b;
+          var dist2 = Math.sqrt( a + b );
+
+          var ratio = dist2 /dist1;
+
+          width = width * ratio;
+          height = height * ratio;
+          // To improve performance you might limit how often resizeImage() is called
+          this.resizeImage(width, height);
+        }
       },
       crop:function(){
         var left=this.$.overlay.offsetLeft-this.$.resizeContainer.offsetLeft;
@@ -483,19 +509,10 @@ image editor
         this.event_state.container_height=this.$.resizeContainer.offsetHeight;
         this.event_state.container_left=this.$.resizeContainer.offsetLeft;
         this.event_state.container_top=this.$.resizeContainer.offsetTop;
-        this.event_state.mouse_x = (e.clientX || e.pageX) + window.scrollX;
-        this.event_state.mouse_y = (e.clientY || e.pageY) + window.scrollY;
-        /*
-        if(typeof e.originalEvent.touches !== 'undefined'){
-          this.event_state.touches = [];
-          for(i=0; i<e.originalEvent.touches; i++){
-            this.event_state.touches[i] = {};
-            this.event_state.touches[i].clientX = 0+ob.clientX;
-            this.event_state.touches[i].clientY = 0+ob.clientY;
-          };
-        };
-        */
+        this.event_state.mouse_x = (e.clientX || e.pageX || e.touches[0].clientX) + window.scrollX;
+        this.event_state.mouse_y = (e.clientY || e.pageY || e.touches[0].clientY) + window.scrollY;
         this.event_state.currentTarget=e.currentTarget;
+        this.event_state.evnt=e;
       },
       getElementOffset:function(element){
         var de = document.documentElement;

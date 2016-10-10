@@ -61,7 +61,7 @@
       .inputWrapper{
         padding:20px;
       }
-      .mainCard{
+      #mainCard{
         width:80%;
         margin:-50px 10% 50px 10%;
       }
@@ -105,15 +105,29 @@
         padding:10px;
       }
 
-      .mainFab{
+      #regFab{
         position:absolute;
         right:-25px;
         top:-25px;
-        z-index:1;
+        z-index:3;
+        /*
         position:var(--main-fab-position);
         bottom:var(--main-fab-bottom);
         top:var(--main-fab-top);
         right:var(--main-fab-right);
+        */
+      }
+      #editFab{
+        position:fixed;
+        bottom:25px;
+        z-index:3;
+        opacity:1;
+        /*
+        position:var(--main-fab-position);
+        bottom:var(--main-fab-bottom);
+        top:var(--main-fab-top);
+        right:var(--main-fab-right);
+        */
       }
       .mainContainer{
         padding-top:20px;
@@ -201,7 +215,7 @@
 
     </paper-dialog>
 
-    <paper-card class="mainCard" elevation="3">
+    <paper-card id="mainCard" elevation="3">
       <su-header
         page="Risk Assessment"
         home="[[home]]"
@@ -211,22 +225,19 @@
       <div class="mainContainer">
 
         <!--absolute positioned button to add a new risk-->
-        <span hidden="[[riskSelected]]">
 
-          <paper-fab
-            class="mainFab"
-            icon="icons:add"
-            on-tap="addRisk"
-            hidden="[[riskSelected]]">
-          </paper-fab>
-
-        </span>
+        <paper-fab
+          id="regFab"
+          icon="icons:add"
+          on-tap="addRisk"
+          hidden="[[riskSelected]]">
+        </paper-fab>
 
         <!--absolute positioned button to finsh adding a new risk assessment and close the add view-->
         <span hidden="[[!riskSelected]]">
 
           <paper-fab
-            class="mainFab"
+            id="editFab"
             icon="icons:check"
             on-tap="finishRisk"
             hidden="[[!riskSelected]]">
@@ -396,6 +407,9 @@
         "editQuery(query1300, query1100, query750, query640)",
         "requirementsMet(risksData)"
       ],
+      behaviors:[
+        Polymer.fabAnimationBehavior
+      ],
       toggleEditModal:function(e){
         this.$.editModal.positionTarget = e.target;
         this.riskUID=e.model.risk.$key;
@@ -433,6 +447,7 @@
         this.riskSelected=true;
         this.$.riskDB.path="/homes/"+this.home+"/patients/"+this.patient+"/riskAssessment/"+this.riskUID;
         this.$.editModal.close();
+        this.animateEditState();
       },
       deleteRisk:function(e){
         var path="/homes/"+this.home+"/patients/"+this.patient+"/riskAssessment/"+this.riskUID;
@@ -441,6 +456,7 @@
       },
       finishRisk:function(e){
         this.riskSelected=false;
+        this.animateRegState();
       },
       _computeDate:function(date){
         if(typeof date==="string"){

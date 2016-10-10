@@ -137,15 +137,35 @@
         width:100%;
 
       }
-      .mainFab{
+      #regFab{
         position:absolute;
         right:-25px;
         top:-25px;
-        z-index:1;
+        z-index:3;
+        /*
         position:var(--main-fab-position);
         bottom:var(--main-fab-bottom);
         top:var(--main-fab-top);
         right:var(--main-fab-right);
+        */
+      }
+      #editFab{
+        position:fixed;
+        bottom:25px;
+        z-index:3;
+        opacity:1;
+        /*
+        position:var(--main-fab-position);
+        bottom:var(--main-fab-bottom);
+        top:var(--main-fab-top);
+        right:var(--main-fab-right);
+        */
+      }
+      #regView{
+
+      }
+      #editView{
+
       }
       .goalDetails{
         width:90%;
@@ -187,7 +207,7 @@
         background-position:bottom left;
         margin: 0px 0 20px 0;
       }
-      .mainCard{
+      #mainCard{
         position:absolute;
         width:80%;
         margin:-50px 10% 50px 10%;
@@ -289,9 +309,10 @@
       <paper-button on-tap="saveStep">save</paper-button>
     </paper-dialog>
 
-    <paper-card class="mainCard" elevation="3">
+    <paper-card id="mainCard" elevation="3">
 
       <su-header
+        id="suHeader"
         page="Personal Goals"
         patient="[[patient]]"
         home="[[home]]"
@@ -299,32 +320,22 @@
       </su-header>
 
       <!--repeat each goal that currently is set-->
-      <div class="mainContainer">
-
-        <span hidden="[[!goalSelected]]">
+      <div id="mainContainer" class="mainContainer">
 
           <!--absolute positioned button to finsh adding a new goal and close the add view-->
           <paper-fab
-            class="mainFab"
+            id="editFab"
             icon="icons:check"
             on-tap="finishGoal">
           </paper-fab>
 
-        </span>
-
-        <span hidden="[[goalSelected]]">
-
           <!--absolute positioned button to add a new goal-->
           <paper-fab
-            class="mainFab"
+            id="regFab"
             icon="icons:add"
-            on-tap="addGoal"
-            hidden="[[goalSelected]]">
+            on-tap="addGoal">
           </paper-fab>
 
-        </span>
-
-        <div hidden="[[goalSelected]]">
           <!--default placeholder if user has not put any goals in yet...-->
           <!--
           <div hidden="{{queryCount}}">
@@ -332,7 +343,7 @@
 
           </div>
           -->
-          <div class="app-grid" has-aspect-ratio>
+          <paper-card id="regView" class="app-grid" has-aspect-ratio>
 
             <template id="goalRepeat" is="dom-repeat" items="[[goalsData]]" as="goal">
               {{_computeQueryCount(goal)}}
@@ -383,139 +394,138 @@
 
             </template>
 
-          </div>
+          </paper-card>
 
-        </div>
+          <paper-card id="editView" style="display:none;">
 
-      </div>
-      <div hidden="[[!goalSelected]]">
+            <div class="detailBar"
+              style="background-image:url(../../../../{{_computeGoalImage(goalData.category)}})">
+                <vaadin-combo-box
+                  allow-custom-value
+                  label="Category"
+                  items="[[goalTypes]]"
+                  value="{{goalData.category}}"
+                  class="detailBarInput">
+                </vaadin-combo-box>
+            </div>
 
-        <div class="detailBar"
-          style="background-image:url(../../../../{{_computeGoalImage(goalData.category)}})">
-            <vaadin-combo-box
-              allow-custom-value
-              label="Category"
-              items="[[goalTypes]]"
-              value="{{goalData.category}}"
-              class="detailBarInput">
-            </vaadin-combo-box>
-        </div>
+            <div class="inputContainer">
 
-        <div class="inputContainer">
+              <guuey-date-input
+                value="{{goalData.startDate}}"
+                label="Start Date">
+              </guuey-date-input>
 
-          <guuey-date-input
-            value="{{goalData.startDate}}"
-            label="Start Date">
-          </guuey-date-input>
+              <guuey-notify
+                home="[[home]]"
+                notify-route="homes/[[home]]/patients/[[patient]]/personalGoals/[[goalUID]]/finishDate"
+                condition-type="guuey-date"
+                notify-condition="true"
+                notify-message="[[suBasicInfo.fName]] [[suBasicInfo.lName]]'s [[goalData.category]] goal completion date is soon."
+                notify-url="/[[home]]/care-plan/su-goals/[[patient]]">
+              </guuey-notify>
 
-          <guuey-notify
-            home="[[home]]"
-            notify-route="homes/[[home]]/patients/[[patient]]/personalGoals/[[goalUID]]/finishDate"
-            condition-type="guuey-date"
-            notify-condition="true"
-            notify-message="[[suBasicInfo.fName]] [[suBasicInfo.lName]]'s [[goalData.category]] goal completion date is soon."
-            notify-url="/[[home]]/care-plan/su-goals/[[patient]]">
-          </guuey-notify>
+              <guuey-date-input
+                value="{{goalData.finishDate}}"
+                label="Estimated Finish Date">
+              </guuey-date-input>
 
-          <guuey-date-input
-            value="{{goalData.finishDate}}"
-            label="Estimated Finish Date">
-          </guuey-date-input>
+              <vaadin-combo-box
+                label="coordinator"
+                items="[[userList]]"
+                value="{{goalData.coordinator}}">
+              </vaadin-combo-box>
 
-          <vaadin-combo-box
-            label="coordinator"
-            items="[[userList]]"
-            value="{{goalData.coordinator}}">
-          </vaadin-combo-box>
+            </div>
 
-        </div>
+            <div
+            class="detailDescription"
+            style="background-image:url(../../../../images/target_goals.png">
+              <div class="descriptionContainer">
+                <paper-input
+                  label="Goal Description"
+                  value="{{goalData.description}}"
+                  required
+                  auto-validate
+                  pattern="[a-zA-Z\s\.\d]*"
+                  error-message="Please enter a description without special characters.">
+                </paper-input>
+              </div>
+            </div>
 
-        <div
-        class="detailDescription"
-        style="background-image:url(../../../../images/target_goals.png">
-          <div class="descriptionContainer">
-            <paper-input
-              label="Goal Description"
-              value="{{goalData.description}}"
-              required
-              auto-validate
-              pattern="[a-zA-Z\s\.\d]*"
-              error-message="Please enter a description without special characters.">
-            </paper-input>
-          </div>
-        </div>
+            <div class="tableContainer">
 
-        <div class="tableContainer">
+              <p class="tableScrollLabel">
+                swipe left scrolls table
+              </p>
 
-          <p class="tableScrollLabel">
-            swipe left scrolls table
-          </p>
+              <table>
+                <thead>
+                  <tr>
+                    <th>
+                      Step #
+                    </th>
+                    <th>
+                      Description
+                    </th>
+                    <th>
+                      Completed?
+                    </th>
+                    <th>
+                      Edit
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <template
+                    is="dom-repeat"
+                    items="[[stepsData]]"
+                    as="step"
+                    sort="_sortSteps"
+                    observe="order description">
+                    <tr>
+                      <td>
+                        <center>
+                          <paper-fab label="[[step.order]]"></paper-fab>
+                        </center>
+                      </td>
+                      <td>
+                        <paper-input value="{{step.description}}"></paper-input>
+                      </td>
+                      <td>
+                        <paper-checkbox
+                          on-change="checkboxChanged"
+                          checked="{{step.completed}}">
+                        </paper-checkbox>
 
-          <table>
-            <thead>
-              <tr>
-                <th>
-                  Step #
-                </th>
-                <th>
-                  Description
-                </th>
-                <th>
-                  Completed?
-                </th>
-                <th>
-                  Edit
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <template
-                is="dom-repeat"
-                items="[[stepsData]]"
-                as="step"
-                sort="_sortSteps"
-                observe="order description">
-                <tr>
-                  <td>
-                    <center>
-                      <paper-fab label="[[step.order]]"></paper-fab>
-                    </center>
-                  </td>
-                  <td>
-                    <paper-input value="{{step.description}}"></paper-input>
-                  </td>
-                  <td>
-                    <paper-checkbox
-                      on-change="checkboxChanged"
-                      checked="{{step.completed}}">
-                    </paper-checkbox>
+                      </td>
+                      <td>
+                        <paper-icon-button icon="editor:border-color" class="editButton" on-tap="editStep">edit</paper-icon-button>
+                      </td>
+                    </tr>
+                  </template>
+                  <tr>
+                    <td>
+                      <center>
+                        <paper-fab icon="icons:add" on-tap="addStep"></paper-fab>
+                      </center>
+                    </td>
+                    <td>
+                      Add a new step.
+                    </td>
+                    <td>
+                      <paper-checkbox disabled checked></paper-checkbox>
+                    </td>
+                    <td>
+                      <paper-icon-button disabled icon="editor:border-color" class="editButton" on-tap="editStep">edit</paper-icon-button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
 
-                  </td>
-                  <td>
-                    <paper-icon-button icon="editor:border-color" class="editButton" on-tap="editStep">edit</paper-icon-button>
-                  </td>
-                </tr>
-              </template>
-              <tr>
-                <td>
-                  <center>
-                    <paper-fab icon="icons:add" on-tap="addStep"></paper-fab>
-                  </center>
-                </td>
-                <td>
-                  Add a new step.
-                </td>
-                <td>
-                  <paper-checkbox disabled checked></paper-checkbox>
-                </td>
-                <td>
-                  <paper-icon-button disabled icon="editor:border-color" class="editButton" on-tap="editStep">edit</paper-icon-button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+            </div>
 
-        </div>
+          </paper-card>
 
       </div>
 
@@ -577,6 +587,9 @@
         "editQuery(query1200, query850, query950, query640)",
         "requirementsMet(goalsData)"
       ],
+      behaviors:[
+        Polymer.fabAnimationBehavior
+      ],
       updateUsers:function(snapshot){
         var tempList=[];
         if(snapshot.val()){
@@ -616,6 +629,7 @@
          this.$.stepsDB.path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalUID+"/steps";
          this.goalSelected=true;
          this.$.editModal.toggle();
+         this.animateEditState();
       },
       deleteGoal:function(e){
         var path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalUID;
@@ -624,6 +638,7 @@
       },
       finishGoal:function(e){
         this.goalSelected=false;
+        this.animateRegState();
       },
       addStep:function(){
         this.$.stepDB.path=null;
