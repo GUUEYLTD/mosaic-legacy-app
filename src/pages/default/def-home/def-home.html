@@ -143,16 +143,16 @@
               <paper-card
                 class="suBox"
                 elevation="3">
-              <a href="/[[home]]/care-plan/su-profile/[[su.$key]]">
+              <a hidden href="/[[home]]/care-plan/su-profile/[[su.$key]]"></a>
                 <iron-image
                   class="suBoxImage"
                   sizing="cover"
                   preload
                   placeholder="../../../../images/defaultAvatar.png"
                   fade
-                  src="[[su.image]]">
+                  src="[[su.image]]"
+                  on-tap="goProfile">
                 </iron-image>
-              </a>
 
                 <p class="suspendedText">
                   suspended
@@ -170,16 +170,16 @@
               <paper-card
                 class="suBox"
                 elevation="3">
-                <a href="/[[home]]/care-plan/su-profile/[[su.$key]]">
+                <a hidden href="/[[home]]/care-plan/su-profile/[[su.$key]]"></a>
                   <iron-image
                     class="suBoxImage"
                     sizing="cover"
                     preload
                     placeholder="../../../../images/defaultAvatar.png"
                     fade
-                    src="[[su.image]]">
+                    src="[[su.image]]"
+                    on-tap="goProfile">
                   </iron-image>
-                </a>
                 <div class="suLower">
                   [[su.fName]]
                   <br />
@@ -227,6 +227,9 @@
       observers:[
         "mediaQueryEdit(query1300, query1100, query900, query700, query500)",
         "dbLoaded(patientList)"
+      ],
+      behaviors:[
+        Polymer.defPagesAnimation
       ],
       createNewPatient:function(){
         this.$.fireDoc.path=null;

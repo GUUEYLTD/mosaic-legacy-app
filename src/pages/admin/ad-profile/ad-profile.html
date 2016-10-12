@@ -194,6 +194,9 @@
         "editQuery(query600)",
         "_computeImage(careHomeProfile.profileImage)"
       ],
+      behaviors:[
+        Polymer.adminPagesAnimation
+      ],
       _inputChanged:function(image) {
         console.log(image);
         this.$.storage._uploadFile(image)

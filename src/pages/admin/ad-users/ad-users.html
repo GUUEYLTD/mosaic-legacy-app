@@ -332,6 +332,9 @@
       observers:[
         "editQuery(query900)"
       ],
+      behaviors:[
+        Polymer.adminPagesAnimation
+      ],
       createNewUser:function(){
         this.fire("createNewUser", this.newAccount);
         this.newAccount={};

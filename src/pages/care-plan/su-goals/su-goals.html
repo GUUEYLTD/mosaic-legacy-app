@@ -142,6 +142,7 @@
         right:-25px;
         top:-25px;
         z-index:3;
+        opacity:1;
         /*
         position:var(--main-fab-position);
         bottom:var(--main-fab-bottom);
@@ -153,7 +154,7 @@
         position:fixed;
         bottom:25px;
         z-index:3;
-        opacity:1;
+        opacity:0;
         /*
         position:var(--main-fab-position);
         bottom:var(--main-fab-bottom);
@@ -588,7 +589,8 @@
         "requirementsMet(goalsData)"
       ],
       behaviors:[
-        Polymer.fabAnimationBehavior
+        Polymer.fabAnimationBehavior,
+        Polymer.carePlanAnimation
       ],
       updateUsers:function(snapshot){
         var tempList=[];

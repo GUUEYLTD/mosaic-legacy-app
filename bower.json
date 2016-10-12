@@ -51,7 +51,8 @@
     "paper-menu": "PolymerElements/paper-menu#^1.2.2",
     "paper-slider": "PolymerElements/paper-slider#^1.0.11",
     "paper-toggle-button": "PolymerElements/paper-toggle-button#^1.2.0",
-    "signature_pad": "^1.5.3"
+    "signature_pad": "^1.5.3",
+    "neon-animation": "PolymerElements/neon-animation#^1.2.4"
   },
   "devDependencies": {
     "web-component-tester": "^4.0.0"

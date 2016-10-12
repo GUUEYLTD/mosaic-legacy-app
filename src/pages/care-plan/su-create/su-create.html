@@ -556,6 +556,9 @@
         "editQuery(query950)",
         "requirementsMet(newPatientData)"
       ],
+      behaviors:[
+        Polymer.carePlanAnimation
+      ],
       createNewPatient:function(){
         var path="/homes/"+this.home+"/patients/"+this.patient+"/currentStatus";
         this.$.newPatientDB.setStoredValue(path, "active")

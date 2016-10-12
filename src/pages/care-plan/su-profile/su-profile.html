@@ -84,8 +84,9 @@
       }
     </style>
 
-    <paper-card elevation="3">
+    <paper-card id="mainCard" elevation="3">
       <su-header
+        id="suHeader"
         page="Personal Profile"
         patient="[[patient]]"
         home="[[home]]"
@@ -890,6 +891,9 @@
         "requirementsMet(profileData)",
         "secondaryRequirementsMet(nextOfKinData)",
         "nameChanged(profileData.fName, profileData.lName)"
+      ],
+      behaviors:[
+        Polymer.carePlanAnimation
       ],
       print:function(e){
         var printable=window.open("","printable");

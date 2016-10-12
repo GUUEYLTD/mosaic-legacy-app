@@ -159,6 +159,9 @@
                 value:false
               }
             },
+            behaviors:[
+              Polymer.defPagesAnimation
+            ],
             verifyEmail: function() {
               this.$.auth.user.sendEmailVerification()
                 .then(function() {
