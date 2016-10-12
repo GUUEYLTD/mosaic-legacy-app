@@ -404,48 +404,230 @@
           <paper-icon-button class="backButton" icon="hardware:keyboard-backspace" on-tap="goBack"></paper-icon-button>
         </div>
         <!--page templates are loded in here inside iron pages-->
-        <iron-pages
+        <neon-animated-pages
           role="main"
-          selected="[[page]]"
-          attr-for-selected="name"
-          fallback-selection="def-error">
+          selected="[[selected]]"
+          attr-for-selected="name">
           <!--custom pages built for the app names attached in order to know which to display according to route-->
           <!--page selected style only shows when the drawer item has been clicked twice need to fix this..-->
           <!--login page-->
-          <def-login page="[[page]]" name="def-login"></def-login>
+          <def-login
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            name="def-login">
+          </def-login>
           <!--default page-->
-          <def-home page="[[page]]" home="[[home]]" name="def-home" signed-in="[[signedIn]]"></def-home>
+          <def-home
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            home="[[home]]"
+            name="def-home"
+            signed-in="[[signedIn]]">
+          </def-home>
           <!--default page if not verified-->
-          <def-verify page="[[page]]" home="[[home]]" name="def-verify"></def-verify>
+          <def-verify
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            home="[[home]]"
+            name="def-verify">
+          </def-verify>
           <!--error 404 page-->
-          <def-error name="def-error"></def-error>
+          <def-error
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            name="def-error">
+          </def-error>
           <!--other pages for care plan-->
-          <su-home page="[[page]]" patient="[[param]]" home="[[home]]" name="su-home"></su-home>
-          <su-profile page="[[page]]" patient="[[param]]" home="[[home]]" name="su-profile"></su-profile>
-          <su-care page="[[page]]" patient="[[param]]" home="[[home]]" name="su-care"></su-care>
-          <su-goals page="[[page]]" patient="[[param]]" home="[[home]]" name="su-goals"></su-goals>
+          <su-home
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            patient="[[param]]"
+            home="[[home]]"
+            name="su-home">
+          </su-home>
+          <su-profile
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            patient="[[param]]"
+            home="[[home]]"
+            name="su-profile">
+          </su-profile>
+          <su-care
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            patient="[[param]]"
+            home="[[home]]"
+            name="su-care">
+          </su-care>
+          <su-goals
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            patient="[[param]]"
+            home="[[home]]"
+            name="su-goals">
+        </su-goals>
           <!--add in user in order to log the uid for version control and logging-->
-          <su-medical page="[[page]]" patient="[[param]]" home="[[home]]" user="{{user}}" name="su-medical"></su-medical>
+          <su-medical
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            patient="[[param]]"
+            home="[[home]]"
+            user="{{user}}"
+            name="su-medical">
+          </su-medical>
           <!--add in user in order to log the uid for version control and logging-->
-          <su-medication page="[[page]]" patient="[[param]]" home="[[home]]" user="{{user}}" name="su-medication"></su-medication>
-          <su-pre page="[[page]]" patient="[[param]]" home="[[home]]" name="su-pre"></su-pre>
-          <su-profile page="[[page]]" patient="[[param]]" home="[[home]]" name="su-profile"></su-profile>
+          <su-medication
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            patient="[[param]]"
+            home="[[home]]"
+            user="{{user}}"
+            name="su-medication">
+          </su-medication>
+          <su-pre
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            patient="[[param]]"
+            home="[[home]]"
+            name="su-pre">
+          </su-pre>
+          <su-profile
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            patient="[[param]]"
+            home="[[home]]"
+            name="su-profile">
+          </su-profile>
           <!--add in user in order to log the uid for version control and logging-->
-          <su-risk page="[[page]]" patient="[[param]]" home="[[home]]" user="{{user}}" name="su-risk"></su-risk>
-          <su-create page="[[page]]" patient="[[param]]" home="[[home]]" name="su-create"></su-create>
-          <su-care-review page="[[page]]" patient="[[param]]" home="[[home]]" name="su-care-review"></su-care-review>
+          <su-risk
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            patient="[[param]]"
+            home="[[home]]"
+            user="{{user}}"
+            name="su-risk">
+          </su-risk>
+          <su-create
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            patient="[[param]]"
+            home="[[home]]"
+            name="su-create">
+          </su-create>
+          <su-care-review
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            patient="[[param]]"
+            home="[[home]]"
+            name="su-care-review">
+          </su-care-review>
 
           <!--pages for admin-->
-          <ad-dash page="[[page]]" admin-id="[[param]]" home="[[home]]" name="ad-dash"></ad-dash>
-          <ad-profile page="[[page]]" admin-id="[[param]]" home="[[home]]" name="ad-profile"></ad-profile>
-          <ad-payment page="[[page]]" admin-id="[[param]]" home="[[home]]" name="ad-payment"></ad-payment>
-          <ad-users page="[[page]]" admin-id="[[param]]" user={{user}} home="[[home]]" name="ad-users"></ad-users>
-          <ad-user page="[[page]]" uid="[[param]]" user={{user}} home="[[home]]" name="ad-user"></ad-user>
-          <ad-settings page="[[page]]" admin-id="[[param]]" home="[[home]]" name="ad-settings"></ad-settings>
-          <ad-support page="[[page]]" admin-id="[[param]]" home="[[home]]" name="ad-support"></ad-support>
+          <ad-dash
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            admin-id="[[param]]"
+            home="[[home]]"
+            name="ad-dash">
+          </ad-dash>
+          <ad-profile
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            admin-id="[[param]]"
+            home="[[home]]"
+            name="ad-profile">
+          </ad-profile>
+          <ad-payment
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            admin-id="[[param]]"
+            home="[[home]]"
+            name="ad-payment">
+          </ad-payment>
+          <ad-users
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            admin-id="[[param]]"
+            user={{user}}
+            home="[[home]]"
+            name="ad-users">
+          </ad-users>
+          <ad-user
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            uid="[[param]]"
+            user={{user}}
+            home="[[home]]"
+            name="ad-user">
+          </ad-user>
+          <ad-settings
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            admin-id="[[param]]"
+            home="[[home]]"
+            name="ad-settings">
+          </ad-settings>
+          <ad-support
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            admin-id="[[param]]"
+            home="[[home]]"
+            name="ad-support">
+          </ad-support>
           <!--test page for whatever-->
-          <test-test page="[[page]]" patient="[[param]]" home="[[home]]" name="test-test"></test-test>
-        </iron-pages>
+          <test-test
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            patient="[[param]]"
+            home="[[home]]"
+            name="test-test">
+          </test-test>
+        </neon-animated-pages>
 
       </app-header-layout>
 
@@ -619,6 +801,10 @@
           observer:'_homeChanged',
           value:'default',
         },
+        intendedCat:{
+          type:String,
+          value:'default'
+        },
         category:{
           type:String,
           reflectToAttribute:true,
@@ -665,9 +851,12 @@
         this.home=home || 'default';
       },
       _catRouteChanged:function(category){
+        this.temp_currentCat=this.category;
+        this.temp_intendedCat=category || 'default';
         this.category=category || 'default';
       },
       _pageRouteChanged:function(page) {
+          this.currentPage=this.page;
           this.page=page || 'def-home';
       },
       _paramRouteChanged:function(param){
@@ -701,6 +890,9 @@
         this.importHref(
           this.resolveUrl('pages/'+this.category+'/' + page +'/'+page+'.html'),
           function(){
+            this.currentCat=this.temp_currentCat;
+            this.intendedCat=this.temp_intendedCat;
+            this.selected=this.page;
             this.ensureLayout(this.page);
           },
           function(){
@@ -845,8 +1037,8 @@
         };
       },
       errorRedirect:function(){
-        this.set("catData.category", "default");
-        this.set("pageData.page", "def-error");
+        this.set("category", "default");
+        this.set("page", "def-error");
       },
       _computeNotificationCount:function(notifiesData){
         this.$.notifyDB.query
