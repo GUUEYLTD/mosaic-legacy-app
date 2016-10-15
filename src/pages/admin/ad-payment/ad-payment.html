@@ -16,24 +16,11 @@
     query-matches="{{query600}}">
   </iron-media-query>
 
-    <style include="app-grid-style">
+    <style include="common-styles">
       :host{
         --app-grid-columns:2;
         --app-grid-item-height:100px;
         --app-grid-expandible-item-columns:2;
-      }
-      .mainCard{
-        width:80%;
-        margin: -50px 10% 50px 10%;
-        padding-bottom:50px;
-        position:absolute;
-      }
-      .guuey-button{
-        background-color:#41847d;
-        color:#FFFFFF;
-      }
-      .container{
-        padding:20px;
       }
       paper-button{
         padding:20px;
@@ -48,56 +35,17 @@
         width:100%;
         height:100%;
       }
-      .tableScrollLabel{
-        font-weight:bold;
-        text-transform:uppercase;
-        margin-bottom:0px;
-        padding-bottom:0px;
-        font-size:10px;
-        color:var(--table-scroll-lable-color);
-      }
-      .tableContainer{
-        padding:20px;
-        height:auto;
-        overflow:var(--table-overflow);
+      .guuey-table{
         @apply(--app-grid-expandible-item);
-      }
-      .tableContainer table{
-        width:100%;
-      }
-      table{
-        background-color:var(--table-background-color);
-      }
-      tbody{
-        display:var(--tbody-display);
-      }
-      thead tr{
-        position:var(--thead-tr-position);
-        display:var(--thead-tr-display);
-      }
-      td{
-        width:var(--thead-tr-td-width);
-      }
-      th{
-        text-align:left;
-      }
-      td,th{
-
-      }
-      td,th{
-        min-width:var(--td-th-min-width);
-      }
-      td,th:last-of-type{
-        width:var(--td-th-last-width);
       }
     </style>
 
-    <paper-card class="mainCard">
+    <paper-card class="pageCard">
       <admin-header
         page="Payment"
         icon="icons:payment">
       </admin-header>
-      <div class="container app-grid">
+      <div class="pageInnerCont padded app-grid">
 
         <paper-input label="Subscription" value="Care Plan"></paper-input>
 
@@ -119,7 +67,7 @@
           <paper-button class="guuey-button">edit payment</paper-button>
         </span>
 
-        <span class="tableContainer">
+        <div class="guuey-table">
 
             <span class="tableScrollLabel">
               swipe left scrolls table
@@ -187,7 +135,7 @@
                 </tr>
               </tbody>
             </table>
-        </span>
+        </div>
       </div>
       <div style="height:100px;">
         <!--spacer-->

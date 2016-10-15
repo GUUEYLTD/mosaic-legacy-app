@@ -24,19 +24,13 @@
     query-matches="{{query600}}">
   </iron-media-query>
 
-    <style include="app-grid-style"></style>
+    <style include="common-styles"></style>
 
     <style>
       :host{
         --app-grid-columns:2;
         --app-grid-expandible-item-columns:2;
         --app-grid-item-height:100px;
-      }
-      .mainCard{
-        width:80%;
-        margin: -50px 10% 50px 10%;
-        padding-bottom:50px;
-        position:absolute;
       }
       paper-input{
         padding:20px;
@@ -61,12 +55,12 @@
       }
     </style>
 
-    <paper-card class="mainCard">
+    <paper-card class="pageCard">
       <admin-header
         page="Care Home Profile"
         icon="social:location-city">
       </admin-header>
-      <div class="app-grid">
+      <div class="pageInnerCont padded app-grid">
 
         <div class="imageWrapper">
 

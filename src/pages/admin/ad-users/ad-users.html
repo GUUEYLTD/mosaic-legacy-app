@@ -27,68 +27,9 @@
     query="(max-width:900px)"
     query-matches="{{query900}}">
   </iron-media-query>
-    <style>
-      .mainCard{
-        width:80%;
-        margin: -50px 10% 50px 10%;
-        padding-bottom:50px;
-        position:absolute;
-      }
-      .tableScrollLabel{
-        font-weight:bold;
-        text-transform:uppercase;
-        margin-bottom:0px;
-        padding-bottom:0px;
-        font-size:10px;
-        padding-left:20px;
-        color:var(--table-scroll-lable-color);
-      }
-      .tableContainer{
-        padding:20px;
-        height:auto;
-        overflow:var(--table-overflow);
-      }
-      .tableContainer table{
-        padding:20px;
-        width:100%;
-      }
-      table{
-        background-color:var(--table-background-color);
-      }
-      tbody{
-        display:var(--tbody-display);
-      }
-      thead tr{
-        position:var(--thead-tr-position);
-        display:var(--thead-tr-display);
-      }
-      td{
-        width:var(--thead-tr-td-width);
-      }
-      th{
-        text-align:left;
-      }
-      td,th{
-
-      }
-      td,th{
-        min-width:var(--td-th-min-width);
-      }
-      td,th:last-of-type{
-        width:var(--td-th-last-width);
-      }
+    <style include="common-styles">
       #userDialog{
         margin:0;
-      }
-      .mainFab{
-        position:absolute;
-        right:5%;
-        top:235px;
-        z-index:1;
-        position:var(--main-fab-position);
-        bottom:var(--main-fab-bottom);
-        top:var(--main-fab-top);
-        right:var(--main-fab-right);
       }
       .userImage{
         width:50px;
@@ -110,12 +51,6 @@
       }
     </style>
 
-    <paper-fab
-      class="mainFab"
-      icon="icons:add"
-      on-tap="addUser">
-    </paper-fab>
-
     <input
       id="imageInput"
       type="file"
@@ -123,7 +58,7 @@
       hidden>
     </input>
 
-    <paper-dialog id="addUserDialog">
+    <paper-dialog id="addUserDialog" class="guuey-modal guuey-add-modal">
 
         <h2>Add A Care Worker or Manager</h2>
         <paper-input
@@ -153,27 +88,31 @@
           error-message="Please enter a valid email address as the username.">
         </paper-input>
 
-        <paper-dropdown-menu label="Role">
+        <paper-dropdown-menu label="Role" class="dialogHalf">
           <paper-listbox attr-for-selected="value" selected="{{newAccount.role}}" class="dropdown-content">
             <paper-item value="manager">Manager</paper-item>
             <paper-item value="careWorker">Care Worker</paper-item>
           </paper-listbox>
         </paper-dropdown-menu>
 
-        <paper-dropdown-menu label="Service Users Supervised">
+        <paper-dropdown-menu label="Service Users Supervised" class="dialogHalf">
           <paper-listbox multi attr-for-selected="value" selected-values="{{newAccount.patients}}" class="dropdown-content">
             <template is="dom-repeat" items="{{susData}}">
               <paper-item value="{{item.$key}}">{{item.personalProfile.lName}}, {{item.personalProfile.fName}}</paper-item>
             </template>
           </paper-listbox>
         </paper-dropdown-menu>
-        <paper-button on-tap="createNewUser">Create</paper-button>
+        <div class="modal-button-container">
+          <paper-button dialog-dismiss>Cancel</paper-button>
+          <paper-button on-tap="createNewUser">Create</paper-button>
+        </div>
 
     </paper-dialog>
 
-    <paper-dialog id="editUserDialog">
+    <paper-dialog id="editUserDialog" class="guuey-modal guuey-view-modal">
 
         <h2>User Info</h2>
+
         <paper-input
           label="Name"
           value="{{userData.name}}"
@@ -199,14 +138,14 @@
           error-message="Please enter a valid email address as the username.">
         </paper-input>
 
-        <paper-dropdown-menu label="Role">
+        <paper-dropdown-menu label="Role" class="dialogHalf">
           <paper-listbox attr-for-selected="value" selected="{{userData.role}}" class="dropdown-content">
             <paper-item value="manager">Manager</paper-item>
             <paper-item value="careWorker">Care Worker</paper-item>
           </paper-listbox>
         </paper-dropdown-menu>
 
-        <paper-dropdown-menu label="Service Users Supervised">
+        <paper-dropdown-menu label="Service Users Supervised" class="dialogHalf">
           <paper-listbox multi attr-for-selected="value" selected-values="{{userData.patients}}" class="dropdown-content">
             <template is="dom-repeat" items="{{susData}}" as="serviceUser">
               <paper-item value="{{serviceUser.$key}}">{{serviceUser.personalProfile.lName}}, {{serviceUser.personalProfile.fName}}</paper-item>
@@ -215,6 +154,7 @@
         </paper-dropdown-menu>
 
     </paper-dialog>
+
     <paper-dialog id="userDialog" no-overlap horizontal-align="left" vertical-align="bottom">
       <paper-button on-tap="editUser">edit</paper-button>
       <br />
@@ -223,84 +163,95 @@
       <paper-button on-tap="archiveUser">archive</paper-button>
     </paper-dialog>
 
-    <paper-card class="mainCard" elevation="3">
+    <paper-card class="pageCard" elevation="3">
       <admin-header
         page="Users"
         icon="social:group">
       </admin-header>
 
-      <div class="tableContainer">
+      <div class="pageInnerCont padded">
 
-        <p class="tableScrollLabel">
-          swipe left scrolls table
-        </p>
+        <paper-fab
+          id="adminFab"
+          icon="icons:add"
+          on-tap="addUser">
+        </paper-fab>
 
-        <table>
-          <thead>
-            <tr>
-              <th>
-                Profile Picture
-              </th>
-              <th>
-                Staff Member
-              </th>
-              <th>
-                Name
-              </th>
-              <th>
-                Status
-              </th>
-              <th>
-                Contact
-              </th>
-              <th>
-                Edit
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <template is="dom-repeat" items="{{usersData}}" as="user">
+        <div class="guuey-table">
 
+          <p class="tableScrollLabel">
+            swipe left scrolls table
+          </p>
+
+          <table>
+            <thead>
               <tr>
-                <td hidden="{{user.image}}">
-                  <paper-icon-button
-                    class="imageButton"
-                    on-tap="_onAddFilesClick"
-                    icon="icons:account-circle"
-                    hidden="[[!setimage]]">
-                  </paper-icon-button>
-                </td>
-                <td hidden="[[!user.image]]">
-                  <iron-image
-                    class="userImage"
-                    sizing="cover"
-                    preload
-                    fade
-                    src="[[user.image]]"
-                    on-tap="_onAddFilesClick">
-                  </iron-image>
-                </td>
-                <td>
-                  [[user.email]]
-                </td>
-                <td>
-                  [[user.displayName]]
-                </td>
-                <td>
-                  [[user.role]]
-                </td>
-                <td>
-                  <paper-icon-button icon="communication:email"></paper-icon-button>
-                </td>
-                <td>
-                  <paper-icon-button icon="icons:more-vert" on-tap="userOptions"></paper-icon-button>
-                </td>
+                <th>
+                  Profile Picture
+                </th>
+                <th>
+                  Staff Member
+                </th>
+                <th>
+                  Name
+                </th>
+                <th>
+                  Status
+                </th>
+                <th>
+                  Contact
+                </th>
+                <th>
+                  Edit
+                </th>
               </tr>
+            </thead>
+            <tbody>
+              <template is="dom-repeat" items="{{usersData}}" as="user">
 
-            </template>
-          </tbody>
-        </table>
+                <tr>
+                  <td hidden="{{user.image}}">
+                    <paper-icon-button
+                      class="imageButton"
+                      on-tap="_onAddFilesClick"
+                      icon="icons:account-circle"
+                      hidden="[[!setimage]]">
+                    </paper-icon-button>
+                  </td>
+                  <td hidden="[[!user.image]]">
+                    <iron-image
+                      class="userImage"
+                      sizing="cover"
+                      preload
+                      fade
+                      src="[[user.image]]"
+                      on-tap="_onAddFilesClick">
+                    </iron-image>
+                  </td>
+                  <td>
+                    [[user.email]]
+                  </td>
+                  <td>
+                    [[user.displayName]]
+                  </td>
+                  <td>
+                    [[user.role]]
+                  </td>
+                  <td>
+                    <paper-icon-button icon="communication:email"></paper-icon-button>
+                  </td>
+                  <td>
+                    <paper-icon-button icon="icons:more-vert" on-tap="userOptions"></paper-icon-button>
+                  </td>
+                </tr>
+
+              </template>
+            </tbody>
+          </table>
+        </div>
+
       </div>
+
     </paper-card>
 
   </template>
@@ -381,6 +332,7 @@
           this.customStyle["--main-fab-position"]="fixed";
           this.customStyle["--main-fab-top"]="unset";
           this.customStyle["--main-fab-bottom"]="5%";
+          this.customStyle["--main-fab-right"]="5%";
 
           this.updateStyles();
         } else {
@@ -394,7 +346,8 @@
           this.customStyle["--td-th-last-width"]="unset";
 
           this.customStyle["--main-fab-position"]="absolute";
-          this.customStyle["--main-fab-top"]="235px";
+          this.customStyle["--main-fab-top"]="-25px";
+          this.customStyle["--main-fab-right"]="-25px"
           this.customStyle["--main-fab-bottom"]="unset";
           this.updateStyles();
         };
