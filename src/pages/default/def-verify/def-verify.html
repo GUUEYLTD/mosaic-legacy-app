@@ -11,19 +11,16 @@
           on-error="handleError">
         </firebase-auth>
 
-        <style>
-            paper-card {
-                width: 80%;
-                height: 600px;
-                margin: -50px 10% 50px 10%;
-                padding:20px;
-                text-align:justify;
+        <style include="common-styles">
+            .pageCard{
+              min-height:600px;
             }
         </style>
 
         <span hidden="[[!verifyReminderDisplay]]">
 
-          <paper-card>
+          <paper-card class="pageCard">
+            <div class="pageInnerCont padded">
               <h1>You have not verified your email.</h1>
               <p>
                 Your email: <b>[[user.email]]</b>
@@ -41,6 +38,7 @@
               </p>
 
               <paper-button on-tap="verifyEmail">send email again</paper-button>
+            </div>
 
           </paper-card>
 
@@ -48,30 +46,32 @@
 
         <span hidden="[[!showResetPassForm]]">
 
-          <paper-card>
-            <h1>Reset Password</h1>
-            <span hidden="[[!passwordSet]]">
+          <paper-card class="pageCard">
+            <div class="pageInnerCont padded">
+              <h1>Reset Password</h1>
+              <span hidden="[[!passwordSet]]">
 
-              <p>
-                Your password must be at least 6 characters long.
-              </p>
+                <p>
+                  Your password must be at least 6 characters long.
+                </p>
 
-              <paper-input label="New Password" value="{{newPassword}}"></paper-input>
-              <paper-button on-tap="changePassword">change password</paper-button>
+                <paper-input label="New Password" value="{{newPassword}}"></paper-input>
+                <paper-button on-tap="changePassword">change password</paper-button>
 
-            </span>
+              </span>
 
-            <span hidden="[[!resetVerifySuccess]]">
+              <span hidden="[[!resetVerifySuccess]]">
 
-              Your password has been set: [[resetVerifySuccessMessage]]
+                Your password has been set: [[resetVerifySuccessMessage]]
 
-            </span>
+              </span>
 
-            <span hidden="[[!resetVerifyError]]">
+              <span hidden="[[!resetVerifyError]]">
 
-              There was an error with your password reset: [[resetVerifyErrorMessage]]
+                There was an error with your password reset: [[resetVerifyErrorMessage]]
 
-            </span>
+              </span>
+            </div>
 
           </paper-card>
 
@@ -79,11 +79,13 @@
 
         <span hidden="[[!showRecoverEmailForm]]">
 
-          <paper-card>
-            <h1>Recover Email</h1>
+          <paper-card class="pageCard">
+            <div class="pageInnerCont padded">
+              <h1>Recover Password</h1>
 
-            <paper-input label="New Email"></paper-input>
-            <paper-button>change email</paper-button>
+              <paper-input label="New Email"></paper-input>
+              <paper-button>change email</paper-button>
+            </div>
 
           </paper-card>
 
@@ -91,21 +93,22 @@
 
         <span hidden="[[!showVerifyEmailForm]]">
 
-          <paper-card>
+          <paper-card class="pageCard">
+            <div class="pageInnerCont">
+              <span hidden="[[!verifySuccess]]">
 
-            <span hidden="[[!verifySuccess]]">
+                <p>
+                  Your email has been verified: [[verifyResponse]]
+                </p>
 
-              <p>
-                Your email has been verified: [[verifyResponse]]
-              </p>
+              </span>
 
-            </span>
+              <span hidden="[[!verifyError]]">
 
-            <span hidden="[[!verifyError]]">
+                Email Verification failed: [[verifyErrorMessage]]
 
-              Email Verification failed: [[verifyErrorMessage]]
-
-            </span>
+              </span>
+            </div>
 
           </paper-card>
 
