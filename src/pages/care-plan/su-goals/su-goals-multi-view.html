@@ -1,0 +1,239 @@
+
+<link rel="import" href="../../../../bower_components/polymer/polymer.html" />
+<link rel="import" href="../../../../bower_components/paper-progress/paper-progress.html" />
+<link rel="import" href="../../../../bower_components/iron-icon/iron-icon.html" />
+<link rel="import" href="../../../../bower_components/iron-icons/iron-icons.html" />
+<link rel="import" href="../../../../bower_components/paper-button/paper-button.html" />
+<link rel="import" href="../../../../bower_components/paper-fab/paper-fab.html" />
+<link rel="import" href="../../../../bower_components/paper-input/paper-input.html" />
+<link rel="import" href="../../../../bower_components/paper-card/paper-card.html" />
+<link rel="import" href="../../../../bower_components/paper-icon-button/paper-icon-button.html" />
+<link rel="import" href="../../../../bower_components/paper-dialog/paper-dialog.html" />
+
+<link rel="import" href="../../../behaviors/multi-edit-behavior.html" />
+
+<link rel="import" href="../../../styles/common-styles.html" />
+
+<dom-module id="su-goals-multi-view">
+
+  <template>
+
+  <style include="common-styles">
+    :host{
+      --app-grid-columns:3;
+      --app-grid-item-height:150%;
+    }
+
+    .goalLabel{
+      width:25%;
+      position:absolute;
+      bottom:10px;
+      left:10px;
+      padding:0px;
+      margin:0px;
+      font-weight:bold;
+      color:#FFFFFF;
+      font-size:20px;
+    }
+    .goalMore{
+      position:absolute;
+      top:10px;
+      right:10px;
+      color:#FFFFFF;
+    }
+    .goalBox{
+      margin:20px;
+    }
+    .goalHeading{
+      width:100%;
+      height:40%;
+      margin-bottom:4%;
+      position:relative;
+      background-repeat:no-repeat;
+      background-size:cover;
+      background-position:bottom right;
+    }
+    .goalDescription{
+      text-align:center;
+      font-size:18px;
+      height:38%;
+      margin:4%;
+      overflow:hidden;
+    }
+    .goalSteps:{
+      width:100%;
+      height:10%;
+      margin:4%;
+    }
+    .goalStepsText{
+      position:absolute;
+      bottom:5%;
+      left:30%;
+    }
+    .stepsFab{
+      position:absolute;
+      bottom:5%;
+      left:5%;
+    }
+    .goalProgress{
+      width:100%;
+    }
+    .goalDetails{
+      width:90%;
+      margin:20px 5% 20px 5%;
+    }
+    .editButton{
+      margin-top:-20px;
+    }
+  </style>
+
+  <paper-dialog horizontal-align="left" vertical-align="top" id="editModal">
+    <paper-button on-tap="editGoal">edit</paper-button>
+    <br />
+    <paper-button on-tap="deleteGoal">delete</paper-button>
+  </paper-dialog>
+
+  <paper-card class="app-grid" has-aspect-ratio>
+
+    <template id="goalRepeat" is="dom-repeat" items="[[goalsData]]" as="goal">
+      {{_computeQueryCount(goal)}}
+
+      <div class="goalBoxContainer">
+
+        <paper-card elevation="3" class="goalBox">
+
+          <div style="background-image:url(../../../../{{_computeGoalImage(goal.category)}})" class="goalHeading">
+            <p class="goalLabel">
+              [[goal.category]]
+            </p>
+          </div>
+
+          <div class="goalDescription">
+              [[goal.description]]
+          </div>
+
+          <paper-icon-button
+            icon="icons:more-vert"
+            class="goalMore"
+            on-tap="toggleEditModal">
+          </paper-icon-button>
+
+
+          <div class="goalSteps">
+            <paper-progress
+              class="goalProgress"
+              min="0"
+              max="{{_computeSteps(goal.steps)}}"
+              value="{{_computeCompleteSteps(goal.steps)}}">
+            </paper-progress>
+
+            <paper-fab
+              label="{{_computeSteps(goal.steps)}}"
+              class="stepsFab">
+            </paper-fab>
+
+            <p class="goalStepsText">
+              STEPS
+            </p>
+
+          </div>
+
+        </paper-card>
+
+      </div>
+
+    </template>
+
+  </paper-card>
+
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is:"su-goals-multi-view",
+      ready:function(){
+
+      },
+      properties:{
+        goalsData:{
+          type:Array,
+          notify:true,
+        },
+        goalId:{
+          type:String,
+          notify:true
+        },
+        viewType:{
+          type:String,
+          value:"multi-view"
+        }
+      },
+      behaviors:[
+        Polymer.multiEditBehavior
+      ],
+      editGoal:function(e){
+        this.fire("editGoal");
+        this.$.editModal.toggle();
+      },
+      deleteGoal:function(){
+        this.fire("deletGoal");
+        this.$.editModal.toggle();
+      },
+      _computeGoalImage:function(cat){
+        switch(cat) {
+          case "Accommodation":
+              return "images/goals/accommodation.png"
+              break;
+          case "Finance And Budget":
+              return "images/goals/financeAndBudget.png"
+              break;
+          case "Social Skills":
+              return "images/goals/socialSkills.png"
+              break;
+          case "Medical Treatment":
+              return "images/goals/medicalTreatment.png"
+              break;
+          case "Mental Health":
+              return "images/goals/mentalHealth.png"
+              break;
+          default:
+              return "images/goals/other.png"
+        };
+      },
+      _computeQueryCount:function(goal){
+        if(!this.queryCount){
+          this.queryCount=0;
+        };
+        this.queryCount++;
+      },
+      _computeCompleteSteps:function(steps){
+        var completeCount=0;
+        for(x in steps){
+          if(steps[x].completed){
+            if(steps[x].completed===true){
+              completeCount++;
+            };
+          };
+        };
+        return completeCount;
+      },
+      _computeSteps:function(steps){
+        var stepCount=0;
+        for(x in steps){
+          stepCount++;
+        }
+        return stepCount;
+      },
+      toggleEditModal:function(e){
+        this.heroElement=Polymer.dom(e.target).parentNode;
+        this.$.editModal.positionTarget = e.target;
+        this.goalId = e.model.goal.$key;
+        this.$.editModal.toggle();
+      },
+    });
+
+  </script>
+
+</dom-module>

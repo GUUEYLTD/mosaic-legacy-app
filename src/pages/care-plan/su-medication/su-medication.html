@@ -45,25 +45,10 @@
     </iron-media-query>
 
     <style include="paper-time-picker-dialog-style"></style>
-    <style include="app-grid-style">
+    <style include="common-styles">
       :host{
         --app-grid-columns:2;
         --app-grid-expandible-item-columns:2;
-      }
-      paper-card{
-        width:80%;
-        margin:-50px 10% 50px 10%;
-        position:absolute;
-      }
-      .mainFab{
-        position:absolute;
-        right:-25px;
-        top:-25px;
-        z-index:1;
-        position:var(--main-fab-position);
-        bottom:var(--main-fab-bottom);
-        top:var(--main-fab-top);
-        right:var(--main-fab-right);
       }
       .timeChunkMorning{
           background-image:url(../../../../images/timechunks/morning.png);
@@ -81,7 +66,6 @@
         background-color:#F5F2F2;
         margin:20px 0 20px 0;
         padding:30px;
-        color:#009688;
         background-repeat:no-repeat;
         background-size:40px 40px;
         background-position:20px;
@@ -92,76 +76,16 @@
       .timeChunkLabel{
         flex-grow:1;
         text-transform:uppercase;
+        color:#009688;
       }
       .timeChunkLabel:hover{
         cursor:pointer;
       }
       .timeChunkTime{
-        color:#686868;
         font-weight:bold;
         font-size:20px;
         text-transform:uppercase;
-      }
-      .timeChunkButton{
-        color:#000;
-        opacity:.5;
-
-      }
-      .tableScrollLabel{
-        font-weight:bold;
-        text-transform:uppercase;
-        margin-bottom:0px;
-        padding-bottom:0px;
-        font-size:10px;
-        padding-left:20px;
-        color:var(--table-scroll-lable-color);
-      }
-      .tableContainer{
-        padding:20px;
-        height:auto;
-        overflow:var(--table-overflow);
-      }
-      .tableContainer table{
-        padding:20px;
-        width:100%;
-        background-color:var(--table-background-color);
-      }
-      table {
-        border-collapse:collapse;
-      }
-      tbody{
-        display:var(--tbody-display);
-      }
-      tr{
-        border-bottom:1px solid #F0F0F0;
-      }
-      thead tr{
-        position:var(--thead-tr-position);
-        display:var(--thead-tr-display);
-      }
-      td{
-        width:var(--thead-tr-td-width);
-      }
-      th{
-        text-align:left;
-      }
-      td,th{
-        padding:5px;
-      }
-      td,th{
-        min-width:var(--td-th-min-width);
-      }
-      td,th:last-of-type{
-        width:var(--td-th-last-width);
-      }
-      .mainContainer{
-        position:relative;
-      }
-      .buttons{
-        text-align:center;
-      }
-      .buttons *{
-        width:50%;
+        opacity:.54;
       }
       .timeSection{
         text-align:center;
@@ -169,41 +93,17 @@
       .timeSection *{
         width:50%;
       }
-      .medModalHeader{
-        margin-top:0 !important;
-        background-color:#3d4ba8;
-        color:#FFF;
-      }
-      .addMedModalHeader{
-        margin-top:0 !important;
-        background-color:#673AB7;
-        color:#FFF;
-      }
-      .addMedModalHeader h2{
-        padding:15px;
-      }
-      .medModalHeader h2{
-        padding:15px;
-      }
-      .dialogHalf{
-        width:40%;
-        display:inline-block;
-      }
-      .dialogFull{
-
-      }
       #timeChunkModal{
         margin:0;
       }
       #timeChunkModal paper-item{
-        margin:0 !important;
         text-transform:uppercase;
       }
       #timeChunkModal paper-item:hover{
         cursor:pointer;
       }
       .commentButton{
-        color:green;
+        color:#009688;
       }
     </style>
 
@@ -218,14 +118,11 @@
 
     </paper-dialog>
 
-    <paper-dialog id="medModal">
+    <paper-dialog id="medModal" class="guuey-modal guuey-add-modal">
 
-      <div class="addMedModalHeader">
         <h2>Add Medication</h2>
-      </div>
 
         <paper-input
-          class="dialogFull"
           label="Medication Name"
           value="{{newMed.medicine}}"
           required
@@ -256,7 +153,6 @@
         </paper-input>
 
         <paper-textarea
-          class="dialogFull"
           label="Comments"
           value="{{newMed.comment}}">
         </paper-textarea>
@@ -269,21 +165,18 @@
           value="{{newMed.weekdays}}">
         </guuey-weekday-selector>
 
-        <div class="buttons">
+        <div class="modal-button-container">
           <paper-button dialog-dismiss>Cancel</paper-button>
           <paper-button on-tap="saveMed">Save</paper-button>
         </div>
 
     </paper-dialog>
 
-    <paper-dialog id="editMedModal">
+    <paper-dialog id="editMedModal" class="guuey-modal guuey-view-modal">
 
-      <div class="medModalHeader">
-        <h2>Edit/View Medication</h2>
-      </div>
+      <h2>Edit/View Medication</h2>
 
       <paper-input
-        class="dialogFull"
         label="Medication Name"
         value="{{newMedEdit.medicine}}"
         required
@@ -314,7 +207,6 @@
       </paper-input>
 
       <paper-textarea
-        class="dialogFull"
         label="Comments"
         value="{{newMedEdit.comment}}">
       </paper-textarea>
@@ -327,7 +219,7 @@
         value="{{newMedEdit.weekdays}}">
       </guuey-weekday-selector>
 
-      <div class="buttons">
+      <div class="modal-button-container">
         <paper-button dialog-dismiss>Cancel</paper-button>
         <paper-button on-tap="saveEditMed">Save</paper-button>
       </div>
@@ -348,17 +240,17 @@
 
     </paper-dialog>
 
-    <paper-card>
+    <paper-card class="pageCard">
       <su-header
       page="Medication Outline"
       home="[[home]]"
       patient="[[patient]]">
       </su-header>
 
-      <div class="mainContainer">
+      <div class="pageInnerCont">
 
         <paper-fab
-          class="mainFab"
+          id="mainFab"
           icon="add"
           on-tap="startNewMed">
         </paper-fab>
@@ -378,7 +270,7 @@
           </paper-icon-button>
         </paper-item>
         <iron-collapse id="morning" opened>
-          <div class="tableContainer">
+          <div class="guuey-table">
 
             <p class="tableScrollLabel">
               swipe left scrolls table
@@ -459,7 +351,7 @@
         </paper-item>
         <iron-collapse id="afternoon">
 
-          <div class="tableContainer">
+          <div class="guuey-table">
 
             <p class="tableScrollLabel">
               swipe left scrolls table
@@ -540,7 +432,7 @@
         </paper-item>
         <iron-collapse id="evening">
 
-          <div class="tableContainer">
+          <div class="guuey-table">
 
             <p class="tableScrollLabel">
               swipe left scrolls table
@@ -621,7 +513,7 @@
         </paper-item>
         <iron-collapse id="night">
 
-          <div class="tableContainer">
+          <div class="guuey-table">
 
             <p class="tableScrollLabel">
               swipe left scrolls table

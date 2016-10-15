@@ -1,0 +1,209 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/app-layout/app-grid/app-grid-style.html" />
+<!-- shared styles for all views -->
+<dom-module id="common-styles">
+  <template>
+    <style include="app-grid-style">
+      /*avoid flashes during animations*/
+      :host{
+        -webkit-backface-visibility: hidden;
+        --iron-icon:{
+          opacity:.54;
+        }
+      }
+      /*general styling*/
+      /*AKA:mainCard*/
+      .pageCard{
+        width:80%;
+        margin:-50px 10% 50px 10%;
+      }
+      /*used for inner cards inside of main card*/
+      .subCard{
+          width:90%;
+          margin:20px 5% 20px 5%;
+      }
+      /*AKA:mainContainer*/
+      .pageInnerCont{
+        position:relative;
+      }
+      .padded{
+        padding:20px;
+      }
+      .guuey-button{
+        background-color: #009688;
+        color:#FFF;
+      }
+      .divider{
+        width:100%;
+        height:1px;
+        margin-top:25px;
+        margin-bottom:25px;
+        background-color:#e0e0e0;
+        display:inline-block;
+      }
+
+      /* fab styles*/
+      #mainFab{
+        position:absolute;
+        right:-25px;
+        top:-25px;
+        z-index:1;
+        position:var(--main-fab-position);
+        bottom:var(--main-fab-bottom);
+        top:var(--main-fab-top);
+        right:var(--main-fab-right);
+      }
+      #regFab{
+        position:absolute;
+        right:-25px;
+        top:-25px;
+        z-index:3;
+        opacity:1;
+        /*
+        position:var(--main-fab-position);
+        bottom:var(--main-fab-bottom);
+        top:var(--main-fab-top);
+        right:var(--main-fab-right);
+        */
+      }
+      #editFab{
+        position:fixed;
+        bottom:25px;
+        z-index:3;
+        opacity:0;
+        /*
+        position:var(--main-fab-position);
+        bottom:var(--main-fab-bottom);
+        top:var(--main-fab-top);
+        right:var(--main-fab-right);
+        */
+      }
+      /*headings etc.*/
+      .sectionHeading{
+        background-color:#42c6ff;
+        width:100%;
+      }
+      .sectionHeadingText{
+        font-size: 24px;
+        color:#FFFFFF;
+      }
+      .subHeadingText{
+        color:#FFFFFF;
+      }
+
+      /*responsive table styling */
+      /*AKA: tableContainer*/
+      .guuey-table{
+        padding:20px;
+        height:auto;
+        overflow:var(--table-overflow);
+      }
+      .guuey-table .tableScrollLabel{
+        font-weight:bold;
+        text-transform:uppercase;
+        margin-bottom:0px;
+        padding-bottom:0px;
+        font-size:10px;
+        padding-left:20px;
+        color:var(--table-scroll-lable-color);
+      }
+      .guuey-table table{
+        width:100%;
+        background-color:var(--table-background-color);
+        padding:20px;
+      }
+      .guuey-table table thead tr{
+        position:var(--thead-tr-position);
+        display:var(--thead-tr-display);
+      }
+      .guuey-table table th{
+        text-align:left;
+      }
+      .guuey-table table tbody{
+        display:var(--tbody-display);
+      }
+      .guuey-table table tr{
+        width:100%;
+      }
+      .guuey-table table tr:nth-child(odd){
+        background-color:#FFF;
+        border-color:#FFF;
+      }
+      .guuey-table table tr:nth-child(even){
+        background-color:#EEE;
+        border-color:#EEE;
+      }
+      .guuey-table table td{
+        text-align:left;
+        padding:10px;
+        width:var(--thead-tr-td-width);
+      }
+      .guuey-table table td a{
+        text-decoration:none;
+        color:#FFF;
+      }
+      .guuey-table table td,th{
+        min-width:var(--td-th-min-width);
+      }
+      .guuey-table table td,th:last-of-type{
+        width:var(--td-th-last-width);
+      }
+
+      /*modal styles*/
+      .guuey-add-modal h2{
+        margin:0;
+        background-color:#673AB7;
+        color:#FFF;
+      }
+      .guuey-view-modal h2{
+        margin:0;
+        background-color:#3d4ba8;
+        color:#FFF;
+      }
+      .guuey-add-modal paper-button{
+        color:#673AB7;
+      }
+      .guuey-view-modal paper-button{
+        color:#3d4ba8;
+      }
+      .guuey-modal{
+        --paper-dialog:{
+          :host{
+            margin:0;
+            padding:0;
+          }
+          :host > ::content > *:first-child {
+            margin-top: 0px;
+          }
+        }
+      }
+      .guuey-modal *{
+        padding:20px;
+      }
+      .guuey-modal .dialogHalf{
+        width:40%;
+        display:inline-block;
+        text-align:center;
+      }
+      .modal-button-container{
+        display:flex;
+        flex-direction:row;
+      }
+      .modal-button-container paper-button{
+        flex-grow:1;
+        display:inline-block;
+        text-align:center;
+      }
+    </style>
+  </template>
+</dom-module>

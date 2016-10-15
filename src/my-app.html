@@ -290,11 +290,14 @@
         color:#FFF;
       }
       #suDrawer{
-        background-color:#F5F2F2;
+        
       }
       #suDrawerImage{
         width:256px;
         height:256px;
+      }
+      #neonPages{
+        height:var(--neon-pages-height);
       }
     </style>
 
@@ -404,7 +407,7 @@
           <paper-icon-button class="backButton" icon="hardware:keyboard-backspace" on-tap="goBack"></paper-icon-button>
         </div>
         <!--page templates are loded in here inside iron pages-->
-        <neon-animated-pages
+        <neon-animated-pages id="neonPages"
           role="main"
           selected="[[selected]]"
           attr-for-selected="name">
@@ -664,6 +667,12 @@
         this.fire("pageLoaded",{page:this.page});
         this.$.storage._downloadFile(this.$.storage.path);
       },
+      attached:function(){
+        var neonOffsetTop=this.$.neonPages.offsetTop;
+        var screenHeight=window.innerHeight;
+        this.customStyle["--neon-pages-height"]=screenHeight-neonOffsetTop-100+"px";
+        this.updateStyles();
+      },
       //create new service user for an already existing home
       createNewUser:function(e){
         var password=this.makePass();
@@ -894,6 +903,7 @@
             this.intendedCat=this.temp_intendedCat;
             this.selected=this.page;
             this.ensureLayout(this.page);
+
           },
           function(){
             this.errorRedirect();

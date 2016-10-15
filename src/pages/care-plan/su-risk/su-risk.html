@@ -50,7 +50,7 @@
       query-matches="{{query640}}">
     </iron-media-query>
 
-    <style include="app-grid-style">
+    <style include="common-styles">
       :host{
         --app-grid-columns:3;
         --app-grid-item-height:150%;
@@ -60,10 +60,6 @@
       }
       .inputWrapper{
         padding:20px;
-      }
-      #mainCard{
-        width:80%;
-        margin:-50px 10% 50px 10%;
       }
       .riskDescription{
         text-align:center;
@@ -104,53 +100,6 @@
       .dateContainer{
         padding:10px;
       }
-
-      #regFab{
-        position:absolute;
-        right:-25px;
-        top:-25px;
-        z-index:3;
-        /*
-        position:var(--main-fab-position);
-        bottom:var(--main-fab-bottom);
-        top:var(--main-fab-top);
-        right:var(--main-fab-right);
-        */
-      }
-      #editFab{
-        position:fixed;
-        bottom:25px;
-        z-index:3;
-        opacity:1;
-        /*
-        position:var(--main-fab-position);
-        bottom:var(--main-fab-bottom);
-        top:var(--main-fab-top);
-        right:var(--main-fab-right);
-        */
-      }
-      .mainContainer{
-        padding-top:20px;
-        position:relative;
-      }
-      .guuey-button{
-        background-color:#41847d;
-        color:#FFFFFF;
-        width:60%;
-        margin: 4% 20% 4% 20%;
-        height:10%;
-      }
-      .addRiskHeader{
-        color:#FFF;
-        background-color:#673AB7;
-        margin-top:0px !important;
-      }
-      .addRiskHeader h2{
-        padding:15px;
-      }
-      #addRiskDialog{
-        padding:20px;
-      }
       .riskMore{
         position:absolute;
         top:10px;
@@ -165,64 +114,73 @@
       <paper-button on-tap="deleteRisk">delete</paper-button>
     </paper-dialog>
 
-    <paper-dialog id="addRiskDialog">
-      <div class="addRiskHeader">
-        <h2>Add New Goal</h2>
-      </div>
+    <paper-dialog id="addRiskDialog" class="guuey-modal guuey-add-modal">
+
+      <h2>Add New Goal</h2>
 
       <vaadin-combo-box
+        class="dialogHalf"
         label="Category"
         items="[[riskTypes]]"
         value="{{riskData.category}}">
       </vaadin-combo-box>
 
       <guuey-date-input
+        class="dialogHalf"
         value="{{riskData.date}}"
         label="Date of risk assessment">
       </guuey-date-input>
 
       <paper-textarea
+        class="dialogHalf"
         label="Background of Risk"
         value="{{riskData.backgroundOfRisk}}">
       </paper-textarea>
 
       <paper-textarea
+        class="dialogHalf"
         label="Risk Identified"
         value="{{riskData.riskIdentified}}">
       </paper-textarea>
 
       <paper-textarea
+        class="dialogHalf"
         label="Crisis Plan"
         value="{{riskData.crisisPlan}}">
       </paper-textarea>
 
       <vaadin-combo-box
+        class="dialogHalf"
         label="Agreed Frequencey of Evaluation"
         items="[[evalFreq]]"
         value="{{riskData.agreedFrequencyOfEvaluation}}">
       </vaadin-combo-box>
 
       <guuey-date-input
+        class="dialogHalf"
         value="{{riskData.evaluation}}"
         label="Date of risk evaluation">
       </guuey-date-input>
 
       <guuey-slider
+        class="dialogHalf"
         value="{{riskData.riskLevel}}">
       </guuey-slider>
-      <paper-button on-tap="cancelNewRisk">cancel</paper-button>
-      <paper-button on-tap="saveNewRisk">save</paper-button>
+      <div class="modal-button-container">
+        <paper-button on-tap="cancelNewRisk">cancel</paper-button>
+        <paper-button on-tap="saveNewRisk">save</paper-button>
+      </div>
 
     </paper-dialog>
 
-    <paper-card id="mainCard" elevation="3">
+    <paper-card class="pageCard" elevation="3">
       <su-header
         page="Risk Assessment"
         home="[[home]]"
         patient="[[patient]]">
       </su-header>
 
-      <div class="mainContainer">
+      <div class="pageInnerCont">
 
         <!--absolute positioned button to add a new risk-->
 

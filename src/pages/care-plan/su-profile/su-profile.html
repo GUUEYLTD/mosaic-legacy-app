@@ -40,26 +40,13 @@
       query-matches="{{query900}}">
     </iron-media-query>
 
-    <style include="app-grid-style">
+    <style include="common-styles">
       :host{
         --app-grid-columns:2;
         --app-grid-expandible-item-columns:2;
         --app-grid-item-height:100px;
       }
-      paper-card{
-        width:80%;
-        margin:-50px 10% 50px 10%;
-      }
-      .divider{
-        width:100%;
-        height:1px;
-        margin-top:25px;
-        margin-bottom:25px;
-        background-color:#e0e0e0;
-        display:inline-block;
-      }
       iron-icon{
-        opacity:.54;
         width:10%;
         margin:50px 0px 0px 0px;
         position:absolute;
@@ -84,7 +71,7 @@
       }
     </style>
 
-    <paper-card id="mainCard" elevation="3">
+    <paper-card id="mainCard" class="pageCard" elevation="3">
       <su-header
         id="suHeader"
         page="Personal Profile"

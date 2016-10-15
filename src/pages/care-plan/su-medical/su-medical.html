@@ -28,36 +28,18 @@
       query-matches="{{query900}}">
     </iron-media-query>
 
-    <style include="app-grid-style">
+    <style include="common-styles">
       :host{
         --app-grid-columns:2;
         --app-grid-expandible-item-columns:2;
       }
-      paper-card{
-        width:80%;
-        margin:-50px 10% 50px 10%;
-      }
-      .pdfContainer{
-        margin-bottom:50px;
-        border:1px solid black;
-      }
-      .inputContainer{
+      .guuey-button{
         width:100%;
-        display:inline-flex;
-        flex-direction:row;
-      }
-      #fileInputDisplay{
-        background-color: #009688;
-        width:100%;
-        color:#FFF;
         margin:0;
       }
       #fileInputName{
         align-self:center;
         margin-top:-15px;
-      }
-      .grid-container{
-        padding:10%;
       }
       #tableInput{
         margin:0;
@@ -65,84 +47,23 @@
         padding-bottom:20px;
         width:90%;
       }
-      table{
-        width:100%;
-      }
-      td{
-        text-align:left;
-        padding:10px;
-      }
-      td a{
-        text-decoration:none;
-        color:#FFF;
-      }
-      th{
-        text-align:left;
-      }
-      tr{
-        width:100%;
-      }
-      tr:nth-child(odd){
-        background-color:#FFF;
-        border-color:#FFF;
-      }
-      tr:nth-child(even){
-        background-color:#EEE;
-        border-color:#EEE;
-      }
-      .tableScrollLabel{
-        font-weight:bold;
-        text-transform:uppercase;
-        margin-bottom:0px;
-        padding-bottom:0px;
-        font-size:10px;
-        padding-left:20px;
-        color:var(--table-scroll-lable-color);
-      }
-      .tableContainer{
-        padding:20px;
-        height:auto;
-        overflow:var(--table-overflow);
-      }
-      .tableContainer table{
-        padding:20px;
-        width:100%;
-      }
-      table{
-        background-color:var(--table-background-color);
-      }
-      tbody{
-        display:var(--tbody-display);
-      }
-      thead tr{
-        position:var(--thead-tr-position);
-        display:var(--thead-tr-display);
-      }
-      td{
-        width:var(--thead-tr-td-width);
-      }
-      td,th{
-        min-width:var(--td-th-min-width);
-      }
-      td,th:last-of-type{
-        width:var(--td-th-last-width);
-      }
+
     </style>
 
-      <paper-card elevation="3">
+      <paper-card class="pageCard" elevation="3">
         <su-header
           page="Medical Assessment"
           home="[[home]]"
           patient="[[patient]]">
         </su-header>
-        <div class="inputContainer app-grid">
-          <div class="grid-container">
+        <div class="app-grid padded">
+          <div class="padded">
             <paper-input id="fileInputName" label="Asessment Name" value="{{newFileName}}"></paper-input>
           </div>
 
-          <div class="grid-container">
+          <div class="pageInnerCont padded">
             <paper-button
-              id="fileInputDisplay"
+              class="guuey-button"
               on-tap="_onAddFilesClick">upload file
             </paper-button>
           </div>
@@ -155,7 +76,7 @@
           on-change="fileChange"
           hidden>
         </input>
-        <div class="tableContainer">
+        <div class="guuey-table">
           <p class="tableScrollLabel">
             swipe left scrolls table
           </p>
@@ -189,7 +110,7 @@
                     <paper-input id="tableInput" label="comments" value="{{upload.comments}}"></paper-input>
                   </td>
                   <td>
-                    <paper-button id="fileInputDisplay" on-tap="openFile">go to file</paper-button>
+                    <paper-button class="guuey-button" on-tap="openFile">go to file</paper-button>
                   </td>
                 </tr>
               </template>

@@ -46,7 +46,7 @@
             {
               name:"fade-out-animation",
               node:this,
-              timing:{duration:500}
+              timing:{delay:200, duration:300}
             }
           ];
         } else if(curCat==="default" && intCat==="care-plan"){
@@ -66,7 +66,7 @@
           this.animationConfig={};
           this.animationConfig.exit=[
               {
-                name: 'slide-down-animation',
+                name: 'slide-down-exit-animation',
                 node: this,
                 transformOrigin: "50% 50%",
                 timing: {duration:500}
@@ -74,7 +74,7 @@
             ];
           this.animationConfig.entry=[
             {
-              name: 'slide-from-top-animation',
+              name: 'slide-down-entry-animation',
               node: this,
               transformOrigin: "50% 50%",
               timing: {duration:500}

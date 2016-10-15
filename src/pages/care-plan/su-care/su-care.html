@@ -86,35 +86,13 @@
       query-matches="{{query1100}}">
     </iron-media-query>
 
-    <style include="app-grid-style">
+    <style include="common-styles">
       :host{
         --app-grid-columns:5;
         --app-grid-expandible-item-columns:2;
         --app-grid-item-height:100px;
       }
-      .sectionHeading{
-        background-color:#42c6ff;
-        width:100%;
-      }
-      .sectionHeadingText{
-        font-size: 24px;
-        color:#FFFFFF;
-      }
-      .subHeadingText{
-        color:#FFFFFF;
-      }
-      .container{
-        padding:16px;
-      }
-      paper-card{
-        width:80%;
-        margin:-50px 10% 50px 10%;
-      }
-      .subCard{
-          width:90%;
-          margin:20px 5% 20px 5%;
-      }
-      paper-card .agreement{
+      .agreement{
         width:50%;
         display:flex;
         flex-direction:column;
@@ -126,20 +104,6 @@
       .halfSizeRight{
         --guuey-list-width:var(--list-width-half);
         --guuey-list-float:var(--guuey-list-float-right);
-      }
-      .mainContainer{
-        padding-top:20px;
-        position:relative;
-      }
-      .mainFab{
-        position:absolute;
-        right:-25px;
-        top:-25px;
-        z-index:1;
-        position:var(--main-fab-position);
-        bottom:var(--main-fab-bottom);
-        top:var(--main-fab-top);
-        right:var(--main-fab-right);
       }
       .app-grid paper-input, vaadin-combo-box, guuey-date-input{
         padding:20px;
@@ -175,7 +139,7 @@
     </paper-dialog>
 
     <!--start of organized section-->
-    <paper-card>
+    <paper-card class="pageCard">
 
       <su-header
         page="Care Plan"
@@ -184,10 +148,10 @@
         su-index-data="{{suBasicInfo}}">
       </su-header>
 
-      <div class="mainContainer">
+      <div class="pageInnerCont padded">
         <!--fab to add a custom field/input-->
         <paper-fab
-          class="mainFab"
+          id="mainFab"
           icon="icons:add"
           on-tap="createNewSection">
         </paper-fab>
@@ -211,13 +175,13 @@
         <!--statement of service user section-->
         <paper-card elevation="3" class="subCard">
           <div class="sectionHeading">
-            <div class="container">
+            <div class="padded">
               <p class="sectionHeadingText">
                 Statement of Service User
               </p>
             </div>
           </div>
-          <div class="container">
+          <div class="padded">
             <p>
               Please read this form carefully. I am aware that I have the right to change my mind at any time including after I have signed this form.
             </p>

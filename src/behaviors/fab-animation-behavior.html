@@ -17,9 +17,7 @@
         this.addEventListener("neon-animation-finish", this._neonAnimationFinish);
       },
       attributeChanged:function(){
-        this.$.editFab.style.left=this.$.mainCard.offsetLeft + this.$.mainCard.offsetWidth - this.$.editFab.offsetWidth/2 + "px";
         this.$.editFab.disabled=true;
-
         this.animationConfig={
           "editState":[
             {
@@ -47,32 +45,27 @@
           ]
         }
       },
-      properties:{
-        animationConfig:{
-
-        }
-      },
-      animateEditState:function(){
-        this.$.editFab.style.left=this.$.mainCard.offsetLeft + this.$.mainCard.offsetWidth - this.$.editFab.offsetWidth/2 + "px";
+      animateEditViewFab:function(){
+        this.$.editFab.style.left=this.$$(".pageCard").offsetLeft + this.$$(".pageCard").offsetWidth - this.$.editFab.offsetWidth/2 + "px";
         this.playAnimation("editState", "edit");
       },
-      animateRegState:function(){
-        this.playAnimation("regState", "reg");
+      animateMultiViewFab:function(){
+        this.playAnimation("regState", "multi");
       },
       _neonAnimationFinish:function(e){
-
         if(e.detail==="edit"){
-          this.$.editFab.style.left=this.$.mainCard.offsetLeft + this.$.mainCard.offsetWidth - this.$.editFab.offsetWidth/2 + "px";
+          this.$.editFab.style.left=this.$$(".pageCard").offsetLeft + this.$$(".pageCard").offsetWidth - this.$.editFab.offsetWidth/2 + "px";
           this.$.regFab.style.opacity=0;
           this.$.regFab.disabled=true;
           this.$.editFab.style.opacity=1;
           this.$.editFab.disabled=false;
-        } else if(e.detail==="reg"){
+        } else if(e.detail==="multi"){
           this.$.editFab.style.opacity=0;
           this.$.editFab.disabled=true;
           this.$.regFab.style.opacity=1;
           this.$.regFab.disabled=false;
         }
+        this.fabAnimated=true;
       },
 
       behaviors:[

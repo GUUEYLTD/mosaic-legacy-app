@@ -43,25 +43,7 @@
       query-matches="{{query640}}">
     </iron-media-query>
 
-    <style inlclude="app-grid-style">
-      paper-card{
-        width:80%;
-        margin:-50px 10% 50px 10%;
-      }
-      .mainWrapper{
-        position:relative;
-      }
-      .mainFab{
-        position:absolute;
-        right:-25px;
-        top:-25px;
-        z-index:1;
-        position:var(--main-fab-position);
-        bottom:var(--main-fab-bottom);
-        top:var(--main-fab-top);
-        right:var(--main-fab-right);
-      }
-    </style>
+    <style include="common-styles"></style>
 
     <!--dialogue that works to add labels for custom text input area-->
     <paper-dialog id="customSectionModal">
@@ -72,7 +54,7 @@
       <paper-button on-tap="saveNewSection">save</paper-button>
     </paper-dialog>
 
-    <paper-card elevation="3">
+    <paper-card class="pageCard" elevation="3">
 
       <su-header
         page="Pre-Admission Assessment"
@@ -81,11 +63,11 @@
         id="header">
       </su-header>
 
-      <div class="mainWrapper">
+      <div class="pageInnerCont">
 
         <!--fab to add a custom field/input-->
         <paper-fab
-          class="mainFab"
+          id="mainFab"
           icon="icons:add"
           on-tap="createNewSection">
         </paper-fab>

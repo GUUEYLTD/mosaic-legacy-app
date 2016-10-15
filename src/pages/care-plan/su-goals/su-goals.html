@@ -1,4 +1,6 @@
 <link rel="import" href="dependencies.html" />
+<link rel="import" href="su-goals-edit-view.html" />
+<link rel="import" href="su-goals-multi-view.html" />
 <dom-module id="su-goals">
 
   <template>
@@ -76,7 +78,7 @@
       query-matches="{{query640}}">
     </iron-media-query>
 
-    <style include="app-grid-style">
+    <style include="common-styles">
       :host{
         --app-grid-columns:3;
         --app-grid-item-height:150%;
@@ -135,38 +137,6 @@
       }
       .goalProgress{
         width:100%;
-
-      }
-      #regFab{
-        position:absolute;
-        right:-25px;
-        top:-25px;
-        z-index:3;
-        opacity:1;
-        /*
-        position:var(--main-fab-position);
-        bottom:var(--main-fab-bottom);
-        top:var(--main-fab-top);
-        right:var(--main-fab-right);
-        */
-      }
-      #editFab{
-        position:fixed;
-        bottom:25px;
-        z-index:3;
-        opacity:0;
-        /*
-        position:var(--main-fab-position);
-        bottom:var(--main-fab-bottom);
-        top:var(--main-fab-top);
-        right:var(--main-fab-right);
-        */
-      }
-      #regView{
-
-      }
-      #editView{
-
       }
       .goalDetails{
         width:90%;
@@ -282,35 +252,7 @@
       users="[[userList]]">
     </guuey-new-goal-modal>
 
-    <paper-dialog horizontal-align="left" vertical-align="top" id="editModal">
-      <paper-button on-tap="editGoal">edit</paper-button>
-      <br />
-      <paper-button on-tap="deleteGoal">delete</paper-button>
-    </paper-dialog>
-
-    <paper-dialog id="stepModal">
-      <h2>Add/update Step</h2>
-      <paper-input
-        label="describe the step"
-        value="{{stepData.description}}"
-        required
-        auto-validate
-        pattern="[a-zA-Z\s\.!\d]*"
-        error-message="Please describe the step.">
-      </paper-input>
-      <paper-input
-        label="step number"
-        value="{{stepData.order}}"
-        required
-        auto-validate
-        pattern="\d{1,1}"
-        error-message="Please enter a step from 1 to 9">
-      </paper-input>
-      <paper-button on-tap="cancelStep">cancel</paper-button>
-      <paper-button on-tap="saveStep">save</paper-button>
-    </paper-dialog>
-
-    <paper-card id="mainCard" elevation="3">
+    <paper-card class="pageCard" elevation="3">
 
       <su-header
         id="suHeader"
@@ -321,7 +263,7 @@
       </su-header>
 
       <!--repeat each goal that currently is set-->
-      <div id="mainContainer" class="mainContainer">
+      <div class="pageInnerCont">
 
           <!--absolute positioned button to finsh adding a new goal and close the add view-->
           <paper-fab
@@ -344,189 +286,28 @@
 
           </div>
           -->
-          <paper-card id="regView" class="app-grid" has-aspect-ratio>
+          <neon-animated-pages
+            attr-for-selected="name"
+            selected="[[pageState]]">
 
-            <template id="goalRepeat" is="dom-repeat" items="[[goalsData]]" as="goal">
-              {{_computeQueryCount(goal)}}
+            <su-goals-multi-view
+              name="multi-view"
+              goals-data="{{goalsData}}"
+              goal-id="{{goalId}}">
+            </su-goals-multi-view>
 
-              <div class="goalBoxContainer">
+            <su-goals-edit-view
+              name="edit-view"
+              goal-data="{{goalData}}"
+              user-list="[[userList]]"
+              step-id="{{stepId}}"
+              step-modal-open="{{stepModalOpen}}"
+              steps-data="{{stepsData}}"
+              step-data="{{stepData}}">
+            </su-goals-edit-view>
 
-                <paper-card elevation="3" class="goalBox">
+          </neon-animated-pages>
 
-                  <div style="background-image:url(../../../../{{_computeGoalImage(goal.category)}})" class="goalHeading">
-                    <p class="goalLabel">
-                      [[goal.category]]
-                    </p>
-                  </div>
-
-                  <div class="goalDescription">
-                      [[goal.description]]
-                  </div>
-
-                  <paper-icon-button
-                    icon="icons:more-vert"
-                    class="goalMore"
-                    on-tap="toggleEditModal">
-                  </paper-icon-button>
-
-
-                  <div class="goalSteps">
-                    <paper-progress
-                      class="goalProgress"
-                      min="0"
-                      max="{{_computeSteps(goal.steps)}}"
-                      value="{{_computeCompleteSteps(goal.steps)}}">
-                    </paper-progress>
-
-                    <paper-fab
-                      label="{{_computeSteps(goal.steps)}}"
-                      class="stepsFab">
-                    </paper-fab>
-
-                    <p class="goalStepsText">
-                      STEPS
-                    </p>
-
-                  </div>
-
-                </paper-card>
-
-              </div>
-
-            </template>
-
-          </paper-card>
-
-          <paper-card id="editView" style="display:none;">
-
-            <div class="detailBar"
-              style="background-image:url(../../../../{{_computeGoalImage(goalData.category)}})">
-                <vaadin-combo-box
-                  allow-custom-value
-                  label="Category"
-                  items="[[goalTypes]]"
-                  value="{{goalData.category}}"
-                  class="detailBarInput">
-                </vaadin-combo-box>
-            </div>
-
-            <div class="inputContainer">
-
-              <guuey-date-input
-                value="{{goalData.startDate}}"
-                label="Start Date">
-              </guuey-date-input>
-
-              <guuey-notify
-                home="[[home]]"
-                notify-route="homes/[[home]]/patients/[[patient]]/personalGoals/[[goalUID]]/finishDate"
-                condition-type="guuey-date"
-                notify-condition="true"
-                notify-message="[[suBasicInfo.fName]] [[suBasicInfo.lName]]'s [[goalData.category]] goal completion date is soon."
-                notify-url="/[[home]]/care-plan/su-goals/[[patient]]">
-              </guuey-notify>
-
-              <guuey-date-input
-                value="{{goalData.finishDate}}"
-                label="Estimated Finish Date">
-              </guuey-date-input>
-
-              <vaadin-combo-box
-                label="coordinator"
-                items="[[userList]]"
-                value="{{goalData.coordinator}}">
-              </vaadin-combo-box>
-
-            </div>
-
-            <div
-            class="detailDescription"
-            style="background-image:url(../../../../images/target_goals.png">
-              <div class="descriptionContainer">
-                <paper-input
-                  label="Goal Description"
-                  value="{{goalData.description}}"
-                  required
-                  auto-validate
-                  pattern="[a-zA-Z\s\.\d]*"
-                  error-message="Please enter a description without special characters.">
-                </paper-input>
-              </div>
-            </div>
-
-            <div class="tableContainer">
-
-              <p class="tableScrollLabel">
-                swipe left scrolls table
-              </p>
-
-              <table>
-                <thead>
-                  <tr>
-                    <th>
-                      Step #
-                    </th>
-                    <th>
-                      Description
-                    </th>
-                    <th>
-                      Completed?
-                    </th>
-                    <th>
-                      Edit
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <template
-                    is="dom-repeat"
-                    items="[[stepsData]]"
-                    as="step"
-                    sort="_sortSteps"
-                    observe="order description">
-                    <tr>
-                      <td>
-                        <center>
-                          <paper-fab label="[[step.order]]"></paper-fab>
-                        </center>
-                      </td>
-                      <td>
-                        <paper-input value="{{step.description}}"></paper-input>
-                      </td>
-                      <td>
-                        <paper-checkbox
-                          on-change="checkboxChanged"
-                          checked="{{step.completed}}">
-                        </paper-checkbox>
-
-                      </td>
-                      <td>
-                        <paper-icon-button icon="editor:border-color" class="editButton" on-tap="editStep">edit</paper-icon-button>
-                      </td>
-                    </tr>
-                  </template>
-                  <tr>
-                    <td>
-                      <center>
-                        <paper-fab icon="icons:add" on-tap="addStep"></paper-fab>
-                      </center>
-                    </td>
-                    <td>
-                      Add a new step.
-                    </td>
-                    <td>
-                      <paper-checkbox disabled checked></paper-checkbox>
-                    </td>
-                    <td>
-                      <paper-icon-button disabled icon="editor:border-color" class="editButton" on-tap="editStep">edit</paper-icon-button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-
-            </div>
-
-          </paper-card>
 
       </div>
 
@@ -541,7 +322,20 @@
       is: 'su-goals',
       ready:function(){
         this.fire("pageLoaded", {page:this.page});
+        //print listener
         this.addEventListener("print", this.print);
+
+        //multi-view page listeners
+        this.addEventListener("editGoal", this.editGoal);
+        this.addEventListener("deleteGoal", this.deleteGoal);
+
+        //edit-view page listeners
+        this.addEventListener("addStep", this.addStep);
+        this.addEventListener("editStep", this.editStep);
+        this.addEventListener("saveStep", this.saveStep);
+        this.addEventListener("deleteStep", this.deleteStep);
+        this.addEventListener("checkboxChanged", this.checkboxChanged);
+
         this.$.usersDB.query.on("value", function(snapshot){
           this.updateUsers(snapshot);
         }.bind(this));
@@ -560,8 +354,19 @@
           type:Boolean,
           value:false
         },
-        goalUID:{
+        pageState:{
+          type:String,
+          value:"multi-view"
+        },
+        goalId:{
           type:String
+        },
+        stepId:{
+          type:String
+        },
+        stepModalOpen:{
+          type:String,
+          value:"close"
         },
         goalTypes:{
           type:Array,
@@ -576,7 +381,6 @@
         },
         userList:{
           type:Array,
-          value:[]
         },
         newGoal:{
           type:Object,
@@ -592,6 +396,53 @@
         Polymer.fabAnimationBehavior,
         Polymer.carePlanAnimation
       ],
+      //activated from child events
+      //multi-view event functions
+      editGoal:function(e){
+         this.$.goalDB.path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalId;
+         this.$.stepsDB.path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalId+"/steps";
+         this.animateEditViewFab();
+         this.pageState="edit-view"
+      },
+      deleteGoal:function(e){
+        var path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalId;
+        this.$.goalDB.setStoredValue(path, null);
+        this.$.editModal.toggle();
+      },
+      //edit-view functions
+      addStep:function(){
+        this.$.stepDB.path=null;
+        this.$.stepDB.data={};
+        var path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalId+"/steps";
+        this.$.stepDB.save(path, null)
+          .then(function(){
+            this.stepId=this.$.stepDB.path.slice(path.length+2);
+            this.stepModalOpen="open";
+            //reset the db path and save the path for later
+            this.$.stepDB.path=null;
+          }.bind(this));
+      },
+      editStep:function(){
+        this.$.stepDB.path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalId+"/steps/"+this.stepId;
+        this.stepModalOpen="open";
+      },
+      saveStep:function(){
+        var path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalId+"/steps";
+        this.$.stepDB.save(path, this.stepId)
+          .then(function(){
+            this.fire("openToast",{toastText:"new step saved."});
+            this.stepModalOpen="close";
+            this.$.stepDB.path=null;
+            this.$.stepDB.data={};
+          }.bind(this))
+          .catch(function(error){
+            this.fire("openToast",{toastText:"there was an error saving your new step: "+error});
+            this.stepModalOpen="close";
+            this.$.stepDB.path=null;
+            this.$.stepDB.data={};
+          });
+      },
+      //reg functions
       updateUsers:function(snapshot){
         var tempList=[];
         if(snapshot.val()){
@@ -626,111 +477,11 @@
             });
         }
       },
-      editGoal:function(e){
-         this.$.goalDB.path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalUID;
-         this.$.stepsDB.path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalUID+"/steps";
-         this.goalSelected=true;
-         this.$.editModal.toggle();
-         this.animateEditState();
-      },
-      deleteGoal:function(e){
-        var path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalUID;
-        this.$.goalDB.setStoredValue(path, null);
-        this.$.editModal.toggle();
-      },
       finishGoal:function(e){
-        this.goalSelected=false;
-        this.animateRegState();
-      },
-      addStep:function(){
-        this.$.stepDB.path=null;
-        this.$.stepDB.data={};
-        var path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalUID+"/steps";
-        this.$.stepDB.save(path, null)
-          .then(function(){
-            this.stepUID=this.$.stepDB.path.slice(path.length+2);
-            this.$.stepModal.open();
-            //reset the db path and save the path for later
-            this.$.stepDB.path=null;
-          }.bind(this));
-      },
-      editStep:function(e){
-        this.stepUID=e.model.step.$key;
-        this.$.stepDB.path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalUID+"/steps/"+this.stepUID;
-        this.$.stepModal.toggle();
-      },
-      saveStep:function(){
-        var path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalUID+"/steps";
-        this.$.stepDB.save(path, this.stepUID)
-          .then(function(){
-            this.fire("openToast",{toastText:"new step saved."});
-            this.$.stepModal.close();
-            this.$.stepDB.path=null;
-            this.$.stepDB.data={};
-          }.bind(this))
-          .catch(function(error){
-            this.fire("openToast",{toastText:"there was an error saving your new step: "+error});
-            this.$.stepModal.close();
-            this.$.stepDB.path=null;
-            this.$.stepDB.data={};
-          });
-      },
-      //function to sort steps based on order
-      _sortSteps:function(a, b){
-        if (a.order === b.order) return 0;
-        return a.order < b.order ? -1 : 1;
-      },
-      _computeSteps:function(steps){
-        var stepCount=0;
-        for(x in steps){
-          stepCount++;
-        }
-        return stepCount;
-      },
-      _computeCompleteSteps:function(steps){
-        var completeCount=0;
-        for(x in steps){
-          if(steps[x].completed){
-            if(steps[x].completed===true){
-              completeCount++;
-            };
-          };
-        };
-        return completeCount;
-      },
-      _computeGoalImage:function(cat){
-        switch(cat) {
-          case "Accommodation":
-              return "images/goals/accommodation.png"
-              break;
-          case "Finance And Budget":
-              return "images/goals/financeAndBudget.png"
-              break;
-          case "Social Skills":
-              return "images/goals/socialSkills.png"
-              break;
-          case "Medical Treatment":
-              return "images/goals/medicalTreatment.png"
-              break;
-          case "Mental Health":
-              return "images/goals/mentalHealth.png"
-              break;
-          default:
-              return "images/goals/other.png"
-        };
-      },
-      toggleEditModal:function(e){
-        this.$.editModal.positionTarget = e.target;
-        this.goalUID = e.model.goal.$key;
-        this.$.editModal.toggle();
+        this.animateMultiViewFab();
+        this.pageState="multi-view"
       },
 
-      _computeQueryCount:function(goal){
-        if(!this.queryCount){
-          this.queryCount=0;
-        };
-        this.queryCount++;
-      },
       print:function(e){
         var printData=this.$.printDB.data;
         var printable=window.open("","printable");
@@ -786,9 +537,9 @@
         return newText;
       },
       checkboxChanged:function(e){
-        var checkBool=e.model.step.completed;
-        var stepID=e.model.step.$key;
-        var path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalUID+"/steps/"+stepID+"/completed";
+        var stepID=e.detail.stepID;
+        var checkBool=e.detail.checkBool;
+        var path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalId+"/steps/"+stepID+"/completed";
         this.$.stepDB.setStoredValue(path, checkBool);
       },
       requirementsMet:function(data){

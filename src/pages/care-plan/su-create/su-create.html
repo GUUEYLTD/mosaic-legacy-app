@@ -26,7 +26,7 @@
       query-matches="{{query950}}">
     </iron-media-query>
 
-    <style include="app-grid-style">
+    <style include="common-styles">
       :host{
         --su-header-patient-name-background-color:#7e57c2;
         --su-header-page-name-background-color:#673AB7;
@@ -35,34 +35,19 @@
         --app-grid-expandible-item-columns:2;
         --app-grid-item-height:100px;
       }
-      paper-card{
-        width:80%;
-        margin:-50px 10% 50px 10%;
-      }
       su-header{
         background-color:purple;
       }
-      .buttonContainer{
-        @apply(--app-grid-expandible-item);
-      }
-      .guuey-button{
-        background-color:#41847d;
-        color:#FFFFFF;
-        width:50%;
-        margin:0% 25% 0% 25%;
-      }
-      .mainContainer{
-        padding:20px;
-      }
-      .app-grid *{
+      .pageInnerCont *{
         padding:20px;
       }
       h4{
+        text-align:center;
         @apply(--app-grid-expandible-item);
       }
     </style>
 
-    <paper-card>
+    <paper-card class="pageCard">
       <su-header
         page="Create New Service User"
         patient="{{patient}}"
@@ -71,7 +56,7 @@
         firstname="{{newPatientData.fName}}"
         setimage>
       </su-header>
-      <div class="mainContainer app-grid">
+      <div class="pageInnerCont app-grid">
         <h4>
           Fill in this Information to Start
         </h4>

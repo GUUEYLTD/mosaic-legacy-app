@@ -3,11 +3,10 @@
 
 <!--perhaps dynamically load these in later... need to find a way to do this with the build process-->
 <link rel="import" href="../../../bower_components/neon-animation/animations/hero-animation.html" />
-<link rel="import" href="../../../bower_components/neon-animation/animations/slide-from-top-animation.html" />
 <link rel="import" href="../../../bower_components/neon-animation/animations/slide-from-right-animation.html" />
 <link rel="import" href="../../../bower_components/neon-animation/animations/slide-right-animation.html" />
-<link rel="import" href="../../../bower_components/neon-animation/animations/slide-down-animation.html" />
-
+<link rel="import" href="./slide-down-exit-animation.html" />
+<link rel="import" href="./slide-down-entry-animation.html" />
 
 <script>
   (function(){
@@ -61,17 +60,15 @@
           this.animationConfig={};
           this.animationConfig.exit=[
               {
-                name: 'slide-down-animation',
+                name: 'slide-down-exit-animation',
                 node: this,
-                transformOrigin: "50% 50%",
                 timing: {duration:500}
               },
             ];
           this.animationConfig.entry=[
             {
-              name: 'slide-from-top-animation',
+              name: 'slide-down-entry-animation',
               node: this,
-              transformOrigin: "50% 50%",
               timing: {duration:500}
             },
           ];
