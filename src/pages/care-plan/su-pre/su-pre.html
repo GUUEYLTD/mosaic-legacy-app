@@ -192,7 +192,8 @@
         "editQuery(query640)"
       ],
       behaviors:[
-        Polymer.carePlanAnimation
+        Polymer.carePlanAnimation,
+        Polymer.suPrintBehavior
       ],
       createNewSection:function(){
         this.$.customInput.path=null;
@@ -210,52 +211,6 @@
         this.$.customInput.path=null;
         this.$.customInput.data={};
         this.$.customSectionModal.close();
-      },
-      print:function(e){
-        var printable=window.open("","printable");
-        printable.document.write("<html><head>");
-        printable.document.write("</head><body>");
-        printable.document.write("<div style='width:100% padding:5%;'>");
-        var assmt=this.assmtData;
-        for(x in assmt){
-          if(x !="custom"){
-            printable.document.write("<p>"+this.convertToPrintText(x)+": "+assmt[x].info+"<br /></p>");
-          }
-          if(x ==="custom"){
-            var custom=assmt[x];
-            for(y in custom){
-              printable.document.write("<p>"+custom[y].label+"/"+custom[y].label2+": "+custom[y].info+"</br></p>");
-            }
-          }
-        };
-        printable.document.write();
-        printable.document.write("</body></html>");
-        printable.document.write("</div>");
-        printable.print();
-        printable.close();
-      },
-      //convert db keys to regular with spaces
-      convertToPrintText:function(camelCase){
-        if (camelCase == null || camelCase == "") {
-          return camelCase;
-        }
-
-        camelCase = camelCase.trim();
-        var newText = "";
-        for (var i = 0; i < camelCase.length; i++) {
-          if (/[A-Z]/.test(camelCase[i])
-              && i != 0
-              && /[a-z]/.test(camelCase[i-1])) {
-            newText += " ";
-          }
-          if (i == 0 && /[a-z]/.test(camelCase[i]))
-          {
-            newText += camelCase[i].toUpperCase();
-          } else {
-            newText += camelCase[i];
-          }
-        }
-        return newText;
       },
       editQuery:function(query640){
         if(query640){

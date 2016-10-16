@@ -645,7 +645,8 @@
         "editQuery(query1000 , query640)"
       ],
       behaviors:[
-        Polymer.carePlanAnimation
+        Polymer.carePlanAnimation,
+        Polymer.suPrintBehavior
       ],
       startNewMed:function(){
         this.$.medModal.toggle();
@@ -748,55 +749,6 @@
         } else {
           return "night";
         };
-      },
-      print:function(e){
-        var printData=this.$.medsDB.data;
-        var printable=window.open("","printable");
-        printable.document.write("<html><head>");
-        printable.document.write("</head><body>");
-        printable.document.write("<div style='width:100% padding:5%;'>");
-        printable.document.write("<p style='font-weight:bold;'>Medication List and History</p>");
-        for(x in printData){
-          var med=printData[x];
-          for(y in med){
-            var medHistory=med[y];
-            var date=medHistory.log.time;
-            var formattedDate=new Date(date);yy
-            var printDate=formattedDate.getDay()+"."+formattedDate.getMonth()+"."+formattedDate.getFullYear();
-            printable.document.write("<p style='font-weight:bold;'>"+formattedDate+"</p>");
-            printable.document.write("<ul>");
-            for(z in medHistory.med){
-              printable.document.write("<li>"+this.convertToPrintText(z)+": "+medHistory.med[z]+"</li>");
-            };
-            printable.document.write("</ul>");
-          };
-        };
-        printable.document.write("</body></html>");
-        printable.document.write("</div>");
-        printable.print();
-        printable.close();
-      },
-      convertToPrintText:function(camelCase){
-        if (camelCase == null || camelCase == "") {
-          return camelCase;
-        }
-
-        camelCase = camelCase.trim();
-        var newText = "";
-        for (var i = 0; i < camelCase.length; i++) {
-          if (/[A-Z]/.test(camelCase[i])
-              && i != 0
-              && /[a-z]/.test(camelCase[i-1])) {
-            newText += " ";
-          }
-          if (i == 0 && /[a-z]/.test(camelCase[i]))
-          {
-            newText += camelCase[i].toUpperCase();
-          } else {
-            newText += camelCase[i];
-          }
-        }
-        return newText;
       },
       _computeMedList:function(meds){
         //return the most recent sub doc from medication docs

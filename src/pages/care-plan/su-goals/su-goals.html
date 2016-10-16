@@ -238,7 +238,8 @@
       ],
       behaviors:[
         Polymer.fabAnimationBehavior,
-        Polymer.carePlanAnimation
+        Polymer.carePlanAnimation,
+        Polymer.suPrintBehavior
       ],
       //activated from child events
       //multi-view event functions
@@ -324,61 +325,6 @@
       finishGoal:function(e){
         this.animateMultiViewFab();
         this.pageState="multi-view"
-      },
-
-      print:function(e){
-        var printData=this.$.printDB.data;
-        var printable=window.open("","printable");
-        printable.document.write("<html><head>");
-        printable.document.write("</head><body>");
-        printable.document.write("<div style='width:100% padding:5%;'>");
-        for(x in printData){
-          var goal=printData[x];
-          printable.document.write("<p style='font-weight:bold;'>Goal</p>");
-          for(y in goal){
-            var goalProp=goal[y];
-            if(y!="steps"){
-              printable.document.write("<p>"+y+": "+goalProp+"</p>");
-            };
-            if(y==="steps"){
-              for(z in goalProp){
-                var steps=goalProp[z];
-                printable.document.write("<p style='font-weight:bold;'>Goal Step</p>");
-                for(xx in steps){
-                  var stepProp=steps[xx];
-                  printable.document.write("<p>"+this.convertToPrintText(xx)+": "+stepProp+"</p>");
-                };
-              };
-            };
-          };
-        };
-        printable.document.write("</body></html>");
-        printable.document.write("</div>");
-        printable.print();
-        printable.close();
-
-      },
-      convertToPrintText:function(camelCase){
-        if (camelCase == null || camelCase == "") {
-          return camelCase;
-        }
-
-        camelCase = camelCase.trim();
-        var newText = "";
-        for (var i = 0; i < camelCase.length; i++) {
-          if (/[A-Z]/.test(camelCase[i])
-              && i != 0
-              && /[a-z]/.test(camelCase[i-1])) {
-            newText += " ";
-          }
-          if (i == 0 && /[a-z]/.test(camelCase[i]))
-          {
-            newText += camelCase[i].toUpperCase();
-          } else {
-            newText += camelCase[i];
-          }
-        }
-        return newText;
       },
       checkboxChanged:function(e){
         var stepID=e.detail.stepID;

@@ -336,7 +336,6 @@
       is: 'su-care',
       ready:function(){
         this.fire("pageLoaded", {page:this.page});
-        this.addEventListener("print", this.print);
         this.$.usersDB.query.on("value", function(snapshot){
           this.updateUsers(snapshot);
         }.bind(this));
@@ -400,7 +399,8 @@
 
       ],
       behaviors:[
-        Polymer.carePlanAnimation
+        Polymer.carePlanAnimation,
+        Polymer.suPrintBehavior
       ],
       updateUsers:function(snapshot){
         var tempList=[];
@@ -452,136 +452,6 @@
         this.$.customInput.path=null;
         this.$.customInput.data={};
         this.$.customSectionModal.close();
-      },
-      print:function(e){
-        var date="Thu Jul 14 2016 00:00:00 GMT+0200 (CEST)";
-        var printable=window.open("","printable", "height:=400, width=600");
-        printable.document.write("<html><head>");
-        printable.document.write("</head><body>");
-        printable.document.write("<div style='width:100% padding:5%;'>");
-        var printData=this.$.printDB.data;
-        for(x in printData){
-          switch(x) {
-            case "careAndSuppProp":
-              var proposal=printData[x];
-              printable.document.write("<p style='font-weight:bold'>Proposals:</p>");
-              printable.document.write("<ol>");
-              for(y in proposal){
-                printable.document.write("<li>"+proposal[y].proposal+"</li>");
-              };
-              printable.document.write("</ol>");
-              break;
-            case "interventionByStaff":
-              var proposal=printData[x];
-              printable.document.write("<p style='font-weight:bold'>Intervention By Staff Proposals:</p>");
-              printable.document.write("<ol>");
-              for(y in proposal){
-                printable.document.write("<li>"+proposal[y].proposal+"</li>");
-              };
-              printable.document.write("</ol>");
-              break;
-            case "myHealthQuestionnaire":
-              var healthData=printData[x];
-              for(y in healthData){
-                var healthSub=healthData[y];
-                for(z in healthSub){
-                  if(z!="comment"){
-                    printable.document.write("<p>"+y+": "+z+"</p>");
-                  };
-                  if(z==="comment"){
-                    printable.document.write("<p>Comment: "+healthSub[z]+"</p>");
-                  };
-                };
-              };
-              break;
-            case "myRoomQuestionnaire":
-              var roomData=printData[x];
-              for(y in roomData){
-                var roomSub=roomData[y];
-                for(z in roomSub){
-                  if(z!="comment"){
-                    printable.document.write("<p>"+y+": "+z+"</p>");
-                  };
-                  if(z==="comment"){
-                    printable.document.write("<p>Comment: "+roomSub[z]+"</p>");
-                  };
-                };
-              };
-              break;
-            case "wellBeingQuestionnaire":
-              var wellData=printData[x];
-              for(y in wellData){
-                var wellSub=wellData[y];
-                for(z in wellSub){
-                  if(z!="comment"){
-                    printable.document.write("<p>"+y+": "+z+"</p>");
-                  };
-                  if(z==="comment"){
-                    printable.document.write("<p>Comment: "+wellSub[z]+"</p>");
-                  };
-                };
-              };
-              break;
-            case "whatWillTheServiceUserDo":
-              var proposal=printData[x];
-              printable.document.write("<p style='font-weight:bold'>Service User Proposals:</p>");
-              printable.document.write("<ol>");
-              for(y in proposal){
-                printable.document.write("<li>"+proposal[y].proposal+"</li>");
-              };
-              printable.document.write("</ol>");
-              break;
-            case "statementOfServiceUser":
-              if(printData[x].suAgree && printData[x].swAgree){
-                printable.document.write("<p>Service User Agreed on :"+printData[x].suDate.slice(0,15)+"</p>");
-                printable.document.write("<p>Service Worker Agreed on :"+printData[x].swDate.slice(0,15)+"</p>");
-              } else if(printData[x].suAgree){
-                printable.document.write("<p>Service User Agreed on :"+printData[x].suDate.slice(0,15)+"</p>");
-                printable.document.write("<p>Service Worker has not Agreed</p>");
-              } else if(printData[x].swAgree){
-                printable.document.write("<p>Service User has not Agreed</p>");
-                printable.document.write("<p>Service Worker Agreed on :"+printData[x].swDate.slice(0,15)+"</p>");
-              } else {
-                printable.document.write("<p>Service User and Service Worker have not Agreed</p>");
-              };
-              break;
-            case "custom":
-              var custom=printData[x];
-              for(y in custom){
-                printable.document.write("<p>"+custom[y].label+"/"+custom[y].label2+" :"+custom[y].info+"</p>")
-              };
-              break;
-            default:
-              printable.document.write("<p>"+this.convertToPrintText(x)+": "+printData[x].info+"<br /></p>");
-              break;
-            };
-        };
-        printable.document.write("</body></html>");
-        printable.document.write("</div>");
-        printable.print();
-        printable.close();
-      },
-      convertToPrintText:function(camelCase){
-        if (camelCase == null || camelCase == "") {
-          return camelCase;
-        }
-
-        camelCase = camelCase.trim();
-        var newText = "";
-        for (var i = 0; i < camelCase.length; i++) {
-          if (/[A-Z]/.test(camelCase[i])
-              && i != 0
-              && /[a-z]/.test(camelCase[i-1])) {
-            newText += " ";
-          }
-          if (i == 0 && /[a-z]/.test(camelCase[i]))
-          {
-            newText += camelCase[i].toUpperCase();
-          } else {
-            newText += camelCase[i];
-          }
-        }
-        return newText;
       },
       requirementsMet:function(data){
         if(!data.suName){

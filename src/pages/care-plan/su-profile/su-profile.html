@@ -880,54 +880,9 @@
         "nameChanged(profileData.fName, profileData.lName)"
       ],
       behaviors:[
-        Polymer.carePlanAnimation
+        Polymer.carePlanAnimation,
+        Polymer.suPrintBehavior
       ],
-      print:function(e){
-        var printable=window.open("","printable");
-        printable.document.write("<html><head>");
-        printable.document.write("</head><body>");
-        printable.document.write("<div style='width:100% padding:5%;'>");
-        var patient = this.profileData;
-        var contacts = this.$.contactsQuery.data;
-        for(x in patient){
-          if(x !="image"){
-            printable.document.write("<p>"+this.convertToPrintText(x)+": "+patient[x]+"<br /></p>");
-          }
-        };
-        for(x in contacts){
-          printable.document.write("<p>"+this.convertToPrintText(x)+": "+contacts[x].name+"<br /></p>");
-          printable.document.write("<p>"+this.convertToPrintText(x)+": "+contacts[x].address+"<br /></p>");
-          printable.document.write("<p>"+this.convertToPrintText(x)+": "+contacts[x].phone+"<br /></p>");
-        };
-        printable.document.write();
-        printable.document.write("</body></html>");
-        printable.document.write("</div>");
-        printable.print();
-        printable.close();
-      },
-      //convert db keys to regular with spaces
-      convertToPrintText:function(camelCase){
-        if (camelCase == null || camelCase == "") {
-          return camelCase;
-        }
-
-        camelCase = camelCase.trim();
-        var newText = "";
-        for (var i = 0; i < camelCase.length; i++) {
-          if (/[A-Z]/.test(camelCase[i])
-              && i != 0
-              && /[a-z]/.test(camelCase[i-1])) {
-            newText += " ";
-          }
-          if (i == 0 && /[a-z]/.test(camelCase[i]))
-          {
-            newText += camelCase[i].toUpperCase();
-          } else {
-            newText += camelCase[i];
-          }
-        }
-        return newText;
-      },
       editquery900:function(query900){
         if(query900){
           this.customStyle["--app-grid-columns"]="1";

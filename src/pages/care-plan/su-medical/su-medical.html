@@ -145,7 +145,8 @@
         "editQuery(query900)"
       ],
       behaviors:[
-        Polymer.carePlanAnimation
+        Polymer.carePlanAnimation,
+        Polymer.suPrintBehavior
       ],
       fileChange:function(e) {
         var file = e.target.files[0];
@@ -210,18 +211,6 @@
           this.customStyle["--main-fab-bottom"]="unset";
           this.updateStyles();
         };
-      },
-      print:function(e){
-        var printable=window.open("","printable", "height:=400, width=600");
-        printable.document.write("<html><head>");
-        printable.document.write("</head><body>");
-        printable.document.write("<div style='width:100% padding:5%;'>");
-        printable.document.write("<p>Build Print pages later.</p></br>")
-        printable.document.write("</body></html>");
-        printable.document.write("</div>");
-        printable.print();
-        printable.close();
-
       }
     });
 
