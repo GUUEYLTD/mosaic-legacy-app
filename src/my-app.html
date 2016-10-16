@@ -191,10 +191,12 @@
         margin-left:12px;
       }
       .backButton{
+        position:absolute;
         height:50px;
         width:50px;
         color:#FFFFFF;
-        margin-top:25px;
+        top: 100px;
+        left:50px;
       }
       .toolbarLeft{
         width:50%;
@@ -302,10 +304,14 @@
         width:256px;
         height:256px;
       }
-      #neonPages, #neonPages *{
+      #neonPages{
         height:var(--neon-pages-height);
-        z-index:100;
+        background-image:url("../../images/header-background.png");
+        background-size: 100% 100px;
+        background-repeat: no-repeat;
+        background-position: top;
       }
+
 
     </style>
 
@@ -410,7 +416,6 @@
           </app-toolbar>
           <paper-progress class="mainProgress" indeterminate></paper-progress>
         </app-header>
-        <div id="headerBackground" class="headerBackground">
           <paper-icon-button class="backButton" icon="hardware:keyboard-backspace" on-tap="goBack"></paper-icon-button>
         </div>
         <!--page templates are loded in here inside iron pages-->
@@ -681,7 +686,7 @@
       resizeElements:function(){
         var neonOffsetTop=this.$.neonPages.offsetTop;
         var screenHeight=window.innerHeight;
-        var headerHeight=this.$.headerBackground.offsetHeight + this.$.appHeader.offsetHeight;
+        var headerHeight=this.$.appHeader.offsetHeight;
         this.customStyle["--neon-pages-height"]=screenHeight-headerHeight+"px";
         if(this.page==="def-login"){
           this.customStyle["--login-overlay-display"]="inline-block";
