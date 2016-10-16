@@ -80,169 +80,7 @@
 
     <style include="common-styles">
       :host{
-        --app-grid-columns:3;
-        --app-grid-item-height:150%;
-      }
 
-      .goalLabel{
-        width:25%;
-        position:absolute;
-        bottom:10px;
-        left:10px;
-        padding:0px;
-        margin:0px;
-        font-weight:bold;
-        color:#FFFFFF;
-        font-size:20px;
-      }
-      .goalMore{
-        position:absolute;
-        top:10px;
-        right:10px;
-        color:#FFFFFF;
-      }
-      .goalBox{
-        margin:20px;
-      }
-      .goalHeading{
-        width:100%;
-        height:40%;
-        margin-bottom:4%;
-        position:relative;
-        background-repeat:no-repeat;
-        background-size:cover;
-        background-position:bottom right;
-      }
-      .goalDescription{
-        text-align:center;
-        font-size:18px;
-        height:38%;
-        margin:4%;
-        overflow:hidden;
-      }
-      .goalSteps:{
-        width:100%;
-        height:10%;
-        margin:4%;
-      }
-      .goalStepsText{
-        position:absolute;
-        bottom:5%;
-        left:30%;
-      }
-      .stepsFab{
-        position:absolute;
-        bottom:5%;
-        left:5%;
-      }
-      .goalProgress{
-        width:100%;
-      }
-      .goalDetails{
-        width:90%;
-        margin:20px 5% 20px 5%;
-      }
-      .detailBar{
-        background-color:#E0E0E0;
-        width:100%;
-        background-repeat:no-repeat;
-        background-size:auto 100%;
-        background-position:bottom left;
-        margin: 0px 0 20px 0;
-      }
-      .inputContainer{
-        padding:20px;
-      }
-      .detailBarInput{
-        width:50%;
-        padding:0% 25% 20px 25%;
-        --paper-input-container-color:#4DB6AC;
-        --paper-input-container-input-color:#4DB6AC;
-        padding:var(--detail-bar-padding);
-      }
-      .descriptionContainer{
-        margin-top:20px;
-      }
-      .descriptionContainer paper-input{
-        width:50%;
-        padding:0% 25% 20px 25%;
-        --paper-input-container-color:#FFFFFF;
-        --paper-input-container-input-color:#FFFFFF;
-        padding:var(--description-container-padding);
-      }
-      .detailDescription{
-        background-color:#4DB6AC;
-        width:100%;
-        background-repeat:no-repeat;
-        background-size:auto 100%;
-        background-position:bottom left;
-        margin: 0px 0 20px 0;
-      }
-      #mainCard{
-        position:absolute;
-        width:80%;
-        margin:-50px 10% 50px 10%;
-      }
-      .mainContainer{
-        position:relative;
-      }
-      .guuey-button{
-        background-color:#41847d;
-        color:#FFFFFF;
-        width:60%;
-        margin: 20px 20% 20px 20%;
-      }
-      .editButton{
-        margin-top:-20px;
-      }
-      #editModal{
-        margin:0;
-      }
-      .tableScrollLabel{
-        font-weight:bold;
-        text-transform:uppercase;
-        margin-bottom:0px;
-        padding-bottom:0px;
-        font-size:10px;
-        padding-left:20px;
-        color:var(--table-scroll-lable-color);
-      }
-      .tableContainer{
-        padding:20px;
-        height:auto;
-        overflow:var(--table-overflow);
-      }
-      .tableContainer table{
-        padding:20px;
-        width:100%;
-      }
-      table{
-        background-color:var(--table-background-color);
-      }
-      tbody{
-        display:var(--tbody-display);
-      }
-      thead tr{
-        position:var(--thead-tr-position);
-        display:var(--thead-tr-display);
-      }
-      td{
-        width:var(--thead-tr-td-width);
-      }
-      th{
-        text-align:left;
-      }
-      td,th{
-
-      }
-      td,th{
-        min-width:var(--td-th-min-width);
-      }
-      td,th:last-of-type{
-        width:var(--td-th-last-width);
-      }
-      .divider{
-        border-bottom:1px solid grey;
       }
     </style>
 
@@ -320,6 +158,12 @@
     Polymer({
 
       is: 'su-goals',
+      goEdit:function(){
+        this.pageState="edit-view";
+      },
+      goMulti:function(){
+        this.pageState="multi-view";
+      },
       ready:function(){
         this.fire("pageLoaded", {page:this.page});
         //print listener
@@ -407,7 +251,7 @@
       deleteGoal:function(e){
         var path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalId;
         this.$.goalDB.setStoredValue(path, null);
-        this.$.editModal.toggle();
+        this.stepModalOpen="close";
       },
       //edit-view functions
       addStep:function(){

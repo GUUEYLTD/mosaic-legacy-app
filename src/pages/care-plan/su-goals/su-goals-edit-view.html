@@ -66,61 +66,9 @@
       background-position:bottom left;
       margin: 0px 0 20px 0;
     }
-    .guuey-button{
-      background-color:#41847d;
-      color:#FFFFFF;
-      width:60%;
-      margin: 20px 20% 20px 20%;
-    }
-    .tableScrollLabel{
-      font-weight:bold;
-      text-transform:uppercase;
-      margin-bottom:0px;
-      padding-bottom:0px;
-      font-size:10px;
-      padding-left:20px;
-      color:var(--table-scroll-lable-color);
-    }
-    .tableContainer{
-      padding:20px;
-      height:auto;
-      overflow:var(--table-overflow);
-    }
-    .tableContainer table{
-      padding:20px;
-      width:100%;
-    }
-    table{
-      background-color:var(--table-background-color);
-    }
-    tbody{
-      display:var(--tbody-display);
-    }
-    thead tr{
-      position:var(--thead-tr-position);
-      display:var(--thead-tr-display);
-    }
-    td{
-      width:var(--thead-tr-td-width);
-    }
-    th{
-      text-align:left;
-    }
-    td,th{
-
-    }
-    td,th{
-      min-width:var(--td-th-min-width);
-    }
-    td,th:last-of-type{
-      width:var(--td-th-last-width);
-    }
-    .divider{
-      border-bottom:1px solid grey;
-    }
   </style>
 
-    <paper-dialog id="stepModal">
+    <paper-dialog id="stepModal" class="guuey-modal guuey-add-modal">
       <h2>Add/update Step</h2>
       <paper-input
         label="describe the step"
@@ -138,8 +86,10 @@
         pattern="\d{1,1}"
         error-message="Please enter a step from 1 to 9">
       </paper-input>
-      <paper-button on-tap="cancelStep">cancel</paper-button>
-      <paper-button on-tap="saveStep">save</paper-button>
+      <div class="modal-button-container">
+        <paper-button on-tap="cancelStep">cancel</paper-button>
+        <paper-button on-tap="saveStep">save</paper-button>
+      </div>
     </paper-dialog>
 
     <paper-card class="editViewCard">
@@ -200,7 +150,7 @@
         </div>
       </div>
 
-      <div class="tableContainer">
+      <div class="guuey-table">
 
         <p class="tableScrollLabel">
           swipe left scrolls table

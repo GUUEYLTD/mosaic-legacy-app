@@ -15,19 +15,20 @@
 
       observers:[
         "_heroElementChanged(heroElement)",
-        "_viewTypeKnown(viewType)"
       ],
       _heroElementChanged:function(){
-        if(this.viewState==="multi-view"){
+        if(this.viewType==="multi-view"){
           this.sharedElements={
             "enterHero":this.heroElement,
             "exitHero":this.heroElement
           };
         };
       },
-      _viewTypeKnown:function(type){
+      ready:function(){
         if(this.viewType==="multi-view"){
-          this.animationConfig={};
+          if(!this.animationConfig){
+            this.animationConfig={};
+          };
           this.animationConfig.exit=[
             {
               name:"hero-animation",
@@ -46,7 +47,9 @@
           ];
         };
         if(this.viewType==="edit-view"){
-          this.animationConfig={};
+          if(!this.animationConfig){
+            this.animationConfig={};
+          };
           this.animationConfig.exit=[
             {
               name:"hero-animation",
@@ -72,7 +75,7 @@
     }
     Polymer.multiEditBehavior=[
       Polymer.multiEditBehaviorImp,
-      Polymer.NeonSharedElementAnimatableBehavior
+      Polymer.NeonSharedElementAnimatableBehavior,
     ]
   })();
 
