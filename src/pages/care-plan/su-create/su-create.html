@@ -21,10 +21,9 @@
       app-name="main">
     </firebase-document>
 
-    <iron-media-query
-      query="(max-width:950px)"
-      query-matches="{{query950}}">
-    </iron-media-query>
+    <media-queries
+      dimensions="{{dimensions}}">
+    </media-queries>
 
     <style include="common-styles">
       :host{
@@ -538,11 +537,11 @@
         }
       },
       observers:[
-        "editQuery(query950)",
         "requirementsMet(newPatientData)"
       ],
       behaviors:[
-        Polymer.carePlanAnimation
+        Polymer.carePlanAnimation,
+        Polymer.suResizeBehavior
       ],
       createNewPatient:function(){
         var path="/homes/"+this.home+"/patients/"+this.patient+"/currentStatus";
@@ -555,15 +554,6 @@
             this.$.suIndexDB.data.home=this.home;
             this.$.suIndexDB.save("/homes/"+this.home+"/patients/suIndex", this.patient);
           }.bind(this));
-      },
-      editQuery:function(query950){
-        if(query950){
-          this.customStyle["--app-grid-columns"]="1";
-          this.updateStyles();
-        } else {
-          this.customStyle["--app-grid-columns"]="2";
-          this.updateStyles();
-        }
       },
       requirementsMet:function(data){
         if(!data.fName){

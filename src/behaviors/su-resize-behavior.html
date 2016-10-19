@@ -82,7 +82,12 @@
 
         };
         if(this.page==="su-create"){
-
+          var appGridColumns="2";
+          if(dimensions.base.query900){
+            appGridColumns="2";
+          };
+          this.customStyle["--app-grid-columns"]=appGridColumns;
+          this.updateStyles();
         };
         if(this.page==="su-goals"){
 
