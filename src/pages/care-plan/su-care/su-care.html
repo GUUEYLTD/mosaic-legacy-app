@@ -66,25 +66,9 @@
       app-name="main">
     </firebase-document>
 
-    <iron-media-query
-      query="(max-width:640px)"
-      query-matches="{{query640}}">
-    </iron-media-query>
-
-    <iron-media-query
-      query="max-width:900px"
-      query-matches="{{query900}}">
-    </iron-media-query>
-
-    <iron-media-query
-      query="max-width:750px"
-      query-matches="{{query750}}">
-    </iron-media-query>
-
-    <iron-media-query
-      query="max-width:1100px"
-      query-matches="{{query1100}}">
-    </iron-media-query>
+    <media-queries
+      dimensions="{{dimensions}}">
+    </media-queries>
 
     <style include="common-styles">
       :host{

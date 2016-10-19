@@ -5,11 +5,13 @@
   (function(){
     'use-strict';
     Polymer.suResizeBehaviorImp={
-
       is:"su-resize-behavior",
       attached:function(){
         if(this.page==="su-care"){
-
+          if(this.observers===null){
+            this.observers=[];
+          };
+          this.observers.push("changeLayout(dimensions.query640, dimensions.query900, dimensions.query750, dimensions.query1100)");
         };
         if(this.page==="su-care-review"){
 
