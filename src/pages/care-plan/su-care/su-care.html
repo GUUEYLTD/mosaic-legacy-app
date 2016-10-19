@@ -102,7 +102,7 @@
     </style>
 
     <!--dialogue that works to add labels for custom text input area-->
-    <paper-dialog id="customSectionModal">
+    <paper-dialog id="customSectionModal" class="guuey-modal guuey-add-modal">
       <h2>Add a New Section</h2>
       <paper-input
         label="Name the New Section"
@@ -118,8 +118,10 @@
         auto-validate
         error-message="Please describe the custom section">
       </paper-input>
-      <paper-button on-tap="cancelNewSection">cancel</paper-button>
-      <paper-button on-tap="saveNewSection">save</paper-button>
+      <div class="modal-button-container">
+        <paper-button on-tap="cancelNewSection">cancel</paper-button>
+        <paper-button on-tap="saveNewSection">save</paper-button>
+      </div>
     </paper-dialog>
 
     <!--start of organized section-->

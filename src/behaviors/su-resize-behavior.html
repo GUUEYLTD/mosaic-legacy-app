@@ -16,89 +16,66 @@
       screenChange:function(dimensions){
 
         if(this.page==="su-care"){
+          var guueyListFloatRight="left";
+          var guueyListFloatLeft="right";
+          var listWidthHalf="40%";
+          var appGridColumns="5";
+          var mainFabPosition="absolute";
+          var mainFabTop="-25px";
+          var mainFabBottom="unset";
+          var mainFabRight="-25px";
 
           if(dimensions.base.query640){
-            console.log("found 640");
-            //list styles
-            this.customStyle["--guuey-list-float-left"]="unset";
-            this.customStyle["--guuey-list-float-right"]="unset";
-            this.customStyle["--list-width-half"]="90%";
-
-            //column styles
-            this.customStyle["--app-grid-columns"]="1";
-
-            //fab styles
-            this.customStyle["--main-fab-position"]="fixed";
-            this.customStyle["--main-fab-top"]="unset";
-            this.customStyle["--main-fab-bottom"]="5%";
-            this.customStyle["--main-fab-right"]="5%";
-            this.updateStyles();
+            guueyListFloatRight="unset";
+            guueyListFloatLeft="unset";
+            listWidthHalf="90%";
+            appGridColumns="1";
+            mainFabPosition="fixed";
+            mainFabTop="unset";
+            mainFabBottom="5%";
+            mainFabRight="5%";
           }else if(dimensions.base.query750){
-            console.log("found 750");
-            //list styles
-            this.customStyle["--guuey-list-float-left"]="unset";
-            this.customStyle["--guuey-list-float-right"]="unset";
-            this.customStyle["--list-width-half"]="90%";
-
-            //column styles
-            this.customStyle["--app-grid-columns"]="1";
-
-            //fab styles
-            this.customStyle["--main-fab-position"]="absolute";
-            this.customStyle["--main-fab-top"]="-25px";
-            this.customStyle["--main-fab-bottom"]="unset";
-            this.customStyle["--main-fab-right"]="-25px";
-            this.updateStyles();
+            guueyListFloatRight="unset";
+            guueyListFloatLeft="unset";
+            listWidthHalf="90%";
+            appGridColumns="1";
+            mainFabPosition="absolute";
+            mainFabTop="-25px";
+            mainFabBottom="unset";
+            mainFabRight="-25px";
           }else if(dimensions.base.query900){
-            console.log("found 900");
-            //list styles
-            this.customStyle["--guuey-list-float-left"]="unset";
-            this.customStyle["--guuey-list-float-right"]="unset";
-            this.customStyle["--list-width-half"]="90%";
-
-            //column styles
-            this.customStyle["--app-grid-columns"]="4";
-
-            //fab styles
-            this.customStyle["--main-fab-position"]="absolute";
-            this.customStyle["--main-fab-top"]="-25px";
-            this.customStyle["--main-fab-bottom"]="unset";
-            this.customStyle["--main-fab-right"]="-25px";
-            this.updateStyles();
+            guueyListFloatRight="unset";
+            guueyListFloatLeft="unset";
+            listWidthHalf="90%";
+            appGridColumns="4";
+            mainFabPosition="absolute";
+            mainFabTop="-25px";
+            mainFabBottom="unset";
+            mainFabRight="-25px";
           } else if(dimensions.base.query1100){
-            console.log("found 1100");
-            //list styles
-            this.customStyle["--guuey-list-float-left"]="unset";
-            this.customStyle["--guuey-list-float-right"]="unset";
-            this.customStyle["--list-width-half"]="90%";
-
-            //column styles
-            this.customStyle["--app-grid-columns"]="5";
-
-            //fab styles
-            this.customStyle["--main-fab-position"]="absolute";
-            this.customStyle["--main-fab-top"]="25px";
-            this.customStyle["--main-fab-bottom"]="unset";
-            this.customStyle["--main-fab-right"]="-25px";
-            this.updateStyles();
-
-          } else {
-            //list styles
-            console.log("found other");
-            this.customStyle["--guuey-list-float-left"]="left";
-            this.customStyle["--guuey-list-float-right"]="right";
-            this.customStyle["--list-width-half"]="40%";
-
-            //column styles
-            this.customStyle["--app-grid-columns"]="5";
-
-            //fab styles
-            this.customStyle["--main-fab-position"]="absolute";
-            this.customStyle["--main-fab-top"]="-25px";
-            this.customStyle["--main-fab-bottom"]="unset";
-            this.customStyle["--main-fab-right"]="-25px";
-            this.updateStyles();
+            guueyListFloatRight="unset";
+            guueyListFloatLeft="unset";
+            listWidthHalf="90%";
+            appGridColumns="5";
+            mainFabPosition="absolute";
+            mainFabTop="-25px";
+            mainFabBottom="unset";
+            mainFabRight="-25px";
           };
+          //list styles
+          this.customStyle["--guuey-list-float-right"]=guueyListFloatRight;
+          this.customStyle["--guuey-list-float-left"]=guueyListFloatLeft;
+          this.customStyle["--list-width-half"]=listWidthHalf;
+
+          //column styles
+          this.customStyle["--app-grid-columns"]=appGridColumns;
+
+          //fab styles
+          this.customStyle["--main-fab-position"]=mainFabPosition;
+          this.customStyle["--main-fab-top"]=mainFabTop;
+          this.customStyle["--main-fab-bottom"]=mainFabBottom;
+          this.customStyle["--main-fab-right"]=mainFabRight;
+          this.updateStyles();
 
         };
         if(this.page==="su-care-review"){
