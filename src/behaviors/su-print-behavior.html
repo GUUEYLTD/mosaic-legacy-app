@@ -4,7 +4,7 @@
 
   (function(){
     'use-strict';
-    Polymer.suPrintBehaviorImp={
+    Polymer.suPrintBehavior={
 
       is:"su-print-behavior",
       ready:function(){
@@ -204,7 +204,8 @@
         };
 
         //su-pre admissin assessment
-        if(this.page==="su--pre"){
+        if(this.page==="su-pre"){
+          console.log("ok");
           var printable=window.open("","printable");
           printable.document.write("<html><head>");
           printable.document.write("</head><body>");
@@ -299,9 +300,6 @@
         return newText;
       },
 
-    };
-    Polymer.suPrintBehavior={
-      Polymer.suPrintBehaviorImp
     };
   })();
 

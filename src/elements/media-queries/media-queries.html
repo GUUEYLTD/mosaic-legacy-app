@@ -1,0 +1,55 @@
+<!--
+
+  element containing all needed media queries for the app...
+  returns dimensions object for su-resize-behavior to use
+
+-->
+
+<link rel="import" href="dependencies.html" />
+
+<dom-module id="media-queries">
+
+  <iron-media-query
+    query="(max-width:640px)"
+    query-matches="{{dimensions.query640}}">
+  </iron-media-query>
+
+  <iron-media-query
+    query="max-width:900px"
+    query-matches="{{dimensions.query900}}">
+  </iron-media-query>
+
+  <iron-media-query
+    query="max-width:750px"
+    query-matches="{{dimensions.query750}}">
+  </iron-media-query>
+
+  <iron-media-query
+    query="max-width:1100px"
+    query-matches="{{dimensions.query1100}}">
+  </iron-media-query>
+
+  <style>
+
+
+
+  </style>
+
+  <template>
+
+
+
+  </template>
+
+  <script>
+
+    Polymer({
+      is:"media-queries",
+      properties:{
+        dimensions:{
+          type:Object,
+          notify:true,
+          value:{}
+        }
+      }
+    })
