@@ -1,17 +1,105 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html" />
 <link rel="import" href="../../../bower_components/iron-media-query/iron-media-query.html" />
-
 <script>
 
   (function(){
     'use-strict';
-    Polymer.suResizeBehaviorImp={
+    Polymer.suResizeBehavior={
       is:"su-resize-behavior",
-      attached:function(){
+      ready:function(){
+
+
+      },
+      observers:[
+        "screenChange(dimensions.*)"
+      ],
+      screenChange:function(dimensions){
+
         if(this.page==="su-care"){
-          if(this.observers===null){
-            this.observers=[];
+
+          if(dimensions.base.query640){
+            console.log("found 640");
+            //list styles
+            this.customStyle["--guuey-list-float-left"]="unset";
+            this.customStyle["--guuey-list-float-right"]="unset";
+            this.customStyle["--list-width-half"]="90%";
+
+            //column styles
+            this.customStyle["--app-grid-columns"]="1";
+
+            //fab styles
+            this.customStyle["--main-fab-position"]="fixed";
+            this.customStyle["--main-fab-top"]="unset";
+            this.customStyle["--main-fab-bottom"]="5%";
+            this.customStyle["--main-fab-right"]="5%";
+            this.updateStyles();
+          }else if(dimensions.base.query750){
+            console.log("found 750");
+            //list styles
+            this.customStyle["--guuey-list-float-left"]="unset";
+            this.customStyle["--guuey-list-float-right"]="unset";
+            this.customStyle["--list-width-half"]="90%";
+
+            //column styles
+            this.customStyle["--app-grid-columns"]="1";
+
+            //fab styles
+            this.customStyle["--main-fab-position"]="absolute";
+            this.customStyle["--main-fab-top"]="-25px";
+            this.customStyle["--main-fab-bottom"]="unset";
+            this.customStyle["--main-fab-right"]="-25px";
+            this.updateStyles();
+          }else if(dimensions.base.query900){
+            console.log("found 900");
+            //list styles
+            this.customStyle["--guuey-list-float-left"]="unset";
+            this.customStyle["--guuey-list-float-right"]="unset";
+            this.customStyle["--list-width-half"]="90%";
+
+            //column styles
+            this.customStyle["--app-grid-columns"]="4";
+
+            //fab styles
+            this.customStyle["--main-fab-position"]="absolute";
+            this.customStyle["--main-fab-top"]="-25px";
+            this.customStyle["--main-fab-bottom"]="unset";
+            this.customStyle["--main-fab-right"]="-25px";
+            this.updateStyles();
+          } else if(dimensions.base.query1100){
+            console.log("found 1100");
+            //list styles
+            this.customStyle["--guuey-list-float-left"]="unset";
+            this.customStyle["--guuey-list-float-right"]="unset";
+            this.customStyle["--list-width-half"]="90%";
+
+            //column styles
+            this.customStyle["--app-grid-columns"]="5";
+
+            //fab styles
+            this.customStyle["--main-fab-position"]="absolute";
+            this.customStyle["--main-fab-top"]="25px";
+            this.customStyle["--main-fab-bottom"]="unset";
+            this.customStyle["--main-fab-right"]="-25px";
+            this.updateStyles();
+
+          } else {
+            //list styles
+            console.log("found other");
+            this.customStyle["--guuey-list-float-left"]="left";
+            this.customStyle["--guuey-list-float-right"]="right";
+            this.customStyle["--list-width-half"]="40%";
+
+            //column styles
+            this.customStyle["--app-grid-columns"]="5";
+
+            //fab styles
+            this.customStyle["--main-fab-position"]="absolute";
+            this.customStyle["--main-fab-top"]="-25px";
+            this.customStyle["--main-fab-bottom"]="unset";
+            this.customStyle["--main-fab-right"]="-25px";
+            this.updateStyles();
           };
-          this.observers.push("changeLayout(dimensions.query640, dimensions.query900, dimensions.query750, dimensions.query1100)");
+
         };
         if(this.page==="su-care-review"){
 
@@ -37,10 +125,11 @@
         if(this.page==="su-risk"){
 
         };
-      }
-    };
-    Polymer.suResizeBehavior={
-      Polymer.suResizeBehaviorImp
+      },
+      attached:function(){
+
+      },
+
     };
   })();
 
