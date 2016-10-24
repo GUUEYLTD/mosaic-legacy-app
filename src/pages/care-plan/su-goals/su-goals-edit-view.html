@@ -13,20 +13,18 @@
 
 <link rel="import" href="../../../elements/guuey-date-input/guuey-date-input.html" />
 <link rel="import" href="../../../elements/guuey-notify/guuey-notify.html" />
+<link rel="import" href="../../../elements/media-queries/media-queries.html">
 
 <link rel="import" href="../../../styles/common-styles.html" />
 
-<link rel="import" href="../../../behaviors/multi-edit-behavior.html" />
+<link rel="import" href="../../../behaviors/edit-view-resize-behavior.html" />
+<link rel="import" href="../../../behaviors/multi-edit-animation-behavior.html" />
 
 <dom-module id="su-goals-edit-view">
 
   <template>
 
   <style include="common-styles">
-    :host{
-      --app-grid-columns:3;
-      --app-grid-item-height:150%;
-    }
     .editViewCard{
       width:100%;
     }
@@ -273,7 +271,8 @@
         }
       },
       behaviors:[
-        Polymer.multiEditBehavior
+        Polymer.editViewResizeBehavior,
+        Polymer.multiEditAnimationBehavior
       ],
       addStep:function(){
         this.fire("addStep");

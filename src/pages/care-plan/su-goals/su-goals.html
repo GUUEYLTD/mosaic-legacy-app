@@ -5,6 +5,10 @@
 
   <template>
 
+    <media-queries
+      dimensions="{{dimensions}}">
+    </media-queries>
+
     <!-- db query to find all goals for a patient-->
     <firebase-query
       id="goalsDB"
@@ -59,24 +63,6 @@
       app-name="main"
       path="homes/[[home]]/patients/[[patient]]/personalGoals">
     </firebase-document>
-
-    <!--media query workaround for shadow dom-->
-    <iron-media-query
-      query="(max-width:1200px)"
-      query-matches="{{query1200}}">
-    </iron-media-query>
-    <iron-media-query
-      query="(max-width:850px)"
-      query-matches="{{query850}}">
-    </iron-media-query>
-    <iron-media-query
-      query="(max-width:950px)"
-      query-matches="{{query950}}">
-    </iron-media-query>
-    <iron-media-query
-      query="(max-width:640px)"
-      query-matches="{{query640}}">
-    </iron-media-query>
 
     <style include="common-styles">
       :host{
@@ -233,13 +219,13 @@
         }
       },
       observers:[
-        "editQuery(query1200, query850, query950, query640)",
         "requirementsMet(goalsData)"
       ],
       behaviors:[
         Polymer.fabAnimationBehavior,
         Polymer.carePlanAnimation,
-        Polymer.suPrintBehavior
+        Polymer.suPrintBehavior,
+        Polymer.suResizeBehavior
       ],
       //activated from child events
       //multi-view event functions
@@ -358,136 +344,6 @@
           };
         }.bind(this));
       },
-      editQuery:function(query1200, query850, query950, query640){
-        if(query640){
-          //column style
-          this.customStyle["--app-grid-columns"]="1";
-
-          //fab style
-          this.customStyle["--main-fab-position"]="fixed";
-          this.customStyle["--main-fab-top"]="unset";
-          this.customStyle["--main-fab-bottom"]="5%";
-          this.customStyle["--main-fab-right"]="5%";
-
-          //table style
-          this.customStyle["--table-scroll-lable-color"]="inherit";
-          this.customStyle["--table-overflow"]="scroll";
-          this.customStyle["--tbody-display"]="block";
-          this.customStyle["--thead-tr-position"]="relative";
-          this.customStyle["--thead-tr-display"]="block";
-          this.customStyle["--thead-tr-td-width"]="150px";
-          this.customStyle["--td-th-min-width"]="150px";
-          this.customStyle["--td-th-last-width"]="150px";
-
-          //description and detail bar padding
-          this.customStyle["--detail-bar-padding"]="0% 10% 20px 40%";
-          this.customStyle["--description-container-padding"]="0% 10% 20px 40%";
-
-          this.updateStyles();
-        } else if(query850){
-          //column style
-          this.customStyle["--app-grid-columns"]="1";
-
-          //fab style
-          this.customStyle["--main-fab-position"]="absolute";
-          this.customStyle["--main-fab-top"]="-25px";
-          this.customStyle["--main-fab-right"]="-25px";
-          this.customStyle["--main-fab-bottom"]="unset";
-
-          //table style
-          this.customStyle["--table-scroll-lable-color"]="inherit";
-          this.customStyle["--table-overflow"]="scroll";
-          this.customStyle["--tbody-display"]="block";
-          this.customStyle["--thead-tr-position"]="relative";
-          this.customStyle["--thead-tr-display"]="block";
-          this.customStyle["--thead-tr-td-width"]="150px";
-          this.customStyle["--td-th-min-width"]="150px";
-          this.customStyle["--td-th-last-width"]="150px";
-
-          //description and detail bar padding
-          this.customStyle["--detail-bar-padding"]="0% 10% 20px 40%";
-          this.customStyle["--description-container-padding"]="0% 10% 20px 40%";
-
-          this.updateStyles();
-        } else if(query950){
-          //column style
-          this.customStyle["--app-grid-columns"]="1";
-
-          //fab style
-          this.customStyle["--main-fab-position"]="absolute";
-          this.customStyle["--main-fab-top"]="-25px";
-          this.customStyle["--main-fab-right"]="-25px";
-          this.customStyle["--main-fab-bottom"]="unset";
-
-          //table style
-          this.customStyle["--table-scroll-lable-color"]="inherit";
-          this.customStyle["--table-overflow"]="scroll";
-          this.customStyle["--tbody-display"]="block";
-          this.customStyle["--thead-tr-position"]="relative";
-          this.customStyle["--thead-tr-display"]="block";
-          this.customStyle["--thead-tr-td-width"]="150px";
-          this.customStyle["--td-th-min-width"]="150px";
-          this.customStyle["--td-th-last-width"]="150px";
-
-          //description and detail bar padding
-          this.customStyle["--detail-bar-padding"]="0% 25% 20px 25%";
-          this.customStyle["--description-container-padding"]="0% 25% 20px 25%";
-
-          this.updateStyles();
-        } else if(query1200){
-          //column style
-          this.customStyle["--app-grid-columns"]="2";
-
-          //fab style
-          this.customStyle["--main-fab-position"]="absolute";
-          this.customStyle["--main-fab-top"]="-25px";
-          this.customStyle["--main-fab-right"]="-25px";
-          this.customStyle["--main-fab-bottom"]="unset";
-
-          //table style
-          this.customStyle["--table-scroll-lable-color"]="transparent";
-          this.customStyle["--table-overflow"]="unset";
-          this.customStyle["--tbody-display"]="table-row-group";
-          this.customStyle["--thead-tr-position"]="unset";
-          this.customStyle["--thead-tr-display"]="table-row";
-          this.customStyle["--thead-tr-td-width"]="unset";
-          this.customStyle["--td-th-min-width"]="unset";
-          this.customStyle["--td-th-last-width"]="unset";
-
-          //description and detail bar padding
-          this.customStyle["--detail-bar-padding"]="0% 25% 20px 25%";
-          this.customStyle["--description-container-padding"]="0% 25% 20px 25%";
-
-          this.updateStyles();
-        } else {
-          //column style
-          this.customStyle["--app-grid-columns"]="3";
-
-          //fab style
-          this.customStyle["--main-fab-position"]="absolute";
-          this.customStyle["--main-fab-top"]="-25px";
-          this.customStyle["--main-fab-right"]="-25px";
-          this.customStyle["--main-fab-bottom"]="unset";
-
-          //table style
-          this.customStyle["--table-scroll-lable-color"]="transparent";
-          this.customStyle["--table-overflow"]="unset";
-          this.customStyle["--tbody-display"]="table-row-group";
-          this.customStyle["--thead-tr-position"]="unset";
-          this.customStyle["--thead-tr-display"]="table-row";
-          this.customStyle["--thead-tr-td-width"]="unset";
-          this.customStyle["--td-th-min-width"]="unset";
-          this.customStyle["--td-th-last-width"]="unset";
-
-          //description and detail bar padding
-          this.customStyle["--detail-bar-padding"]="0% 25% 20px 25%";
-          this.customStyle["--description-container-padding"]="0% 25% 20px 25%";
-
-          this.updateStyles();
-
-
-        };
-      }
     });
 
   </script>
