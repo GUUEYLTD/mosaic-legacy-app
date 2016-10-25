@@ -2,6 +2,11 @@
 <dom-module id="su-profile">
 
   <template>
+
+    <media-queries
+      dimensions="{{dimensions}}">
+    </media-queries>
+
     <firebase-document
       id="profileDB"
       path="/homes/[[home]]/patients/[[patient]]/personalProfile"
@@ -34,11 +39,6 @@
       id="suIndexDB"
       app-name="main">
     </firebase-document>
-
-    <iron-media-query
-      query="(max-width:900px)"
-      query-matches="{{query900}}">
-    </iron-media-query>
 
     <style include="common-styles">
       :host{
@@ -81,9 +81,6 @@
       </su-header>
 
       <div class="customContainer">
-        <div class="divider">
-
-        </div>
         <div class="sectionContainer">
           <iron-icon icon="social:person-outline"></iron-icon>
 
@@ -874,24 +871,15 @@
         }
       },
       observers:[
-        "editquery900(query900)",
         "requirementsMet(profileData)",
         "secondaryRequirementsMet(nextOfKinData)",
         "nameChanged(profileData.fName, profileData.lName)"
       ],
       behaviors:[
         Polymer.carePlanAnimation,
-        Polymer.suPrintBehavior
+        Polymer.suPrintBehavior,
+        Polymer.suResizeBehavior
       ],
-      editquery900:function(query900){
-        if(query900){
-          this.customStyle["--app-grid-columns"]="1";
-          this.updateStyles();
-        } else {
-          this.customStyle["--app-grid-columns"]="2";
-          this.updateStyles();
-        }
-      },
       requirementsMet:function(data){
         if(Object.keys(data).length === 0 && data.constructor === Object && this.guueyDOB!="loading" && this.guueyDOA!="loading"){
         } else {

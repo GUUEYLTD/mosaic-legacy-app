@@ -3,6 +3,9 @@
 <dom-module id="su-medication">
 
   <template>
+    <media-queries
+      dimensions="{{dimensions}}">
+    </media-queries>
     <firebase-document
       id="medDB"
       app-name="main">
@@ -33,16 +36,6 @@
       persisted-data="{{medsData}}"
       worker-url="../../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
     </app-indexeddb-mirror>
-
-    <iron-media-query
-      query="(max-width:1000px)"
-      query-matches="{{query1000}}">
-    </iron-media-query>
-
-    <iron-media-query
-      query="(max-width:640px)"
-      query-matches="{{query640}}">
-    </iron-media-query>
 
     <style include="paper-time-picker-dialog-style"></style>
     <style include="common-styles">
@@ -642,11 +635,12 @@
         }
       },
       observers:[
-        "editQuery(query1000 , query640)"
+
       ],
       behaviors:[
         Polymer.carePlanAnimation,
-        Polymer.suPrintBehavior
+        Polymer.suPrintBehavior,
+        Polymer.suResizeBehavior
       ],
       startNewMed:function(){
         this.$.medModal.toggle();
@@ -796,60 +790,6 @@
         } else {
           return "loading...";
         }
-      },
-      editQuery:function(query1000, query640){
-        if(query640){
-          //table style
-          this.customStyle["--table-scroll-lable-color"]="inherit";
-          this.customStyle["--table-overflow"]="scroll";
-          this.customStyle["--tbody-display"]="block";
-          this.customStyle["--thead-tr-position"]="relative";
-          this.customStyle["--thead-tr-display"]="block";
-          this.customStyle["--thead-tr-td-width"]="150px";
-          this.customStyle["--td-th-min-width"]="150px";
-          this.customStyle["--td-th-last-width"]="150px";
-
-          //fab styles
-          this.customStyle["--main-fab-position"]="fixed";
-          this.customStyle["--main-fab-top"]="unset";
-          this.customStyle["--main-fab-bottom"]="5%";
-          this.customStyle["--main-fab-right"]="5%";
-          this.updateStyles();
-        } else if(query1000){
-
-          //table style
-          this.customStyle["--table-scroll-lable-color"]="inherit";
-          this.customStyle["--table-overflow"]="scroll";
-          this.customStyle["--tbody-display"]="block";
-          this.customStyle["--thead-tr-position"]="relative";
-          this.customStyle["--thead-tr-display"]="block";
-          this.customStyle["--thead-tr-td-width"]="150px";
-          this.customStyle["--td-th-min-width"]="150px";
-          this.customStyle["--td-th-last-width"]="150px";
-
-          //fab styles
-          this.customStyle["--main-fab-position"]="absolute";
-          this.customStyle["--main-fab-top"]="-25px";
-          this.customStyle["--main-fab-bottom"]="unset";
-          this.customStyle["--main-fab-right"]="-25px";
-          this.updateStyles();
-        } else {
-          this.customStyle["--table-scroll-lable-color"]="transparent";
-          this.customStyle["--table-overflow"]="unset";
-          this.customStyle["--tbody-display"]="table-row-group";
-          this.customStyle["--thead-tr-position"]="unset";
-          this.customStyle["--thead-tr-display"]="table-row";
-          this.customStyle["--thead-tr-td-width"]="unset";
-          this.customStyle["--td-th-min-width"]="unset";
-          this.customStyle["--td-th-last-width"]="unset";
-
-          //fab styles
-          this.customStyle["--main-fab-position"]="absolute";
-          this.customStyle["--main-fab-top"]="-25px";
-          this.customStyle["--main-fab-bottom"]="unset";
-          this.customStyle["--main-fab-right"]="-25px";
-          this.updateStyles();
-        };
       },
       editTimeDialog:function(){
         this.$.timeChunkModal.close();

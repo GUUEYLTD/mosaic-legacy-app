@@ -2,6 +2,9 @@
 <dom-module id="su-pre">
 
   <template>
+    <media-queries
+      dimensions="{{dimensions}}">
+    </media-queries>
     <firebase-document
       id="assmtDB"
       path="/homes/[[home]]/patients/[[patient]]/preAdmissionAssessment"
@@ -37,11 +40,6 @@
       data="{{customData}}"
       app-name="main">
     </firebase-document>
-
-    <iron-media-query
-      query="(max-width:640px)"
-      query-matches="{{query640}}">
-    </iron-media-query>
 
     <style include="common-styles"></style>
 
@@ -189,11 +187,12 @@
         }
       },
       observers:[
-        "editQuery(query640)"
+
       ],
       behaviors:[
         Polymer.carePlanAnimation,
-        Polymer.suPrintBehavior
+        Polymer.suPrintBehavior,
+        Polymer.suResizeBehavior
       ],
       createNewSection:function(){
         this.$.customInput.path=null;
@@ -212,21 +211,6 @@
         this.$.customInput.data={};
         this.$.customSectionModal.close();
       },
-      editQuery:function(query640){
-        if(query640){
-          this.customStyle["--main-fab-position"]="fixed";
-          this.customStyle["--main-fab-top"]="unset";
-          this.customStyle["--main-fab-bottom"]="5%";
-          this.customStyle["--main-fab-right"]="5%";
-          this.updateStyles();
-        } else {
-          this.customStyle["--main-fab-position"]="absolute";
-          this.customStyle["--main-fab-top"]="-25px";
-          this.customStyle["--main-fab-bottom"]="unset";
-          this.customStyle["--main-fab-right"]="-25px";
-          this.updateStyles();
-        };
-      }
     });
 
   </script>
