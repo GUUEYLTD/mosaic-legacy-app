@@ -1,18 +1,88 @@
 <link rel="import" href="../../../../bower_components/polymer/polymer.html" />
+<link rel="import" href="../../../../bower_components/paper-card/paper-card.html" />
+<link rel="import" href="../../../../bower_components/vaadin-combo-box/vaadin-combo-box.html" />
+
+<link rel="import" href="../../../elements/guuey-text-input/guuey-text-input.html" />
+<link rel="import" href="../../../elements/guuey-slider/guuey-slider.html" />
+<link rel="import" href="../../../elements/guuey-date-input/guuey-date-input.html" />
+<link rel="import" href="../../../elements/media-queries/media-queries.html" />
+
+<link rel="import" href="../../../behaviors/multi-edit-animation-behavior.html" />
+<link rel="import" href="../../../behaviors/edit-view-resize-behavior.html" />
 
 <link rel="import" href="../../../styles/common-styles.html" />
 
 <dom-module id="su-risk-edit-view">
 
-  <style include="common-styles">
-
-
-
-  </style>
-
   <template>
 
+    <media-queries
+      dimensions="{{dimensions}}">
+    </media-queries>
 
+    <style include="common-styles">
+
+      .dateInput{
+        padding-top:40px;
+      }
+      .inputWrapper{
+        padding:20px;
+      }
+      .riskDescription{
+        text-align:center;
+        font-size:18px;
+        height:50%;
+        max-height:50%;
+        margin:4%;
+        overflow:hidden;
+      }
+
+    </style>
+    <paper-card class="editViewCard padded">
+
+      <vaadin-combo-box
+        label="Category"
+        items="[[riskTypes]]"
+        value="{{riskData.category}}">
+      </vaadin-combo-box>
+
+      <guuey-date-input
+        value="{{riskData.date}}"
+        label="Date of risk assessment">
+      </guuey-date-input>
+
+      <guuey-text-input
+        value="{{riskData.backgroundOfRisk}}"
+        label="Background of Risk">
+      </guuey-text-input>
+
+      <guuey-text-input
+        value="{{riskData.riskIdentified}}"
+        label="Risk Identified">
+      </guuey-text-input>
+
+      <guuey-text-input
+        value="{{riskData.crisisPlan}}"
+        label="crisis Plan"
+        label2="How to Address">
+      </guuey-text-input>
+
+      <vaadin-combo-box
+        label="Agreed Frequencey of Evaluation"
+        items="[[evalFreq]]"
+        value="{{riskData.agreedFrequencyOfEvaluation}}">
+      </vaadin-combo-box>
+
+      <guuey-date-input
+        value="{{riskData.evaluation}}"
+        label="Date of risk evaluation">
+      </guuey-date-input>
+
+      <guuey-slider
+        value="{{riskData.riskLevel}}">
+      </guuey-slider>
+
+    </paper-card>
 
   </template>
 
@@ -21,8 +91,20 @@
     Polymer({
 
       is:"su-risk-edit-view",
-
-
+      properties:{
+        riskData:{
+          type:Object,
+          notify:true,
+        },
+        viewType:{
+          type:String,
+          value:"edit-view"
+        }
+      },
+      behaviors:[
+        Polymer.editViewResizeBehavior,
+        Polymer.multiEditAnimationBehavior
+      ]
     });
 
   </script>

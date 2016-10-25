@@ -1,18 +1,162 @@
 <link rel="import" href="../../../../bower_components/polymer/polymer.html" />
+<link rel="import" href="../../../../bower_components/paper-card/paper-card.html" />
+<link rel="import" href="../../../../bower_components/paper-icon-button/paper-icon-button.html" />
+<link rel="import" href="../../../../bower_components/iron-icons/iron-icons.html" />
+<link rel="import" href="../../../../bower_components/paper-dialog/paper-dialog.html" />
+<link rel="import" href="../../../../bower_components/paper-button/paper-button.html" />
+<link rel="import" href="../../../../bower_components/iron-icon/iron-icon.html" />
+<link rel="import" href="../../../../bower_components/iron-icons/editor-icons.html" />
+
+<link rel="import" href="../../../elements/guuey-slider/guuey-slider.html" />
+<link rel="import" href="../../../elements/media-queries/media-queries.html" />
+
+<link rel="import" href="../../../behaviors/multi-edit-animation-behavior.html" />
+<link rel="import" href="../../../behaviors/multi-view-resize-behavior.html" />
 
 <link rel="import" href="../../../styles/common-styles.html" />
 
-<dom-module id="su-risk-edit-view">
-
-  <style include="common-styles">
-
-
-
-  </style>
+<dom-module id="su-risk-multi-view">
 
   <template>
 
+    <media-queries
+      dimensions="{{dimensions}}">
+    </media-queries>
 
+    <style include="common-styles">
+
+      :host{
+        --app-grid-columns:3;
+        --app-grid-item-height:150%;
+      }
+      .riskBox{
+        margin:20px;
+        padding: 0 !important;
+      }
+      .riskHeading{
+        width:100%;
+        height:30%;
+        margin-top:0 !important;
+        margin-bottom:4%;
+        position:relative;
+        background-repeat:no-repeat;
+        background-size:cover;
+        background-position:bottom right;
+      }
+      .riskLabel{
+        width:25%;
+        position:absolute;
+        bottom:5%;
+        left:5%;
+        padding:0px;
+        margin:0px;
+        font-weight:bold;
+        color:#FFFFFF;
+        font-size:20px;
+      }
+      .riskMore{
+        position:absolute;
+        top:5%;
+        right:5%;
+        color:#FFFFFF;
+      }
+      .multiCardContainer{
+        display:flex;
+        flex-direction:column;
+        height:70%;
+      }
+      .riskCardText{
+        flex-grow:3;
+        margin:0 10px 0 10px;
+      }
+      .cardDivider{
+        border-bottom:1px solid #e0e0e0;
+        height:1px;
+        width:100%;
+        display:inline-block;
+      }
+      .dateContainer{
+        flex-grow:1;
+        display:flex;
+        flex-direction:row;
+      }
+      .dateHeader{
+        width:100%;
+        text-align:center;
+      }
+      .riskDate{
+        flex-grow:1;
+        text-align:center;
+      }
+
+    </style>
+
+    <paper-dialog horizontal-align="left" vertical-align="top" id="editModal">
+      <paper-button on-tap="editRisk">edit</paper-button>
+      <br />
+      <paper-button on-tap="deleteRisk">delete</paper-button>
+    </paper-dialog>
+
+    <paper-card class="app-grid" has-aspect-ratio>
+
+      <!--
+      <div hidden="{{queryCount}}">
+
+      </div>
+      -->
+
+      <template is="dom-repeat" items="{{risksData}}" as="risk">
+        {{_computeQueryCount(risk)}}
+
+        <div class="riskContainer">
+
+          <paper-card elevation="3" class="riskBox">
+
+            <div style="background-image:url(../../../../{{_computeRiskImage(risk.category)}})" class="riskHeading">
+              <p class="riskLabel">
+                [[risk.category]]
+              </p>
+            </div>
+
+            <div class="multiCardContainer">
+              <guuey-slider value="{{risk.riskLevel}}">
+              </guuey-slider>
+
+              <p class="riskCardText">
+                [[risk.riskIdentified]]
+              </p>
+
+              <div class="cardDivider">
+
+              </div>
+              <p class="dateHeader">
+                Date of Assessment
+              </p>
+              <div class="dateContainer">
+                <div class="riskDate">
+                  <iron-icon icon="editor:insert-invitation"></iron-icon>{{_computeDate(risk.date)}}
+                </div>
+
+                <div class="riskDate">
+                  <iron-icon icon="icons:update"></iron-icon>{{_computeDate(risk.evaluation)}}
+                </div>
+              </div>
+            </div>
+
+            <paper-icon-button
+              icon="icons:more-vert"
+              class="riskMore"
+              on-tap="toggleEditModal">
+            </paper-icon-button>
+
+
+          </paper-card>
+
+        </paper-card>
+
+      </template>
+
+    </div>
 
   </template>
 
@@ -20,9 +164,80 @@
 
     Polymer({
 
-      is:"su-risk-edit-view",
+      is:"su-risk-multi-view",
+      properties:{
+        risksData:{
+          type:Object,
+          notify:true
+        },
+        riskId:{
+          type:String,
+          value:null
+        },
+        viewType:{
+          type:String,
+          value:"multi-view"
+        }
+      },
+      behaviors:[
+        Polymer.multiViewResizeBehavior,
+        Polymer.multiEditAnimationBehavior
+      ],
+      _computeQueryCount:function(risk){
+        if(!this.queryCount){
+          this.queryCount=0;
+        };
+        this.queryCount++;
+      },
+      _computeRiskImage:function(cat){
 
-
+        switch(cat) {
+          case "Moving & Handling":
+              return "images/risks/movingHandling.png";
+              break;
+          case "Slips & Trips":
+              return "images/risks/slipsTrips.png";
+              break;
+          case "Violence & Agression":
+              return "images/risks/violenceAgression.png";
+              break;
+          case "Falls From Windows & Balconies":
+              return "images/risks/falls.png";
+              break;
+          case "Scalding & Burning":
+              return "images/risks/scaldingBurning.png";
+              break;
+          case "Bedrail Entrapment":
+              return "images/risks/bedrailEntrapment.png";
+              break;
+          case "Legionella":
+              return "images/risks/legionella.png";
+              break;
+          default:
+              return "images/risks/other.png";
+              break;
+        };
+      },
+      _computeDate:function(date){
+        if(typeof date==="string"){
+          return date.slice(3,15);
+        } else {
+          return "Date not set";
+        };
+      },
+      toggleEditModal:function(e){
+        this.$.editModal.positionTarget = e.target;
+        this.riskId=e.model.risk.$key;
+        this.$.editModal.toggle();
+      },
+      editRisk:function(e){
+        this.fire("editRisk", {riskId:this.riskId})
+        this.$.editModal.close();
+      },
+      deleteRisk:function(e){
+        this.fire("deleteRisk", {riskId:this.riskId});
+        this.$.editModal.close();
+      },
     });
 
   </script>

@@ -147,6 +147,49 @@
 
         };
         if(this.page==="su-risk"){
+          console.log("risk hitting");
+          var mainFabPosition="absolute";
+          var mainFabTop="-25px";
+          var mainFabRight="-25px";
+          var mainFabBottom="unset";
+
+          if(dimensions.base.query640){
+
+            mainFabPosition="fixed";
+            mainFabTop="unset";
+            mainFabBottom="5%";
+            mainFabRight="5%";
+
+          } else if(dimensions.base.query750){
+
+            mainFabPosition="absolute";
+            mainFabTop="-25px";
+            mainFabBottom="unset";
+            mainFabRight="-25px";
+
+          } else if(dimensions.base.query900){
+
+            mainFabPosition="absolute";
+            mainFabTop="-25px";
+            mainFabBottom="unset";
+            mainFabRight="-25px";
+
+          } else if(dimensions.base.query1100){
+
+            mainFabPosition="absolute";
+            mainFabTop="-25px";
+            mainFabBottom="unset";
+            mainFabRight="-25px";
+
+          };
+
+          //fab style
+          this.customStyle["--main-fab-position"]=mainFabPosition;
+          this.customStyle["--main-fab-top"]=mainFabTop;
+          this.customStyle["--main-fab-right"]=mainFabRight;
+          this.customStyle["--main-fab-bottom"]=mainFabBottom;
+
+          this.updateStyles();
 
         };
       },

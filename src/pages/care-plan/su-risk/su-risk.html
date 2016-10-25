@@ -3,6 +3,10 @@
 
   <template>
 
+    <media-queries
+      dimensions="{{dimensions}}">
+    </media-queries>
+
     <!--firebase query to get all of the risk assessments-->
     <firebase-query
       id="risksDB"
@@ -32,87 +36,7 @@
       app-name="main">
     </firebase-document>
 
-    <!--media query workaround for shadow dom-->
-    <iron-media-query
-      query="(max-width:1300px)"
-      query-matches="{{query1300}}">
-    </iron-media-query>
-    <iron-media-query
-      query="(max-width:1100px)"
-      query-matches="{{query1100}}">
-    </iron-media-query>
-    <iron-media-query
-      query="(max-width:750px)"
-      query-matches="{{query750}}">
-    </iron-media-query>
-    <iron-media-query
-      query="(max-width:640px)"
-      query-matches="{{query640}}">
-    </iron-media-query>
-
-    <style include="common-styles">
-      :host{
-        --app-grid-columns:3;
-        --app-grid-item-height:150%;
-      }
-      .dateInput{
-        padding-top:40px;
-      }
-      .inputWrapper{
-        padding:20px;
-      }
-      .riskDescription{
-        text-align:center;
-        font-size:18px;
-        height:50%;
-        max-height:50%;
-        margin:4%;
-        overflow:hidden;
-      }
-      .riskBox{
-        margin:20px;
-        padding: 0 !important;
-      }
-      .riskHeading{
-        width:100%;
-        height:40%;
-        margin-top:0 !important;
-        margin-bottom:4%;
-        position:relative;
-        background-repeat:no-repeat;
-        background-size:cover;
-        background-position:bottom right;
-      }
-      .riskLabel{
-        width:25%;
-        position:absolute;
-        bottom:10px;
-        left:10px;
-        padding:0px;
-        margin:0px;
-        font-weight:bold;
-        color:#FFFFFF;
-        font-size:20px;
-      }
-      .riskCardText{
-        padding:10px;
-      }
-      .dateContainer{
-        padding:10px;
-      }
-      .riskMore{
-        position:absolute;
-        top:10px;
-        right:10px;
-        color:#FFFFFF;
-      }
-    </style>
-
-    <paper-dialog horizontal-align="left" vertical-align="top" id="editModal">
-      <paper-button on-tap="editRisk">edit</paper-button>
-      <br />
-      <paper-button on-tap="deleteRisk">delete</paper-button>
-    </paper-dialog>
+    <style include="common-styles"></style>
 
     <paper-dialog id="addRiskDialog" class="guuey-modal guuey-add-modal">
 
@@ -187,121 +111,32 @@
         <paper-fab
           id="regFab"
           icon="icons:add"
-          on-tap="addRisk"
-          hidden="[[riskSelected]]">
+          on-tap="addRisk">
         </paper-fab>
 
         <!--absolute positioned button to finsh adding a new risk assessment and close the add view-->
-        <span hidden="[[!riskSelected]]">
 
-          <paper-fab
-            id="editFab"
-            icon="icons:check"
-            on-tap="finishRisk"
-            hidden="[[!riskSelected]]">
-          </paper-fab>
+        <paper-fab
+          id="editFab"
+          icon="icons:check"
+          on-tap="finishRisk">
+        </paper-fab>
 
-        </span>
+          <neon-animated-pages
+            attr-for-selected="name"
+            selected="[[pageState]]">
 
-        <div class="app-grid" has-aspect-ratio>
+            <su-risk-multi-view
+              name="multi-view"
+              risks-data="{{risksData}}">
+            </su-risk-multi-view>
 
-          <!--
-          <div hidden="{{queryCount}}">
+            <su-risk-edit-view
+              name="edit-view"
+              risk-data="{{riskData}}">
+            </su-risk-edit-view>
 
-          </div>
-          -->
-
-          <template is="dom-repeat" items="{{risksData}}" as="risk">
-            {{_computeQueryCount(risk)}}
-
-            <div class="riskContainer" hidden="[[riskSelected]]">
-
-              <paper-card elevation="3" class="riskBox">
-
-                <div style="background-image:url(../../../../{{_computeRiskImage(risk.category)}})" class="riskHeading">
-                  <p class="riskLabel">
-                    [[risk.category]]
-                  </p>
-                </div>
-
-                <guuey-slider value="{{risk.riskLevel}}">
-                </guuey-slider>
-
-                <p class="riskCardText">
-                  [[risk.riskIdentified]]
-                </p>
-
-                <div style="border-bottom:1px solid grey; width:100%;" class="divider">
-
-                </div>
-                <div class="dateContainer">
-                  <p class="dateHeader">
-                    Date of Assessment
-                  </p>
-                  <iron-icon icon="editor:insert-invitation"></iron-icon>{{_computeDate(risk.date)}}
-                  <br />
-                  <iron-icon icon="icons:update"></iron-icon>{{_computeDate(risk.evaluation)}}
-                </div>
-                <paper-icon-button
-                  icon="icons:more-vert"
-                  class="riskMore"
-                  on-tap="toggleEditModal">
-                </paper-icon-button>
-
-
-              </paper-card>
-
-            </div>
-
-          </template>
-
-        </div>
-
-        <div class="inputWrapper" hidden="[[!riskSelected]]">
-
-          <vaadin-combo-box
-            label="Category"
-            items="[[riskTypes]]"
-            value="{{riskData.category}}">
-          </vaadin-combo-box>
-
-          <guuey-date-input
-            value="{{riskData.date}}"
-            label="Date of risk assessment">
-          </guuey-date-input>
-
-          <guuey-text-input
-            value="{{riskData.backgroundOfRisk}}"
-            label="Background of Risk">
-          </guuey-text-input>
-
-          <guuey-text-input
-            value="{{riskData.riskIdentified}}"
-            label="Risk Identified">
-          </guuey-text-input>
-
-          <guuey-text-input
-            value="{{riskData.crisisPlan}}"
-            label="crisis Plan"
-            label2="How to Address">
-          </guuey-text-input>
-
-          <vaadin-combo-box
-            label="Agreed Frequencey of Evaluation"
-            items="[[evalFreq]]"
-            value="{{riskData.agreedFrequencyOfEvaluation}}">
-          </vaadin-combo-box>
-
-          <guuey-date-input
-            value="{{riskData.evaluation}}"
-            label="Date of risk evaluation">
-          </guuey-date-input>
-
-          <guuey-slider
-            value="{{riskData.riskLevel}}">
-          </guuey-slider>
-
-        </div>
+          </neon-animated-pages>
 
       </div>
 
@@ -317,6 +152,8 @@
       ready:function(){
         this.fire("pageLoaded", {page:this.page});
         this.addEventListener("print", this.print);
+        this.addEventListener("editRisk", this.editRisk);
+        this.addEventListener("deleteRisk", this.deleteRisk);
       },
       properties:{
         page:{
@@ -332,9 +169,13 @@
           type:Boolean,
           value:true
         },
-        riskSelected:{
-          type:Boolean,
-          value:false
+        pageState:{
+          type:String,
+          value:"multi-view"
+        },
+        riskId:{
+          type:String,
+          value:null
         },
         evalFreq:{
           type:Array,
@@ -362,22 +203,30 @@
         }
       },
       observers:[
-        "editQuery(query1300, query1100, query750, query640)",
         "requirementsMet(risksData)"
       ],
       behaviors:[
         Polymer.fabAnimationBehavior,
         Polymer.carePlanAnimation,
-        Polymer.suPrintBehavior
+        Polymer.suPrintBehavior,
+        Polymer.suResizeBehavior,
       ],
-      toggleEditModal:function(e){
-        this.$.editModal.positionTarget = e.target;
-        this.riskUID=e.model.risk.$key;
-        this.$.editModal.toggle();
+      editRisk:function(e){
+        var riskId=e.detail.riskId;
+        this.$.riskDB.path="/homes/"+this.home+"/patients/"+this.patient+"/riskAssessment/"+riskId;
+        this.animateEditViewFab();
+        this.goEdit();
       },
-      //is this useless???? i think so... test later
-      editField:function(event){
-        event.model.set('item.name','stuff');
+      deleteRisk:function(e){
+        var riskId=e.detail.riskId;
+        var path="/homes/"+this.home+"/patients/"+this.patient+"/riskAssessment/"+riskId;
+        this.$.riskDB.setStoredValue(path, null);
+      },
+      goEdit:function(){
+        this.pageState="edit-view";
+      },
+      goMulti:function(){
+        this.pageState="multi-view";
       },
       toggleEdit:function(){
         this.inputDisabled=!this.inputDisabled;
@@ -403,62 +252,9 @@
         this.$.addRiskDialog.close();
         this.$.riskDB.data={};
       },
-      editRisk:function(e){
-        this.riskSelected=true;
-        this.$.riskDB.path="/homes/"+this.home+"/patients/"+this.patient+"/riskAssessment/"+this.riskUID;
-        this.$.editModal.close();
-        this.animateEditState();
-      },
-      deleteRisk:function(e){
-        var path="/homes/"+this.home+"/patients/"+this.patient+"/riskAssessment/"+this.riskUID;
-        this.$.riskDB.setStoredValue(path, null);
-        this.$.editModal.close();
-      },
       finishRisk:function(e){
-        this.riskSelected=false;
-        this.animateRegState();
-      },
-      _computeDate:function(date){
-        if(typeof date==="string"){
-          return date.slice(3,15);
-        } else {
-          return "Date not set";
-        };
-      },
-      _computeRiskImage:function(cat){
-
-        switch(cat) {
-          case "Moving & Handling":
-              return "images/risks/movingHandling.png";
-              break;
-          case "Slips & Trips":
-              return "images/risks/slipsTrips.png";
-              break;
-          case "Violence & Agression":
-              return "images/risks/violenceAgression.png";
-              break;
-          case "Falls From Windows & Balconies":
-              return "images/risks/falls.png";
-              break;
-          case "Scalding & Burning":
-              return "images/risks/scaldingBurning.png";
-              break;
-          case "Bedrail Entrapment":
-              return "images/risks/bedrailEntrapment.png";
-              break;
-          case "Legionella":
-              return "images/risks/legionella.png";
-              break;
-          default:
-              return "images/risks/other.png";
-              break;
-        };
-      },
-      _computeQueryCount:function(goal){
-        if(!this.queryCount){
-          this.queryCount=0;
-        };
-        this.queryCount++;
+        this.pageState="multi-view";
+        this.animateMultiViewFab();
       },
       requirementsMet:function(data){
         //change case
@@ -468,60 +264,7 @@
             this.fire("openToast", {toastText:"Date of risk assessment is reqiured."});
           };
         }.bind(this));
-      },
-      editQuery:function(query1300, query1100, query750, query640){
-        if(query640){
-          //column style
-          this.customStyle["--app-grid-columns"]="1";
-
-          //fab style
-          this.customStyle["--main-fab-position"]="fixed";
-          this.customStyle["--main-fab-top"]="unset";
-          this.customStyle["--main-fab-bottom"]="5%";
-          this.customStyle["--main-fab-right"]="5%";
-          this.updateStyles();
-        } else if(query750){
-          //column style
-          this.customStyle["--app-grid-columns"]="1";
-
-          //fab style
-          this.customStyle["--main-fab-position"]="absolute";
-          this.customStyle["--main-fab-top"]="-25px";
-          this.customStyle["--main-fab-right"]="-25px";
-          this.customStyle["--main-fab-bottom"]="unset";
-          this.updateStyles();
-        } else if(query1100){
-          //column style
-          this.customStyle["--app-grid-columns"]="2";
-
-          //fab style
-          this.customStyle["--main-fab-position"]="absolute";
-          this.customStyle["--main-fab-top"]="-25px";
-          this.customStyle["--main-fab-right"]="-25px";
-          this.customStyle["--main-fab-bottom"]="unset";
-          this.updateStyles();
-        } else if(query1300){
-          //column style
-          this.customStyle["--app-grid-columns"]="2";
-
-          //fab style
-          this.customStyle["--main-fab-position"]="absolute";
-          this.customStyle["--main-fab-top"]="-25px";
-          this.customStyle["--main-fab-right"]="-25px";
-          this.customStyle["--main-fab-bottom"]="unset";
-          this.updateStyles();
-        }  else {
-          //column style
-          this.customStyle["--app-grid-columns"]="3";
-
-          //fab style
-          this.customStyle["--main-fab-position"]="absolute";
-          this.customStyle["--main-fab-top"]="-25px";
-          this.customStyle["--main-fab-right"]="-25px";
-          this.customStyle["--main-fab-bottom"]="unset";
-          this.updateStyles();
-        };
-      },
+      }
     });
 
   </script>
