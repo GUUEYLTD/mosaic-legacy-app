@@ -3,12 +3,9 @@
 
   <template>
 
-    <firebase-document
-      id="testDB"
-      path="homes/[[home]]/patients/test/test"
-      data="{{testData}}"
-      app-name="main">
-    </firebase-document>
+    <media-queries
+      dimensions="{{dimensions}}">
+    </media-queries>
 
     <style include="common-styles">
 
@@ -33,7 +30,8 @@
         this.fire("pageLoaded",{page:this.page});
       },
       behaviors:[
-        Polymer.defPagesAnimation
+        Polymer.defPagesAnimation,
+        Polymer.defaultResizeBehavior
       ]
     });
 

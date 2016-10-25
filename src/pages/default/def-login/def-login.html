@@ -4,10 +4,9 @@
 
   <template>
 
-    <iron-media-query
-      query="(max-width:400px)"
-      query-matches="{{query400}}">
-    </iron-media-query>
+    <media-queries
+      dimensions="{{dimensions}}">
+    </media-queries>
 
     <firebase-auth
       id="forgotUser"
@@ -298,10 +297,11 @@
         }
       },
       observers:[
-        "queryEdit(query400)"
+
       ],
       behaviors:[
-        Polymer.defPagesAnimation
+        Polymer.defPagesAnimation,
+        Polymer.defaultResizeBehavior
       ],
       validateInputs:function(){
         var validArray=[];
@@ -374,15 +374,6 @@
             this.error=error;
           }.bind(this));
       },
-      queryEdit:function(query400){
-        if(query400){
-          this.customStyle["--app-grid-columns"]="1";
-          this.updateStyles();
-        } else {
-          this.customStyle["--app-grid-columns"]="2";
-          this.updateStyles();
-        };
-      }
     });
 
   </script>

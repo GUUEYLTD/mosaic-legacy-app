@@ -2,6 +2,11 @@
 <dom-module id="def-verify">
 
     <template>
+
+        <media-queries
+          dimensions="{{dimensions}}">
+        </media-queries>
+
         <firebase-auth
           id="auth"
           app-name="main"
@@ -163,7 +168,8 @@
               }
             },
             behaviors:[
-              Polymer.defPagesAnimation
+              Polymer.defPagesAnimation,
+              Polymer.defaultResizeBehavior
             ],
             verifyEmail: function() {
               this.$.auth.user.sendEmailVerification()

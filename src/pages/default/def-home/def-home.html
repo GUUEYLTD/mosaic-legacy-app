@@ -2,6 +2,11 @@
 <dom-module id="def-home">
 
   <template>
+
+    <media-queries
+      dimensions="{{dimensions}}">
+    </media-queries>
+
     <firebase-query
       id="suIndexDB"
       path="/homes/[[home]]/patients/suIndex"
@@ -19,27 +24,7 @@
       id="fireDoc"
       app-name="main">
     </firebase-document>
-    <!--media query workaround for shadow dom-->
-    <iron-media-query
-      query="(min-width:1300px)"
-      query-matches="{{query1300}}">
-    </iron-media-query>
-    <iron-media-query
-      query="(min-width:1100px)"
-      query-matches="{{query1100}}">
-    </iron-media-query>
-    <iron-media-query
-      query="(min-width:900px)"
-      query-matches="{{query900}}">
-    </iron-media-query>
-    <iron-media-query
-      query="(min-width:700px)"
-      query-matches="{{query700}}">
-    </iron-media-query>
-    <iron-media-query
-      query="(min-width:500px)"
-      query-matches="{{query500}}">
-    </iron-media-query>
+
     <style include="app-grid-style">
     :host{
       --app-grid-columns:5;
@@ -225,11 +210,11 @@
         },
       },
       observers:[
-        "mediaQueryEdit(query1300, query1100, query900, query700, query500)",
         "dbLoaded(patientList)"
       ],
       behaviors:[
-        Polymer.defPagesAnimation
+        Polymer.defPagesAnimation,
+        Polymer.defaultResizeBehavior
       ],
       createNewPatient:function(){
         this.$.fireDoc.path=null;
@@ -318,45 +303,6 @@
             this.fire("dbLoaded");
         }.bind(this));
       },
-      mediaQueryEdit:function(query1300, query1100, query900, query700, query500){
-        if(query1300){
-          this.customStyle["--app-grid-columns"]="5";
-          this.customStyle["--main-fab-position"]="absolute";
-          this.customStyle["--main-fab-top"]="140px";
-          this.customStyle["--main-fab-bottom"]="unset";
-          this.updateStyles();
-        } else if(query1100){
-          this.customStyle["--app-grid-columns"]="4";
-          this.customStyle["--main-fab-position"]="absolute";
-          this.customStyle["--main-fab-top"]="140px";
-          this.customStyle["--main-fab-bottom"]="unset";
-          this.updateStyles();
-        } else if(query900){
-          this.customStyle["--app-grid-columns"]="3";
-          this.customStyle["--main-fab-position"]="absolute";
-          this.customStyle["--main-fab-top"]="140px";
-          this.customStyle["--main-fab-bottom"]="unset";
-          this.updateStyles();
-        } else if(query700){
-          this.customStyle["--app-grid-columns"]="2";
-          this.customStyle["--main-fab-position"]="fixed";
-          this.customStyle["--main-fab-top"]="unset";
-          this.customStyle["--main-fab-bottom"]="5%";
-          this.updateStyles();
-        } else if(query500){
-          this.customStyle["--app-grid-columns"]="2";
-          this.customStyle["--main-fab-position"]="fixed";
-          this.customStyle["--main-fab-top"]="unset";
-          this.customStyle["--main-fab-bottom"]="5%";
-          this.updateStyles();
-        } else {
-          this.customStyle["--app-grid-columns"]="1";
-          this.customStyle["--main-fab-position"]="fixed";
-          this.customStyle["--main-fab-top"]="unset";
-          this.customStyle["--main-fab-bottom"]="5%";
-          this.updateStyles();
-        };
-      }
     });
 
   </script>
