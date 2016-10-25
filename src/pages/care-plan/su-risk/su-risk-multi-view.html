@@ -7,6 +7,10 @@
 <link rel="import" href="../../../../bower_components/iron-icon/iron-icon.html" />
 <link rel="import" href="../../../../bower_components/iron-icons/editor-icons.html" />
 
+<!--temp animations till hero animations work-->
+<link rel="import" href="../../../../bower_components/neon-animation/animations/scale-up-animation.html" />
+<link rel="import" href="../../../../bower_components/neon-animation/animations/scale-down-animation.html" />
+
 <link rel="import" href="../../../elements/guuey-slider/guuey-slider.html" />
 <link rel="import" href="../../../elements/media-queries/media-queries.html" />
 
@@ -181,7 +185,7 @@
       },
       behaviors:[
         Polymer.multiViewResizeBehavior,
-        Polymer.multiEditAnimationBehavior
+        //Polymer.multiEditAnimationBehavior
       ],
       _computeQueryCount:function(risk){
         if(!this.queryCount){
