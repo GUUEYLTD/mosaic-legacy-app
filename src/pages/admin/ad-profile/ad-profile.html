@@ -3,6 +3,11 @@
 <dom-module id="ad-profile">
 
   <template>
+
+    <media-queries
+      dimensions="{{dimensions}}">
+    </media-queries>
+
     <firebase-document
       id="careHomeProfileDB"
       path="/homes/{{home}}/details"
@@ -185,11 +190,11 @@
         }
       },
       observers:[
-        "editQuery(query600)",
         "_computeImage(careHomeProfile.profileImage)"
       ],
       behaviors:[
-        Polymer.adminPagesAnimation
+        Polymer.adminPagesAnimation,
+        Polymer.adminResizeBehavior
       ],
       _inputChanged:function(image) {
         console.log(image);
@@ -208,15 +213,6 @@
           this.$.imageInput.value = '';
           this.$.imageInput.click();
         }
-      },
-      editQuery:function(query600){
-        if(query600){
-          this.customStyle["--app-grid-columns"]="1";
-          this.updateStyles();
-        } else {
-          this.customStyle["--app-grid-columns"]="2";
-          this.updateStyles();
-        };
       },
       _computeImage:function(image){
         var type=typeof image;

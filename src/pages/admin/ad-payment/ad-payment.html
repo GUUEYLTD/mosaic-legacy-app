@@ -4,17 +4,17 @@
 <dom-module id="ad-payment">
 
   <template>
+
+    <media-queries
+      dimensions="{{dimensions}}">
+    </media-queries>
+
     <firebase-document
     id="careHomeProfileDB"
     path="/homes/{{home}}/payment"
     data="{{chPayments}}"
     app-name="main">
   </firebase-document>
-
-  <iron-media-query
-    query="(max-width:600px)"
-    query-matches="{{query600}}">
-  </iron-media-query>
 
     <style include="common-styles">
       :host{
@@ -156,42 +156,18 @@
         home:{
           type:String,
         },
-      date:{
-        type:String,
-        value:"today"
+        date:{
+          type:String,
+          value:"today"
+        },
       },
-    },
-    observers:[
-      "editQuery(query600)"
-    ],
-    behaviors:[
-      Polymer.adminPagesAnimation
-    ],
-    editQuery:function(query600){
-      if(query600){
-        this.customStyle["--app-grid-columns"]="1";
-        this.customStyle["--table-scroll-lable-color"]="inherit";
-        this.customStyle["--table-overflow"]="scroll";
-        this.customStyle["--tbody-display"]="block";
-        this.customStyle["--thead-tr-position"]="relative";
-        this.customStyle["--thead-tr-display"]="block";
-        this.customStyle["--thead-tr-td-width"]="150px";
-        this.customStyle["--td-th-min-width"]="150px";
-        this.customStyle["--td-th-last-width"]="150px";
-        this.updateStyles();
-      } else {
-        this.customStyle["--app-grid-columns"]="2";
-        this.customStyle["--table-scroll-lable-color"]="transparent";
-        this.customStyle["--table-overflow"]="unset";
-        this.customStyle["--tbody-display"]="table-row-group";
-        this.customStyle["--thead-tr-position"]="unset";
-        this.customStyle["--thead-tr-display"]="table-row";
-        this.customStyle["--thead-tr-td-width"]="unset";
-        this.customStyle["--td-th-min-width"]="unset";
-        this.customStyle["--td-th-last-width"]="unset";
-        this.updateStyles();
-      };
-    }
+      observers:[
+
+      ],
+      behaviors:[
+        Polymer.adminPagesAnimation,
+        Polymer.adminResizeBehavior
+      ],
     });
 
   </script>

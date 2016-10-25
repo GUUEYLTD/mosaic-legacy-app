@@ -3,6 +3,11 @@
 <dom-module id="ad-users">
 
   <template>
+
+    <media-queries
+      dimensions="{{dimensions}}">
+    </media-queries>
+
     <!--query to get a list of curent users-->
   <firebase-query
     id="usersDB"
@@ -23,10 +28,7 @@
     data="{{susData}}"
     app-name="main">
   </firebase-query>
-  <iron-media-query
-    query="(max-width:900px)"
-    query-matches="{{query900}}">
-  </iron-media-query>
+
     <style include="common-styles">
       #userDialog{
         margin:0;
@@ -172,7 +174,7 @@
       <div class="pageInnerCont padded">
 
         <paper-fab
-          id="adminFab"
+          id="mainFab"
           icon="icons:add"
           on-tap="addUser">
         </paper-fab>
@@ -281,10 +283,11 @@
         }
       },
       observers:[
-        "editQuery(query900)"
+
       ],
       behaviors:[
-        Polymer.adminPagesAnimation
+        Polymer.adminPagesAnimation,
+        Polymer.adminResizeBehavior
       ],
       createNewUser:function(){
         this.fire("createNewUser", this.newAccount);
@@ -316,41 +319,6 @@
           this.$.imageInput.value = '';
           this.$.imageInput.click();
         }
-      },
-      editQuery:function(query900){
-        if(query900){
-          //table style
-          this.customStyle["--table-scroll-lable-color"]="inherit";
-          this.customStyle["--table-overflow"]="scroll";
-          this.customStyle["--tbody-display"]="block";
-          this.customStyle["--thead-tr-position"]="relative";
-          this.customStyle["--thead-tr-display"]="block";
-          this.customStyle["--thead-tr-td-width"]="150px";
-          this.customStyle["--td-th-min-width"]="150px";
-          this.customStyle["--td-th-last-width"]="150px";
-          //fab style
-          this.customStyle["--main-fab-position"]="fixed";
-          this.customStyle["--main-fab-top"]="unset";
-          this.customStyle["--main-fab-bottom"]="5%";
-          this.customStyle["--main-fab-right"]="5%";
-
-          this.updateStyles();
-        } else {
-          this.customStyle["--table-scroll-lable-color"]="transparent";
-          this.customStyle["--table-overflow"]="unset";
-          this.customStyle["--tbody-display"]="table-row-group";
-          this.customStyle["--thead-tr-position"]="unset";
-          this.customStyle["--thead-tr-display"]="table-row";
-          this.customStyle["--thead-tr-td-width"]="unset";
-          this.customStyle["--td-th-min-width"]="unset";
-          this.customStyle["--td-th-last-width"]="unset";
-
-          this.customStyle["--main-fab-position"]="absolute";
-          this.customStyle["--main-fab-top"]="-25px";
-          this.customStyle["--main-fab-right"]="-25px"
-          this.customStyle["--main-fab-bottom"]="unset";
-          this.updateStyles();
-        };
       }
     });
 

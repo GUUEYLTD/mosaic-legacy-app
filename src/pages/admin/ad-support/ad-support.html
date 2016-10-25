@@ -4,8 +4,11 @@
 
   <template>
 
-    <style include="common-styles"></style>
-    <style>
+    <media-queries
+      dimensions="{{dimensions}}">
+    </media-queries>
+
+    <style include="common-styles">
 
       .pageCard{
         min-height:800px;
@@ -33,7 +36,8 @@
         this.fire("pageLoaded", {page:this.page});
       },
       behaviors:[
-        Polymer.adminPagesAnimation
+        Polymer.adminPagesAnimation,
+        Polymer.adminResizeBehavior
       ]
     });
 
