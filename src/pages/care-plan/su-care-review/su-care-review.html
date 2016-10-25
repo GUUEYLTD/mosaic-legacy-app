@@ -2,41 +2,34 @@
 <dom-module id="su-care-review">
 
   <template>
-    <!--db for agreement section-->
-    <firebase-document
-      id="agreeDB"
-      app-name="main"
-      data="{{agreeDataLive}}"
-      path="homes/[[home]]/patients/[[patient]]/carePlan/statementOfServiceUser">
-    </firebase-document>
-
-    <app-indexeddb-mirror
-      key="agreeDB|[[patient]]"
-      data="{{agreeDataLive}}"
-      persisted-data="{{agreeData}}"
-      worker-url="../../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
-    </app-indexeddb-mirror>
-
-    <!--query for custom fields-->
+    <!--db query for reviews-->
     <firebase-query
-      path="/homes/[[home]]/patients/[[patient]]/carePlan/custom"
-      data="{{customDataQueryLive}}"
-      app-name="main">
+      id="reviewsDB"
+      app-name="main"
+      data="{{reviewsDataLive}}"
+      path="homes/[[home]]/patients/[[patient]]/carePlanReviews">
     </firebase-query>
 
     <app-indexeddb-mirror
-      key="assmtCustomDB|[[page]]|[[patient]]"
-      data="{{customDataQueryLive}}"
-      persisted-data="{{customDataQuery}}"
+      key="reviewsDB|[[patient]]"
+      data="{{reviewsDataLive}}"
+      persisted-data="{{reviewsData}}"
       worker-url="../../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
     </app-indexeddb-mirror>
 
-    <!--connection to set new fields in custom section-->
+    <!--db for agreement section-->
     <firebase-document
-      id="customInput"
-      data="{{customData}}"
-      app-name="main">
+      id="reviewDB"
+      app-name="main"
+      data="{{reviewDataLive}}">
     </firebase-document>
+
+    <app-indexeddb-mirror
+      key="reviewDB|[[patient]]"
+      data="{{reviewDataLive}}"
+      persisted-data="{{reviewData}}"
+      worker-url="../../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
 
     <firebase-document
       id="confirmDB"
@@ -55,104 +48,25 @@
       query-matches="{{query640}}">
     </iron-media-query>
 
-    <style include="app-grid-style">
-      :host{
-        --app-grid-columns:2;
-        --app-grid-item-height:100px;
-        --app-grid-expandible-item-columns:2;
-      }
-      .sectionHeading{
-        background-color:#42c6ff;
-        width:100%;
-      }
-      .sectionHeadingText{
-        font-size: 24px;
-        color:#FFFFFF;
-      }
-      .subHeadingText{
-        color:#FFFFFF;
-      }
-      .container{
-        padding:20px;
-      }
-      .container paper-input,guuey-date-input,paper-button{
-        padding:20px;
-      }
-      .container .buttonContainer{
-        @apply(--app-grid-expandible-item);
-        text-align:right;
-      }
-      paper-card{
-        width:80%;
-        margin:-50px 10% 50px 10%;
-        position:absolute;
-      }
-      paper-card .agreement{
-        width:50%;
-        display:flex;
-        flex-direction:column;
-      }
-      .agreementRow{
-        display:flex;
-        flex-direction:row;
-      }
-      .smallHeader{
-        --guuey-list-min-header-height:50px;
-      }
-      .halfSizeLeft{
-        --guuey-list-width:var(--list-width-half);
-        --guuey-list-float:var(--guuey-list-float-left);
-      }
-      .halfSizeRight{
-        --guuey-list-width:var(--list-width-half);
-        --guuey-list-float:var(--guuey-list-float-right);
-      }
-      .inputLeft{
-        float:left;
-        width:40%;
-        min-height:100px;
-      }
-      .inputRight{
-        float:right;
-        width:40%;
-        min-height:100px;
-      }
-      .mainContainer{
-        padding-top:20px;
-        position:relative;
-      }
-      .mainFab{
-        position:absolute;
-        right:-25px;
-        top:75px;
-        z-index:1;
-        position:var(--main-fab-position);
-        bottom:var(--main-fab-bottom);
-        top:var(--main-fab-top);
-        right:var(--main-fab-right);
-      }
+    <style include="common-styles">
+
     </style>
 
-    <!--dialogue that works to add labels for custom text input area-->
-    <paper-dialog id="customSectionModal">
-      <h2>Add a New Section</h2>
-      <paper-input
-        label="Name the New Section"
-        value="{{customData.label}}"
-        required
-        auto-validate
-        error-message="Please name the custom section.">
-      </paper-input>
-      <paper-input
-        label="Describe the New Section"
-        value="{{customData.label2}}"
-        required
-        auto-validate
-        error-message="Please describe the custom section">
-      </paper-input>
-    </paper-dialog>
+        <paper-dialog id="addReviewDialog" class="guuey-modal guuey-add-modal">
 
-        <paper-card>
+          <h2>Add Review</h2>
+
+          <paper-input value="{{reviewData.name}}" label="name of the review"></paper-input>
+          <paper-input value="{{reviewData.description}}" label="short description"></paper-input>
+
+          <div class="modal-button-container">
+            <paper-button on-tap="cancelNewReview">cancel</paper-button>
+            <paper-button on-tap="saveNewReview">continue to new review</paper-button>
+          </div>
+
+        </paper-dialog>
+
+        <paper-card class="pageCard">
 
           <su-header
             page="Care Plan Review"
@@ -161,161 +75,41 @@
             su-index-data={{suBasicInfo}}>
           </su-header>
 
-          <div class="mainContainer">
+          <div class="pageInnerCont">
+
+            <!--absolute position button to add a new risk-->
 
             <paper-fab
-              class="mainFab"
+              id="regFab"
               icon="icons:add"
-              on-tap="createNewSection">
+              on-tap="addReview">
             </paper-fab>
 
-            <template is="dom-repeat" items="{{customDataQuery}}" as="custom">
-              <guuey-custom-text-input
-                value="{{custom.info}}"
-                label="{{custom.label}}"
-                label2="{{custom.label2}}">
-              </guuey-custom-text-input>
-            </template>
+            <!--fixed position button to finsh adding a new risk assessment and close the add view-->
 
-            <guuey-list-input
-              class="smallHeader"
-              home="[[home]]"
-              patient="[[patient]]"
-              label="Areas of concern"
-              label2="Areas of concern are issues that are on-going or that staff and/or the service user have identified as problems that need to be worked on in order to achieve either short term, medium term, or long term goals."
-              listroute="homes/[[home]]/patients/[[patient]]/carePlanReview/areasOfConcern">
-            </guuey-list-input>
+            <paper-fab
+              id="editFab"
+              icon="icons:check"
+              on-tap="finishReview">
+            </paper-fab>
 
-            <guuey-list-input
-              class="smallHeader"
-              home="[[home]]"
-              patient="[[patient]]"
-              label="Short term goals"
-              listroute="homes/[[home]]/patients/[[patient]]/carePlanReview/shortTermGoals">
-            </guuey-list-input>
+            <neon-animated-pages
+              entry-animation="scale-up-animation"
+              exit-animation="scale-down-animation"
+              attr-for-selected="name"
+              selected="[[pageState]]">
 
-            <guuey-list-input
-              class="smallHeader"
-              home="[[home]]"
-              patient="[[patient]]"
-              label="Medium term goals"
-              listroute="homes/[[home]]/patients/[[patient]]/carePlanReview/mediumTermGoals">
-            </guuey-list-input>
+              <su-care-review-multi-view
+                name="multi-view"
+                reviews-data="{{reviewsData}}">
+              </su-care-review-multi-view>
 
-            <guuey-list-input
-              class="smallHeader"
-              home="[[home]]"
-              patient="[[patient]]"
-              label="Long term goals"
-              listroute="homes/[[home]]/patients/[[patient]]/carePlanReview/longTermGoals">
-            </guuey-list-input>
+              <su-care-review-edit-view
+                name="edit-view"
+                review-data="{{reviewData}}">
+              </su-care-review-edit-view>
 
-            <guuey-list-input
-              class="halfSizeLeft"
-              home="[[home]]"
-              patient="[[patient]]"
-              label="What service will the service user do?"
-              label2="i.e. agree to the following"
-              listroute="homes/[[home]]/patients/[[patient]]/carePlan/whatWillTheServiceUserDo"
-              section="{{whatWillTheServiceUserDo}}">
-            </guuey-list-input>
-
-            <guuey-list-input
-              class="halfSizeRight"
-              home="[[home]]"
-              patient="[[patient]]"
-              label="Intervention by staff"
-              label2="what will the staff do?"
-              listroute="homes/[[home]]/patients/[[patient]]/carePlan/interventionByStaff"
-              section="{{interventionByStaff}}">
-            </guuey-list-input>
-
-            <guuey-text-input
-              route="homes/[[home]]/patients/[[patient]]/carePlanReview/"
-              label="Review Summary"
-              label2="Include progress made from previous review i.e. areas of improvement from &quot; areas of concern&quot;">
-            </guuey-text-input>
-
-            <div class="container app-grid">
-
-              <paper-input
-                class="agreement"
-                label="Service User's Name"
-                value="{{_computeServiceUserAgree(suBasicInfo)}}"
-                disabled>
-              </paper-input>
-
-              <guuey-date-input
-                value="{{agreeData.suDate}}"
-                label="Service User Agreement Date">
-              </guuey-date-input>
-
-              <div class="buttonContainer">
-                <paper-button hidden="[[agreeData.suAgree]]" on-tap="suConfirm">CONFIRM</paper-button>
-
-                <paper-button hidden="[[!agreeData.suAgree]]">CONFIRMED</paper-button>
-              </div>
-
-              <!--need to create a file input for this???-->
-              <paper-input
-                label="staff or key worker's agreement (if necessary)"
-                value="{{agreeData.staffAgreement}}"
-                required
-                auto-validate
-                pattern="[a-zA-z\s\.]*"
-                error-message="need to upload file">
-              </paper-input>
-
-              <guuey-date-input
-                value="{{agreeData.swDate}}"
-                label="Service Worker Agreement Date">
-              </guuey-date-input>
-
-              <paper-input
-                label="Copy of agreement given to the service user?"
-                value="{{agreeData.agreementGiven}}"
-                required
-                auto-validate
-                pattern="[a-zA-Z\s\.]*"
-                error-message="Enter yes/no or comments. No special characters.">
-              </paper-input>
-
-              <guuey-date-input
-                value="{{agreeData.agreementGivenDate}}"
-                label="Date Agreement Given">
-              </guuey-date-input>
-
-              <paper-input
-                label="Reason(s) why agreement not given to the service user"
-                value="{{agreeData.reasonAgreementNotGiven}}"
-                auto-validate
-                pattern="[a-zA-Z\s\.]*"
-                error-message="Please explain with letters and periods only.">
-              </paper-input>
-
-              <guuey-notify
-                home="[[home]]"
-                notify-route="homes/[[home]]/patients/[[patient]]/carePlan/statementOfServiceUser/nextReviewDate"
-                condition-type="guuey-date"
-                notify-condition="true"
-                notify-message="[[suBasicInfo.fName]] [[suBasicInfo.lName]]'s Care Plan Review Date is scheduled soon."
-                notify-url="/[[home]]/care-plan/su-care-review/[[patient]]">
-              </guuey-notify>
-
-              <guuey-date-input
-                value="{{nextReviewDate}}"
-                label="Next Review Date">
-              </guuey-date-input>
-
-              <div class="buttonContainer">
-
-                <paper-button hidden="[[agreeData.swAgree]]" on-tap="cofirmAgreement">CONFIRM</paper-button>
-
-                <paper-button hidden="[[!agreeData.swAgree]]">CONFIRMED</paper-button>
-
-              </div>
-
-            </div>
+            </neon-animated-pages>
 
           </div>
 
@@ -330,6 +124,8 @@
       ready:function(){
         this.fire("pageLoaded", {page:this.page});
         this.addEventListener("print", this.print);
+        this.addEventListener("editReview", this.editReview);
+        this.addEventListener("deleteReview", this.deleteReview);
       },
       properties:{
         page:{
@@ -341,229 +137,58 @@
         home:{
           type:String,
         },
-        sectionData:{
-          type:Object,
-          value:{}
-        },
-        agreeData:{
-          type:Object,
-          value:{},
-          reflectToAttribute:true
-        },
-        //table inputs need to be declared here
-        wellBeingQuestionnaireInputs:{
-          type:Array,
-          value:[
-            'Bathing',
-            'Body Spray',
-            'Haircut',
-            'Beard shave',
-            'Public shave',
-            'Fingernails',
-            'Toenails',
-            'Changing clothes',
-            'Skin care'
-          ]
-        },
-      myHealthQuestionnaireInputs:{
-        type:Array,
-        value:[
-          'Dental',
-          'Weight',
-          'Skin care',
-          'Exercise',
-          'Diet',
-          'Blood Pressure',
-          'Open bowels',
-          'Emotions & Mood Changes'
-        ]
-      },
-      myRoomQuestionnaireInputs:{
-        type:Array,
-        value:[
-          'Laundry',
-          'Change bed sheets',
-          'Dust room',
-          'Hoovering or vaccuming',
-          'Cleaning sink',
-          'Ironing clothes',
-          'Changing socks',
-          'Cleaning shoes',
-          'Air freshening room'
-        ]
-      }
+        pageState:{
+          type:String,
+          value:"multi-view"
+        }
       },
       observers:[
-        "queryEdit(query640)",
-        "requirementsMet(agreeData)"
+
       ],
       behaviors:[
-        Polymer.carePlanAnimation
+        Polymer.carePlanAnimation,
+        Polymer.fabAnimationBehavior,
+        Polymer.suPrintBehavior,
+        Polymer.suResizeBehavior
       ],
-      _computeServiceUserAgree:function(suIndexData){
-        var fullName=suIndexData.fName+" "+suIndexData.lName;
-        this.agreeData.suName=fullName;
-        return fullName;
+      addReview:function(){
+        this.$.reviewDB.path=null;
+        this.$.reviewData={};
+        this.$.addReviewDialog.open();
       },
-      suConfirm:function(){
-        this.$.confirmDB.path=null;
-        this.$.confirmDB.data=true;
-        this.$.confirmDB.save("/homes/"+this.home+"/patients/"+this.patient+"/carePlan/statementOfServiceUser/",'suAgree');
-      },
-      cofirmAgreement:function(){
-        this.$.confirmDB.path=null;
-        this.$.confirmDB.data=true;
-        this.$.confirmDB.save("/homes/"+this.home+"/patients/"+this.patient+"/carePlan/statementOfServiceUser/",'swAgree');
-      },
-      createNewSection:function(){
-        this.$.customInput.path=null;
-        this.$.customInput.data={};
-        var path="/homes/"+this.home+"/patients/"+this.patient+"/carePlan/custom"
-        this.$.customInput.save(path, null)
-          .then(function(){
-            this.$.customSectionModal.toggle();
+      saveNewReview:function(){
+        var path="/homes/"+this.home+"/patients/"+this.patient+"/carePlanReviews";
+        this.$.reviewDB.save(path, null)
+          .then(function(val){
+            this.$.addReviewDialog.close();
+            this.pageState="edit-view"
+            this.animateEditViewFab();
+            this.fire("openToast",{toastText:"New care plan review saved."});
+          }.bind(this))
+          .catch(function(error){
+            this.$.addReviewDialog.close();
+            this.fire("openToast",{toastText:"There was an error saving the care plan review: "+error});
           }.bind(this));
       },
-      print:function(e){
-        var printable=window.open("","printable");
-        printable.document.write("<html><head>");
-        printable.document.write("</head><body>");
-        printable.document.write("<div style='width:100% padding:5%;'>");
-        var printData=this.$.printDB.data;
-        for(x in printData){
-          switch(x){
-            case "areasOfConcern":
-              printable.document.write("<p style='font-weight:bold;'>Areas of Concern</p>");
-              printable.document.write("<ol>");
-              var concerns=printData[x];
-              for(y in concerns){
-                printable.document.write("<li>"+concerns[y].proposal+"</li>");
-              }
-              printable.document.write("</ol>");
-              break;
-            case "careReviewSummary":
-            printable.document.write("<p style='font-weight:bold;'>Care Plan Review Summary</p>");
-              var summary=printData[x];
-              for(y in summary){
-                printable.document.write("<p>"+this.convertToPrintText(y)+": "+summary[y]+"</p>");
-              };
-              break;
-            case "longTermGoals":
-              printable.document.write("<p style='font-weight:bold;'>Long Term Goals</p>");
-              printable.document.write("<ol>");
-              var goals=printData[x];
-              for(y in goals){
-                printable.document.write("<li>"+goals[y].proposal+"</li>");
-              }
-              printable.document.write("</ol>");
-              break;
-            case "mediumTermGoals":
-              printable.document.write("<p style='font-weight:bold;'>Medium Term Goals</p>");
-              printable.document.write("<ol>");
-              var goals=printData[x];
-              for(y in goals){
-                printable.document.write("<li>"+goals[y].proposal+"</li>");
-              }
-              printable.document.write("</ol>");
-              break;
-            case "shortTermGoals":
-              printable.document.write("<p style='font-weight:bold;'>Short Term Goals</p>");
-              printable.document.write("<ol>");
-              var goals=printData[x];
-              for(y in goals){
-                printable.document.write("<li>"+goals[y].proposal+"</li>");
-              }
-              printable.document.write("</ol>");
-              break;
-            case "reviewSummary":
-              printable.document.write("<p style='font-weight:bold;'>Review Summary</p>");
-              printable.document.write("<p>Review Summary: "+printData[x].info+"</p>");
-              break;
-          };
-        };
-        printable.document.write("</body></html>");
-        printable.document.write("</div>");
-        printable.print();
-        printable.close();
+      cancelNewReview:function(){
+        this.$.addReviewDialog.close();
+        this.$.reviewDB.path=null;
+        this.$.reviewData={};
       },
-      convertToPrintText:function(camelCase){
-        if (camelCase == null || camelCase == "") {
-          return camelCase;
-        }
-
-        camelCase = camelCase.trim();
-        var newText = "";
-        for (var i = 0; i < camelCase.length; i++) {
-          if (/[A-Z]/.test(camelCase[i])
-              && i != 0
-              && /[a-z]/.test(camelCase[i-1])) {
-            newText += " ";
-          }
-          if (i == 0 && /[a-z]/.test(camelCase[i]))
-          {
-            newText += camelCase[i].toUpperCase();
-          } else {
-            newText += camelCase[i];
-          }
-        }
-        return newText;
+      editReview:function(e){
+        this.$.reviewDB.path="/homes/"+this.home+"/patients/"+this.patient+"/carePlanReviews/"+e.detail.reviewId;
+        this.pageState="edit-view";
+        this.animateEditViewFab();
       },
-      requirementsMet:function(data){
-        if(Object.keys(data).length === 0 && data.constructor === Object){
-          //do nothing and wait for change
-        } else {
-          if(!data.suDate){
-            this.fire("openToast",{toastText:"Service user date of agreement is required."});
-            return false;
-          } else if(!data.swDate){
-            this.fire("openToast",{toastText:"Staff worker date of agreement is required."});
-            return false;
-          } else if(!data.suAgree){
-            this.fire("openToast",{toastText:"The service user needs to agree to the agreement."});
-            return false;
-          } else if(!data.swAgree){
-            this.fire("openToast",{toastText:"The staff worker needs to agree to the agreement."});
-            return false;
-          } else if(!data.swName){
-            this.fire("openToast",{toastText:"A service worker must be selected for this agreement."});
-            return false;
-          } else {
-            return true;
-          };
-        };
+      deleteReview:function(e){
+        var path="/homes/"+this.home+"/patients/"+this.patient+"/carePlanReviews/"+e.detail.reviewId;
+        this.$.reviewDB.setStoredValue(path, null);
       },
-      queryEdit:function(query640){
-        if(query640){
-          //list styles
-          this.customStyle["--guuey-list-float-left"]="unset";
-          this.customStyle["--guuey-list-float-right"]="unset";
-          this.customStyle["--list-width-half"]="90%";
-
-          //column styles
-          this.customStyle["--app-grid-columns"]="1";
-
-          //fab styles
-          this.customStyle["--main-fab-position"]="fixed";
-          this.customStyle["--main-fab-top"]="unset";
-          this.customStyle["--main-fab-bottom"]="5%";
-          this.customStyle["--main-fab-right"]="5%";
-          this.updateStyles();
-        } else {
-          //list styles
-          this.customStyle["--guuey-list-float-left"]="left";
-          this.customStyle["--guuey-list-float-right"]="right";
-          this.customStyle["--list-width-half"]="40%";
-
-          //column styles
-          this.customStyle["--app-grid-columns"]="2";
-
-          //fab styles
-          this.customStyle["--main-fab-position"]="absolute";
-          this.customStyle["--main-fab-top"]="-25px";
-          this.customStyle["--main-fab-bottom"]="unset";
-          this.customStyle["--main-fab-right"]="-25px";
-          this.updateStyles();
-        }
+      finishReview:function(){
+        this.pageState="multi-view";
+        this.animateMultiViewFab();
+        this.$.reviewDB.path=null;
+        this.$.reviewDB.data={};
       }
     });
 

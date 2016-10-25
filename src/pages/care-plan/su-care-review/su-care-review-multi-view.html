@@ -1,0 +1,140 @@
+<link rel="import" href="../../../../bower_components/polymer/polymer.html" />
+<link rel="import" href="../../../../bower_components/paper-card/paper-card.html" />
+
+<!--temp animations till hero animations work-->
+<link rel="import" href="../../../../bower_components/neon-animation/animations/scale-up-animation.html" />
+<link rel="import" href="../../../../bower_components/neon-animation/animations/scale-down-animation.html" />
+<link rel="import" href="../../../../bower_components/paper-icon-button/paper-icon-button.html" />
+<link rel="import" href="../../../../bower_components/iron-icons/iron-icons.html" />
+
+<link rel="import" href="../../../elements/media-queries/media-queries.html" />
+
+<link rel="import" href="../../../behaviors/multi-edit-animation-behavior.html" />
+<link rel="import" href="../../../behaviors/multi-view-resize-behavior.html" />
+
+<link rel="import" href="../../../styles/common-styles.html" />
+
+<dom-module id="su-care-review-multi-view">
+
+  <template>
+
+    <media-queries
+      dimensions="{{dimensions}}">
+    </media-queries>
+
+    <style include="common-styles">
+    :host{
+      --app-grid-columns:3;
+      --app-grid-item-height:150%;
+    };
+    .multiCardHeading{
+      width:100%;
+      height:30%;
+      margin-top:0 !important;
+      margin-bottom:4%;
+      background-color:red;
+      position:relative;
+    }
+    .multiCardLabel{
+      width:25%;
+      position:absolute;
+      bottom:5%;
+      left:5%;
+      padding:0px;
+      margin:0px;
+      font-weight:bold;
+      color:#FFFFFF;
+      font-size:20px;
+    }
+    .multiCardMore{
+      position:absolute;
+      top:5%;
+      right:5%;
+      color:#FFFFFF;
+    }
+    .multiCardContainer{
+      display:flex;
+      flex-direction:column;
+      height:70%;
+      padding:5%;
+    }
+    .multiCardMain{
+      flex-grow:1;
+    }
+    </style>
+
+    <paper-dialog horizontal-align="left" vertical-align="top" id="editModal">
+      <paper-button on-tap="editReview">edit</paper-button>
+      <br />
+      <paper-button on-tap="deleteReview">delete</paper-button>
+    </paper-dialog>
+
+    <paper-card class="multiViewCard app-grid" has-aspect-ratio>
+      <template is="dom-repeat" items="{{reviewsData}}" as="review">
+
+        <div class="multiCardContainer">
+          <paper-card class="multiItem">
+            <div class="multiCardHeading">
+              <p class="multiCardLabel">
+                [[review.name]]
+              </p>
+            </div>
+            <div class="multiCardContainer">
+
+              <p class="multiCardMain">
+                [[review.description]]
+              </p>
+
+            </div>
+
+            <paper-icon-button
+              icon="icons:more-vert"
+              class="multiCardMore"
+              on-tap="toggleEditModal">
+            </paper-icon-button>
+
+          </paper-card>
+        </div>
+
+      </template>
+    </paper-card>
+
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is:"su-care-review-multi-view",
+      properties:{
+        viewType:{
+          type:String,
+          value:"multi-view"
+        },
+        reviewsData:{
+          type:Object,
+          notify:true,
+        }
+      },
+      behaviors:[
+        Polymer.multiViewResizeBehavior,
+        //Polymer.multiEditAnimationBehavior
+      ],
+      toggleEditModal:function(e){
+        this.$.editModal.positionTarget = e.target;
+        this.reviewId=e.model.review.$key;
+        this.$.editModal.toggle();
+      },
+      editReview:function(e){
+        this.fire("editReview", {reviewId:this.reviewId})
+        this.$.editModal.close();
+      },
+      deleteReview:function(e){
+        this.fire("deleteReview", {reviewId:this.reviewId});
+        this.$.editModal.close();
+      }
+    });
+
+  </script>
+
+</dom-module>

@@ -125,7 +125,66 @@
 
         //su-care-review case
         if(this.page==="su-care-review"){
-
+          var printable=window.open("","printable");
+          printable.document.write("<html><head>");
+          printable.document.write("</head><body>");
+          printable.document.write("<div style='width:100% padding:5%;'>");
+          var printData=this.$.printDB.data;
+          for(x in printData){
+            switch(x){
+              case "areasOfConcern":
+                printable.document.write("<p style='font-weight:bold;'>Areas of Concern</p>");
+                printable.document.write("<ol>");
+                var concerns=printData[x];
+                for(y in concerns){
+                  printable.document.write("<li>"+concerns[y].proposal+"</li>");
+                }
+                printable.document.write("</ol>");
+                break;
+              case "careReviewSummary":
+              printable.document.write("<p style='font-weight:bold;'>Care Plan Review Summary</p>");
+                var summary=printData[x];
+                for(y in summary){
+                  printable.document.write("<p>"+this.convertToPrintText(y)+": "+summary[y]+"</p>");
+                };
+                break;
+              case "longTermGoals":
+                printable.document.write("<p style='font-weight:bold;'>Long Term Goals</p>");
+                printable.document.write("<ol>");
+                var goals=printData[x];
+                for(y in goals){
+                  printable.document.write("<li>"+goals[y].proposal+"</li>");
+                }
+                printable.document.write("</ol>");
+                break;
+              case "mediumTermGoals":
+                printable.document.write("<p style='font-weight:bold;'>Medium Term Goals</p>");
+                printable.document.write("<ol>");
+                var goals=printData[x];
+                for(y in goals){
+                  printable.document.write("<li>"+goals[y].proposal+"</li>");
+                }
+                printable.document.write("</ol>");
+                break;
+              case "shortTermGoals":
+                printable.document.write("<p style='font-weight:bold;'>Short Term Goals</p>");
+                printable.document.write("<ol>");
+                var goals=printData[x];
+                for(y in goals){
+                  printable.document.write("<li>"+goals[y].proposal+"</li>");
+                }
+                printable.document.write("</ol>");
+                break;
+              case "reviewSummary":
+                printable.document.write("<p style='font-weight:bold;'>Review Summary</p>");
+                printable.document.write("<p>Review Summary: "+printData[x].info+"</p>");
+                break;
+            };
+          };
+          printable.document.write("</body></html>");
+          printable.document.write("</div>");
+          printable.print();
+          printable.close();
         };
 
         //su-goals case

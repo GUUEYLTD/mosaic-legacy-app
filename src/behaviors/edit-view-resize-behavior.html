@@ -10,81 +10,105 @@
         "screenChange(dimensions.*)"
       ],
       screenChange:function(dimensions){
-        var tableScrollLableColor="transparent";
-        var tableOverflow="unset";
-        var tbodyDisplay="table-row-group";
-        var theadTrPosition="unset";
-        var theadTrDisplay="table-row";
-        var theadTrTdWidth="unset";
-        var tdThMinWidth="unset";
-        var tdThLastWidth="unset";
-        var detailBarPadding="0% 25% 20px 25%";
-        var descriptionContainerPadding="0% 25% 20px 25%";
+        if(this.page==="su-goals" || this.page==="su-risk"){
+          var tableScrollLableColor="transparent";
+          var tableOverflow="unset";
+          var tbodyDisplay="table-row-group";
+          var theadTrPosition="unset";
+          var theadTrDisplay="table-row";
+          var theadTrTdWidth="unset";
+          var tdThMinWidth="unset";
+          var tdThLastWidth="unset";
+          var detailBarPadding="0% 25% 20px 25%";
+          var descriptionContainerPadding="0% 25% 20px 25%";
 
-        if(dimensions.base.query640){
-          tableScrollLableColor="inherit";
-          tableOverflow="scroll";
-          tbodyDisplay="block";
-          theadTrPosition="relative";
-          theadTrDisplay="block";
-          theadTrTdWidth="150px";
-          tdThMinWidth="150px";
-          tdThLastWidth="150px";
-          detailBarPadding="0% 10% 20px 40%";
-          descriptionContainerPadding="0% 10% 20px 40%";
+          if(dimensions.base.query640){
+            tableScrollLableColor="inherit";
+            tableOverflow="scroll";
+            tbodyDisplay="block";
+            theadTrPosition="relative";
+            theadTrDisplay="block";
+            theadTrTdWidth="150px";
+            tdThMinWidth="150px";
+            tdThLastWidth="150px";
+            detailBarPadding="0% 10% 20px 40%";
+            descriptionContainerPadding="0% 10% 20px 40%";
 
-        } else if(dimensions.base.query750){
-          tableScrollLableColor="inherit";
-          tableOverflow="scroll";
-          tbodyDisplay="block";
-          theadTrPosition="relative";
-          theadTrDisplay="block";
-          theadTrTdWidth="150px";
-          tdThMinWidth="150px";
-          tdThLastWidth="150px";
-          detailBarPadding="0% 10% 20px 40%";
-          descriptionContainerPadding="0% 10% 20px 40%";
+          } else if(dimensions.base.query750){
+            tableScrollLableColor="inherit";
+            tableOverflow="scroll";
+            tbodyDisplay="block";
+            theadTrPosition="relative";
+            theadTrDisplay="block";
+            theadTrTdWidth="150px";
+            tdThMinWidth="150px";
+            tdThLastWidth="150px";
+            detailBarPadding="0% 10% 20px 40%";
+            descriptionContainerPadding="0% 10% 20px 40%";
 
-        } else if(dimensions.base.query900){
-          tableScrollLableColor="inherit";
-          tableOverflow="scroll";
-          tbodyDisplay="block";
-          theadTrPosition="relative";
-          theadTrDisplay="block";
-          theadTrTdWidth="150px";
-          tdThMinWidth="150px";
-          tdThLastWidth="150px";
-          detailBarPadding="0% 25% 20px 25%";
-          descriptionContainerPadding="0% 25% 20px 25%";
+          } else if(dimensions.base.query900){
+            tableScrollLableColor="inherit";
+            tableOverflow="scroll";
+            tbodyDisplay="block";
+            theadTrPosition="relative";
+            theadTrDisplay="block";
+            theadTrTdWidth="150px";
+            tdThMinWidth="150px";
+            tdThLastWidth="150px";
+            detailBarPadding="0% 25% 20px 25%";
+            descriptionContainerPadding="0% 25% 20px 25%";
 
-        } else if(dimensions.base.query1100){
-          tableScrollLableColor="transparent";
-          tableOverflow="unset";
-          tbodyDisplay="table-row-group";
-          theadTrPosition="unset";
-          theadTrDisplay="table-row";
-          theadTrTdWidth="unset";
-          tdThMinWidth="unset";
-          tdThLastWidth="unset";
-          detailBarPadding="0% 25% 20px 25%";
-          descriptionContainerPadding="0% 25% 20px 25%";
+          } else if(dimensions.base.query1100){
+            tableScrollLableColor="transparent";
+            tableOverflow="unset";
+            tbodyDisplay="table-row-group";
+            theadTrPosition="unset";
+            theadTrDisplay="table-row";
+            theadTrTdWidth="unset";
+            tdThMinWidth="unset";
+            tdThLastWidth="unset";
+            detailBarPadding="0% 25% 20px 25%";
+            descriptionContainerPadding="0% 25% 20px 25%";
 
-        };
+          };
 
-        //table style
-        this.customStyle["--table-scroll-lable-color"]=tableScrollLableColor;
-        this.customStyle["--table-overflow"]=tableOverflow;
-        this.customStyle["--tbody-display"]=tbodyDisplay;
-        this.customStyle["--thead-tr-position"]=theadTrPosition;
-        this.customStyle["--thead-tr-display"]=theadTrDisplay;
-        this.customStyle["--thead-tr-td-width"]=theadTrTdWidth;
-        this.customStyle["--td-th-min-width"]=tdThMinWidth;
-        this.customStyle["--td-th-last-width"]=tdThLastWidth;
+          //table style
+          this.customStyle["--table-scroll-lable-color"]=tableScrollLableColor;
+          this.customStyle["--table-overflow"]=tableOverflow;
+          this.customStyle["--tbody-display"]=tbodyDisplay;
+          this.customStyle["--thead-tr-position"]=theadTrPosition;
+          this.customStyle["--thead-tr-display"]=theadTrDisplay;
+          this.customStyle["--thead-tr-td-width"]=theadTrTdWidth;
+          this.customStyle["--td-th-min-width"]=tdThMinWidth;
+          this.customStyle["--td-th-last-width"]=tdThLastWidth;
 
-        //description and detail bar padding
-        this.customStyle["--detail-bar-padding"]=detailBarPadding;
-        this.customStyle["--description-container-padding"]=descriptionContainerPadding;
-        this.updateStyles();
+          //description and detail bar padding
+          this.customStyle["--detail-bar-padding"]=detailBarPadding;
+          this.customStyle["--description-container-padding"]=descriptionContainerPadding;
+          this.updateStyles();
+        } else if(this.page==="su-care-review"){
+          //list styles
+          var guueyListFloatLeft="left";
+          var guueyListFloatRight="right";
+          var listWidthHalf="40%";
+          //column styles
+          var appGridColumns="2";
+
+          if(dimensions.base.query640){
+            guueyListFloatLeft="unset";
+            guueyListFloatRight="unset";
+            listWidthHalf="90%";
+            appGridColumns="1";
+          };
+          //list styles
+          this.customStyle["--guuey-list-float-left"]=guueyListFloatLeft;
+          this.customStyle["--guuey-list-float-right"]=guueyListFloatRight;
+          this.customStyle["--list-width-half"]=listWidthHalf;
+          //column styles
+          this.customStyle["--app-grid-columns"]=appGridColumns;
+          this.updateStyles();
+        }
+
       }
     };
 

@@ -78,7 +78,25 @@
 
         };
         if(this.page==="su-care-review"){
-
+          //orig width 640px
+          //fab styles
+          var mainFabPosition="absolute";
+          var mainFabTop="-25px";
+          var mainFabBottom="unset";
+          var mainFabRight="-25px";
+          if(dimension.base.query640){
+            //fab styles
+            mainFabPosition="fixed";
+            mainFabTop="unset";
+            mainFabBottom="5%";
+            mainFabRight="5%";
+          };
+          //fab styles
+          this.customStyle["--main-fab-position"]=mainFabPosition;
+          this.customStyle["--main-fab-top"]=mainFabTop;
+          this.customStyle["--main-fab-bottom"]=mainFabBottom;
+          this.customStyle["--main-fab-right"]=mainFabRight;
+          this.updateStyles();
         };
         if(this.page==="su-create"){
           var appGridColumns="2";
