@@ -60,7 +60,7 @@
             page="Care Plan Review"
             home="[[home]]"
             patient="[[patient]]"
-            su-index-data={{suBasicInfo}}>
+            su-index-data="{{suBasicInfo}}">
           </su-header>
 
           <div class="pageInnerCont">
@@ -89,12 +89,14 @@
 
               <su-care-review-multi-view
                 name="multi-view"
-                reviews-data="{{reviewsData}}">
+                reviews-data="{{reviewsData}}"
+                su-basic-info="[[suBasicInfo]]">
               </su-care-review-multi-view>
 
               <su-care-review-edit-view
                 name="edit-view"
-                review-data="{{reviewData}}">
+                review-data="{{reviewData}}"
+                su-basic-info="[[suBasicInfo]]">
               </su-care-review-edit-view>
 
             </neon-animated-pages>
@@ -139,6 +141,13 @@
         Polymer.suPrintBehavior,
         Polymer.suResizeBehavior
       ],
+      _checkServiceUser:function(suBasicInfo){
+        var fullName=suBasicInfo.fName+" "+suBasicInfo.lName;
+        if(!this.reviewData.suName){
+          this.reviewData.suName=fullName;
+          this.set("reviewData.suName", fullName);
+        };
+      },
       addReview:function(){
         this.$.reviewDB.path=null;
         this.$.reviewData={};
@@ -152,6 +161,7 @@
             this.pageState="edit-view"
             this.animateEditViewFab();
             this.fire("openToast",{toastText:"New care plan review saved."});
+            this.$.reviewDB.transactionsComplete=this._checkServiceUser(this.suBasicInfo);
           }.bind(this))
           .catch(function(error){
             this.$.addReviewDialog.close();
@@ -165,6 +175,7 @@
       },
       editReview:function(e){
         this.$.reviewDB.path="/homes/"+this.home+"/patients/"+this.patient+"/carePlanReviews/"+e.detail.reviewId;
+        this.$.reviewDB.transactionsComplete=this._checkServiceUser(this.suBasicInfo);
         this.pageState="edit-view";
         this.animateEditViewFab();
       },

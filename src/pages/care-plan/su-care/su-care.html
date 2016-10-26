@@ -15,7 +15,8 @@
       id="agreeDB"
       app-name="main"
       data="{{agreeDataLive}}"
-      path="/homes/[[home]]/patients/[[patient]]/carePlan/statementOfServiceUser">
+      path="/homes/[[home]]/patients/[[patient]]/carePlan/statementOfServiceUser"
+      transactions-complete="{{_checkServiceUser(suBasicInfo)}}">
     </firebase-document>
 
     <app-indexeddb-mirror
@@ -191,7 +192,7 @@
               <paper-input
                 class="agreement"
                 label="Service User's Name"
-                value="{{_computeServiceUserAgree(suBasicInfo)}}"
+                value="{{agreeData.suName}}"
                 disabled>
               </paper-input>
 
@@ -401,10 +402,12 @@
         };
         this.userList=tempList;
       },
-      _computeServiceUserAgree:function(suIndexData){
-        var fullName=suIndexData.fName+" "+suIndexData.lName;
-        this.agreeData.suName=fullName;
-        return fullName;
+      _checkServiceUser:function(suBasicInfo){
+        var fullName=suBasicInfo.fName+" "+suBasicInfo.lName;
+        if(!this.agreeData.suName){
+          this.agreeData.suName=fullName;
+          this.set("agreeData.suName", fullName);
+        };
       },
       suAgreeUpdate:function(e){
         this.$.formDB.path=null;

@@ -155,7 +155,7 @@
         <paper-input
           class="agreement"
           label="Service User's Name"
-          value="{{_computeServiceUserAgree(suBasicInfo)}}"
+          value="{{reviewData.suName}}"
           disabled>
         </paper-input>
 
@@ -298,11 +298,6 @@
         Polymer.editViewResizeBehavior,
         //Polymer.multiEditAnimationBehavior
       ],
-      _computeServiceUserAgree:function(suIndexData){
-        var fullName=suIndexData.fName+" "+suIndexData.lName;
-        this.reviewData.suName=fullName;
-        return fullName;
-      },
       suConfirm:function(){
         this.set("reviewData.suAgree","true");
       },
