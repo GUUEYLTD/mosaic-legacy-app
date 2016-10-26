@@ -44,12 +44,14 @@
     <style include="common-styles"></style>
 
     <!--dialogue that works to add labels for custom text input area-->
-    <paper-dialog id="customSectionModal">
+    <paper-dialog id="customSectionModal" class="guuey-modal guuey-add-modal">
       <h2>Add a New Section</h2>
       <paper-input label="Name the New Section" value="{{customData.label}}"></paper-input>
       <paper-input label="Describe the New Section" value="{{customData.label2}}"></paper-input>
-      <paper-button on-tap="cancelNewSection">cancel</paper-button>
-      <paper-button on-tap="saveNewSection">save</paper-button>
+      <div class="modal-button-container">
+        <paper-button on-tap="cancelNewSection">cancel</paper-button>
+        <paper-button on-tap="saveNewSection">save</paper-button>
+      </div>
     </paper-dialog>
 
     <paper-card class="pageCard" elevation="3">

@@ -103,6 +103,30 @@
         viewType:{
           type:String,
           value:"edit-view"
+        },
+        evalFreq:{
+          type:Array,
+          value:[
+            "daily",
+            "weekly",
+            "bi-weekly",
+            "monthly",
+            "bi-monthly",
+            "yearly"
+          ]
+        },
+        riskTypes:{
+          type:Array,
+          value:[
+            "Moving & Handling",
+            "Slips & Trips",
+            "Violence & Agression",
+            "Falls From Windows & Balconies",
+            "Scalding & Burning",
+            "Bedrail Entrapment",
+            "Legionella",
+            "Other"
+          ]
         }
       },
       behaviors:[

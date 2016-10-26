@@ -15,8 +15,7 @@
         //su-care case
         if(this.page==="su-care"){
           //why the fuck isnt date dynamic???
-          var date="Thu Jul 14 2016 00:00:00 GMT+0200 (CEST)";
-          var printable=window.open("","printable", "height:=400, width=600");
+          var printable=window.open("","printable");
           printable.document.write("<html><head>");
           printable.document.write("</head><body>");
           printable.document.write("<div style='width:100% padding:5%;'>");
@@ -28,7 +27,7 @@
                 printable.document.write("<p style='font-weight:bold'>Proposals:</p>");
                 printable.document.write("<ol>");
                 for(y in proposal){
-                  printable.document.write("<li>"+proposal[y].proposal+"</li>");
+                  printable.document.write("<li>"+proposal[y].entry+"</li>");
                 };
                 printable.document.write("</ol>");
                 break;
@@ -37,50 +36,26 @@
                 printable.document.write("<p style='font-weight:bold'>Intervention By Staff Proposals:</p>");
                 printable.document.write("<ol>");
                 for(y in proposal){
-                  printable.document.write("<li>"+proposal[y].proposal+"</li>");
+                  printable.document.write("<li>"+proposal[y].entry+"</li>");
                 };
                 printable.document.write("</ol>");
                 break;
               case "myHealthQuestionnaire":
                 var healthData=printData[x];
                 for(y in healthData){
-                  var healthSub=healthData[y];
-                  for(z in healthSub){
-                    if(z!="comment"){
-                      printable.document.write("<p>"+y+": "+z+"</p>");
-                    };
-                    if(z==="comment"){
-                      printable.document.write("<p>Comment: "+healthSub[z]+"</p>");
-                    };
-                  };
+                  printable.document.write("<p>"+this.convertToPrintText(y)+": "+healthData[y]+"</p>");
                 };
                 break;
               case "myRoomQuestionnaire":
                 var roomData=printData[x];
                 for(y in roomData){
-                  var roomSub=roomData[y];
-                  for(z in roomSub){
-                    if(z!="comment"){
-                      printable.document.write("<p>"+y+": "+z+"</p>");
-                    };
-                    if(z==="comment"){
-                      printable.document.write("<p>Comment: "+roomSub[z]+"</p>");
-                    };
-                  };
+                  printable.document.write("<p>"+this.convertToPrintText(y)+": "+roomData[y]+"</p>");
                 };
                 break;
               case "wellBeingQuestionnaire":
                 var wellData=printData[x];
                 for(y in wellData){
-                  var wellSub=wellData[y];
-                  for(z in wellSub){
-                    if(z!="comment"){
-                      printable.document.write("<p>"+y+": "+z+"</p>");
-                    };
-                    if(z==="comment"){
-                      printable.document.write("<p>Comment: "+wellSub[z]+"</p>");
-                    };
-                  };
+                  printable.document.write("<p>"+this.convertToPrintText(y)+": "+wellData[y]+"</p>");
                 };
                 break;
               case "whatWillTheServiceUserDo":
@@ -88,7 +63,7 @@
                 printable.document.write("<p style='font-weight:bold'>Service User Proposals:</p>");
                 printable.document.write("<ol>");
                 for(y in proposal){
-                  printable.document.write("<li>"+proposal[y].proposal+"</li>");
+                  printable.document.write("<li>"+proposal[y].entry+"</li>");
                 };
                 printable.document.write("</ol>");
                 break;
@@ -109,11 +84,11 @@
               case "custom":
                 var custom=printData[x];
                 for(y in custom){
-                  printable.document.write("<p>"+custom[y].label+"/"+custom[y].label2+" :"+custom[y].info+"</p>")
+                  printable.document.write("<p>"+custom[y].label+"&"+custom[y].label2+" :"+custom[y].info+"</p>")
                 };
                 break;
               default:
-                printable.document.write("<p>"+this.convertToPrintText(x)+": "+printData[x].info+"<br /></p>");
+                printable.document.write("<p>"+this.convertToPrintText(x)+": "+printData[x]+"<br /></p>");
                 break;
               };
           };
@@ -129,57 +104,97 @@
           printable.document.write("<html><head>");
           printable.document.write("</head><body>");
           printable.document.write("<div style='width:100% padding:5%;'>");
-          var printData=this.$.printDB.data;
-          for(x in printData){
-            switch(x){
+          var reviewsData=this.reviewsData;
+          for(x in reviewsData){
+            printable.document.write("<b><h1>"+reviewsData[x].name+"</h1></b>");
+            printable.document.write("<b><h2>"+reviewsData[x].description+"</h2></b>");
+            var reviewData=reviewsData[x];
+            for(y in reviewData)
+            switch(y){
               case "areasOfConcern":
                 printable.document.write("<p style='font-weight:bold;'>Areas of Concern</p>");
                 printable.document.write("<ol>");
-                var concerns=printData[x];
-                for(y in concerns){
-                  printable.document.write("<li>"+concerns[y].proposal+"</li>");
+                var concerns=reviewData[y];
+                for(z in concerns){
+                  printable.document.write("<li>"+concerns[z].entry+"</li>");
                 }
                 printable.document.write("</ol>");
                 break;
               case "careReviewSummary":
               printable.document.write("<p style='font-weight:bold;'>Care Plan Review Summary</p>");
-                var summary=printData[x];
-                for(y in summary){
-                  printable.document.write("<p>"+this.convertToPrintText(y)+": "+summary[y]+"</p>");
+                var summary=reviewData[y];
+                for(z in summary){
+                  printable.document.write("<p>"+this.convertToPrintText(y)+": "+summary[z]+"</p>");
                 };
                 break;
               case "longTermGoals":
                 printable.document.write("<p style='font-weight:bold;'>Long Term Goals</p>");
                 printable.document.write("<ol>");
-                var goals=printData[x];
-                for(y in goals){
-                  printable.document.write("<li>"+goals[y].proposal+"</li>");
+                var goals=reviewData[y];
+                for(z in goals){
+                  printable.document.write("<li>"+goals[z].entry+"</li>");
                 }
                 printable.document.write("</ol>");
                 break;
               case "mediumTermGoals":
                 printable.document.write("<p style='font-weight:bold;'>Medium Term Goals</p>");
                 printable.document.write("<ol>");
-                var goals=printData[x];
-                for(y in goals){
-                  printable.document.write("<li>"+goals[y].proposal+"</li>");
+                var goals=reviewData[y];
+                for(z in goals){
+                  printable.document.write("<li>"+goals[z].entry+"</li>");
                 }
                 printable.document.write("</ol>");
                 break;
               case "shortTermGoals":
                 printable.document.write("<p style='font-weight:bold;'>Short Term Goals</p>");
                 printable.document.write("<ol>");
-                var goals=printData[x];
-                for(y in goals){
-                  printable.document.write("<li>"+goals[y].proposal+"</li>");
+                var goals=reviewData[y];
+                for(z in goals){
+                  printable.document.write("<li>"+goals[z].entry+"</li>");
+                }
+                printable.document.write("</ol>");
+                break;
+              case "careAndSuppProp":
+                printable.document.write("<p style='font-weight:bold;'>Care and support proposals</p>");
+                printable.document.write("<ol>");
+                var proposals=reviewData[y];
+                for(z in proposals){
+                  printable.document.write("<li>"+proposals[z].entry+"</li>");
+                }
+                printable.document.write("</ol>");
+                break;
+              case "interventionByStaff":
+                printable.document.write("<p style='font-weight:bold;'>Intervention By Staff </p>");
+                printable.document.write("<ol>");
+                var interventions=reviewData[y];
+                for(z in interventions){
+                  printable.document.write("<li>"+interventions[z].entry+"</li>");
+                }
+                printable.document.write("</ol>");
+                break;
+              case "whatWillTheServiceUserDo":
+                printable.document.write("<p style='font-weight:bold;'>What will the service user do </p>");
+                printable.document.write("<ol>");
+                var doables=reviewData[y];
+                for(z in doables){
+                  printable.document.write("<li>"+doables[z].entry+"</li>");
                 }
                 printable.document.write("</ol>");
                 break;
               case "reviewSummary":
                 printable.document.write("<p style='font-weight:bold;'>Review Summary</p>");
-                printable.document.write("<p>Review Summary: "+printData[x].info+"</p>");
+                printable.document.write("<p>Review Summary: "+reviewData[y]+"</p>");
                 break;
             };
+            if(reviewData.suAgree){
+              printable.document.write("<p>Service user has agreed to this review on "+reviewData.suDate+"</p>");
+            };
+            if(reviewData.swAgree){
+              printable.document.write("<p>Service worker has agreed to this review on "+reviewData.swDate+"</p>");
+            };
+            if(reviewData.nextReviewDate){
+              printable.document.write("<p>Next review date is on: "+reviewData.nextReviewDate+"</p>");
+            }
           };
           printable.document.write("</body></html>");
           printable.document.write("</div>");
@@ -189,7 +204,7 @@
 
         //su-goals case
         if(this.page==="su-goals"){
-          var printData=this.$.printDB.data;
+          var printData=this.goalsData;
           var printable=window.open("","printable");
           printable.document.write("<html><head>");
           printable.document.write("</head><body>");
@@ -222,11 +237,11 @@
 
         //su-medical case
         if(this.page==="su-medical"){
-          var printable=window.open("","printable", "height:=400, width=600");
+          var printable=window.open("","printable");
           printable.document.write("<html><head>");
           printable.document.write("</head><body>");
           printable.document.write("<div style='width:100% padding:5%;'>");
-          printable.document.write("<p>Build Print pages later.</p></br>")
+          printable.document.write("<p>Cannot Print this page. Go to file and print right click to print.</p></br>")
           printable.document.write("</body></html>");
           printable.document.write("</div>");
           printable.print();
@@ -264,7 +279,6 @@
 
         //su-pre admissin assessment
         if(this.page==="su-pre"){
-          console.log("ok");
           var printable=window.open("","printable");
           printable.document.write("<html><head>");
           printable.document.write("</head><body>");
@@ -272,12 +286,12 @@
           var assmt=this.assmtData;
           for(x in assmt){
             if(x !="custom"){
-              printable.document.write("<p>"+this.convertToPrintText(x)+": "+assmt[x].info+"<br /></p>");
+              printable.document.write("<p>"+this.convertToPrintText(x)+": "+assmt[x]+"<br /></p>");
             }
             if(x ==="custom"){
               var custom=assmt[x];
               for(y in custom){
-                printable.document.write("<p>"+custom[y].label+"/"+custom[y].label2+": "+custom[y].info+"</br></p>");
+                printable.document.write("<p>"+custom[y].label+"&"+custom[y].label2+": "+custom[y].info+"</br></p>");
               }
             }
           };
@@ -295,16 +309,14 @@
           printable.document.write("</head><body>");
           printable.document.write("<div style='width:100% padding:5%;'>");
           var patient = this.profileData;
-          var contacts = this.$.contactsQuery.data;
+          var contacts = this.contactsData;
           for(x in patient){
             if(x !="image"){
               printable.document.write("<p>"+this.convertToPrintText(x)+": "+patient[x]+"<br /></p>");
             }
           };
           for(x in contacts){
-            printable.document.write("<p>"+this.convertToPrintText(x)+": "+contacts[x].name+"<br /></p>");
-            printable.document.write("<p>"+this.convertToPrintText(x)+": "+contacts[x].address+"<br /></p>");
-            printable.document.write("<p>"+this.convertToPrintText(x)+": "+contacts[x].phone+"<br /></p>");
+            printable.document.write("<p>"+this.convertToPrintText(x)+": "+contacts[x]+"<br /></p>");
           };
           printable.document.write();
           printable.document.write("</body></html>");
@@ -319,14 +331,13 @@
           printable.document.write("<html><head>");
           printable.document.write("</head><body>");
           printable.document.write("<div style='width:100% padding:5%;'>");
-          var printData=this.$.printDB.data;
+          var printData=this.risksData;
           for(x in printData){
             var assmt=printData[x];
-            printable.document.write("<p style='font-weight:bold;'>"+assmt.date.slice(0,15)+"</p>");
+            printable.document.write("<p style='font-weight:bold;'>Assessment date: "+assmt.date.slice(0,15)+"</p>");
             for(y in assmt){
-              var subAssmt=assmt[y];
-              if(y!="date"){
-                printable.document.write("<p>"+this.convertToPrintText(y)+": "+subAssmt.info+"</p>");
+              if(y!="$key"){
+                printable.document.write("<p>"+this.convertToPrintText(y)+": "+assmt[y]+"</p>");
               };
             };
           };
