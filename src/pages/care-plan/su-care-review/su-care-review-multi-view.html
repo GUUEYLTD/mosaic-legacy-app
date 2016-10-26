@@ -6,6 +6,7 @@
 <link rel="import" href="../../../../bower_components/neon-animation/animations/scale-down-animation.html" />
 <link rel="import" href="../../../../bower_components/paper-icon-button/paper-icon-button.html" />
 <link rel="import" href="../../../../bower_components/iron-icons/iron-icons.html" />
+<link rel="import" href="../../../../bower_components/iron-icon/iron-icon.html" />
 
 <link rel="import" href="../../../elements/media-queries/media-queries.html" />
 
@@ -34,6 +35,9 @@
       margin-bottom:4%;
       background-color:red;
       position:relative;
+      background-repeat:no-repeat;
+      background-size:cover;
+      background-position:bottom right;
     }
     .multiCardLabel{
       width:25%;
@@ -45,6 +49,9 @@
       font-weight:bold;
       color:#FFFFFF;
       font-size:20px;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-height:100%;
     }
     .multiCardMore{
       position:absolute;
@@ -55,11 +62,17 @@
     .multiCardContainer{
       display:flex;
       flex-direction:column;
-      height:70%;
+      height:60%;
       padding:5%;
     }
     .multiCardMain{
-      flex-grow:1;
+      flex-grow:2;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-height:80%;
+    }
+    .multiCardSecondary{
+
     }
     </style>
 
@@ -70,21 +83,27 @@
     </paper-dialog>
 
     <paper-card class="multiViewCard app-grid" has-aspect-ratio>
-      <template is="dom-repeat" items="{{reviewsData}}" as="review">
+      <template
+        is="dom-repeat"
+        items="{{reviewsData}}"
+        as="review"
+        sort="_sortReviewDate"
+        observe="nextReviewDate">
 
         <div class="multiCardContainer">
           <paper-card class="multiItem">
-            <div class="multiCardHeading">
+            <div style="background-image:url(../../../../{{_computeReviewImage(review.nextReviewDate)}})" class="multiCardHeading">
               <p class="multiCardLabel">
                 [[review.name]]
               </p>
             </div>
             <div class="multiCardContainer">
-
               <p class="multiCardMain">
                 [[review.description]]
               </p>
-
+              <div class="multiCardSecondary">
+                <iron-icon icon="icons:update"></iron-icon>{{_computeDate(review.nextReviewDate)}}
+              </div>
             </div>
 
             <paper-icon-button
@@ -132,7 +151,63 @@
       deleteReview:function(e){
         this.fire("deleteReview", {reviewId:this.reviewId});
         this.$.editModal.close();
-      }
+      },
+      _sortReviewDate:function(review1, review2){
+        var date1=new Date(review1.nextReviewDate).getTime();
+        var date2=new Date(review2.nextReviewDate).getTime();
+        return date1>date2;
+      },
+      _computeReviewImage:function(date){
+        var date=new Date(date).getMonth();
+        switch(date) {
+          case 0:
+              return "images/risks/movingHandling.png";
+              break;
+          case 1:
+              return "images/risks/slipsTrips.png";
+              break;
+          case 2:
+              return "images/risks/violenceAgression.png";
+              break;
+          case 3:
+              return "images/risks/falls.png";
+              break;
+          case 4:
+              return "images/risks/scaldingBurning.png";
+              break;
+          case 5:
+              return "images/risks/bedrailEntrapment.png";
+              break;
+          case 6:
+              return "images/risks/legionella.png";
+              break;
+          case 7:
+              return "images/risks/legionella.png";
+              break;
+          case 8:
+              return "images/risks/legionella.png";
+              break;
+          case 9:
+              return "images/risks/legionella.png";
+              break;
+          case 10:
+              return "images/risks/legionella.png";
+              break;
+          case 11:
+              return "images/risks/legionella.png";
+              break;
+          default:
+              return "images/risks/other.png";
+              break;
+        };
+      },
+      _computeDate:function(date){
+        if(typeof date==="string"){
+          return date.slice(3,15);
+        } else {
+          return "Date not set";
+        };
+      },
     });
 
   </script>

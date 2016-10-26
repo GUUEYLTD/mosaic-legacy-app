@@ -48,6 +48,11 @@
 
           <paper-input value="{{reviewData.name}}" label="name of the review"></paper-input>
           <paper-input value="{{reviewData.description}}" label="short description"></paper-input>
+          <guuey-date-input
+            class="modal-date-input"
+            value="{{reviewData.nextReviewDate}}"
+            label="Next Review Date">
+          </guuey-date-input>
 
           <div class="modal-button-container">
             <paper-button on-tap="cancelNewReview">cancel</paper-button>

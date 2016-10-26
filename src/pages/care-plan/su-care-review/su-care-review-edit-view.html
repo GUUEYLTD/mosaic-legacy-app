@@ -88,6 +88,18 @@
     </style>
     <paper-card class="editViewCard">
 
+      <guuey-text-input
+        label="Review Name"
+        label2="A simple name to describe this review"
+        value="{{reviewData.name}}">
+      </guuey-text-input>
+
+      <guuey-text-input
+        label="Review Description"
+        label2="A short description of what this review is about"
+        value="{{reviewData.description}}">
+      </guuey-text-input>
+
       <guuey-list-input
         value="{{reviewData.careAndSuppProp}}"
         label="Proposed Care & Support">
@@ -205,7 +217,7 @@
         </guuey-notify>
 
         <guuey-date-input
-          value="{{nextReviewDate}}"
+          value="{{reviewData.nextReviewDate}}"
           label="Next Review Date">
         </guuey-date-input>
 
