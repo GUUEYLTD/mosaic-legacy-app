@@ -3,7 +3,6 @@
   <template>
     <firebase-document
       id="notifyTargetDB"
-      path=[[notifyRoute]]
       app-name="main"
       data={{notifyTargetData}}>
     </firebase-document>
@@ -21,6 +20,7 @@
     properties:{
       notifyRoute:{
         type:String,
+        observer:"ready"
       },
       conditionType:{
         type:String
@@ -46,7 +46,8 @@
         value:false
       }
     },
-    ready:function(){
+    initialize:function(){
+      this.$.notifyTargetDB.path=this.notifyRoute;
       this.$.notifyTargetDB.getStoredValue(this.notifyRoute)
         .then(function(snapshot){
           this.originalTarget=snapshot;
@@ -81,7 +82,6 @@
           var path="homes/"+this.home+"/notifications/notifiable";
           this.$.notifiableDB.save(path, null)
             .then(function(){
-              console.log("saved new notification");
               this.$.notifiableDB.path=null;
               this.$.notifiableDB.data=null;
             }.bind(this));

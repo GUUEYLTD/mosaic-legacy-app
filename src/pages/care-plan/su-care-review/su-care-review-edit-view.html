@@ -208,8 +208,9 @@
         </paper-input>
 
         <guuey-notify
+          id="dateNotify"
           home="[[home]]"
-          notify-route="homes/[[home]]/patients/[[patient]]/carePlan/statementOfServiceUser/nextReviewDate"
+          notify-route="homes/[[home]]/patients/[[patient]]/carePlanReviews/[[reviewId]]/nextReviewDate"
           condition-type="guuey-date"
           notify-condition="true"
           notify-message="[[suBasicInfo.fName]] [[suBasicInfo.lName]]'s Care Plan Review Date is scheduled soon."
@@ -247,6 +248,10 @@
         reviewData:{
           type:Object,
           notify:true,
+        },
+        reviewId:{
+          type:String,
+          observer:"initNotify"
         },
         //table inputs need to be declared here
         wellBeingQuestionnaireInputs:{
@@ -298,6 +303,9 @@
         Polymer.editViewResizeBehavior,
         //Polymer.multiEditAnimationBehavior
       ],
+      initNotify:function(){
+        this.$.dateNotify.initialize();
+      },
       suConfirm:function(){
         this.set("reviewData.suAgree","true");
       },

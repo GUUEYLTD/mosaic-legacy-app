@@ -272,6 +272,7 @@
         outline:none;
       }
       #searchDropdown{
+        margin-top:20px;
         width:100%;
         position:absolute;
         background-color:#FFF;
@@ -279,10 +280,11 @@
         color:#000;
       }
       #notificationDropdown{
+        margin-top:20px;
         width:100%;
         position:absolute;
         background-color:#FFF;
-        z-index:5;
+        z-index:999;
         color:#000;
       }
       .notifyButton{
@@ -397,9 +399,9 @@
               <span id="notifyCount" hidden="{{computeNotifyHidden(notifyCount)}}">[[notifyCount]]</span>
               <iron-collapse id="notificationDropdown">
 
-                <template is="dom-repeat" items="[[notifiesData]]" as="notification">
+                <template is="dom-repeat" items="[[notifiesData]]" as="guueyNotify">
                     <paper-item class="notifyText">
-                      [[notification.message]]
+                      [[guueyNotify.message]]
                       <paper-button class="notifyButton" on-tap="dismissNotification">dismiss</paper-button>
                       <a style="text-decoration:none;" class="inherit" href="[[notification.url]]">
                         <paper-button class="notifyButton">check</paper-button>
@@ -1082,15 +1084,19 @@
           }.bind(this));
       },
       dismissNotification:function(e){
-        var data=e.model.notification;
-        var key=e.model.notification.$key;
+        var data=e.model.guueyNotify;
+        var key=e.model.guueyNotify.$key;
         delete data.$key;
         this.$.notifiableDB.path=null;
         this.$.notifiableDB.data=data;
         this.$.notifiableDB.save("/homes/"+this.home+"/notifications/notified", key)
           .then(function(){
             this.$.notifiableDB.path="/homes/"+this.home+"/notifications/notify/"+key;
-            this.$.notifiableDB.destroy();
+            this.$.notifiableDB.destroy()
+              .then(function(){
+                this.splice("notifiesData",e.model.index,1);
+                this.$.notifiableDB.path="/homes/"+this.home+"/notifications/notify/"+key;
+              }.bind(this));
           }.bind(this));
       },
       computeNotifyHidden:function(count){

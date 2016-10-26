@@ -112,8 +112,10 @@
         </guuey-date-input>
 
         <guuey-notify
+          id="dateNotify"
           home="[[home]]"
-          notify-route="homes/[[home]]/patients/[[patient]]/personalGoals/[[goalUID]]/finishDate"
+          su-basic-info="[[suBasicInfo]]"
+          notify-route="homes/[[home]]/patients/[[patient]]/personalGoals/[[goalId]]/finishDate"
           condition-type="guuey-date"
           notify-condition="true"
           notify-message="[[suBasicInfo.fName]] [[suBasicInfo.lName]]'s [[goalData.category]] goal completion date is soon."
@@ -253,6 +255,10 @@
           notify:true,
           observer:"_stepModalCheck"
         },
+        goalId:{
+          type:String,
+          observer:"initNotify"
+        },
         stepId:{
           type:String,
           notify:true
@@ -274,6 +280,9 @@
         Polymer.editViewResizeBehavior,
         Polymer.multiEditAnimationBehavior
       ],
+      initNotify:function(){
+        this.$.dateNotify.initialize();
+      },
       addStep:function(){
         this.fire("addStep");
       },

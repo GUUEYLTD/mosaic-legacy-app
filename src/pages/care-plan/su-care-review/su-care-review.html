@@ -96,7 +96,10 @@
               <su-care-review-edit-view
                 name="edit-view"
                 review-data="{{reviewData}}"
-                su-basic-info="[[suBasicInfo]]">
+                su-basic-info="[[suBasicInfo]]"
+                review-id="[[reviewId]]"
+                home="[[home]]"
+                patient="[[patient]]">
               </su-care-review-edit-view>
 
             </neon-animated-pages>
@@ -157,6 +160,7 @@
         var path="/homes/"+this.home+"/patients/"+this.patient+"/carePlanReviews";
         this.$.reviewDB.save(path, null)
           .then(function(val){
+            this.reviewId=this.$.reviewDB.path.slice(path.length+1);
             this.$.addReviewDialog.close();
             this.pageState="edit-view"
             this.animateEditViewFab();
@@ -174,13 +178,15 @@
         this.$.reviewData={};
       },
       editReview:function(e){
-        this.$.reviewDB.path="/homes/"+this.home+"/patients/"+this.patient+"/carePlanReviews/"+e.detail.reviewId;
+        this.reviewId=e.detail.reviewId;
+        this.$.reviewDB.path="/homes/"+this.home+"/patients/"+this.patient+"/carePlanReviews/"+this.reviewId;
         this.$.reviewDB.transactionsComplete=this._checkServiceUser(this.suBasicInfo);
         this.pageState="edit-view";
         this.animateEditViewFab();
       },
       deleteReview:function(e){
-        var path="/homes/"+this.home+"/patients/"+this.patient+"/carePlanReviews/"+e.detail.reviewId;
+        this.reviewId=e.detail.reviewId;
+        var path="/homes/"+this.home+"/patients/"+this.patient+"/carePlanReviews/"+this.reviewId;
         this.$.reviewDB.setStoredValue(path, null);
       },
       finishReview:function(){
