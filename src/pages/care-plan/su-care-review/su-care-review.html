@@ -31,6 +31,18 @@
       worker-url="../../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
     </app-indexeddb-mirror>
 
+    <guuey-notify
+      id="dateNotify"
+      home="[[home]]"
+      notify-target="[[reviewId]]"
+      notify-route="homes/[[home]]/patients/[[patient]]/carePlanReviews/[[reviewId]]/nextReviewDate"
+      notify-target="[[reviewId]]"
+      condition-type="guuey-date"
+      notify-condition="true"
+      notify-message="[[suBasicInfo.fName]] [[suBasicInfo.lName]]'s Care Plan Review Date is scheduled soon."
+      notify-url="/[[home]]/care-plan/su-care-review/[[patient]]">
+    </guuey-notify>
+
     <style include="common-styles">
 
     </style>
@@ -133,7 +145,11 @@
         pageState:{
           type:String,
           value:"multi-view"
-        }
+        },
+        reviewId:{
+          type:String,
+          observer:"initNotify"
+        },
       },
       observers:[
 
@@ -144,6 +160,9 @@
         Polymer.suPrintBehavior,
         Polymer.suResizeBehavior
       ],
+      initNotify:function(){
+        this.$.dateNotify.initialize();
+      },
       _checkServiceUser:function(suBasicInfo){
         var fullName=suBasicInfo.fName+" "+suBasicInfo.lName;
         if(!this.reviewData.suName){
@@ -188,6 +207,7 @@
         this.reviewId=e.detail.reviewId;
         var path="/homes/"+this.home+"/patients/"+this.patient+"/carePlanReviews/"+this.reviewId;
         this.$.reviewDB.setStoredValue(path, null);
+        this.$.dateNotify.deNotify(this.home, this.reviewId);
       },
       finishReview:function(){
         this.pageState="multi-view";

@@ -37,6 +37,15 @@
       worker-url="../../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
     </app-indexeddb-mirror>
 
+    <guuey-notify
+      id="dailyMedNotify"
+      immediate
+      home="[[home]]"
+      times-route="homes/[[home]]/patients/[[patient]]/medicationOutline/timeChunks"
+      condition-type="dailyMeds"
+      notify-url="/[[home]]/care-plan/su-medication/[[patient]]">
+    </guuey-notify>
+
     <style include="paper-time-picker-dialog-style"></style>
     <style include="common-styles">
       :host{
@@ -214,6 +223,7 @@
 
       <div class="modal-button-container">
         <paper-button dialog-dismiss>Cancel</paper-button>
+        <paper-button on-tap="deleteMed">Delete</paper-button>
         <paper-button on-tap="saveEditMed">Save</paper-button>
       </div>
 
@@ -663,7 +673,14 @@
         this.$.medDB.data.log={};
         this.$.medDB.data.log.user=this.user.uid;
         this.$.medDB.data.log.time=Date.now();
-        this.$.medDB.save("homes/"+this.home+"/patients/"+this.patient+"/medicationOutline/medications/"+editPath, null);
+        this.$.medDB.save("homes/"+this.home+"/patients/"+this.patient+"/medicationOutline/medications/"+editPath, null)
+          .then(function(med){
+            //guuey notify goes here
+            this.$.dailyMedNotify.notifyRoute=this.$.medDB.path;
+            this.$.dailyMedNotify.notifyMessage="test from daily meds";
+            this.$.dailyMedNotify.notifyTarget=editPath;
+            this.$.dailyMedNotify.initialize();
+          }.bind(this));
         this.$.editMedModal.toggle();
         this.newMedEdit={};
         this.hideEditingMed=true;
@@ -681,6 +698,11 @@
               this.$.medDB.save(this.$.medDB.path, null)
                 .then(function(){
                   this.newMed={};
+                  //guuey-notify goes here
+                  this.$.dailyMedNotify.notifyRoute=this.$.medDB.path;
+                  this.$.dailyMedNotify.notifyMessage="test from daily meds"
+                  this.$.dailyMedNotify.notifyTarget=editPath;
+                  this.$.dailyMedNotify.initialize();
                 }.bind(this));
             }.bind(this));
           this.$.medModal.toggle();
@@ -688,6 +710,24 @@
         } else {
           this.fire("openToast",{toastText:"Please make sure that you have set a name and a time of day (morning, afternoon etc) for this new medication."});
         };
+      },
+      deleteMed:function(){
+        this.$.medDB.path=null;
+        var editPath=this.newMedEdit.parent;
+        this.newMedEdit.parent=null;
+        this.$.medDB.data.med=this.newMedEdit;
+        this.$.medDB.data.med.archived=true;
+        this.$.medDB.data.log={};
+        this.$.medDB.data.log.user=this.user.uid;
+        this.$.medDB.data.log.time=Date.now();
+        this.$.medDB.save("homes/"+this.home+"/patients/"+this.patient+"/medicationOutline/medications/"+editPath, null)
+          .then(function(med){
+            //guuey notify goes here
+            this.$.dailyMedNotify.deNotify(this.home, editPath);
+          }.bind(this));
+        this.$.editMedModal.toggle();
+        this.newMedEdit={};
+        this.hideEditingMed=true;
       },
       newTime:function(time){
         this.newMed.time=time;
@@ -722,16 +762,33 @@
         this.$.night.toggle();
       },
       filterMorning:function(item){
-        return item.timeChunk.indexOf("morning")!=-1;
+        console.log(item);
+        if(item.archived){
+          return false;
+        } else {
+          return item.timeChunk.indexOf("morning")!=-1;
+        };
       },
       filterAfternoon:function(item){
-        return item.timeChunk.indexOf("afternoon")!=-1;
+        if(item.archived){
+          return false;
+        } else {
+          return item.timeChunk.indexOf("afternoon")!=-1;
+        };
       },
       filterEvening:function(item){
-        return item.timeChunk.indexOf("evening")!=-1;
+        if(item.archived){
+          return false;
+        } else {
+          return item.timeChunk.indexOf("evening")!=-1;
+        };
       },
       filterNight:function(item){
-        return item.timeChunk.indexOf("night")!=-1;
+        if(item.archived){
+          return false;
+        } else {
+          return item.timeChunk.indexOf("night")!=-1;
+        };
       },
       convertTime:function(rawTime){
         if(rawTime>=60*5 && rawTime<60*12){

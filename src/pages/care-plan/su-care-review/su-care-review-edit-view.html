@@ -13,7 +13,6 @@
 <link rel="import" href="../../../elements/guuey-date-input/guuey-date-input.html" />
 <link rel="import" href="../../../elements/guuey-list-input/guuey-list-input.html" />
 <link rel="import" href="../../../elements/guuey-text-input/guuey-text-input.html" />
-<link rel="import" href="../../../elements/guuey-notify/guuey-notify.html" />
 
 <link rel="import" href="../../../behaviors/multi-edit-animation-behavior.html" />
 <link rel="import" href="../../../behaviors/edit-view-resize-behavior.html" />
@@ -207,16 +206,6 @@
           error-message="Please explain with letters and periods only.">
         </paper-input>
 
-        <guuey-notify
-          id="dateNotify"
-          home="[[home]]"
-          notify-route="homes/[[home]]/patients/[[patient]]/carePlanReviews/[[reviewId]]/nextReviewDate"
-          condition-type="guuey-date"
-          notify-condition="true"
-          notify-message="[[suBasicInfo.fName]] [[suBasicInfo.lName]]'s Care Plan Review Date is scheduled soon."
-          notify-url="/[[home]]/care-plan/su-care-review/[[patient]]">
-        </guuey-notify>
-
         <guuey-date-input
           value="{{reviewData.nextReviewDate}}"
           label="Next Review Date">
@@ -251,7 +240,6 @@
         },
         reviewId:{
           type:String,
-          observer:"initNotify"
         },
         //table inputs need to be declared here
         wellBeingQuestionnaireInputs:{
@@ -303,9 +291,6 @@
         Polymer.editViewResizeBehavior,
         //Polymer.multiEditAnimationBehavior
       ],
-      initNotify:function(){
-        this.$.dateNotify.initialize();
-      },
       suConfirm:function(){
         this.set("reviewData.suAgree","true");
       },

@@ -15,7 +15,6 @@
 <link rel="import" href="../../../../bower_components/neon-animation/animations/scale-down-animation.html" />
 
 <link rel="import" href="../../../elements/guuey-date-input/guuey-date-input.html" />
-<link rel="import" href="../../../elements/guuey-notify/guuey-notify.html" />
 <link rel="import" href="../../../elements/media-queries/media-queries.html">
 
 <link rel="import" href="../../../styles/common-styles.html" />
@@ -110,17 +109,6 @@
           value="{{goalData.startDate}}"
           label="Start Date">
         </guuey-date-input>
-
-        <guuey-notify
-          id="dateNotify"
-          home="[[home]]"
-          su-basic-info="[[suBasicInfo]]"
-          notify-route="homes/[[home]]/patients/[[patient]]/personalGoals/[[goalId]]/finishDate"
-          condition-type="guuey-date"
-          notify-condition="true"
-          notify-message="[[suBasicInfo.fName]] [[suBasicInfo.lName]]'s [[goalData.category]] goal completion date is soon."
-          notify-url="/[[home]]/care-plan/su-goals/[[patient]]">
-        </guuey-notify>
 
         <guuey-date-input
           value="{{goalData.finishDate}}"
@@ -255,10 +243,6 @@
           notify:true,
           observer:"_stepModalCheck"
         },
-        goalId:{
-          type:String,
-          observer:"initNotify"
-        },
         stepId:{
           type:String,
           notify:true
@@ -280,9 +264,6 @@
         Polymer.editViewResizeBehavior,
         Polymer.multiEditAnimationBehavior
       ],
-      initNotify:function(){
-        this.$.dateNotify.initialize();
-      },
       addStep:function(){
         this.fire("addStep");
       },

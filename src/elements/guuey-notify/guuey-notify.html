@@ -12,6 +12,17 @@
       app-name="main">
     </firebase-document>
 
+    <firebase-document
+      id="deNotifiableDB"
+      app-name="main">
+    </firebase-document>
+
+    <firebase-document
+      id="timesDB"
+      app-name="main"
+      data="{{timesData}}">
+    </firebase-document>
+
   </template>
 </dom-module>
 <script>
@@ -25,13 +36,18 @@
       conditionType:{
         type:String
       },
-      notifyCondition:{
-        type:String
-      },
       notifyMessage:{
         type:String
       },
       notifyUrl:{
+        type:String
+      },
+      //used for setting the id of the info that is being notified on
+      notifyTarget:{
+        type:String
+      },
+      //used for daily med notifcations only
+      timesRoute:{
         type:String
       },
       originalTarget:{
@@ -41,6 +57,13 @@
         type:String,
         observer:"compareTargets"
       },
+      notifyData:{
+        type:Object
+      },
+      immediate:{
+        type:Boolean,
+        value:false
+      },
       readyToCompare:{
         type:Boolean,
         value:false
@@ -48,10 +71,15 @@
     },
     initialize:function(){
       this.$.notifyTargetDB.path=this.notifyRoute;
+      this.$.timesDB.path=this.timesRoute;
       this.$.notifyTargetDB.getStoredValue(this.notifyRoute)
         .then(function(snapshot){
           this.originalTarget=snapshot;
-          this.readyToCompare=true;
+          if(this.immediate){
+            this.routeNotification();
+          } else {
+            this.readyToCompare=true;
+          };
         }.bind(this));
     },
     observers:[
@@ -64,29 +92,87 @@
         }.bind(this));
       }
     },
-    compareTargets:function(){
-      if(this.readyToCompare){
-        if(this.newTarget!=this.oldTarget){
-          this.$.notifiableDB.data={
+    _computeTime:function(timeData, timeChunk){
+      var newestCandidate;
+      var currentChunk=timeData[timeChunk];
+      for(x in currentChunk){
+        var candidate=currentChunk[x];
+        if(newestCandidate!=null){
+          if(newestCandidate.log.time<candidate.log.time){
+            newestCandidate=candidate;
+          }
+        } else {
+          newestCandidate=candidate;
+        };
+      };
+      if(newestCandidate){
+        return newestCandidate.time;
+      } else {
+        return;
+      }
+    },
+    setDailyMedNotify:function(){
+      var path="homes/"+this.home+"/notifications/notifiable/"+this.notifyTarget;
+        this.originalTarget.med.timeChunk.forEach(function(chunk){
+          var time=this._computeTime(this.timesData, chunk);
+          this.notifyData={
             message:this.notifyMessage,
             url:this.notifyUrl,
             location:this.$.notifyTargetDB.path,
             conditions:{
               type:this.conditionType,
-              condition:Date.parse(this.newTarget)
+              weekdays:this.originalTarget.med.weekdays,
+              repeatTime:time
             },
             history:{
               notifiable:Date.now()
             },
           };
-          var path="homes/"+this.home+"/notifications/notifiable";
-          this.$.notifiableDB.save(path, null)
-            .then(function(){
-              this.$.notifiableDB.path=null;
-              this.$.notifiableDB.data=null;
-            }.bind(this));
+          this.$.notifiableDB.setStoredValue(path, this.notifyData)
+          this.$.notifiableDB.path=null;
+          this.notifyData=null;
+
+        }.bind(this));
+    },
+    setDefaultNotify:function(){
+      var path="homes/"+this.home+"/notifications/notifiable/"+this.notifyTarget;
+      this.notifyData={
+        message:this.notifyMessage,
+        url:this.notifyUrl,
+        location:this.$.notifyTargetDB.path,
+        conditions:{
+          type:this.conditionType,
+          condition:Date.parse(this.newTarget)
+        },
+        history:{
+          notifiable:Date.now()
+        },
+      };
+      this.$.notifiableDB.setStoredValue(path, this.notifyData)
+      this.$.notifiableDB.path=null;
+      this.notifyData=null;
+    },
+    compareTargets:function(){
+      if(this.readyToCompare){
+        if(this.newTarget!=this.originalTarget){
+          this.routeNotification();
         };
       };
+    },
+    routeNotification:function(){
+      if(this.conditionType==="dailyMeds"){
+        this.setDailyMedNotify();
+      } else {
+        this.setDefaultNotify();
+      };
+    },
+    //use when deleting an object that potentially has notifications on it
+    //operates off of the original path and home
+    deNotify:function(home, notifyTarId){
+      var notifiableRoute="homes/"+home+"/notifications/notifiable/"+notifyTarId;
+      var notifyRoute="homes/"+home+"/notifications/notify/"+notifyTarId;
+      this.$.deNotifiableDB.setStoredValue(notifiableRoute, null);
+      this.$.deNotifiableDB.setStoredValue(notifyRoute, null);
     }
   });
 </script>

@@ -57,6 +57,17 @@
       data="{{usersData}}">
     </firebase-query>
 
+    <guuey-notify
+      id="dateNotify"
+      home="[[home]]"
+      notify-route="homes/[[home]]/patients/[[patient]]/personalGoals/[[goalId]]/finishDate"
+      notify-target="[[goalId]]"
+      condition-type="guuey-date"
+      notify-condition="true"
+      notify-message="[[suBasicInfo.fName]] [[suBasicInfo.lName]]'s [[goalData.category]] goal completion date is soon."
+      notify-url="/[[home]]/care-plan/su-goals/[[patient]]">
+    </guuey-notify>
+
     <style include="common-styles"></style>
 
     <guuey-new-goal-modal
@@ -112,6 +123,7 @@
             </su-goals-multi-view>
 
             <su-goals-edit-view
+              su-basic-info="[[suBasicInfo]]"
               name="edit-view"
               goal-data="{{goalData}}"
               goal-id="[[goalId]]"
@@ -183,7 +195,8 @@
           value:"multi-view"
         },
         goalId:{
-          type:String
+          type:String,
+          observer:"initNotify"
         },
         stepId:{
           type:String
@@ -221,6 +234,9 @@
         Polymer.suPrintBehavior,
         Polymer.suResizeBehavior
       ],
+      initNotify:function(){
+        this.$.dateNotify.initialize();
+      },
       //activated from child events
       //multi-view event functions
       editGoal:function(e){
@@ -232,6 +248,7 @@
       deleteGoal:function(e){
         var path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalId;
         this.$.goalDB.setStoredValue(path, null);
+        this.$.dateNotify.deNotify(this.home, this.goalId);
         this.stepModalOpen="close";
       },
       //edit-view functions
