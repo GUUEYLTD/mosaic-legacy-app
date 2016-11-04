@@ -1,0 +1,179 @@
+<link rel="import" href="dependencies.html" />
+
+<dom-module id="guuey-stripe">
+
+  <template>
+
+    <iron-ajax
+      id="ajax"
+      handle-as="json"
+      on-response="handleNodeResponse"
+      debounce-duration="300"
+      method="POST"
+      content-type="application/json"
+      body="[[postBody]]">
+    </iron-ajax>
+
+    <style>
+
+    </style>
+
+
+  </template>
+
+  <script>
+
+    Polymer({
+      is:"guuey-stripe",
+      ready:function(){
+        Stripe.setPublishableKey('pk_test_HelqkF6yfrw7IvyTtgtOG7Sb');
+      },
+      properties:{
+        home:{
+          type:String
+        },
+        plan:{
+          type:String,
+          observer:"planChanged"
+        },
+        planId:{
+          type:String,
+          value:""
+        },
+        modulePrice:{
+          type:Number,
+          value:9.99
+        },
+        selectedModules:{
+          type:Object,
+          value:{
+            core:true
+          }
+        },
+        moduleCount:{
+          type:Number,
+          value:1
+        },
+        userCount:{
+          type:Number,
+          value:1
+        },
+        pricingTier:{
+          type:Number,
+          value:250
+        },
+        pricingTierName:{
+          type:String,
+          value:""
+        },
+        cardNumber:{
+          type:String
+        },
+        cardType:{
+          type:String
+        },
+        cvc:{
+          type:String
+        },
+        expDate:{
+          type:String,
+          observer:"splitDate"
+        },
+        expMonth:{
+          type:Number
+        },
+        expYear:{
+          type:Number
+        },
+        zipCode:{
+          type:String
+        },
+        phone:{
+          type:String
+        },
+        email:{
+          type:String
+        },
+        paymentData:{
+          type:Object,
+          notify:true
+        },
+        subscriptionData:{
+          type:Object,
+          observer:"subscriptionDataChanged"
+        }
+      },
+      planChanged:function(plan){
+        this.planId="M"+this.moduleCount+"U"+this.userCount;
+      },
+      subscriptionDataChanged:function(data){
+        if(data.subscriptions){
+          this.subscriptionId=data.subscriptions.data[0].id;
+        };
+      },
+      startSubscription:function(params){
+        this.params=params;
+        var dateObj=this.splitDate(params.expDate)
+        Stripe.card.createToken({
+          number: params.cardNumber,
+          cvc: params.cvc,
+          exp_month: dateObj.expMonth,
+          exp_year: dateObj.expYear,
+        }, this.handleStartSubscription.bind(this));
+      },
+      updateSubscription:function(params){
+        this.$.ajax.url="http://localhost:3000/payments/updateSubscription"
+        this.$.ajax.body={
+          subscriptionId:params.subscriptionId,
+          home:params.home,
+          plan:params.plan,
+          users:params.userCount,
+          modules:params.moduleCount,
+          planId:params.planId
+        };
+        this.$.ajax.generateRequest();
+      },
+      cancelSubscription:function(params){
+        this.$.ajax.url="http://localhost:3000/payments/cancelSubscription"
+        this.$.ajax.body={
+            subscriptionId:params.subscriptionId,
+            home:params.home
+          };
+        this.$.ajax.generateRequest();
+      },
+      splitDate:function(date){
+        var dateArr=date.split("/");
+        var dateObj={};
+        dateObj.expMonth=dateArr[0];
+        if(dateObj.expMonth.length<2){
+          dateObj.expMonth=0+dateObj.expMonth;
+        };
+        dateObj.expYear=dateArr[1];
+        return dateObj;
+      },
+      handleStartSubscription:function(status, res){
+        console.log(this.params);
+        if(res.error){
+          this.fire("openToast",{toastText:"Your payment could not be processed for the following reason: "+res.error.message});
+        } else {
+          this.set("paymentData",res);
+          this.$.ajax.url="http://localhost:3000/payments/startSubscription"
+          this.$.ajax.body={
+            stripeToken:res.id,
+            home:this.params.home,
+            plan:this.params.plan,
+            users:this.params.users,
+            modules:this.params.modules,
+            planId:this.params.planId
+          };
+          this.$.ajax.generateRequest();
+        };
+      },
+      handleNodeResponse:function(res){
+        console.log(res.detail.response);
+      },
+    });
+
+  </script>
+
+</dom-module>

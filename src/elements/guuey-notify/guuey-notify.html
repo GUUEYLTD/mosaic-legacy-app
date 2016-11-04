@@ -128,7 +128,7 @@
               notifiable:Date.now()
             },
           };
-          this.$.notifiableDB.setStoredValue(path, this.notifyData)
+          this.$.notifiableDB.setStoredValue(path+"-"+chunk, this.notifyData)
           this.$.notifiableDB.path=null;
           this.notifyData=null;
 
@@ -168,11 +168,20 @@
     },
     //use when deleting an object that potentially has notifications on it
     //operates off of the original path and home
-    deNotify:function(home, notifyTarId){
+    deNotify:function(home, notifyTarId, suffixes){
       var notifiableRoute="homes/"+home+"/notifications/notifiable/"+notifyTarId;
       var notifyRoute="homes/"+home+"/notifications/notify/"+notifyTarId;
-      this.$.deNotifiableDB.setStoredValue(notifiableRoute, null);
-      this.$.deNotifiableDB.setStoredValue(notifyRoute, null);
+      if(suffixes){
+        for(i=0; i<suffixes.length; i++){
+          var notifiableRoute="homes/"+home+"/notifications/notifiable/"+notifyTarId+"-"+suffixes[i];
+          var notifyRoute="homes/"+home+"/notifications/notify/"+notifyTarId+"-"+suffixes[i];
+          this.$.deNotifiableDB.setStoredValue(notifiableRoute, null);
+          this.$.deNotifiableDB.setStoredValue(notifyRoute, null);
+        }
+      } else {
+        this.$.deNotifiableDB.setStoredValue(notifiableRoute, null);
+        this.$.deNotifiableDB.setStoredValue(notifyRoute, null);
+      };
     }
   });
 </script>

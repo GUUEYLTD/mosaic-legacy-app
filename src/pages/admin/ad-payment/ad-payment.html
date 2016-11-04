@@ -10,17 +10,36 @@
     </media-queries>
 
     <firebase-document
-    id="careHomeProfileDB"
-    path="/homes/{{home}}/payment"
-    data="{{chPayments}}"
-    app-name="main">
-  </firebase-document>
+      id="paymentDB"
+      path="/homes/[[home]]/details/payment"
+      data="{{paymentData}}"
+      app-name="main">
+    </firebase-document>
+    <firebase-document
+      id="subscriptionDB"
+      path="/homes/[[home]]/details/customer"
+      data="{{subscriptionData}}"
+      app-name="main">
+    </firebase-document>
+
+    <firebase-query
+      id="suIndexDB"
+      path="/homes/[[home]]/patients/suIndex"
+      app-name="main">
+    </firebase-query>
+
+    <guuey-stripe
+      id="guueyStripe"
+      home="[[home]]"
+      payment-data="{{paymentData}}"
+      subscription-data="{{subscriptionData}}">
+    </guuey-stripe>
 
     <style include="common-styles">
       :host{
-        --app-grid-columns:2;
+        --app-grid-columns:3;
         --app-grid-item-height:100px;
-        --app-grid-expandible-item-columns:2;
+        --app-grid-expandible-item-columns:3;
       }
       paper-button{
         padding:20px;
@@ -38,105 +57,297 @@
       .guuey-table{
         @apply(--app-grid-expandible-item);
       }
+      .modules{
+        display:flex;
+        flex-direction:row;
+        flex-wrap:wrap;
+      }
+      .modules *{
+        flex-grow:1;
+        width:33.3%;
+        margin-left:0;
+        margin-right:0;
+        padding-left:0;
+        padding-right:0;
+      }
+      .modal-button-container{
+        @apply(--app-grid-expandible-item);
+      }
+      .cancel{
+        @apply(--app-grid-expandible-item);
+      }
+      #cancelText{
+        text-align:center;
+        color:red;
+        text-transform:uppercase;
+      }
+      #cancelText:hover{
+        cursor:pointer;
+      }
+      #payButton{
+        @apply(--app-grid-expandible-item);
+      }
+      .newSub{
+        display:flex;
+        flex-direction:row;
+        flex-wrap:wrap;
+      }
+      .newSub *{
+        flex-grow:1;
+        width:30%;
+        padding:20px;
+      }
+      .newSub .divider{
+        width:100%;
+      }
     </style>
+
+    <paper-dialog
+      id="editSubscription"
+      class="guuey-modal guuey-add-modal">
+
+      <h2>Update Subscription</h2>
+
+      <div class="modules">
+        <paper-radio-button disabled checked="{{selectedModules.core}}" name="core">core</paper-radio-button>
+        <paper-radio-button checked="{{selectedModules.staffManager}}" name="staffManager">Staff Manager</paper-radio-button>
+        <paper-radio-button checked="{{selectedModules.advancedCare}}" name="advancedCare">Advanced Care</paper-radio-button>
+        <paper-radio-button checked="{{selectedModules.training}}" name="training">Training</paper-radio-button>
+        <paper-radio-button checked="{{selectedModules.policiesAndProcedures}}" name="policiesAndProcedures">Policies And Procedures</paper-radio-button>
+        <paper-radio-button checked="{{selectedModules.healthAndSafety}}" name="healthAndSafety">Health And Safety</paper-radio-button>
+        <paper-radio-button checked="{{selectedModules.medication}}" name="medication">Medication</paper-radio-button>
+        <paper-radio-button checked="{{selectedModules.analytics}}" name="analytics">Analytics</paper-radio-button>
+        <paper-radio-button checked="{{selectedModules.mealPlanning}}" name="mealPlanning">Meal Planning</paper-radio-button>
+      </div>
+
+      <p>
+        Selected Modules: {{_computeModuleCount(selectedModules.*)}}
+      </p>
+      <p>
+        Current Service User Count: [[userCount]]
+      </p>
+      <p>
+        Monthly Price: £{{_computeMonthlyPrice(userCount, moduleCount)}}
+      </p>
+      <p>
+        Subscription Name: {{_computeSubscriptionName(userCount, moduleCount)}}
+      </p>
+      <div class="modal-button-container">
+        <paper-button dialog-dismiss>cancel</paper-button>
+        <paper-button on-tap="updateSubscription">save</paper-button>
+      </div>
+
+    </paper-dialog>
+
+    <paper-dialog class="guuey-modal guuey-danger-modal" id="cancelSubscription">
+
+      <h2>Cancel Subscription</h2>
+
+      <h3>
+        Are you sure that you want to cancel your subscription? All user data will be inaccessible until a new subscription is set and paid for.
+      </h3>
+
+      <div class="modal-button-container">
+        <paper-button id="dangerCancel" dialog-dismiss>cancel</paper-button>
+        <paper-button on-tap="cancelSubscription">Confirm</paper-button>
+      </div>
+
+    </paper-dialog>
 
     <paper-card class="pageCard">
       <admin-header
         page="Payment"
         icon="icons:payment">
       </admin-header>
-      <div class="pageInnerCont padded app-grid">
 
-        <paper-input label="Subscription" value="Care Plan"></paper-input>
+      <!--test area-->
 
-        <paper-input label="Customer Number" value="456512"></paper-input>
+      <div class="pageInnerCont padded">
+        <span hidden$="[[subscriptionExists]]">
+          <div class="newSub" class="app-grid">
 
-        <paper-input label="Activated" value="{{date}}"></paper-input>
+            <gold-cc-input
+              id="cardNumber"
+              auto-validate
+              label="credit card"
+              value="{{cardNumber}}"
+              card-type="{{cardType}}"
+              error-message="please enter a valid card number.">
+            </gold-cc-input>
 
-        <span class="buttonWrapper">
-          <paper-button class="guuey-button">edit membership</paper-button>
+            <gold-cc-cvc-input
+              id="cvc"
+              auto-validate
+              card-type="[[cardType]]"
+              error-message="please enter a valid cvc code (on back of your card)."
+              value="{{cvc}}">
+            </gold-cc-cvc-input>
+
+            <gold-cc-expiration-input
+              id="expDate"
+              auto-validate
+              label="expirationDate"
+              value="{{expDate}}"
+              error-message="please enter a valid expiration date.">
+            </gold-cc-expiration-input>
+
+            <gold-email-input
+              id="email"
+              auto-validate
+              label="email"
+              value="{{email}}"
+              error-message="please enter a valid email.">
+            </gold-email-input>
+
+            <gold-phone-input
+              id="phone"
+              auto-validate
+              label="phone number"
+              value="{{phone}}"
+              country-code="44"
+              error-message="please enter a valid phone number.">
+            </gold-phone-input>
+
+            <div class="divider"></div>
+
+            <paper-radio-button disabled checked="{{selectedModules.core}}" name="core">core</paper-radio-button>
+            <paper-radio-button checked="{{selectedModules.staffManager}}" name="staffManager">Staff Manager</paper-radio-button>
+            <paper-radio-button checked="{{selectedModules.advancedCare}}" name="advancedCare">Advanced Care</paper-radio-button>
+            <paper-radio-button checked="{{selectedModules.training}}" name="training">Training</paper-radio-button>
+            <paper-radio-button checked="{{selectedModules.policiesAndProcedures}}" name="policiesAndProcedures">Policies And Procedures</paper-radio-button>
+            <paper-radio-button checked="{{selectedModules.healthAndSafety}}" name="healthAndSafety">Health And Safety</paper-radio-button>
+            <paper-radio-button checked="{{selectedModules.medication}}" name="medication">Medication</paper-radio-button>
+            <paper-radio-button checked="{{selectedModules.analytics}}" name="analytics">Analytics</paper-radio-button>
+            <paper-radio-button checked="{{selectedModules.mealPlanning}}" name="mealPlanning">Meal Planning</paper-radio-button>
+
+            <p>
+              Selected Modules: {{_computeModuleCount(selectedModules.*)}}
+            </p>
+            <p>
+              Current Service User Count: [[userCount]]
+            </p>
+            <p>
+              Monthly Price: £{{_computeMonthlyPrice(userCount, moduleCount)}}
+            </p>
+            <p>
+              Subscription Name: {{_computeSubscriptionName(userCount, moduleCount)}}
+            </p>
+
+            <paper-button
+              id="payButton"
+              class="guuey-button"
+              on-tap="startSubscription">
+              start supscription
+            </paper-button>
+
+          </div>
         </span>
 
-        <paper-input label="Payment Method" value="Visa Card Ending in 9867"></paper-input>
+        <span hidden$="[[!subscriptionExists]]">
 
-        <paper-input label="Payment Interval" value="Monthly"></paper-input>
+          <div  class="pageInnerCont padded app-grid">
 
-        <paper-input label="Next Billing Date" value="20 August, 2016"></paper-input>
+            <paper-input label="Subscription" value="[[subscriptionData.subscriptions.data.0.plan.name]]"></paper-input>
 
-        <span class="buttonWrapper">
-          <paper-button class="guuey-button">edit payment</paper-button>
-        </span>
+            <paper-input label="Customer Number" value="[[home]]"></paper-input>
 
-        <div class="guuey-table">
+            <paper-input label="Activated" value="[[convertEpoch(subscriptionData.subscriptions.data.0.created)]]"></paper-input>
 
-            <span class="tableScrollLabel">
-              swipe left scrolls table
+            <span class="buttonWrapper">
+              <paper-button class="guuey-button" on-tap="editSubscription">edit subscription</paper-button>
             </span>
 
-            <table id="billingTable">
-              <thead>
-                <tr>
-                  <th>
-                    Billing Date
-                  </th>
-                  <th>
-                    Payment
-                  </th>
-                  <th>
-                    Type
-                  </th>
-                  <th>
-                    Print
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>
-                    23 May 2015
-                  </td>
-                  <td>
-                    390,00 EUR
-                  </td>
-                  <td>
-                    Invoice
-                  </td>
-                  <td>
-                    <paper-icon-button icon="icons:print"></paper-icon-button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    23 June 2015
-                  </td>
-                  <td>
-                    390,00 EUR
-                  </td>
-                  <td>
-                    Invoice
-                  </td>
-                  <td>
-                    <paper-icon-button icon="icons:print"></paper-icon-button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    23 July 2015
-                  </td>
-                  <td>
-                    390,00 EUR
-                  </td>
-                  <td>
-                    Invoice
-                  </td>
-                  <td>
-                    <paper-icon-button icon="icons:print"></paper-icon-button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-        </div>
+            <paper-input label="Payment Method" value="Card ending in [[subscriptionData.sources.data.0.last4]]"></paper-input>
+
+            <paper-input label="Payment Interval" value="Monthly"></paper-input>
+
+            <paper-input label="Next Billing Date" value="[[convertEpoch(subscriptionData.subscriptions.data.0.current_period_end)]]"></paper-input>
+
+            <span class="buttonWrapper">
+              <paper-button class="guuey-button">edit payment</paper-button>
+            </span>
+
+            <div class="cancel">
+              <p on-tap="startCancel" id="cancelText">
+                cancel
+              </p>
+            </div>
+
+            <div class="guuey-table">
+
+                <span class="tableScrollLabel">
+                  swipe left scrolls table
+                </span>
+
+                <table id="billingTable">
+                  <thead>
+                    <tr>
+                      <th>
+                        Billing Date
+                      </th>
+                      <th>
+                        Payment
+                      </th>
+                      <th>
+                        Type
+                      </th>
+                      <th>
+                        Print
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        23 May 2015
+                      </td>
+                      <td>
+                        390,00 EUR
+                      </td>
+                      <td>
+                        Invoice
+                      </td>
+                      <td>
+                        <paper-icon-button icon="icons:print"></paper-icon-button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        23 June 2015
+                      </td>
+                      <td>
+                        390,00 EUR
+                      </td>
+                      <td>
+                        Invoice
+                      </td>
+                      <td>
+                        <paper-icon-button icon="icons:print"></paper-icon-button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        23 July 2015
+                      </td>
+                      <td>
+                        390,00 EUR
+                      </td>
+                      <td>
+                        Invoice
+                      </td>
+                      <td>
+                        <paper-icon-button icon="icons:print"></paper-icon-button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+            </div>
+          </div>
+
+        </span>
+
       </div>
+
       <div style="height:100px;">
         <!--spacer-->
       </div>
@@ -151,6 +362,10 @@
       is: 'ad-payment',
       ready:function(){
         this.fire("pageLoaded", {page:this.page});
+        this.$.suIndexDB.query.once("value")
+        .then(function(data){
+          this._computeUserCount(data.val());
+        }.bind(this));
       },
       properties:{
         home:{
@@ -160,6 +375,44 @@
           type:String,
           value:"today"
         },
+        paymentData:{
+          type:Object,
+          observer:"paymentDataChanged"
+        },
+        subscriptionData:{
+          type:Object,
+          observer:"subscriptionDataChanged"
+        },
+        subscriptionExists:{
+          type:Boolean,
+          value:false
+        },
+        selectedModules:{
+          type:Object,
+          value:{
+            core:true
+          }
+        },
+        userCount:{
+          type:Number,
+          value:1
+        },
+        moduleCount:{
+          type:Number,
+          value:1
+        },
+        modulePrice:{
+          type:Number,
+          value:9.99
+        },
+        plan:{
+          type:String,
+          observer:"planChanged"
+        },
+        planId:{
+          type:String,
+          value:""
+        },
       },
       observers:[
 
@@ -168,6 +421,128 @@
         Polymer.adminPagesAnimation,
         Polymer.adminResizeBehavior
       ],
+      planChanged:function(plan){
+        this.planId="M"+this.moduleCount+"U"+this.userCount;
+      },
+      editSubscription:function(){
+        this.$.editSubscription.open();
+      },
+      startCancel:function(){
+        this.$.cancelSubscription.open();
+      },
+      _computeModuleCount:function(modules){
+        var count=0;
+        for(x in modules.base){
+          if(modules.base[x]===true){
+            count++;
+          };
+        };
+        this.set("moduleCount", count);
+        return count;
+      },
+      _computeUserCount:function(users){
+        var userCount=0;
+        for(x in users){
+          if(users[x].currentStatus==="active"){
+            userCount++;
+          };
+        };
+        this.set("userCount", userCount);
+      },
+      _computeMonthlyPrice:function(userCount, moduleCount){
+        var price=userCount*moduleCount*this.modulePrice;
+        this.set("price", price);
+        return price;
+      },
+      _computeSubscriptionName:function(userCount, moduleCount){
+          var baseName="Core Plan "+userCount+(userCount===1?" User":" Users");
+        if(moduleCount===1){
+          this.plan=baseName;
+          return baseName;
+        } else {
+          moduleCount--;
+          baseName=baseName+" +"+moduleCount+(moduleCount===1?" Module":" Modules");
+          this.plan=baseName;
+          return baseName;
+        };
+      },
+      paymentDataChanged:function(data){
+        //console.log(data);
+      },
+      handleResponse:function(e){
+        console.log(e.detail.response);
+      },
+      convertEpoch:function(date){
+        var date = new Date(date*1000);
+        var day = date.getDate();
+        var month = date.getMonth()+1;
+        var year = date.getFullYear();
+        return day+"."+month+"."+year;
+      },
+      startSubscription:function(){
+        if(this.checkValid()){
+          var params={
+            cardNumber:this.cardNumber,
+            cvc:this.cvc,
+            expDate:this.expDate,
+            home:this.home,
+            plan:this.plan,
+            users:this.userCount,
+            modules:this.moduleCount,
+            planId:this.planId
+          };
+          console.log(params);
+          this.$.guueyStripe.startSubscription(params);
+        } else {
+          this.fire("openToast",{toastText:"Your payment could not be processed due to missing or bad information. Please check the information in the form and try again."});
+        };
+      },
+      updateSubscription:function(){
+        var params={
+          subscriptionId:this.subscriptionId,
+          home:this.home,
+          plan:this.plan,
+          userCount:this.userCount,
+          moduleCount:this.moduleCount,
+          planId:this.planId
+        };
+        this.$.guueyStripe.updateSubscription(params);
+        this.$.editSubscription.close();
+      },
+      cancelSubscription:function(){
+        var params={
+          subscriptionId:this.subscriptionId,
+          home:this.home
+        };
+        console.log(params);
+        this.$.guueyStripe.cancelSubscription(params);
+        this.$.cancelSubscription.close();
+      },
+      subscriptionDataChanged:function(data){
+        if(data.subscriptions){
+          this.subscriptionId=data.subscriptions.data[0].id;
+          this.set("subscriptionExists", true);
+        } else {
+          this.set("subscriptionExists", false);
+        }
+      },
+      checkValid:function(params){
+        var checkArr=[
+          this.$.cardNumber,
+          this.$.cvc,
+          this.$.expDate,
+          //this.$.phone,
+          //this.$.email
+        ];
+        console.log(checkArr);
+        var valid=true;
+        for(i=0; i<checkArr.length; i++){
+          if(checkArr[i].invalid || !checkArr[i].value){
+            valid=false;
+          };
+        };
+        return valid;
+      },
     });
 
   </script>
