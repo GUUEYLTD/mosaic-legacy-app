@@ -247,7 +247,8 @@
       <su-header
       page="Medication Outline"
       home="[[home]]"
-      patient="[[patient]]">
+      patient="[[patient]]"
+      su-index-data="{{suBasicInfo}}">
       </su-header>
 
       <div class="pageInnerCont">
@@ -677,7 +678,7 @@
           .then(function(med){
             //guuey notify goes here
             this.$.dailyMedNotify.notifyRoute=this.$.medDB.path;
-            this.$.dailyMedNotify.notifyMessage="test from daily meds";
+            this.$.dailyMedNotify.notifyMessage=this.suBasicInfo.fName+" has medication that is ready to be taken within the hour.";
             this.$.dailyMedNotify.notifyTarget=editPath;
             this.$.dailyMedNotify.initialize();
           }.bind(this));
@@ -689,8 +690,10 @@
         this.$.medDB.path=null;
         this.$.medDB.data={};
         if(this.newMed.timeChunk && this.newMed.medicine){
-          this.$.medDB.save("homes/"+this.home+"/patients/"+this.patient+"/medicationOutline/medications", null)
+          var medPath="homes/"+this.home+"/patients/"+this.patient+"/medicationOutline/medications";
+          this.$.medDB.save(medPath, null)
             .then(function(){
+              var notifyTarget=this.$.medDB.path.slice(medPath.length+1);
               this.$.medDB.data.med=this.newMed;
               this.$.medDB.data.log={};
               this.$.medDB.data.log.user=this.user.uid;
@@ -700,8 +703,8 @@
                   this.newMed={};
                   //guuey-notify goes here
                   this.$.dailyMedNotify.notifyRoute=this.$.medDB.path;
-                  this.$.dailyMedNotify.notifyMessage="test from daily meds"
-                  this.$.dailyMedNotify.notifyTarget=editPath;
+                  this.$.dailyMedNotify.notifyMessage=this.suBasicInfo.fName+" has medication that is ready to be taken within the hour.";
+                  this.$.dailyMedNotify.notifyTarget=notifyTarget;
                   this.$.dailyMedNotify.initialize();
                 }.bind(this));
             }.bind(this));
@@ -723,7 +726,8 @@
         this.$.medDB.save("homes/"+this.home+"/patients/"+this.patient+"/medicationOutline/medications/"+editPath, null)
           .then(function(med){
             //guuey notify goes here
-            this.$.dailyMedNotify.deNotify(this.home, editPath);
+            var suffixes=["morning","afternoon","evening","night"];
+            this.$.dailyMedNotify.deNotify(this.home, editPath, suffixes);
           }.bind(this));
         this.$.editMedModal.toggle();
         this.newMedEdit={};
@@ -762,7 +766,6 @@
         this.$.night.toggle();
       },
       filterMorning:function(item){
-        console.log(item);
         if(item.archived){
           return false;
         } else {
