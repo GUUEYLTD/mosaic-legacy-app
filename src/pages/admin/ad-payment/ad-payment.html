@@ -100,6 +100,11 @@
       .newSub .divider{
         width:100%;
       }
+      .subExists paper-input{
+        --paper-input-container-disabled:{
+          opacity:.7;
+        };
+      }
     </style>
 
     <paper-dialog
@@ -245,23 +250,23 @@
 
         <span hidden$="[[!subscriptionExists]]">
 
-          <div  class="pageInnerCont padded app-grid">
+          <div  class="subExists pageInnerCont padded app-grid">
 
-            <paper-input label="Subscription" value="[[subscriptionData.subscriptions.data.0.plan.name]]"></paper-input>
+            <paper-input disabled label="Subscription" value="[[subscriptionData.subscriptions.data.0.plan.name]]"></paper-input>
 
-            <paper-input label="Customer Number" value="[[home]]"></paper-input>
+            <paper-input disabled label="Customer Number" value="[[home]]"></paper-input>
 
-            <paper-input label="Activated" value="[[convertEpoch(subscriptionData.subscriptions.data.0.created)]]"></paper-input>
+            <paper-input disabled label="Activated" value="[[convertEpoch(subscriptionData.subscriptions.data.0.created)]]"></paper-input>
 
             <span class="buttonWrapper">
               <paper-button class="guuey-button" on-tap="editSubscription">edit subscription</paper-button>
             </span>
 
-            <paper-input label="Payment Method" value="Card ending in [[subscriptionData.sources.data.0.last4]]"></paper-input>
+            <paper-input disabled label="Payment Method" value="Card ending in [[subscriptionData.sources.data.0.last4]]"></paper-input>
 
-            <paper-input label="Payment Interval" value="Monthly"></paper-input>
+            <paper-input disabled label="Payment Interval" value="Monthly"></paper-input>
 
-            <paper-input label="Next Billing Date" value="[[convertEpoch(subscriptionData.subscriptions.data.0.current_period_end)]]"></paper-input>
+            <paper-input disabled label="Next Billing Date" value="[[convertEpoch(subscriptionData.subscriptions.data.0.current_period_end)]]"></paper-input>
 
             <span class="buttonWrapper">
               <paper-button class="guuey-button">edit payment</paper-button>
