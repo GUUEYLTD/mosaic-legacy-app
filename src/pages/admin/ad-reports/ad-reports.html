@@ -1,0 +1,72 @@
+<link rel="import" href="dependencies.html" />
+
+<dom-module id="ad-reports">
+
+  <template>
+
+    <media-queries
+      dimensions="{{dimensions}}">
+    </media-queries>
+
+    <style include="common-styles">
+
+    </style>
+
+    <paper-card class="pageCard">
+
+      <admin-header
+        page="Settings"
+        icon="icons:assessment">
+      </admin-header>
+
+      <div class="pageInnerCont padded">
+        <h1>Select a Report</h1>
+        <paper-dropdown-menu label="Report Types">
+          <paper-listbox class="dropdown-content">
+            <paper-item>Monthly Reports</paper-item>
+            <paper-item>MAPPA Reports</paper-item>
+            <paper-item>Management Reports</paper-item>
+            <paper-item>Quarterly Reports</paper-item>
+            <paper-item>Annual Reports</paper-item>
+          </paper-listbox>
+        </paper-dropdown-menu>
+
+
+
+
+
+
+
+
+      </div>
+
+    </paper-card>
+
+  </template>
+
+  <script>
+
+    Polymer({
+      is:"ad-reports",
+
+      ready:function(){
+        this.fire("pageLoaded", {page:this.page});
+      },
+
+      properties:{
+
+      },
+
+      observers:[
+
+      ],
+
+      behaviors:[
+        Polymer.adminPagesAnimation,
+        Polymer.adminResizeBehavior
+      ]
+    });
+
+  </script>
+
+</dom-module>

@@ -344,6 +344,7 @@
 
             <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
               <a name="su-profile" href="/[[home]]/care-plan/su-profile/[[param]]">Personal Profile<a>
+              <a name="su-reports" href="/[[home]]/care-plan/su-reports/[[param]]">Daily Reports</a>
               <a name="su-pre" href="/[[home]]/care-plan/su-pre/[[param]]">Pre-Admission Assessment</a>
               <a name="su-care" href="/[[home]]/care-plan/su-care/[[param]]">Care Plan</a>
               <a name="su-care-review" href="/[[home]]/care-plan/su-care-review/[[param]]">Care Plan Review</a>
@@ -567,6 +568,15 @@
             home="[[home]]"
             name="su-care-review">
           </su-care-review>
+          <su-reports
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            patient="[[param]]"
+            home="[[home]]"
+            name="su-reports">
+          </su-reports>
 
           <!--pages for admin-->
           <ad-dash
@@ -634,13 +644,22 @@
             home="[[home]]"
             name="ad-support">
           </ad-support>
+          <ad-reports
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            admin-id="[[param]]"
+            home="[[home]]"
+            name="ad-reports">
+          </ad-reports>
           <!--test page for whatever-->
           <test-test
             current-page="[[currentPage]]"
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            patient="[[param]]"
+            admin-id="[[param]]"
             home="[[home]]"
             name="test-test">
           </test-test>

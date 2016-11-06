@@ -1,15 +1,5 @@
 <link rel="import" href="../../../../bower_components/polymer/polymer.html" />
-<link rel="import" href="../../../../bower_components/paper-fab/paper-fab.html" />
-<link rel="import" href="../../../../bower_components/neon-animation/neon-animatable-behavior.html" />
-<link rel="import" href="../../../../bower_components/neon-animation/neon-animation-runner-behavior.html" />
-<link rel="import" href="../../../../bower_components/iron-icons/iron-icons.html" />
-<link rel="import" href="../../../../bower_components/paper-button/paper-button.html" />
-<link rel="import" href="../../../../bower_components/paper-card/paper-card.html" />
-
-<link rel="import" href="../../../behaviors/animations/fab-down-animation.html" />
-<link rel="import" href="../../../behaviors/animations/fab-up-animation.html" />
-<link rel="import" href="../../../../bower_components/neon-animation/animations/fade-in-animation.html" />
-<link rel="import" href="../../../../bower_components/neon-animation/animations/slide-left-animation.html" />
+<link rel="import" href="../../../elements/guuey-rating/guuey-rating.html" />
 
 
 <!--
@@ -23,84 +13,13 @@ image editor
   <template>
 
     <style>
-      :host {
-        display: block;
-      }
-      #regFab{
-        position:absolute;
-        top:50px;
-        left:50px;
-        z-index:1;
-      }
-      #editFab{
-        opacity:0;
-        position:absolute;
-        top:50px;
-        left:50px;
-        z-index:0;
-      }
-      #mainCard{
-        width:100%;
-      }
-      paper-button{
-        width:100%;
-        background-color:blue;
-        color:white;
-      }
+
 
     </style>
-    <paper-card id="mainCard">
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <paper-fab id="regFab" on-tap="animateEditState" icon="icons:add"></paper-fab>
-      <paper-fab id="editFab" on-tap="animateRegState" icon="icons:check"></paper-fab>
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-
-    </paper-card>
+    stuff
+    <guuey-rating
+      value="3">
+    </guuey-rating>
 
   </template>
 
@@ -109,132 +28,7 @@ image editor
     Polymer({
 
       is: 'test-test',
-      attached:function(){
-        this.addEventListener("neon-animation-finish", this._neonAnimationFinish);
-      },
-      attributeChanged:function(){
-        this.origFabHeight=this.$.regFab.getComputedStyleValue("height");
-        this.origFabHeight=parseInt(this.origFabHeight, 10);
-        this.origFabTop=this.$.regFab.getComputedStyleValue("top");
-        this.origFabTop=parseInt(this.origFabTop,10);
-        this.postAnimateTop=window.innerHeight-this.origFabHeight-50+"px";
-        this.origToFixed=(window.innerHeight -this.origFabHeight -50) + "px";
-        this.fixedToOrig=(window.innerHeight + window.scrollY + this.offsetTop -50) + "px";
 
-        this.animationConfig={
-          "editState":[
-            {
-              name: 'fab-down-animation',
-              node: this.$.regFab,
-              translateY:this.origToFixed,
-              transformOrigin: "center top",
-              timing: {duration:5000}
-            },
-            {
-              name: 'fab-down-animation',
-              node: this.$.editFab,
-              translateY:this.origToFixed,
-              transformOrigin: "center top",
-              timing: {duration:5000}
-            },
-            {
-              name:"fade-out-animation",
-              node:this.$.regFab,
-              timing:{delay:5001, duration:500}
-            },
-            {
-              name:"fade-in-animation",
-              node:this.$.editFab,
-              timing:{delay:5000, duration:500}
-            }
-          ],
-          "regState":[
-            {
-              name: "fab-up-animation",
-              node:this.$.regFab,
-              translateY:this.fixedToOrig,
-              transformOrigin: "center top",
-              timing: {duration:5000}
-            },
-            {
-              name: "fab-up-animation",
-              node:this.$.editFab,
-              translateY:this.fixedToOrig,
-              transformOrigin: "center top",
-              timing: {duration:5000}
-            },
-            {
-              name:"fade-out-animation",
-              node:this.$.editFab,
-              timing:{delay:5001, duration:500}
-            },
-            {
-              name:"fade-in-animation",
-              node:this.$.regFab,
-              timing:{delay:5001, duration:500}
-            }
-          ]
-        }
-      },
-      recomputeConfig:function(){
-        this.origToFixed=(window.innerHeight + window.scrollY - this.offsetTop - this.origFabTop*2 -this.origFabHeight) + "px";
-        this.fixedToOrig=(window.innerHeight + window.scrollY - this.offsetTop - this.origFabTop*2 -this.origFabHeight) + "px";
-        this.animationConfig.editState[0].translateY=this.origToFixed;
-        this.animationConfig.editState[1].translateY=this.origToFixed;
-        this.animationConfig.regState[0].translateY="-"+this.fixedToOrig;
-        this.animationConfig.regState[1].translateY="-"+this.fixedToOrig;
-      },
-      properties:{
-        animationConfig:{
-
-        },
-        editState:{
-          type:Boolean,
-          value:false
-        }
-      },
-      animateEditState:function(){
-        this.recomputeConfig();
-        this.playAnimation("editState");
-        this.editState=true;
-      },
-      animateRegState:function(){
-        var topPos=window.innerHeight - this.offsetTop + window.scrollY - this.origFabTop -this.origFabHeight + "px";
-        this.$.editFab.style.position="absolute";
-        this.$.editFab.style.top=topPos;
-        this.$.regFab.style.position="absolute";
-        this.$.regFab.style.top=topPos;
-        this.recomputeConfig();
-        this.playAnimation("regState");
-        this.editState=false;
-      },
-      _neonAnimationFinish:function(){
-
-        if(this.editState){
-          this.$.regFab.style.top=this.postAnimateTop;
-          this.$.regFab.style.opacity=0;
-          this.$.regFab.style.zIndex=0;
-          this.$.regFab.style.position="fixed";
-          this.$.editFab.style.top=this.postAnimateTop;
-          this.$.editFab.style.opacity=1;
-          this.$.editFab.style.zIndex=1;
-          this.$.editFab.style.position="fixed";
-        } else {
-          this.$.regFab.style.position="absolute";
-          this.$.editFab.style.top=this.origFabTop+"px";
-          this.$.editFab.style.opacity=0;
-          this.$.editFab.style.zIndex=0;
-          this.$.editFab.style.position="absolute";
-          this.$.regFab.style.top=this.origFabTop+"px";
-          this.$.regFab.style.opacity=1;
-          this.$.regFab.style.zIndex=1;
-
-        }
-      },
-
-      behaviors:[
-        Polymer.NeonAnimationRunnerBehavior
-      ]
     });
   </script>
 </dom-module>
