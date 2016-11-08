@@ -116,6 +116,7 @@
     Polymer({
       is:"su-reports",
       ready:function(){
+        this.fire("pageLoaded", {page:this.page});
         this.updateTime();
         this.set("selectedChunk",this.currentChunk);
         setInterval(function(){
@@ -155,7 +156,9 @@
 
       ],
       behaviors:[
-
+        Polymer.carePlanAnimation,
+        Polymer.suPrintBehavior,
+        Polymer.suResizeBehavior
       ],
       updateTime:function(){
         //date for both data points

@@ -1,0 +1,212 @@
+<link rel="import" href="dependencies.html" />
+
+<dom-module id="su-monthly-reports">
+
+  <template>
+
+    <media-queries
+      dimensions="{{dimensions}}">
+    </media-queries>
+
+    <firebase-document
+      id="dailyRepDB"
+      app-name="main"
+      path="homes/[[home]]/patients/[[patient]]/monthlyReports/[[selectedMonth]]"
+      data="{{monthlyRepData}}">
+    </firebase-document>
+
+    <style include="common-styles">
+
+      .sliderRow{
+        margin-top:20px;
+        display:flex;
+        flex-direction:row;
+      }
+      .sliderRow paper-slider{
+        flex-grow:50;
+      };
+      .sliderRow iron-icon{
+        flex-grow:1;
+      }
+      #iconGood{
+        color:#43A047;
+      }
+      #iconBad{
+        color:#E53935;
+      }
+      .sliderOutput{
+        text-align:center;
+        font-size:120%;
+        margin:10px;
+        padding:10px;
+      }
+
+    </style>
+
+    <paper-card class="pageCard">
+
+      <su-header
+        id="suHeader"
+        page="Daily Reports"
+        patient="[[patient]]"
+        home="[[home]]"
+        su-index-data="{{suIndexData}}"
+        setimage>
+      </su-header>
+
+      <div class="pageInnerCont padded">
+        <h2>Monthly Report for [[suIndexData.fName]] [[suIndexData.lName]]: [[readableMonth]]</h2>
+        <paper-dropdown-menu
+          id="chunkSelector"
+          label="Reports for different times of day">
+          <paper-listbox class="dropdown-content" attr-for-selected="date-string" selected="{{selectedMonth}}">
+            <template is="dom-repeat" items="[[altMonths]]" as="month">
+
+              <paper-item date-string="[[_computeLabel(month)]]" label="[[month]]">[[month]]</paper-item>
+
+            </template>
+          </paper-listbox>
+        </paper-dropdown-menu>
+
+        <div class="sliderRow">
+          <iron-icon id="iconBad" icon="icons:thumb-down"></iron-icon>
+          <paper-slider pin value="{{monthlyRepData.mood}}"></paper-slider>
+          <iron-icon id="iconGood" icon="icons:thumb-up"></iron-icon>
+        </div>
+        <p hidden="[[!monthlyRepData.mood]]" class="sliderOutput">
+          [[suIndexData.fName]]'s overall mood was <b>[[monthlyRepData.mood]]</b> out of 100 for this shift.
+        </p>
+        <p hidden="[[monthlyRepData.mood]]" class="sliderOutput">
+          Please select a value out of 100 for [[suIndexData.fName]]'s overall mood.
+        </p>
+
+        <paper-textarea label="Comments on Mood" value="{{monthlyRepData.moodComments}}"></paper-textarea>
+
+        <div class="sliderRow">
+          <iron-icon id="iconBad" icon="icons:thumb-down"></iron-icon>
+          <paper-slider pin value="{{monthlyRepData.health}}"></paper-slider>
+          <iron-icon id="iconGood" icon="icons:thumb-up"></iron-icon>
+        </div>
+        <p hidden="[[!monthlyRepData.health]]" class="sliderOutput">
+          [[suIndexData.fName]]'s overall health was <b>[[monthlyRepData.health]]</b> out of 100 for this shift.
+        </p>
+        <p hidden="[[monthlyRepData.health]]" class="sliderOutput">
+          Please select a value out of 100 for [[suIndexData.fName]]'s overall health.
+        </p>
+
+        <paper-textarea label="Comments on Health" value="{{monthlyRepData.healthComments}}"></paper-textarea>
+
+
+        <div class="divider"></div>
+
+        <paper-textarea label="activities" value="{{monthlyRepData.activities}}"></paper-textarea>
+        <paper-textarea label="locations" value="{{monthlyRepData.locations}}"></paper-textarea>
+        <paper-textarea label="incidents" value="{{monthlyRepData.incidents}}"></paper-textarea>
+        <paper-textarea label="summary of shift" value="{{monthlyRepData.summaryOfChunk}}"></paper-textarea>
+
+
+      </div>
+
+    </paper-card>
+
+  </template>
+
+  <script>
+
+    Polymer({
+      is:"su-monthly-reports",
+      attached:function(){
+        this.fire("pageLoaded", {page:this.page});
+        this.updateMonth();
+        var selectedMonth=this._computeLabel(this.currentMonth);
+        this.set("selectedMonth",selectedMonth);
+        setInterval(function(){
+          this.updateMonth()
+        }.bind(this),1000*60*60);
+      },
+      properties:{
+        currentMonth:{
+          type:String,
+          value:""
+        },
+        currentDate:{
+          type:String,
+          value:""
+        },
+        selectedMonth:{
+          type:Number,
+          value:0,
+          observer:"_computeReadableMonth"
+        },
+        monthList:{
+          type:Array,
+          value:[
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "june",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December"
+          ]
+        },
+        altMonths:{
+          type:Array,
+          value:[]
+        },
+        monthlyRepData:{
+          type:Object,
+          value:{
+            mood:50,
+            health:50
+          }
+        }
+      },
+      observers:[
+        "_computeReadableMonth(monthList, selectedMonth)"
+      ],
+      behaviors:[
+        Polymer.carePlanAnimation,
+        Polymer.suPrintBehavior,
+        Polymer.suResizeBehavior
+      ],
+      updateMonth:function(){
+        //function to set months
+        var date=new Date();
+        var months=date.getMonth();
+        var currentMonth=this.monthList[months];
+        var prevMonth = this.monthList[months-1] < 0 ? 12:this.monthList[months-1];
+        var nextMonth = this.monthList[months+1] > 11 ? 0:this.monthList[months+1];
+        this.altMonths=[];
+        this.push("altMonths", prevMonth, currentMonth, nextMonth);
+        //set the two calculated time values... used in db ops as well
+        this.set("currentMonth",currentMonth);
+      },
+      _computeLabel:function(month){
+        //compute db dir for the report
+        var date = new Date();
+        var years=date.getFullYear();
+        var months=this.monthList.indexOf(month);
+        var currentDate=new Date(years, months);
+        currentDate=currentDate.getTime();
+        return currentDate;
+
+      },
+      _computeReadableMonth:function(monthList, selectedMonth){
+        date=new Date(selectedMonth);
+        date=date.getMonth();
+        date=parseInt(date);
+        var readableMonth=monthList[date];
+        this.set("readableMonth",readableMonth);
+      }
+
+    });
+
+  </script>
+
+</dom-module>

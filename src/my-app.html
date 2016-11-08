@@ -352,6 +352,7 @@
               <a name="su-medication" href="/[[home]]/care-plan/su-medication/[[param]]">Medication Outline</a>
               <a name="su-risk" href="/[[home]]/care-plan/su-risk/[[param]]">Risk Assessment</a>
               <a name="su-goals" href="/[[home]]/care-plan/su-goals/[[param]]">Personal Goals</a>
+              <a name="su-monthly-reports" href="/[[home]]/care-plan/su-monthly-reports/[[param]]">Monthly Reports</a>
             </iron-selector>
 
           </div>
@@ -577,6 +578,15 @@
             home="[[home]]"
             name="su-reports">
           </su-reports>
+          <su-monthly-reports
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            patient="[[param]]"
+            home="[[home]]"
+            name="su-monthly-reports">
+          </su-monthly-reports>
 
           <!--pages for admin-->
           <ad-dash
