@@ -353,6 +353,7 @@
               <a name="su-risk" href="/[[home]]/care-plan/su-risk/[[param]]">Risk Assessment</a>
               <a name="su-goals" href="/[[home]]/care-plan/su-goals/[[param]]">Personal Goals</a>
               <a name="su-monthly-reports" href="/[[home]]/care-plan/su-monthly-reports/[[param]]">Monthly Reports</a>
+              <a name="su-view-reports" href="/[[home]]/care-plan/su-view-reports/[[param]]">View Reports</a>
             </iron-selector>
 
           </div>
@@ -587,7 +588,15 @@
             home="[[home]]"
             name="su-monthly-reports">
           </su-monthly-reports>
-
+          <su-view-reports
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            patient="[[param]]"
+            home="[[home]]"
+            name="su-view-reports">
+          </su-view-reports>
           <!--pages for admin-->
           <ad-dash
             current-page="[[currentPage]]"
@@ -669,7 +678,7 @@
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            admin-id="[[param]]"
+            patient="[[param]]"
             home="[[home]]"
             name="test-test">
           </test-test>

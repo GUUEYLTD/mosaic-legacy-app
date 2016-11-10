@@ -1,0 +1,387 @@
+<link rel="import" href="dependencies.html" />
+
+<dom-module id="su-view-reports">
+
+  <template>
+
+    <firebase-query
+      id="reportsDB"
+      app-name="main"
+      data="{{reportsData}}"
+      path="homes/[[home]]/patients/[[patient]]/dailyReports"
+      start-at="1478646000000"
+      end-at="1480719600000">
+    </firebase-query>
+
+    <style include="common-styles">
+
+      .reportExpand{
+        background-color:#F5F2F2;
+        margin:20px 0 20px 0;
+        padding:20px;
+        text-align:center;
+      }
+      .reportExpand :hover{
+        cursor:pointer;
+
+      }
+      .reportExpand h2{
+        width:100%;
+        text-align:center;
+      }
+      .reportSection{
+        padding:20px;
+      }
+      .reportSection .reportText{
+        --paper-input-container-disabled:{
+          opacity:.9;
+        };
+      }
+      .reportSection paper-progress{
+        width:100%;
+      }
+      #healthGraph{
+        width:100%;
+      }
+      #moodGraph{
+        margin-top:20px;
+        width:100%;
+      }
+      .innerMenu{
+        display:flex;
+        flex-direction:row;
+      }
+      .innerMenu *{
+        flex-grow:1;
+        margin:20px;
+      }
+    </style>
+
+    <paper-card class="pageCard">
+      <su-header
+        id="suHeader"
+        page="Daily Reports"
+        patient="[[patient]]"
+        home="[[home]]"
+        su-index-data="{{suIndexData}}"
+        setimage>
+      </su-header>
+      <div class="pageInnerCont padded">
+        <div class="innerMenu">
+          <paper-button on-tap="viewThisDay" raised>display today</paper-button>
+          <paper-button on-tap="viewThisWeek" raised>display this week</paper-button>
+          <paper-button on-tap="viewThisMonth" raised>display this month</paper-button>
+          <vaadin-combo-box id="selectYear" items="[[yearList]]" label="Year" value="{{selectDate.year}}"></vaadin-combo-box>
+          <vaadin-combo-box id="selectMonth" items="[[monthList]]" label="Month" value="{{selectDate.month}}"></vaadin-combo-box>
+        </div>
+        <!--
+        <paper-button on-tap="viewThisYear" raised>display this year</paper-button>
+        -->
+
+        <google-chart
+          id="healthGraph"
+          type='line'
+          options='{"title": "Health Over Time"}'
+          cols='[{"label":"day", "type":"string"}, {"label":"Health", "type":"number"}, {"label":"Mood", "type":"number"}]'
+          rows='[[graphRows]]'>
+        </google-chart>
+
+        <template is="dom-repeat" items="[[reportsData]]" as="report">
+
+          <paper-item class="reportExpand" on-tap="toggleSection">
+            <h2>[[_computeReadableDate(report.$key)]]</h2>
+          </paper-item>
+          <iron-collapse class="reportSection" id="r[[report.$key]]">
+            <h3>Morning</h3>
+            <p>
+              Health: [[report.morning.health]]/100
+            </p>
+            <paper-progress min="0" max="100" value="[[report.morning.health]]"></paper-progress>
+            <paper-textarea
+              class="reportText"
+              disabled
+              label="Health Comments"
+              value="[[report.morning.healthComments]]">
+            </paper-textarea>
+            <p>
+              Mood: [[report.morning.mood]]/100
+            </p>
+            <paper-progress min="0" max="100" value="[[report.morning.mood]]"></paper-progress>
+            <paper-textarea
+              class="reportText"
+              disabled
+              label="Mood Comments"
+              value="[[report.morning.moodComments]]">
+            </paper-textarea>
+            <paper-textarea
+              class="reportText"
+              disabled
+              label="Activities"
+              value="[[report.morning.activities]]">
+            </paper-textarea>
+            <paper-textarea
+              class="reportText"
+              disabled
+              label="Incidents"
+              value="[[report.morning.incidents]]">
+            </paper-textarea>
+            <paper-textarea
+              class="reportText"
+              disabled
+              label="Locations Visited"
+              value="[[report.morning.locations]]">
+            </paper-textarea>
+            <paper-textarea
+              class="reportText"
+              disabled
+              label="Summary"
+              value="[[report.morning.summaryOfChunk]]">
+            </paper-textarea>
+
+            <h3>Afternoon</h3>
+            <p>
+              Health: [[report.afternoon.health]]/100
+            </p>
+            <paper-progress min="0" max="100" value="[[report.afternoon.health]]"></paper-progress>
+            <paper-textarea
+              class="reportText"
+              disabled
+              label="Health Comments"
+              value="[[report.afternoon.healthComments]]">
+            </paper-textarea>
+            <p>
+              Mood: [[report.afternoon.mood]]/100
+            </p>
+            <paper-progress min="0" max="100" value="[[report.afternoon.mood]]"></paper-progress>
+            <paper-textarea
+              class="reportText"
+              disabled
+              label="Mood Comments"
+              value="[[report.afternoon.moodComments]]">
+            </paper-textarea>
+            <paper-textarea
+              class="reportText"
+              disabled
+              label="Activities"
+              value="[[report.afternoon.activities]]">
+            </paper-textarea>
+            <paper-textarea
+              class="reportText"
+              disabled
+              label="Incidents"
+              value="[[report.afternoon.incidents]]">
+            </paper-textarea>
+            <paper-textarea
+              class="reportText"
+              disabled
+              label="Locations Visited"
+              value="[[report.afternoon.locations]]">
+            </paper-textarea>
+            <paper-textarea
+              class="reportText"
+              disabled
+              label="Summary"
+              value="[[report.afternoon.summaryOfChunk]]">
+            </paper-textarea>
+
+            <h3>Night</h3>
+            <p>
+              Health: [[report.night.health]]/100
+            </p>
+            <paper-progress min="0" max="100" value="[[report.night.health]]"></paper-progress>
+            <paper-textarea
+              class="reportText"
+              disabled
+              label="Health Comments"
+              value="[[report.night.healthComments]]">
+            </paper-textarea>
+            <p>
+              Mood: [[report.night.mood]]/100
+            </p>
+            <paper-progress min="0" max="100" value="[[report.night.mood]]"></paper-progress>
+            <paper-textarea
+              class="reportText"
+              disabled
+              label="Mood Comments"
+              value="[[report.night.moodComments]]">
+            </paper-textarea>
+            <paper-textarea
+              class="reportText"
+              disabled
+              label="Activites"
+              value="[[report.night.activities]]">
+            </paper-textarea>
+            <paper-textarea
+              class="reportText"
+              disabled
+              label="Incidents"
+              value="[[report.night.incidents]]">
+            </paper-textarea>
+            <paper-textarea
+              class="reportText"
+              disabled
+              label="Locations Visited"
+              value="[[report.night.locations]]">
+            </paper-textarea>
+            <paper-textarea
+              class="reportText"
+              disabled
+              label="Summary"
+              value="[[report.night.summaryOfChunk]]">
+            </paper-textarea>
+          </iron-collapse>
+
+        </template>
+      </div>
+    </paper-card>
+
+  </template>
+
+  <script>
+
+    Polymer({
+      is:"su-view-reports",
+      ready:function(){
+        this.fire("pageLoaded",{page:this.page});
+        this._computeYearList();
+        this.$.selectYear.value=this._computeCurrentYear();
+      },
+      properties:{
+        selectDate:{
+          type:Object,
+          value:{},
+          //observer:"_selectChanged"
+        },
+        yearList:{
+          type:Array,
+          value:[]
+        },
+        monthList:{
+          type:Array,
+          value:[
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "june",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December"
+          ]
+        },
+      },
+      observers:[
+        "_computeGraphRows(reportsData.*)",
+        "_selectChanged(selectDate.*)"
+      ],
+      behaviors:[
+        Polymer.carePlanAnimation,
+        Polymer.suPrintBehavior,
+        Polymer.suResizeBehavior
+      ],
+      _computeReadableDate:function(data){
+        var date = new Date(parseInt(data));
+        return date.toLocaleDateString();
+      },
+      toggleSection:function(e){
+        this.$$("#r"+e.model.report.$key).toggle();
+      },
+      viewThisDay:function(){
+        var date = new Date();
+        var days = date.getDate();
+        var months = date.getMonth();
+        var years = date.getFullYear();
+        var date = new Date(years, months, days);
+        var now = date.getTime();
+        this.$.selectYear.value=null;
+        this.$.reportsDB.startAt = now.toString();
+        this.$.reportsDB.endAt = now.toString();
+      },
+      viewThisWeek:function(){
+        var date = new Date();
+        var days = date.getDate();
+        var months = date.getMonth();
+        var years = date.getFullYear();
+        var date = new Date(years, months, days);
+        var now = date.getTime();
+        var nowWeekday = date.getDay();
+        var week = now - (1000 * 60 * 60 * 24 * nowWeekday);
+        this.$.selectYear.value=null;
+        this.$.reportsDB.startAt=week.toString();
+        this.$.reportsDB.endAt=now.toString();
+      },
+      viewThisMonth:function(){
+        var date = new Date();
+        var months = date.getMonth();
+        var years = date.getFullYear();
+        var date = new Date(years, months);
+        var nextMonths = months+1;
+        var endDate = new Date(years, nextMonths);
+        var now = date.getTime();
+        var end = endDate.getTime()-1;
+        this.$.selectYear.value=null;
+        this.$.reportsDB.startAt = now.toString();
+        this.$.reportsDB.endAt = end.toString();
+      },
+      viewThisYear:function(){
+        var date = new Date();
+        var years = date.getFullYear();
+        var date = new Date(years, 0);
+        var nextYears = years+1;
+        var endDate = new Date(nextYears, 0);
+        var now = date.getTime();
+        var end = endDate.getTime()-1;
+        this.$.reportsDB.limitToLast = 5;
+      },
+      _computeGraphRows(data){
+        var rowArr=[];
+        for(x in data.base){
+          //need data and value
+          var date = new Date(parseInt(data.base[x].$key)).toLocaleDateString();
+          var mornHealth = data.base[x].morning.health;
+          var afterHealth = data.base[x].afternoon.health;
+          var nightHealth = data.base[x].night.health;
+          var mornMood = data.base[x].morning.mood;
+          var afterMood = data.base[x].afternoon.mood;
+          var nightMood = data.base[x].night.mood;
+          var morning = [date, mornHealth, mornMood];
+          var afternoon = [date, afterHealth, afterMood];
+          var night = [date, nightHealth, nightMood];
+          rowArr.push(morning, afternoon, night);
+        };
+        this.graphRows = rowArr;
+      },
+      _selectChanged:function(date){
+        if(date.base.month && date.base.year){
+          var months = date.base.month;
+          var years = parseInt(date.base.year);
+          var dateMonths = this.monthList.indexOf(months);
+          var date = new Date(years, dateMonths);
+
+          var nextMonths = dateMonths+1;
+          var endDate = new Date(years, nextMonths);
+          var now = date.getTime();
+          var end = endDate.getTime()-1;
+          this.$.reportsDB.startAt = now.toString();
+          this.$.reportsDB.endAt = end.toString();
+        };
+      },
+      _computeYearList:function(){
+        var date = new Date();
+        year = date.getFullYear();
+        prevYear = date.getFullYear() - 1;
+        this.yearList = [year.toString(), prevYear.toString()];
+      },
+      _computeCurrentYear:function(){
+        var date = new Date();
+        return date.getFullYear();
+      }
+    });
+
+  </script>
+
+</dom-module>

@@ -1,6 +1,9 @@
 <link rel="import" href="../../../../bower_components/polymer/polymer.html" />
-
-
+<link rel="import" Href="../../../../bower_components/polymerfire/firebase-query.html" />
+<link rel="import" href="../../../../bower_components/iron-list/iron-list.html" />
+<link rel="import" href="../../../../bower_components/paper-input/paper-textarea.html" />
+<link rel="import" href="../../../../bower_components/paper-card/paper-card.html" />
+<link rel="import" href="../../../styles/common-styles.html" />
 <!--
 `image-editor`
 image editor
@@ -11,11 +14,37 @@ image editor
 <dom-module id="test-test">
   <template>
 
-    <style>
+    <firebase-query
+      id="reportsDB"
+      app-name="main"
+      data="{{reportsData}}"
+      path="homes/[[home]]/patients/[[patient]]/dailyReports">
+    </firebase-query>
 
+    <style include="common-styles">
+    iron-list {
+      height: 100vh; /* don't use % values unless the parent element is sized. */
+    }
 
     </style>
-    stuff
+
+    <paper-card class="pageCard">
+
+      <iron-list scroll-target="document" items="[[reportsData]]" as="report">
+        <template>
+          <div>
+
+            <h2>Morning</h2>
+            <p>
+              [[report.morning.health]]
+            </p>
+
+          </div>
+
+        </template>
+      </iron-list>
+
+    </paper-card>
 
   </template>
 
