@@ -13,13 +13,9 @@
         "details": {
           ".read": "root.child('homes').child($home).child('users').child(auth.uid).child('home').val()===$home"
         },
-        "adminOnly": {
+        "reports": {
           ".read": "root.child('homes').child($home).child('users').child(auth.uid).child('home').val()===$home && root.child('homes').child($home).child('users').child(auth.uid).child('role').val()==='admin'",
-          "users": {
-            "$user": {
-              ".validate": true
-            }
-          }
+          ".write": "root.child('homes').child($home).child('users').child(auth.uid).child('home').val()===$home && root.child('homes').child($home).child('users').child(auth.uid).child('role').val()==='admin'"
         },
         "users": {
           ".read": "data.child(auth.uid).child('home').val()===$home",

@@ -1,0 +1,197 @@
+<link rel="import" href="../../../../../bower_components/polymer/polymer.html" />
+<link rel="import" href="../../../../../bower_components/paper-card/paper-card.html" />
+<link rel="import" href="../../../../../bower_components/neon-animation/animations/scale-down-animation.html" />
+<link rel="import" href="../../../../../bower_components/neon-animation/animations/scale-up-animation.html" />
+
+<link rel="import" href="../../../../elements/guuey-text-input/guuey-text-input.html" />
+
+<link rel="import" href="manager-report-input-section.html" />
+
+<link rel="import" href="../../../../styles/common-styles.html" />
+
+<dom-module id="quarterly-manager-report">
+
+  <template>
+
+    <style include="common-styles">
+
+
+    </style>
+    <paper-card>
+
+      <guuey-text-input
+        value="{{value.serviceUserReview}}"
+        label="Service User Review"
+        label2="Any relevant notes regarding service users">
+      </guuey-text-input>
+
+      <guuey-text-input
+        value="{{value.incidents}}"
+        label="Incidents"
+        label2="Description of any incidents that took place over the time period">
+      </guuey-text-input>
+
+      <guuey-text-input
+        value="{{value.staff}}"
+        label="Staff Review"
+        label2="Any comments or concerns regarding staff.">
+      </guuey-text-input>
+
+      <guuey-text-input
+        value="{{value.activites}}"
+        label="Activities Review"
+        label2="Activities for Service users over the time period">
+      </guuey-text-input>
+
+      <guuey-text-input
+        value="{{value.medication}}"
+        label="Medication Review"
+        label2="Any comments regarding medication in general">
+      </guuey-text-input>
+
+      <div class="guuey-table">
+
+        <p class="tableScrollLabel">
+          swipe left scrolls table
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>
+                Service User
+              </th>
+              <th>
+                Present Stage
+              </th>
+              <th>
+                Next Stage
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <template is="dom-repeat" items="[[suListData]]" as="su">
+
+              <tr>
+                <td>
+                  [[su.fName]] [[su.lName]]
+                </td>
+                <td>
+                  <manager-report-input-section
+                    input-header="[[su.fName]]'s Present Stage"
+                    value="{{value}}"
+                    input-name="[[su.$key]]"
+                    input-category="presentStage">
+                  </manager-report-input-section>
+                </td>
+                <td>
+                  <manager-report-input-section
+                    input-header="[[su.fName]]'s Next Stage"
+                    value="{{value}}"
+                    input-name="[[su.$key]]"
+                    input-category="nextStage">
+                  </manager-report-input-section>
+                </td>
+              </tr>
+
+            </template>
+          </tbody>
+        </table>
+      </div>
+
+      <guuey-text-input
+        value="{{value.checks}}"
+        label="General Routine Checks"
+        label2="Water temperatures, key sessions, completion of shift planner etc.">
+      </guuey-text-input>
+
+      <guuey-text-input
+        value="{{value.maintenance}}"
+        label="Maintenance Review"
+        label2="Any comments regarding maintenance for the time period">
+      </guuey-text-input>
+
+      <guuey-text-input
+        value="{{value.referrals}}"
+        label="Referrals"
+        label2="Any comments regarding new or potentially new service users">
+      </guuey-text-input>
+
+      <guuey-text-input
+        value="{{value.training}}"
+        label="Training Review"
+        label2="Any comments regarding training of staff">
+      </guuey-text-input>
+
+      <guuey-text-input
+        value="{{value.rota}}"
+        label="ROTA Issues"
+        label2="Any comments works schedules">
+      </guuey-text-input>
+
+      <guuey-text-input
+        value="{{value.environment}}"
+        label="Environment Review"
+        label2="Any comments regarding environment">
+      </guuey-text-input>
+
+      <guuey-text-input
+        value="{{value.events}}"
+        label="Events Review"
+        label2="Any comments regarding special events at the care home">
+      </guuey-text-input>
+
+      <guuey-text-input
+        value="{{value.other}}"
+        label="Other"
+        label2="Any other comments">
+      </guuey-text-input>
+
+    </paper-card>
+
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is:"quarterly-manager-report",
+      ready:function(){
+        this.setReportKey();
+      },
+      properties:{
+        suListData:{
+          type:Array,
+          observer:"suLIstDataChanged"
+        },
+        value:{
+          type:Object,
+          notify:true,
+          value:{}
+        },
+        reportKey:{
+          type:Number,
+          notify:true
+        }
+      },
+      observers:[
+        "valueChanged(value.*)"
+      ],
+      behaviors:[
+
+      ],
+      valueChanged:function(value){
+        //console.log(value);
+      },
+      suLIstDataChanged:function(list){
+        //console.log(list);
+      },
+      setReportKey:function(){
+        //gets current month - 7 days
+
+      }
+    });
+
+  </script>
+
+</dom-module>
