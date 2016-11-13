@@ -24,8 +24,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       /*general styling*/
       /*AKA:mainCard*/
       .pageCard{
-        width:80%;
-        margin:50px 10% 50px 10%;
+        width:calc(100% - var(--page-card-horizontal-margin) - var(--page-card-horizontal-margin));
+        margin-top:50px;
+        margin-bottom:50px;
+        margin-left:var(--page-card-horizontal-margin);
+        margin-right:var(--page-card-horizontal-margin);
       }
       /*used for inner cards inside of main card*/
       .subCard{

@@ -1,0 +1,44 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html" />
+
+<script>
+
+  (function(){
+    "use-strict";
+    Polymer.shellResizeBehavior={
+      is:"simple-resize-behavior",
+      ready:function(){
+
+
+      },
+      observers:[
+        "screenChange(dimensions.*)"
+      ],
+      screenChange:function(dimensions){
+        //available queries= <=767, <=1023, <=1365, <=1919
+        var desktopMenuDisplay="flex";
+        var mobileMenuDisplay="none";
+
+        if(dimensions.base.query767){
+          desktopMenuDisplay="none";
+          mobileMenuDisplay="flex";
+        }else if(dimensions.base.query1023){
+          desktopMenuDisplay="none";
+          mobileMenuDisplay="flex";
+        } else if(dimensions.base.query1365){
+          desktopMenuDisplay="flex";
+          mobileMenuDisplay="none";
+        } else if(dimensions.query1919){
+          desktopMenuDisplay="flex";
+          mobileMenuDisplay="none";
+        };
+
+        this.customStyle["--desktop-menu-display"]=desktopMenuDisplay;
+        this.customStyle["--mobile-menu-display"]=mobileMenuDisplay;
+        this.updateStyles();
+
+      },
+    };
+
+  })();
+
+</script>

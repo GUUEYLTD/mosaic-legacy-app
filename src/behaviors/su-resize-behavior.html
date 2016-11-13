@@ -13,7 +13,7 @@
         "screenChange(dimensions.*)"
       ],
       screenChange:function(dimensions){
-
+        //available queries= <=767, <=1023, <=1365, <=1919
         if(this.page==="su-care"){
           var guueyListFloatRight="left";
           var guueyListFloatLeft="right";
@@ -23,8 +23,9 @@
           var mainFabTop="-25px";
           var mainFabBottom="unset";
           var mainFabRight="-25px";
+          var pageCardHorizontalMargin="164px";
 
-          if(dimensions.base.query640){
+          if(dimensions.base.query767){
             guueyListFloatRight="unset";
             guueyListFloatLeft="unset";
             listWidthHalf="90%";
@@ -33,7 +34,8 @@
             mainFabTop="unset";
             mainFabBottom="5%";
             mainFabRight="5%";
-          }else if(dimensions.base.query750){
+            pageCardHorizontalMargin="0px";
+          }else if(dimensions.base.query1023){
             guueyListFloatRight="unset";
             guueyListFloatLeft="unset";
             listWidthHalf="90%";
@@ -42,7 +44,8 @@
             mainFabTop="-25px";
             mainFabBottom="unset";
             mainFabRight="-25px";
-          }else if(dimensions.base.query900){
+            pageCardHorizontalMargin="0px";
+          } else if(dimensions.base.query1365){
             guueyListFloatRight="unset";
             guueyListFloatLeft="unset";
             listWidthHalf="90%";
@@ -51,7 +54,8 @@
             mainFabTop="-25px";
             mainFabBottom="unset";
             mainFabRight="-25px";
-          } else if(dimensions.base.query1100){
+            pageCardHorizontalMargin="50px";
+          } else if(dimensions.query1919){
             guueyListFloatRight="unset";
             guueyListFloatLeft="unset";
             listWidthHalf="90%";
@@ -60,7 +64,8 @@
             mainFabTop="-25px";
             mainFabBottom="unset";
             mainFabRight="-25px";
-          };
+            pageCardHorizontalMargin="176px";
+          }
           //list styles
           this.customStyle["--guuey-list-float-right"]=guueyListFloatRight;
           this.customStyle["--guuey-list-float-left"]=guueyListFloatLeft;
@@ -74,6 +79,8 @@
           this.customStyle["--main-fab-top"]=mainFabTop;
           this.customStyle["--main-fab-bottom"]=mainFabBottom;
           this.customStyle["--main-fab-right"]=mainFabRight;
+
+          this.customStyle["--page-card-horizontal-margin"]=pageCardHorizontalMargin;
           this.updateStyles();
 
         };
@@ -84,7 +91,7 @@
           var mainFabTop="-25px";
           var mainFabBottom="unset";
           var mainFabRight="-25px";
-          if(dimension.base.query640){
+          if(dimension.base.query767){
             //fab styles
             mainFabPosition="fixed";
             mainFabTop="unset";
@@ -100,7 +107,7 @@
         };
         if(this.page==="su-create"){
           var appGridColumns="2";
-          if(dimensions.base.query900){
+          if(dimensions.base.query1365){
             appGridColumns="1";
           };
           this.customStyle["--app-grid-columns"]=appGridColumns;
@@ -113,28 +120,28 @@
           var mainFabRight="-25px";
           var mainFabBottom="unset";
 
-          if(dimensions.base.query640){
+          if(dimensions.base.query767){
 
             mainFabPosition="fixed";
             mainFabTop="unset";
             mainFabBottom="5%";
             mainFabRight="5%";
 
-          } else if(dimensions.base.query750){
+          } else if(dimensions.base.query1023){
 
             mainFabPosition="absolute";
             mainFabTop="-25px";
             mainFabBottom="unset";
             mainFabRight="-25px";
 
-          } else if(dimensions.base.query900){
+          } else if(dimensions.base.query1365){
 
             mainFabPosition="absolute";
             mainFabTop="-25px";
             mainFabBottom="unset";
             mainFabRight="-25px";
 
-          } else if(dimensions.base.query1100){
+          } else if(dimensions.base.query1919){
 
             mainFabPosition="absolute";
             mainFabTop="-25px";
@@ -163,7 +170,7 @@
           var tdThMinWidth="unset"
           var tdThLastWidth="unset"
 
-          if(dimensions.base.query900){
+          if(dimensions.base.query1365){
             tableScrollLabelColor="inherit"
             tableOverflow="scroll"
             tbodyDisplay="block"
@@ -198,7 +205,7 @@
           var mainFabTop="-25px";
           var mainFabBottom="unset";
           var mainFabRight="-25px";
-          if(dimensions.base.query640){
+          if(dimensions.base.query767){
             //table style
             tableScrollLabelColor="inherit"
             tableOverflow="scroll"
@@ -214,7 +221,7 @@
             mainFabTop="unset";
             mainFabBottom="5%";
             mainFabRight="5%";
-          } else if(dimensions.base.query900){
+          } else if(dimensions.base.query1919){
 
             //table style
             tableScrollLabelColor="inherit"
@@ -253,7 +260,7 @@
             var mainFabTop="-25px";
             var mainFabBottom="unset";
             var mainFabRight="-25px";
-          if(dimensions.base.query640){
+          if(dimensions.base.query767){
             //fab styles
             mainFabPosition="fixed";
             mainFabTop="unset";
@@ -270,7 +277,7 @@
         if(this.page==="su-profile"){
           //uses 900
           var appGridColumns="2";
-          if(dimensions.base.query900){
+          if(dimensions.base.query1365){
             appGridColumns="1";
           };
           this.customStyle["--app-grid-columns"]=appGridColumns;
@@ -282,28 +289,28 @@
           var mainFabRight="-25px";
           var mainFabBottom="unset";
 
-          if(dimensions.base.query640){
+          if(dimensions.base.query767){
 
             mainFabPosition="fixed";
             mainFabTop="unset";
             mainFabBottom="5%";
             mainFabRight="5%";
 
-          } else if(dimensions.base.query750){
+          } else if(dimensions.base.query1023){
 
             mainFabPosition="absolute";
             mainFabTop="-25px";
             mainFabBottom="unset";
             mainFabRight="-25px";
 
-          } else if(dimensions.base.query900){
+          } else if(dimensions.base.query1365){
 
             mainFabPosition="absolute";
             mainFabTop="-25px";
             mainFabBottom="unset";
             mainFabRight="-25px";
 
-          } else if(dimensions.base.query1100){
+          } else if(dimensions.base.query1919){
 
             mainFabPosition="absolute";
             mainFabTop="-25px";

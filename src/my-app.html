@@ -3,6 +3,9 @@
 <dom-module id="my-app">
 
   <template>
+    <media-queries
+      dimensions="{{dimensions}}">
+    </media-queries>
     <!--firebase app and auth config-->
     <firebase-app
       name="main"
@@ -204,8 +207,15 @@
       }
       .toolbarRight{
         width:50%;
-        text-align:right;
+        display:flex;
+        flex-direction:row;
         position:relative;
+      }
+      .toolbarRight *{
+        flex-grow:1;
+      }
+      .toolbarInner{
+        text-align:center;
       }
       #notifyCount{
         margin-left:-10px;
@@ -313,8 +323,27 @@
         background-repeat: no-repeat;
         background-position: top;
       }
+      .mobileMainToolbar{
 
-
+      }
+      .mobileAltToolbar{
+        background-color: #f9f9f9;
+        color:#cecece;
+      }
+      .mobileMainToolbar .flexRow, .mobileAltToolbar .flexRow{
+        width:100%;
+        display:flex;
+        flex-direction:row;
+      }
+      .mobileMainToolbar .flexRow *, .mobileAltToolbar .flexRow *{
+        flex-grow:1;
+      }
+      #desktopMenu{
+        display:var(--desktop-menu-display);
+      }
+      #mobileMenu{
+        display:var(--mobile-menu-display);
+      }
     </style>
 
     <div class="loadingOverlay">
@@ -364,7 +393,7 @@
       <app-header-layout fullbleed>
 
         <app-header id="appHeader" condenses reveals effects="waterfall">
-          <app-toolbar>
+          <app-toolbar id="desktopMenu">
             <div class="toolbarLeft">
               <paper-icon-button class="toolbarButton" icon="menu" on-tap="toggleDrawer"></paper-icon-button>
               <span class="menuText">menu</span>
@@ -395,30 +424,96 @@
             </div>
 
             <div class="toolbarRight">
-              <a class="inherit" href="/[[home]]/default/def-home"><paper-icon-button class="toolbarButton" icon="icons:home"></paper-icon-button></a>
+              <a class="inherit toolbarInner" href="/[[home]]/default/def-home"><paper-icon-button class="toolbarButton" icon="icons:home"></paper-icon-button></a>
               <paper-icon-button class="toolbarButton" icon="icons:apps"></paper-icon-button>
 
-              <paper-icon-button class="toolbarButton dropdown-trigger" icon="social:notifications" on-tap="showNotifications"></paper-icon-button>
-              <span id="notifyCount" hidden="{{computeNotifyHidden(notifyCount)}}">[[notifyCount]]</span>
-              <iron-collapse id="notificationDropdown">
+              <div class="toolbarInner">
+                <paper-icon-button class="toolbarButton dropdown-trigger" icon="social:notifications" on-tap="showNotifications"></paper-icon-button>
+                <span id="notifyCount" hidden="{{computeNotifyHidden(notifyCount)}}">[[notifyCount]]</span>
+                <iron-collapse id="notificationDropdown">
 
-                <template is="dom-repeat" items="[[notifiesData]]" as="guueyNotify">
-                    <paper-item class="notifyText">
-                      [[guueyNotify.message]]
-                      <paper-button class="notifyButton" on-tap="dismissNotification">dismiss</paper-button>
-                      <a style="text-decoration:none;" class="inherit" href="[[guueyNotify.url]]">
-                        <paper-button class="notifyButton">check</paper-button>
-                      </a>
-                    </paper-item>
+                  <template is="dom-repeat" items="[[notifiesData]]" as="guueyNotify">
+                      <paper-item class="notifyText">
+                        [[guueyNotify.message]]
+                        <paper-button class="notifyButton" on-tap="dismissNotification">dismiss</paper-button>
+                        <a style="text-decoration:none;" class="inherit" href="[[guueyNotify.url]]">
+                          <paper-button class="notifyButton">check</paper-button>
+                        </a>
+                      </paper-item>
 
-                </template>
+                  </template>
 
-              </iron-collapse>
+                </iron-collapse>
+              </div>
+
 
               <paper-icon-button class="toolbarButton logoutButton" on-tap="logout" icon="icons:account-circle"></paper-icon-button>
             </div>
 
           </app-toolbar>
+
+          <app-toolbar id="mobileMenu" class="mobileMainToolbar">
+            <div class="flexRow">
+              <a class="inherit toolbarInner" href="/[[home]]/default/def-home"><paper-icon-button class="toolbarButton" icon="icons:home"></paper-icon-button></a>
+              <paper-icon-button class="toolbarButton" icon="icons:apps"></paper-icon-button>
+              <div class="toolbarInner">
+                <paper-icon-button class="toolbarButton dropdown-trigger" icon="social:notifications" on-tap="showNotifications"></paper-icon-button>
+                <span id="notifyCount" hidden="{{computeNotifyHidden(notifyCount)}}">[[notifyCount]]</span>
+                <iron-collapse id="notificationDropdown">
+
+                  <template is="dom-repeat" items="[[notifiesData]]" as="guueyNotify">
+                      <paper-item class="notifyText">
+                        [[guueyNotify.message]]
+                        <paper-button class="notifyButton" on-tap="dismissNotification">dismiss</paper-button>
+                        <a style="text-decoration:none;" class="inherit" href="[[guueyNotify.url]]">
+                          <paper-button class="notifyButton">check</paper-button>
+                        </a>
+                      </paper-item>
+
+                  </template>
+
+                </iron-collapse>
+              </div>
+
+
+              <paper-icon-button class="toolbarButton logoutButton" on-tap="logout" icon="icons:account-circle"></paper-icon-button>
+            </div>
+          </app-toolbar>
+
+          <app-toolbar id="mobileMenu" class="mobileAltToolbar">
+            <div class="flexRow">
+              <paper-icon-button class="toolbarButton" icon="menu" on-tap="toggleDrawer"></paper-icon-button>
+              <div class="toolbarInner">
+
+                <span hidden="[[searchVal]]">
+                  <paper-icon-button class="toolbarButton" icon="icons:search"></paper-icon-button>
+                </span>
+                <span hidden="[[!searchVal]]">
+                  <paper-icon-button class="toolbarButton" icon="icons:clear" on-tap="clearSearch"></paper-icon-button>
+                </span>
+                <input class="searchInput" type="text" value="{{searchVal::input}}" />
+
+                <iron-collapse id="searchDropdown">
+
+                  <template
+                    is="dom-repeat"
+                    items="[[suList]]"
+                    as="search"
+                    filter="{{searchFilter(searchVal)}}"
+                    observe="fName lName"
+                    initial-count="10">
+                      <a class="dropdownLinks" href="/[[home]]/care-plan/su-profile/[[search.$key]]" on-tap="hideSearch">
+                        <paper-item class="dropdownItem">[[search.fName]] [[search.lName]]</paper-item>
+                      </a>
+                  </template>
+
+                </iron-collapse>
+
+              </div>
+              <paper-icon-button class="toolbarButton" icon="menu" on-tap="toggleRightDrawer"></paper-icon-button>
+            </div>
+          </app-toolbar>
+
           <paper-progress class="mainProgress" indeterminate></paper-progress>
         </app-header>
           <paper-icon-button class="backButton" icon="hardware:keyboard-backspace" on-tap="goBack"></paper-icon-button>
@@ -920,6 +1015,9 @@
         '_authKnown(statusKnown)',
         '_computeNotificationCount(notifiesData)'
       ],
+      behaviors: [
+        Polymer.shellResizeBehavior
+      ],
       _homeRouteChanged:function(home){
         this.home=home || 'default';
       },
@@ -980,6 +1078,9 @@
       //workaround for toggle-drawer bug
       toggleDrawer:function(){
         this.$.adminDrawer.opened=!this.$.adminDrawer.opened;
+      },
+      toggleRightDrawer:function(){
+        this.$.suDrawer.toggle();
       },
       //sign in that redirects based on user uid and user index with homes attached
       emailSignIn:function(e){
