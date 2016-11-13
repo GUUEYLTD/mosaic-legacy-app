@@ -14,6 +14,19 @@
       ],
       screenChange:function(dimensions){
         //available queries= <=767, <=1023, <=1365, <=1919
+        //general changes
+        var pageCardHorizontalMargin="176px";
+        if(dimensions.base.query767){
+          pageCardHorizontalMargin="0px";
+        } else if(dimensions.base.query1023){
+          pageCardHorizontalMargin="0px";
+        } else if(dimensions.base.query1365){
+          pageCardHorizontalMargin="50px";
+        } else if(dimensions.base.query1919){
+          pageCardHorizontalMargin="164px";
+        };
+        this.customStyle["--page-card-horizontal-margin"]=pageCardHorizontalMargin;
+        this.updateStyles();
         if(this.page==="su-care"){
           var guueyListFloatRight="left";
           var guueyListFloatLeft="right";
@@ -23,7 +36,6 @@
           var mainFabTop="-25px";
           var mainFabBottom="unset";
           var mainFabRight="-25px";
-          var pageCardHorizontalMargin="164px";
 
           if(dimensions.base.query767){
             guueyListFloatRight="unset";
@@ -34,8 +46,7 @@
             mainFabTop="unset";
             mainFabBottom="5%";
             mainFabRight="5%";
-            pageCardHorizontalMargin="0px";
-          }else if(dimensions.base.query1023){
+          } else if(dimensions.base.query1023){
             guueyListFloatRight="unset";
             guueyListFloatLeft="unset";
             listWidthHalf="90%";
@@ -44,7 +55,6 @@
             mainFabTop="-25px";
             mainFabBottom="unset";
             mainFabRight="-25px";
-            pageCardHorizontalMargin="0px";
           } else if(dimensions.base.query1365){
             guueyListFloatRight="unset";
             guueyListFloatLeft="unset";
@@ -54,7 +64,6 @@
             mainFabTop="-25px";
             mainFabBottom="unset";
             mainFabRight="-25px";
-            pageCardHorizontalMargin="50px";
           } else if(dimensions.query1919){
             guueyListFloatRight="unset";
             guueyListFloatLeft="unset";
@@ -64,8 +73,7 @@
             mainFabTop="-25px";
             mainFabBottom="unset";
             mainFabRight="-25px";
-            pageCardHorizontalMargin="176px";
-          }
+          };
           //list styles
           this.customStyle["--guuey-list-float-right"]=guueyListFloatRight;
           this.customStyle["--guuey-list-float-left"]=guueyListFloatLeft;
@@ -80,7 +88,6 @@
           this.customStyle["--main-fab-bottom"]=mainFabBottom;
           this.customStyle["--main-fab-right"]=mainFabRight;
 
-          this.customStyle["--page-card-horizontal-margin"]=pageCardHorizontalMargin;
           this.updateStyles();
 
         };

@@ -37,11 +37,12 @@
     }
     .suBox{
       margin:20px;
+      margin:var(--su-box-margin);
       position:relative;
     }
     .suBoxImage{
       width:100%;
-      height:200px;
+      height:50%;
     }
     .suBoxImage:hover{
       cursor:pointer;
@@ -124,7 +125,7 @@
           observe="currentStatus"
           as="su">
 
-            <div hidden="{{!_computeSuspended(su.currentStatus)}}" class=" suBoxWrapper">
+            <div hidden="{{!_computeSuspended(su.currentStatus)}}" class="suBoxWrapper">
               <paper-card
                 class="suBox"
                 elevation="3">
