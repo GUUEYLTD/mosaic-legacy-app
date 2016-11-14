@@ -138,20 +138,18 @@
         padding:0;
         margin:0;
       }
-      .drawer-list {
-        margin: 0 20px;
-      }
       .drawer-list a {
         display: block;
-        padding: 0 16px;
         line-height: 40px;
         text-decoration: none;
         color: var(--app-secondary-color);
         z-index:1;
+        padding-left:32px;
       }
       .drawer-list a.iron-selected {
         color: #e51561;
         font-weight: bold;
+        border-left:#e51561 solid 5px;
       }
       .drawer-list a.subroute {
         padding-left: 32px;
@@ -190,12 +188,7 @@
       .logoutButton{
         color:#e51561;
       }
-      .customContainer{
-        margin-left:10px;
-      }
-      .menuLinksContainer{
-        margin-left:12px;
-      }
+
       .backButton{
         position:absolute;
         height:50px;
@@ -209,10 +202,11 @@
         position:relative;
       }
       .toolbarRight{
-        width:50%;
+        right:0;
+        width:25%;
         display:flex;
         flex-direction:row;
-        position:relative;
+        position:absolute;
       }
       .toolbarRight *{
         flex-grow:1;
@@ -349,12 +343,12 @@
         flex-direction:row;
       }
       #moduleType{
-        margin:30px 30px 10px 20px;
+        margin:15px 30px 0px 20px;
         height:85px;
         width:85px;
       }
       .moduleTypeLabel{
-        margin-top:30px;
+        margin-top:15px;
         color:#a0a0a0;
         text-transform:uppercase;
         align-self:center;
@@ -362,7 +356,7 @@
       .divider{
         width:100%;
         height:1px;
-        margin-top:25px;
+        margin-top:20px;
         margin-bottom:25px;
         border-bottom:1px solid #a0a0a0;
         display:inline-block;
@@ -390,36 +384,33 @@
           sizing="contain"
           src="[[homeImage]]">
         </iron-image>
-        <div class="customContainer" style="height: 100%; overflow: auto;">
-          <div class="moduleInfo">
-            <iron-image id="moduleType"
-              sizing="contain"
-              src="../images/care-plan-icon.png">
-            </iron-image>
-            <p class="moduleTypeLabel">
-              care plan
-            </p>
-          </div>
 
-          <div class="divider"></div>
-          <div class="menuLinksContainer">
-
-            <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
-              <a name="su-profile" href="/[[home]]/care-plan/su-profile/[[param]]">Personal Profile<a>
-              <a name="su-reports" href="/[[home]]/care-plan/su-reports/[[param]]">Daily Reports</a>
-              <a name="su-pre" href="/[[home]]/care-plan/su-pre/[[param]]">Pre-Admission Assessment</a>
-              <a name="su-care" href="/[[home]]/care-plan/su-care/[[param]]">Care Plan</a>
-              <a name="su-care-review" href="/[[home]]/care-plan/su-care-review/[[param]]">Care Plan Review</a>
-              <a name="su-medical" href="/[[home]]/care-plan/su-medical/[[param]]">Medical Assessment</a>
-              <a name="su-medication" href="/[[home]]/care-plan/su-medication/[[param]]">Medication Outline</a>
-              <a name="su-risk" href="/[[home]]/care-plan/su-risk/[[param]]">Risk Assessment</a>
-              <a name="su-goals" href="/[[home]]/care-plan/su-goals/[[param]]">Personal Goals</a>
-              <a name="su-monthly-reports" href="/[[home]]/care-plan/su-monthly-reports/[[param]]">Monthly Reports</a>
-              <a name="su-view-reports" href="/[[home]]/care-plan/su-view-reports/[[param]]">View Reports</a>
-            </iron-selector>
-
-          </div>
+        <div class="moduleInfo">
+          <iron-image id="moduleType"
+            sizing="contain"
+            src="../images/care-plan-icon.png">
+          </iron-image>
+          <p class="moduleTypeLabel">
+            care plan
+          </p>
         </div>
+
+        <div class="divider"></div>
+
+        <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
+          <a name="su-profile" href="/[[home]]/care-plan/su-profile/[[param]]">Personal Profile<a>
+          <a name="su-reports" href="/[[home]]/care-plan/su-reports/[[param]]">Daily Reports</a>
+          <a name="su-pre" href="/[[home]]/care-plan/su-pre/[[param]]">Pre-Admission Assessment</a>
+          <a name="su-care" href="/[[home]]/care-plan/su-care/[[param]]">Care Plan</a>
+          <a name="su-care-review" href="/[[home]]/care-plan/su-care-review/[[param]]">Care Plan Review</a>
+          <a name="su-medical" href="/[[home]]/care-plan/su-medical/[[param]]">Medical Assessment</a>
+          <a name="su-medication" href="/[[home]]/care-plan/su-medication/[[param]]">Medication Outline</a>
+          <a name="su-risk" href="/[[home]]/care-plan/su-risk/[[param]]">Risk Assessment</a>
+          <a name="su-goals" href="/[[home]]/care-plan/su-goals/[[param]]">Personal Goals</a>
+          <a name="su-monthly-reports" href="/[[home]]/care-plan/su-monthly-reports/[[param]]">Monthly Reports</a>
+          <a name="su-view-reports" href="/[[home]]/care-plan/su-view-reports/[[param]]">View Reports</a>
+        </iron-selector>
+
       </app-drawer>
 
       <!-- Main content -->
