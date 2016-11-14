@@ -128,7 +128,6 @@
         --app-primary-color: #3d4ba8;
         --app-secondary-color: black;
       }
-
       app-header {
         background-color: var(--app-primary-color);
         color: #fff;
@@ -178,9 +177,28 @@
         color:#000000 !important;
         opacity: .38 !important;
       }
-      .toolbarButton{
-        width: 30px;
-        height: 30px;
+      .leftToolbarButton{
+        height:100%;
+        padding-bottom:20px;
+        padding-top:20px;
+        align-self:center;
+      }
+      .rightToolbarButton{
+        height:100%;
+        width:100%;
+        padding-bottom:17px;
+        padding-top:17px;
+        align-self:center;
+      }
+      .notifyMasterButton{
+        width:100%;
+        position:relative;
+      }
+      .rightToolbarButton:focus{
+        padding-bottom:14.5px;
+        padding-top:14.5px;
+        background-color:#303D95;
+        border-bottom:#e51561 5px solid;
       }
       a:hover {
        cursor:pointer;
@@ -200,6 +218,8 @@
       .toolbarLeft{
         width:50%;
         position:relative;
+        height:100%;
+        align-items:center;
       }
       .toolbarRight{
         right:0;
@@ -207,6 +227,8 @@
         display:flex;
         flex-direction:row;
         position:absolute;
+        height:100%;
+        align-items:center;
       }
       .toolbarRight *{
         flex-grow:1;
@@ -215,7 +237,19 @@
         text-align:center;
       }
       #notifyCount{
-        margin-left:-10px;
+        position:absolute;
+        left:65%;
+        top:10%;
+        height:20px;
+        width:20px;
+        padding:1px;
+        margin:0;
+        background-color:#e51561;
+        color:#FFFFFF;
+        border-radius:100%;
+        text-align:center;
+        font-size:12px;
+        font-weight:bold;
       }
       #notifyBadge{
         --paper-badge-width:20px;
@@ -269,14 +303,18 @@
         border-radius:20px;
         border:solid 1px #5A67BB;
         background-color:#5A67BB;
-        transition: box-shadow 0.3s, border 0.3s;
-        text-align:center;
-        color:#FFF;
-        width:20%;
+        padding:5px;
+        display:inline;
       }
-      .searchInput:focus{
+      .searchInput input:focus{
         border:border:solid 1px #5A67BB;
         outline:none;
+      }
+      .searchInput input{
+        background-color:#5A67BB;
+        border:solid 1px #5A67BB;
+        transition: box-shadow 0.3s, border 0.3s;
+        color:#FFF;
       }
       #searchDropdown{
         margin-top:20px;
@@ -419,15 +457,19 @@
         <app-header id="appHeader" condenses reveals effects="waterfall">
           <app-toolbar id="desktopMenu">
             <div class="toolbarLeft">
-              <paper-icon-button class="toolbarButton" icon="menu" on-tap="toggleDrawer"></paper-icon-button>
+              <paper-icon-button class="leftToolbarButton" icon="menu" on-tap="toggleDrawer"></paper-icon-button>
               <span class="menuText">menu</span>
-              <span hidden="[[searchVal]]">
-                <paper-icon-button class="toolbarButton" icon="icons:search"></paper-icon-button>
-              </span>
-              <span hidden="[[!searchVal]]">
-                <paper-icon-button class="toolbarButton" icon="icons:clear" on-tap="clearSearch"></paper-icon-button>
-              </span>
-              <input class="searchInput" type="text" value="{{searchVal::input}}" />
+
+              <div class="searchInput">
+                <span hidden="[[searchVal]]">
+                  <paper-icon-button class="leftToolbarButton" icon="icons:search"></paper-icon-button>
+                </span>
+                <span hidden="[[!searchVal]]">
+                  <paper-icon-button class="leftToolbarButton" icon="icons:clear" on-tap="clearSearch"></paper-icon-button>
+                </span>
+                <input style="display:inline-block;" type="text" value="{{searchVal::input}}" />
+              </div>
+
 
               <iron-collapse id="searchDropdown">
 
@@ -448,11 +490,11 @@
             </div>
 
             <div class="toolbarRight">
-              <a class="inherit toolbarInner" href="/[[home]]/default/def-home"><paper-icon-button class="toolbarButton" icon="icons:home"></paper-icon-button></a>
-              <paper-icon-button class="toolbarButton" icon="icons:apps"></paper-icon-button>
+              <a class="inherit rightToolbarButton" href="/[[home]]/default/def-home"><paper-icon-button class="rightToolbarButton" icon="icons:home"></paper-icon-button></a>
+              <paper-icon-button class="rightToolbarButton" icon="icons:apps"></paper-icon-button>
 
-              <div class="toolbarInner">
-                <paper-icon-button class="toolbarButton dropdown-trigger" icon="social:notifications" on-tap="showNotifications"></paper-icon-button>
+              <div class="toolbarInner rightToolbarButton">
+                <paper-icon-button class="rightToolbarButton notifyMasterButton dropdown-trigger" icon="social:notifications" on-tap="showNotifications"></paper-icon-button>
                 <span id="notifyCount" hidden="{{computeNotifyHidden(notifyCount)}}">[[notifyCount]]</span>
                 <iron-collapse id="notificationDropdown">
 
@@ -471,7 +513,7 @@
               </div>
 
 
-              <paper-icon-button class="toolbarButton logoutButton" on-tap="logout" icon="icons:account-circle"></paper-icon-button>
+              <paper-icon-button class="rightToolbarButton logoutButton" on-tap="logout" icon="icons:account-circle"></paper-icon-button>
             </div>
 
           </app-toolbar>
@@ -509,13 +551,15 @@
               <paper-icon-button class="toolbarButton" icon="menu" on-tap="toggleDrawer"></paper-icon-button>
               <div class="toolbarInner">
 
-                <span hidden="[[searchVal]]">
-                  <paper-icon-button class="toolbarButton" icon="icons:search"></paper-icon-button>
-                </span>
-                <span hidden="[[!searchVal]]">
-                  <paper-icon-button class="toolbarButton" icon="icons:clear" on-tap="clearSearch"></paper-icon-button>
-                </span>
-                <input class="searchInput" type="text" value="{{searchVal::input}}" />
+                <div class="searchInput">
+                  <span hidden="[[searchVal]]">
+                    <paper-icon-button class="toolbarButton" icon="icons:search"></paper-icon-button>
+                  </span>
+                  <span hidden="[[!searchVal]]">
+                    <paper-icon-button class="toolbarButton" icon="icons:clear" on-tap="clearSearch"></paper-icon-button>
+                  </span>
+                  <input style="display:inline-block;" type="text" value="{{searchVal::input}}" />
+                </div>
 
                 <iron-collapse id="searchDropdown">
 
