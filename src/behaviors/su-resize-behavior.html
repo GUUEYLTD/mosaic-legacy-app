@@ -7,7 +7,6 @@
       is:"su-resize-behavior",
       ready:function(){
 
-
       },
       observers:[
         "screenChange(dimensions.*)"
@@ -334,6 +333,18 @@
 
           this.updateStyles();
 
+        };
+        if(this.page==="su-view-reports"){
+
+          if(dimensions.base.query767){
+            this.$.healthGraph.redraw();
+          } else if(dimensions.base.query1023){
+            this.$.healthGraph.redraw();
+          } else if(dimensions.base.query1365){
+            this.$.healthGraph.redraw();
+          } else if(dimensions.base.query1919){
+            this.$.healthGraph.redraw();
+          };
         };
       },
       attached:function(){

@@ -171,6 +171,9 @@
       }
       #suDrawer{
         text-align:left;
+        --app-drawer-content-container:{
+          background-color:#f2f2f2;
+        }
       }
 
       .disabled{
@@ -309,9 +312,6 @@
         background-color:#5A67BB;
         color:#FFF;
       }
-      #suDrawer{
-
-      }
       #suDrawerImage{
         width:256px;
         height:256px;
@@ -344,6 +344,29 @@
       #mobileMenu{
         display:var(--mobile-menu-display);
       }
+      .moduleInfo{
+        display:flex;
+        flex-direction:row;
+      }
+      #moduleType{
+        margin:30px 30px 10px 20px;
+        height:85px;
+        width:85px;
+      }
+      .moduleTypeLabel{
+        margin-top:30px;
+        color:#a0a0a0;
+        text-transform:uppercase;
+        align-self:center;
+      }
+      .divider{
+        width:100%;
+        height:1px;
+        margin-top:25px;
+        margin-bottom:25px;
+        border-bottom:1px solid #a0a0a0;
+        display:inline-block;
+      }
     </style>
 
     <div class="loadingOverlay">
@@ -368,7 +391,17 @@
           src="[[homeImage]]">
         </iron-image>
         <div class="customContainer" style="height: 100%; overflow: auto;">
+          <div class="moduleInfo">
+            <iron-image id="moduleType"
+              sizing="contain"
+              src="../images/care-plan-icon.png">
+            </iron-image>
+            <p class="moduleTypeLabel">
+              care plan
+            </p>
+          </div>
 
+          <div class="divider"></div>
           <div class="menuLinksContainer">
 
             <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">

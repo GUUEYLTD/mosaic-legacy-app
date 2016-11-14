@@ -4,6 +4,10 @@
 
   <template>
 
+    <media-queries
+      dimensions="{{dimensions}}">
+    </media-queries>
+
     <firebase-query
       id="reportsDB"
       app-name="main"
@@ -340,14 +344,26 @@
       _computeGraphRows(data){
         var rowArr=[];
         for(x in data.base){
-          //need data and value
           var date = new Date(parseInt(data.base[x].$key)).toLocaleDateString();
-          var mornHealth = data.base[x].morning.health;
-          var afterHealth = data.base[x].afternoon.health;
-          var nightHealth = data.base[x].night.health;
-          var mornMood = data.base[x].morning.mood;
-          var afterMood = data.base[x].afternoon.mood;
-          var nightMood = data.base[x].night.mood;
+          //need data and value
+          var mornHealth=0;
+          var mornModd=0;
+          var afterHealth=0;
+          var afterMood=0;
+          var nightHealth=0;
+          var nightMood=0;
+          if(data.base[x].morning){
+            mornHealth = data.base[x].morning.health;
+            mornMood = data.base[x].morning.mood;
+          };
+          if(data.base[x].afternoon){
+            afterHealth = data.base[x].afternoon.health;
+            afterMood = data.base[x].afternoon.mood;
+          };
+          if(data.base[x].night){
+            nightHealth = data.base[x].night.health;
+            nightMood = data.base[x].night.mood;
+          };
           var morning = [date, mornHealth, mornMood];
           var afternoon = [date, afterHealth, afterMood];
           var night = [date, nightHealth, nightMood];
