@@ -10,24 +10,35 @@
 
 
       },
+      properties:{
+        viewType:{
+          type:String,
+          value:"desktop"
+        }
+      },
       observers:[
         "screenChange(dimensions.*)"
       ],
       screenChange:function(dimensions){
         //available queries= <=767, <=1023, <=1365, <=1919
+        this.viewType="desktop";
         var desktopMenuDisplay="flex";
         var mobileMenuDisplay="none";
 
         if(dimensions.base.query767){
+          this.viewType="mobile";
           desktopMenuDisplay="none";
           mobileMenuDisplay="flex";
         }else if(dimensions.base.query1023){
+          this.viewType="mobile";
           desktopMenuDisplay="none";
           mobileMenuDisplay="flex";
         } else if(dimensions.base.query1365){
+          this.viewType="desktop";
           desktopMenuDisplay="flex";
           mobileMenuDisplay="none";
         } else if(dimensions.query1919){
+          this.viewType="desktop";
           desktopMenuDisplay="flex";
           mobileMenuDisplay="none";
         };

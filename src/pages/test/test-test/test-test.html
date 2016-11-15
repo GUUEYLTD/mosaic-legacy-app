@@ -1,6 +1,5 @@
 <link rel="import" href="../../../../bower_components/polymer/polymer.html" />
 <link rel="import" Href="../../../../bower_components/polymerfire/firebase-query.html" />
-<link rel="import" href="../../../../bower_components/iron-list/iron-list.html" />
 <link rel="import" href="../../../../bower_components/paper-input/paper-textarea.html" />
 <link rel="import" href="../../../../bower_components/paper-card/paper-card.html" />
 <link rel="import" href="../../../styles/common-styles.html" />
@@ -15,34 +14,35 @@ image editor
   <template>
 
     <firebase-query
-      id="reportsDB"
-      app-name="main"
-      data="{{reportsData}}"
-      path="homes/[[home]]/patients/[[patient]]/dailyReports">
+      id="suIndexDB"
+      path="/homes/[[home]]/patients/suIndex"
+      data="{{suList}}"
+      app-name="main">
     </firebase-query>
 
     <style include="common-styles">
-    iron-list {
-      height: 100vh; /* don't use % values unless the parent element is sized. */
-    }
 
     </style>
 
     <paper-card class="pageCard">
 
-      <iron-list scroll-target="document" items="[[reportsData]]" as="report">
-        <template>
-          <div>
+      <div class="pageInnerCont">
+        <template is="dom-repeat" items="[[suList]]" as="dick">
 
-            <h2>Morning</h2>
-            <p>
-              [[report.morning.health]]
-            </p>
-
-          </div>
+          <p>
+            ver1: [[dick.fName]] [[dick.lName]]
+          </p>
 
         </template>
-      </iron-list>
+
+        <template is="dom-repeat" items="[[suList]]" as="dick">
+
+          <p>
+          ver2:  [[dick.fName]] [[dick.lName]]
+          </p>
+
+        </template>
+      </div>
 
     </paper-card>
 
@@ -53,6 +53,10 @@ image editor
     Polymer({
 
       is: 'test-test',
+      ready:function(){
+        this.fire("pageLoaded", {page:this.page});
+      },
+
 
     });
   </script>

@@ -1,0 +1,327 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<!-- shared styles for all views -->
+<dom-module id="app-shell-styles">
+  <template>
+    <style>
+    :host {
+      display: block;
+      --app-primary-color: #3d4ba8;
+      --app-secondary-color: black;
+    }
+    app-header {
+      background-color: var(--app-primary-color);
+      color: #fff;
+    }
+    app-header paper-icon-button {
+      --paper-icon-button-ink-color: white;
+      padding:0;
+      margin:0;
+    }
+    .drawer-list a {
+      display: block;
+      line-height: 40px;
+      text-decoration: none;
+      color: var(--app-secondary-color);
+      z-index:1;
+      padding-left:32px;
+    }
+    .drawer-list a.iron-selected {
+      color: #e51561;
+      font-weight: bold;
+      border-left:#e51561 solid 5px;
+    }
+    .drawer-list a.subroute {
+      padding-left: 32px;
+    }
+    .headerBackground{
+      background-image:url("../../images/header-background.png");
+      width:100%;
+      z-index:-1;
+      height:100px;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size:cover;
+    }
+    .inherit {
+      color: inherit;
+      background-color: inherit;
+    }
+    #suDrawer{
+      text-align:left;
+      --app-drawer-content-container:{
+        background-color:#f2f2f2;
+      }
+    }
+
+    .disabled{
+      color:#000000 !important;
+      opacity: .38 !important;
+    }
+    .leftToolbarButton{
+      height:100%;
+      padding-bottom:20px;
+      padding-top:20px;
+      align-self:center;
+    }
+    .rightToolbarButton{
+      height:100%;
+      width:100%;
+      padding-bottom:17px;
+      padding-top:17px;
+      align-self:center;
+    }
+    .atHome{
+      padding-bottom:14.5px;
+      padding-top:14.5px;
+      background-color:#303D95;
+      border-bottom:#e51561 5px solid;
+    }
+    .mobileAtHome{
+      background-color:#303D95;
+      border-bottom:#e51561 5px solid;
+    }
+    .notifyMasterButton{
+      width:100%;
+      position:relative;
+    }
+    paper-icon-button:hover{
+      opacity:.8;
+    }
+    .rightToolbarButton:focus{
+      padding-bottom:14.5px;
+      padding-top:14.5px;
+      background-color:#303D95;
+      border-bottom:#e51561 5px solid;
+    }
+    a:hover {
+     cursor:pointer;
+    }
+    .logoutButton{
+      color:#e51561;
+    }
+
+    .backButton{
+      position:absolute;
+      height:50px;
+      width:50px;
+      color:#FFFFFF;
+      top: 100px;
+      left:50px;
+    }
+    .toolbarLeft{
+      width:50%;
+      position:relative;
+      height:100%;
+      align-items:center;
+    }
+    .toolbarRight{
+      right:0;
+      width:25%;
+      display:flex;
+      flex-direction:row;
+      position:absolute;
+      height:100%;
+      align-items:center;
+    }
+    .toolbarRight *{
+      flex-grow:1;
+    }
+    .toolbarInner{
+      text-align:center;
+    }
+    .notifyCount{
+      position:absolute;
+      left:65%;
+      top:10%;
+      height:20px;
+      width:20px;
+      padding:1px;
+      margin:0;
+      background-color:#e51561;
+      color:#FFFFFF;
+      border-radius:50%;
+      text-align:center;
+      font-size:12px;
+      display:flex;
+    }
+    .notifyCount #notifyContent{
+      flex-grow:1;
+    }
+    #notifyBadge{
+      --paper-badge-width:20px;
+      --paper-badge-height:20px;
+      --paper-badge-margin-left:10px;
+      --paper-badge-margin-right:10px;
+
+    }
+    .menuText{
+      text-transform:uppercase;
+      font-size:14px;
+      align-self:center;
+      margin-right:20px;
+    }
+    .loadingOverlay{
+      position:absolute;
+      right:0;
+      left:0;
+      bottom:0;
+      top:0;
+      background-color:rgba(0, 0, 0, 0.5);
+      flex-direction:column;
+      align-items:center;
+      justify-content: center;
+      display:none;
+      display:var(--db-loading-display);
+      z-index:6;
+      color:#FFF;
+      font-style:italic;
+
+    }
+    .loginOverlay{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      z-index:6;
+      height:var(--login-overlay-height);
+      background-color:#2fc19e;
+      display:var(--login-overlay-display);
+    }
+    .mainProgress{
+      width:100%;
+      --paper-progress-indeterminate-cycle-duration: 15s;
+      --paper-progress-container-color: #3d4ba8;
+      --paper-progress-active-color:#3d4ba8;
+      --paper-progress-active-color:var(--page-loading-active-color);
+      display:inherit;
+    }
+    .searchInput{
+      border-radius:20px;
+      border:solid 1px #5A67BB;
+      background-color:#5A67BB;
+      padding:5px;
+      display:inline;
+    }
+    .searchInput input:focus{
+      border:border:solid 1px #5A67BB;
+      outline:none;
+    }
+    .searchInput input{
+      background-color:#5A67BB;
+      border:solid 1px #5A67BB;
+      width:25%;
+      transition: box-shadow 0.3s, border 0.3s;
+      color:#FFF;
+    }
+    #searchDropdown{
+      margin-top:20px;
+      width:100%;
+      position:absolute;
+      background-color:#FFF;
+      z-index:5;
+      color:#000;
+    }
+    #notificationDropdown{
+      margin-top:20px;
+      width:100%;
+      position:absolute;
+      background-color:#FFF;
+      z-index:999;
+      color:#000;
+    }
+    #mobileSearchDropdown{
+      margin-top:20px;
+      width:100%;
+      position:absolute;
+      background-color:#FFF;
+      z-index:999;
+      color:#000;
+    }
+    #mobileNotificationDropdown{
+      margin-top:20px;
+      width:100%;
+      position:absolute;
+      background-color:#FFF;
+      z-index:999;
+      color:#000;
+    }
+    .notifyButton{
+
+    }
+    .dropdownLinks{
+      text-decoration:none;
+      color:inherit;
+    }
+    .dropdownItem:hover{
+      text-decoration:none;
+      background-color:#5A67BB;
+      color:#FFF;
+    }
+    #suDrawerImage{
+      width:256px;
+      height:168px;
+    }
+    #neonPages{
+      height:var(--neon-pages-height);
+      background-image:url("../../images/header-background.png");
+      background-size: 100% 100px;
+      background-repeat: no-repeat;
+      background-position: top;
+    }
+    .mobileMainToolbar{
+
+    }
+    .mobileAltToolbar{
+      background-color: #f9f9f9;
+      color:#cecece;
+    }
+    .mobileMainToolbar .flexRow, .mobileAltToolbar .flexRow{
+      width:100%;
+      display:flex;
+      flex-direction:row;
+    }
+    .mobileMainToolbar .flexRow *, .mobileAltToolbar .flexRow *{
+      flex-grow:1;
+    }
+    #desktopMenu{
+      display:var(--desktop-menu-display);
+    }
+    #mobileMenu{
+      display:var(--mobile-menu-display);
+    }
+    .moduleInfo{
+      display:flex;
+      flex-direction:row;
+    }
+    #moduleType{
+      margin:15px 30px 0px 20px;
+      height:85px;
+      width:85px;
+    }
+    .moduleTypeLabel{
+      margin-top:30px;
+      color:#a0a0a0;
+      text-transform:uppercase;
+      align-self:center;
+    }
+    .divider{
+      width:100%;
+      height:1px;
+      margin-top:20px;
+      margin-bottom:25px;
+      border-bottom:1px solid #a0a0a0;
+      display:inline-block;
+    }
+    </style>
+  </template>
+</dom-module>
