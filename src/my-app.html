@@ -313,6 +313,7 @@
       .searchInput input{
         background-color:#5A67BB;
         border:solid 1px #5A67BB;
+        width:50%;
         transition: box-shadow 0.3s, border 0.3s;
         color:#FFF;
       }
@@ -346,7 +347,7 @@
       }
       #suDrawerImage{
         width:256px;
-        height:256px;
+        height:168px;
       }
       #neonPages{
         height:var(--neon-pages-height);
@@ -386,7 +387,7 @@
         width:85px;
       }
       .moduleTypeLabel{
-        margin-top:15px;
+        margin-top:30px;
         color:#a0a0a0;
         text-transform:uppercase;
         align-self:center;
@@ -409,7 +410,7 @@
     </div>
     <div class="loginOverlay"></div>
 
-    <app-drawer-layout fullbleed id="appDrawerLayout">
+    <app-drawer-layout responsive-width="1023px" fullbleed id="appDrawerLayout">
 
       <!--admin drawer that contains admin account info and functions-->
       <admin-drawer id="adminDrawer" home="[[home]]" admin="[[param]]" email="{{user.email}}" opened="{{opened}}"></admin-drawer>
@@ -419,7 +420,7 @@
           placeholder="../../../../images/default_home.png"
           preload
           fade
-          sizing="contain"
+          sizing="cover"
           src="[[homeImage]]">
         </iron-image>
 
