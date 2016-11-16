@@ -272,47 +272,50 @@
           this.updateStyles();
         };
         if(this.page==="su-risk"){
-          var mainFabPosition="absolute";
-          var mainFabTop="-30px";
-          var mainFabRight="5%";
-          var mainFabBottom="unset";
+          var regFabRight="60px";
+          var regFabTop="-25px";
+          var regFabBottom="unset";
+          var regFabPosition="absolute";
+          var editFabBottom="25px";
+          var editFabRight="0";
 
           if(dimensions.base.query767){
-
-            mainFabPosition="fixed";
-            mainFabTop="unset";
-            mainFabBottom="5%";
-            mainFabRight="5%";
-
+            //fab styles
+            editFabBottom="5%";
+            editFabRight="5%";
+            regFabRight="5%";
+            regFabTop="unset";
+            regFabBottom="5%";
+            regFabPosition="fixed";
           } else if(dimensions.base.query1023){
-
-            mainFabPosition="absolute";
-            mainFabTop="-30px";
-            mainFabBottom="unset";
-            mainFabRight="5%";
-
+            editFabBottom="5%";
+            editFabRight="5%";
+            regFabRight="5%";
+            regFabTop="unset";
+            regFabBottom="5%";
+            regFabPosition="fixed";
           } else if(dimensions.base.query1365){
-
-            mainFabPosition="absolute";
-            mainFabTop="-30px";
-            mainFabBottom="unset";
-            mainFabRight="5%";
-
+            regFabRight="60px";
+            regFabTop="-25px";
+            regFabBottom="unset";
+            regFabPosition="absolute";
+            editFabBottom="25px";
+            editFabRight="0";
           } else if(dimensions.base.query1919){
-
-            mainFabPosition="absolute";
-            mainFabTop="-30px";
-            mainFabBottom="unset";
-            mainFabRight="5%";
-
-          };
-
-          //fab style
-          this.customStyle["--main-fab-position"]=mainFabPosition;
-          this.customStyle["--main-fab-top"]=mainFabTop;
-          this.customStyle["--main-fab-right"]=mainFabRight;
-          this.customStyle["--main-fab-bottom"]=mainFabBottom;
-
+            regFabRight="60px";
+            regFabTop="-25px";
+            regFabBottom="unset";
+            regFabPosition="absolute";
+            editFabBottom="25px";
+            editFabRight="0";
+          }
+          //fab styles
+          this.customStyle["--reg-fab-top"]=regFabTop;
+          this.customStyle["--reg-fab-bottom"]=regFabBottom;
+          this.customStyle["--reg-fab-right"]=regFabRight;
+          this.customStyle["--reg-fab-position"]=regFabPosition;
+          this.customStyle["--edit-fab-bottom"]=editFabBottom;
+          this.customStyle["--edit-fab-right"]=editFabRight;
           this.updateStyles();
 
         };

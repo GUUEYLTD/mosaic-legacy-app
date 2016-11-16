@@ -47,10 +47,26 @@
         background-size:cover;
         background-position:bottom right;
       }
-      .riskLabel{
-        width:25%;
+      .riskLabel:hover{
+        cursor:pointer;
+        opacity:.8;
+      }
+      .riskLabel:nth-child(1){
+        width:100%;
         position:absolute;
-        bottom:5%;
+        bottom:50%;
+        left:5%;
+        padding:0px;
+        margin:0px;
+        font-weight:bold;
+        color:#FFFFFF;
+        font-size:20px;
+
+      }
+      .riskLabel:nth-child(2){
+        width:100%;
+        position:absolute;
+        bottom:25%;
         left:5%;
         padding:0px;
         margin:0px;
@@ -60,8 +76,8 @@
       }
       .riskMore{
         position:absolute;
-        top:5%;
-        right:5%;
+        top:1%;
+        right:1%;
         color:#FFFFFF;
       }
       .multiCardContainer{
@@ -82,15 +98,18 @@
       .dateContainer{
         flex-grow:1;
         display:flex;
-        flex-direction:row;
+        flex-direction:column;
       }
       .dateHeader{
         width:100%;
-        text-align:center;
+        text-align:left;
+        margin-left:20px;
       }
       .riskDate{
         flex-grow:1;
-        text-align:center;
+        text-align:left;
+        margin-left:20px;
+        opacity:.8;
       }
 
     </style>
@@ -117,9 +136,13 @@
           <paper-card elevation="3" class="riskBox">
 
             <div style="background-image:url(../../../../{{_computeRiskImage(risk.category)}})" class="riskHeading">
-              <p class="riskLabel">
-                [[risk.category]]
-              </p>
+              <template is="dom-repeat" items="[[computeDisplayCat(risk.category)]]" as="riskEl">
+
+                <p on-tap="directEditModal" parent-key="[[risk.$key]]" class="riskLabel">
+                  [[riskEl]]
+                </p>
+
+              </template>
             </div>
 
             <div class="multiCardContainer">
@@ -234,14 +257,23 @@
         this.riskId=e.model.risk.$key;
         this.$.editModal.toggle();
       },
+      directEditModal:function(e){
+        this.riskId=e.model.risk.$key;
+        this.fire("editRisk", {riskId:this.riskId});
+      },
       editRisk:function(e){
-        this.fire("editRisk", {riskId:this.riskId})
+        this.fire("editRisk", {riskId:this.riskId});
         this.$.editModal.close();
       },
       deleteRisk:function(e){
         this.fire("deleteRisk", {riskId:this.riskId});
         this.$.editModal.close();
       },
+      computeDisplayCat:function(risk){
+        var arr = risk.split(" & ");
+        arr[0]+=" &";
+        return arr;
+      }
     });
 
   </script>
