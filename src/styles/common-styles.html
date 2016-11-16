@@ -42,6 +42,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       .padded{
         padding:20px;
       }
+      .vert-padded{
+        padding:20px 0 20px 0;
+      }
       .guuey-button{
         background-color: #009688;
         color:#FFF;
@@ -68,10 +71,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
       #regFab{
         position:absolute;
-        right:30px;
-        top:-25px;
         z-index:3;
         opacity:1;
+        position:var(--reg-fab-position);
+        bottom:var(--reg-fab-bottom);
+        top:var(--reg-fab-top);
+        right:var(--reg-fab-right);
         /*
         position:var(--main-fab-position);
         bottom:var(--main-fab-bottom);
@@ -84,6 +89,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         bottom:25px;
         z-index:3;
         opacity:0;
+        left:var(--edit-fab-left);
+        bottom:var(--edit-fab-bottom);
+        right:var(--edit-fab-right);
         /*
         position:var(--main-fab-position);
         bottom:var(--main-fab-bottom);
@@ -109,7 +117,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       .guuey-table{
         padding:20px;
         height:auto;
-        overflow:var(--table-overflow);
+        overflow-x:auto;
       }
       .guuey-table .tableScrollLabel{
         font-weight:bold;
@@ -125,16 +133,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         background-color:var(--table-background-color);
         padding:20px;
       }
-      .guuey-table table thead tr{
-        position:var(--thead-tr-position);
-        display:var(--thead-tr-display);
-      }
       .guuey-table table th{
+        min-width:100px;
         text-align:left;
       }
-      .guuey-table table tbody{
-        display:var(--tbody-display);
-      }
+
       .guuey-table table tr{
         width:100%;
       }
@@ -149,19 +152,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       .guuey-table table td{
         text-align:left;
         padding:10px;
-        width:var(--thead-tr-td-width);
+        min-width:100px;
       }
       .guuey-table table td a{
         text-decoration:none;
         color:#FFF;
       }
-      .guuey-table table td,th{
-        min-width:var(--td-th-min-width);
-      }
-      .guuey-table table td,th:last-of-type{
-        width:var(--td-th-last-width);
-      }
-
       /*modal styles*/
       .guuey-add-modal h2{
         margin:0;
@@ -231,6 +227,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       /* multi view styles */
       .multiViewCard{
         width:100%;
+        padding-top:30px;
       }
       .multiCardContainer{
 

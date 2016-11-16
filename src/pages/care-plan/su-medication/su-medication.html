@@ -54,15 +54,19 @@
       }
       .timeChunkMorning{
           background-image:url(../../../../images/timechunks/morning.png);
+          border-left:#F76363 solid 5px;
       }
       .timeChunkAfternoon{
           background-image:url(../../../../images/timechunks/afternoon.png);
+          border-left:#FFC200 solid 5px;
       }
       .timeChunkEvening{
           background-image:url(../../../../images/timechunks/evening.png);
+          border-left:#FF5607 solid 5px;
       }
       .timeChunkNight{
           background-image:url(../../../../images/timechunks/night.png);
+          border-left:#6735BA solid 5px;
       }
       .timeChunkBar{
         background-color:#F5F2F2;
@@ -70,7 +74,7 @@
         padding:30px;
         background-repeat:no-repeat;
         background-size:40px 40px;
-        background-position:20px;
+        background-position:5%;
         text-align:center;
         display:flex;
         flex-direction:row;
@@ -79,6 +83,9 @@
         flex-grow:1;
         text-transform:uppercase;
         color:#009688;
+        text-align:left;
+        padding-left:10%;
+
       }
       .timeChunkLabel:hover{
         cursor:pointer;
@@ -88,12 +95,11 @@
         font-size:20px;
         text-transform:uppercase;
         opacity:.54;
+        text-align:right;
+        padding-right:5%;
       }
-      .timeSection{
-        text-align:center;
-      }
-      .timeSection *{
-        width:50%;
+      .timeChunkButton{
+        width:5%;
       }
       #timeChunkModal{
         margin:0;
@@ -106,6 +112,11 @@
       }
       .commentButton{
         color:#009688;
+      }
+      .offset-table{
+        margin-left:10%;
+        margin-right:10%;
+        padding:0;
       }
     </style>
 
@@ -251,7 +262,7 @@
       su-index-data="{{suBasicInfo}}">
       </su-header>
 
-      <div class="pageInnerCont">
+      <div class="pageInnerCont vert-padded">
 
         <paper-fab
           id="mainFab"
@@ -274,7 +285,7 @@
           </paper-icon-button>
         </paper-item>
         <iron-collapse id="morning" opened>
-          <div class="guuey-table">
+          <div class="guuey-table offset-table">
 
             <p class="tableScrollLabel">
               swipe left scrolls table
