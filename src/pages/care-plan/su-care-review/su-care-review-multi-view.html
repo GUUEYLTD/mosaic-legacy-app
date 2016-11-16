@@ -39,9 +39,9 @@
       background-position:bottom right;
     }
     .multiCardLabel{
-      width:25%;
+      width:75%;
       position:absolute;
-      bottom:5%;
+      bottom:10%;
       left:5%;
       padding:0px;
       margin:0px;
@@ -52,10 +52,14 @@
       text-overflow:ellipsis;
       max-height:100%;
     }
+    .multiCardLabel:hover{
+      cursor:pointer;
+      opacity:.8;
+    }
     .multiCardMore{
       position:absolute;
-      top:5%;
-      right:5%;
+      top:1%;
+      right:1%;
       color:#FFFFFF;
     }
     .multiCardContainer{
@@ -92,7 +96,7 @@
         <div class="multiCardContainer">
           <paper-card class="multiItem">
             <div style="background-image:url(../../../../{{_computeReviewImage(review.nextReviewDate)}})" class="multiCardHeading">
-              <p class="multiCardLabel">
+              <p on-tap="directEditModal" class="multiCardLabel">
                 [[review.name]]
               </p>
             </div>
@@ -206,6 +210,10 @@
         } else {
           return "Date not set";
         };
+      },
+      directEditModal:function(e){
+        this.reviewId=e.model.review.$key;
+        this.fire("editReview", {reviewId:this.reviewId});
       },
     });
 

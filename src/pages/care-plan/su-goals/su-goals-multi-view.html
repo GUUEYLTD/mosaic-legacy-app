@@ -33,11 +33,27 @@
         --app-grid-columns:3;
         --app-grid-item-height:150%;
       }
-      .goalLabel{
-        width:25%;
+      .goalLabel:hover{
+        cursor:pointer;
+        opacity:.8;
+      }
+      .goalLabel:nth-child(1){
+        width:100%;
         position:absolute;
-        bottom:10px;
-        left:10px;
+        bottom:50%;
+        left:5%;
+        padding:0px;
+        margin:0px;
+        font-weight:bold;
+        color:#FFFFFF;
+        font-size:20px;
+
+      }
+      .goalLabel:nth-child(2){
+        width:100%;
+        position:absolute;
+        bottom:25%;
+        left:5%;
         padding:0px;
         margin:0px;
         font-weight:bold;
@@ -46,8 +62,8 @@
       }
       .goalMore{
         position:absolute;
-        top:10px;
-        right:10px;
+        top:1%;
+        right:1%;
         color:#FFFFFF;
       }
       .goalBox{
@@ -83,6 +99,7 @@
         position:absolute;
         bottom:5%;
         left:5%;
+        background-color:#F76363;
       }
       .goalProgress{
         width:100%;
@@ -102,7 +119,7 @@
       <paper-button on-tap="deleteGoal">delete</paper-button>
     </paper-dialog>
 
-    <paper-card class="app-grid" has-aspect-ratio>
+    <paper-card class="multiViewCard app-grid" has-aspect-ratio>
 
       <template id="goalRepeat" is="dom-repeat" items="[[goalsData]]" as="goal">
         {{_computeQueryCount(goal)}}
@@ -112,9 +129,13 @@
           <paper-card elevation="3" class="goalBox">
 
             <div style="background-image:url(../../../../{{_computeGoalImage(goal.category)}})" class="goalHeading">
-              <p class="goalLabel">
-                [[goal.category]]
-              </p>
+              <template is="dom-repeat" items="[[computeDisplayCat(goal.category)]]" as="goalEl">
+
+                <p on-tap="directEditModal" parent-key="[[goal.$key]]" class="goalLabel">
+                  [[goalEl]]
+                </p>
+
+              </template>
             </div>
 
             <div class="goalDescription">
@@ -237,11 +258,35 @@
         return stepCount;
       },
       toggleEditModal:function(e){
-        this.heroElement=Polymer.dom(e.target).parentNode;
+        //this.heroElement=Polymer.dom(e.target).parentNode;
         this.$.editModal.positionTarget = e.target;
         this.goalId = e.model.goal.$key;
         this.$.editModal.toggle();
       },
+      directEditModal:function(e){
+        this.goalId=e.model.goal.$key;
+        this.fire("editGoal");
+      },
+      computeDisplayCat:function(goal){
+        console.log(goal)
+        if(goal.indexOf("&")!= -1){
+          var arr = goal.split(" & ");
+          arr[0]+=" &";
+          return arr;
+        } else if(goal.indexOf("And")!= -1){
+          var arr = goal.split(" And ");
+          arr[0]+=" &";
+          return arr;
+        } else if(goal.indexOf("and")!= -1){
+          var arr = goal.split(" and ");
+          arr[0]+=" &";
+          return arr;
+        } else {
+          var arr=[];
+          arr.push(goal);
+          return arr;
+        };
+      }
     });
 
   </script>

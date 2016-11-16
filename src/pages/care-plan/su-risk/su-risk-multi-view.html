@@ -270,9 +270,23 @@
         this.$.editModal.close();
       },
       computeDisplayCat:function(risk){
-        var arr = risk.split(" & ");
-        arr[0]+=" &";
-        return arr;
+        if(risk.indexOf("&")!= -1){
+          var arr = risk.split(" & ");
+          arr[0]+=" &";
+          return arr;
+        } else if(risk.indexOf("And")!= -1){
+          var arr = risk.split(" And ");
+          arr[0]+=" &";
+          return arr;
+        } else if(risk.indexOf("and")!= -1){
+          var arr = risk.split(" and ");
+          arr[0]+=" &";
+          return arr;
+        } else {
+          var arr=[];
+          arr.push(risk);
+          return arr;
+        };
       }
     });
 
