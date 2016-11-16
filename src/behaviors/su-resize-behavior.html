@@ -93,22 +93,51 @@
         if(this.page==="su-care-review"){
           //orig width 640px
           //fab styles
-          var mainFabPosition="absolute";
-          var mainFabTop="-30px";
-          var mainFabBottom="unset";
-          var mainFabRight="5%";
+
+          var regFabRight="60px";
+          var regFabTop="-25px";
+          var regFabBottom="unset";
+          var regFabPosition="absolute";
+          var editFabBottom="25px";
+          var editFabRight="0";
+
           if(dimensions.base.query767){
             //fab styles
-            mainFabPosition="fixed";
-            mainFabTop="unset";
-            mainFabBottom="5%";
-            mainFabRight="5%";
-          };
+            editFabBottom="5%";
+            editFabRight="5%";
+            regFabRight="5%";
+            regFabTop="unset";
+            regFabBottom="5%";
+            regFabPosition="fixed";
+          } else if(dimensions.base.query1023){
+            editFabBottom="5%";
+            editFabRight="5%";
+            regFabRight="5%";
+            regFabTop="unset";
+            regFabBottom="5%";
+            regFabPosition="fixed";
+          } else if(dimensions.base.query1365){
+            regFabRight="60px";
+            regFabTop="-25px";
+            regFabBottom="unset";
+            regFabPosition="absolute";
+            editFabBottom="25px";
+            editFabRight="0";
+          } else if(dimensions.base.query1919){
+            regFabRight="60px";
+            regFabTop="-25px";
+            regFabBottom="unset";
+            regFabPosition="absolute";
+            editFabBottom="25px";
+            editFabRight="0";
+          }
           //fab styles
-          this.customStyle["--main-fab-position"]=mainFabPosition;
-          this.customStyle["--main-fab-top"]=mainFabTop;
-          this.customStyle["--main-fab-bottom"]=mainFabBottom;
-          this.customStyle["--main-fab-right"]=mainFabRight;
+          this.customStyle["--reg-fab-top"]=regFabTop;
+          this.customStyle["--reg-fab-bottom"]=regFabBottom;
+          this.customStyle["--reg-fab-right"]=regFabRight;
+          this.customStyle["--reg-fab-position"]=regFabPosition;
+          this.customStyle["--edit-fab-bottom"]=editFabBottom;
+          this.customStyle["--edit-fab-right"]=editFabRight;
           this.updateStyles();
         };
         if(this.page==="su-create"){
@@ -168,44 +197,18 @@
         if(this.page==="su-medical"){
           //working off max 900
           var tableScrollLabelColor="transparent"
-          var tableOverflow="unset"
-          var tbodyDisplay="table-row-group"
-          var theadTrPosition="unset"
-          var theadTrDisplay="table-row"
-          var theadTrTdWidth="unset"
-          var tdThMinWidth="unset"
-          var tdThLastWidth="unset"
 
           if(dimensions.base.query1365){
             tableScrollLabelColor="inherit"
-            tableOverflow="scroll"
-            tbodyDisplay="block"
-            theadTrPosition="relative"
-            theadTrDisplay="block"
-            theadTrTdWidth="150px"
-            tdThMinWidth="150px"
-            tdThLastWidth="150px"
+
           };
           this.customStyle["--table-scroll-lable-color"]=tableScrollLabelColor;
-          this.customStyle["--table-overflow"]=tableOverflow;
-          this.customStyle["--tbody-display"]=tbodyDisplay;
-          this.customStyle["--thead-tr-position"]=theadTrPosition;
-          this.customStyle["--thead-tr-display"]=theadTrDisplay;
-          this.customStyle["--thead-tr-td-width"]=theadTrTdWidth;
-          this.customStyle["--td-th-min-width"]=tdThMinWidth;
-          this.customStyle["--td-th-last-width"]=tdThLastWidth;
+
           this.updateStyles();
         };
         if(this.page==="su-medication"){
           // 1000 and  640 px
           var tableScrollLabelColor="transparent"
-          var tableOverflow="unset"
-          var tbodyDisplay="table-row-group"
-          var theadTrPosition="unset"
-          var theadTrDisplay="table-row"
-          var theadTrTdWidth="unset"
-          var tdThMinWidth="unset"
-          var tdThLastWidth="unset"
 
           var mainFabPosition="absolute";
           var mainFabTop="-30px";
@@ -214,13 +217,6 @@
           if(dimensions.base.query767){
             //table style
             tableScrollLabelColor="inherit"
-            tableOverflow="scroll"
-            tbodyDisplay="block"
-            theadTrPosition="relative"
-            theadTrDisplay="block"
-            theadTrTdWidth="150px"
-            tdThMinWidth="150px"
-            tdThLastWidth="150px"
 
             //fab styles
             mainFabPosition="fixed";
@@ -231,13 +227,6 @@
 
             //table style
             tableScrollLabelColor="inherit"
-            tableOverflow="scroll"
-            tbodyDisplay="block"
-            theadTrPosition="relative"
-            theadTrDisplay="block"
-            theadTrTdWidth="150px"
-            tdThMinWidth="150px"
-            tdThLastWidth="150px"
 
             //fab styles
             mainFabPosition="absolute";
@@ -246,13 +235,6 @@
             mainFabRight="5%";
           };
           this.customStyle["--table-scroll-lable-color"]=tableScrollLabelColor;
-          this.customStyle["--table-overflow"]=tableOverflow;
-          this.customStyle["--tbody-display"]=tbodyDisplay;
-          this.customStyle["--thead-tr-position"]=theadTrPosition;
-          this.customStyle["--thead-tr-display"]=theadTrDisplay;
-          this.customStyle["--thead-tr-td-width"]=theadTrTdWidth;
-          this.customStyle["--td-th-min-width"]=tdThMinWidth;
-          this.customStyle["--td-th-last-width"]=tdThLastWidth;
 
           this.customStyle["--main-fab-position"]=mainFabPosition;
           this.customStyle["--main-fab-top"]=mainFabTop;
