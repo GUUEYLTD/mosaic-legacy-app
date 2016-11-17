@@ -178,6 +178,7 @@
       <app-header-layout fullbleed>
 
         <app-header id="appHeader" condenses reveals effects="waterfall">
+          <paper-progress class="mainProgress" indeterminate></paper-progress>
           <app-toolbar id="desktopMenu">
             <div class="toolbarLeft">
               <paper-icon-button class="leftToolbarButton" icon="menu" on-tap="toggleDrawer"></paper-icon-button>
@@ -303,8 +304,6 @@
               </div>
               <paper-icon-button class="toolbarButton" icon="custom:su-drawer" on-tap="toggleRightDrawer"></paper-icon-button>
           </app-toolbar>
-
-          <paper-progress class="mainProgress" indeterminate></paper-progress>
         </app-header>
           <paper-icon-button class="backButton" icon="hardware:keyboard-backspace" on-tap="goBack"></paper-icon-button>
         </div>
