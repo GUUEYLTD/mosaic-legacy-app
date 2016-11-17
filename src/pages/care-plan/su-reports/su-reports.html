@@ -16,6 +16,11 @@
     </firebase-document>
 
     <style include="common-styles">
+      :host{
+        --app-grid-columns:2;
+        --app-grid-expandible-item-columns:2;
+        --app-grid-gutter:20px;
+      }
 
       .sliderRow{
         margin-top:20px;
@@ -57,7 +62,6 @@
       </su-header>
 
       <div class="pageInnerCont padded">
-        <h2>Daily Report for [[suIndexData.fName]] [[suIndexData.lName]]: [[selectedChunk]]</h2>
         <paper-dropdown-menu
           id="chunkSelector"
           label="Reports for different times of day">
@@ -70,42 +74,49 @@
           </paper-listbox>
         </paper-dropdown-menu>
 
-        <div class="sliderRow">
-          <iron-icon id="iconBad" icon="icons:thumb-down"></iron-icon>
-          <paper-slider pin value="{{dailyRepData.mood}}"></paper-slider>
-          <iron-icon id="iconGood" icon="icons:thumb-up"></iron-icon>
+        <div class="app-grid">
+          <paper-card elevation="3" class="padded">
+            <div class="sliderRow">
+              <iron-icon id="iconBad" icon="icons:thumb-down"></iron-icon>
+              <paper-slider class$="[[_computeProgressColor(dailyRepData.mood)]]" pin value="{{dailyRepData.mood}}"></paper-slider>
+              <iron-icon id="iconGood" icon="icons:thumb-up"></iron-icon>
+            </div>
+            <p hidden="[[!dailyRepData.mood]]" class="sliderOutput">
+              [[suIndexData.fName]]'s overall mood was <b>[[dailyRepData.mood]]</b> out of 100 for this shift.
+            </p>
+            <p hidden="[[dailyRepData.mood]]" class="sliderOutput">
+              Please select a value out of 100 for [[suIndexData.fName]]'s overall mood.
+            </p>
+
+            <paper-textarea label="Comments on Mood" value="{{dailyRepData.moodComments}}"></paper-textarea>
+          </paper-card>
+
+          <paper-card elevation="3" class="padded">
+            <div class="sliderRow">
+              <iron-icon id="iconBad" icon="icons:thumb-down"></iron-icon>
+              <paper-slider class$="[[_computeProgressColor(dailyRepData.health)]]" pin value="{{dailyRepData.health}}"></paper-slider>
+              <iron-icon id="iconGood" icon="icons:thumb-up"></iron-icon>
+            </div>
+            <p hidden="[[!dailyRepData.health]]" class="sliderOutput">
+              [[suIndexData.fName]]'s overall health was <b>[[dailyRepData.health]]</b> out of 100 for this shift.
+            </p>
+            <p hidden="[[dailyRepData.health]]" class="sliderOutput">
+              Please select a value out of 100 for [[suIndexData.fName]]'s overall health.
+            </p>
+
+            <paper-textarea label="Comments on Health" value="{{dailyRepData.healthComments}}"></paper-textarea>
+          </paper-card>
+
+
+
+
+          <div class="divider full"></div>
+
+          <paper-textarea class="full" label="activities" value="{{dailyRepData.activities}}"></paper-textarea>
+          <paper-textarea class="full" label="locations" value="{{dailyRepData.locations}}"></paper-textarea>
+          <paper-textarea class="full" label="incidents" value="{{dailyRepData.incidents}}"></paper-textarea>
+          <paper-textarea class="full" label="summary of shift" value="{{dailyRepData.summaryOfChunk}}"></paper-textarea>
         </div>
-        <p hidden="[[!dailyRepData.mood]]" class="sliderOutput">
-          [[suIndexData.fName]]'s overall mood was <b>[[dailyRepData.mood]]</b> out of 100 for this shift.
-        </p>
-        <p hidden="[[dailyRepData.mood]]" class="sliderOutput">
-          Please select a value out of 100 for [[suIndexData.fName]]'s overall mood.
-        </p>
-
-        <paper-textarea label="Comments on Mood" value="{{dailyRepData.moodComments}}"></paper-textarea>
-
-        <div class="sliderRow">
-          <iron-icon id="iconBad" icon="icons:thumb-down"></iron-icon>
-          <paper-slider pin value="{{dailyRepData.health}}"></paper-slider>
-          <iron-icon id="iconGood" icon="icons:thumb-up"></iron-icon>
-        </div>
-        <p hidden="[[!dailyRepData.health]]" class="sliderOutput">
-          [[suIndexData.fName]]'s overall health was <b>[[dailyRepData.health]]</b> out of 100 for this shift.
-        </p>
-        <p hidden="[[dailyRepData.health]]" class="sliderOutput">
-          Please select a value out of 100 for [[suIndexData.fName]]'s overall health.
-        </p>
-
-        <paper-textarea label="Comments on Health" value="{{dailyRepData.healthComments}}"></paper-textarea>
-
-
-        <div class="divider"></div>
-
-        <paper-textarea label="activities" value="{{dailyRepData.activities}}"></paper-textarea>
-        <paper-textarea label="locations" value="{{dailyRepData.locations}}"></paper-textarea>
-        <paper-textarea label="incidents" value="{{dailyRepData.incidents}}"></paper-textarea>
-        <paper-textarea label="summary of shift" value="{{dailyRepData.summaryOfChunk}}"></paper-textarea>
-
 
       </div>
 
@@ -191,6 +202,21 @@
         //set the two calculated time values... used in db ops as well
         this.set("currentChunk",timeChunk);
         this.set("currentDate", currentDate);
+      },
+      _computeProgressColor:function(number){
+        console.log(number);
+        this.updateStyles();
+        var int = parseInt(number);
+        if(int<=33){
+          return "bad";
+        } else if(int>34 && int<=66){
+          return "ok";
+        } else if(int>66){
+          return "good";
+        } else {
+          return "ok";
+        };
+        this.updateStyles();
       }
 
     });

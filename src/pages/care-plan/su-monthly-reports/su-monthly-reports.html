@@ -16,6 +16,11 @@
     </firebase-document>
 
     <style include="common-styles">
+      :host{
+        --app-grid-columns:2;
+        --app-grid-expandible-item-columns:2;
+        --app-grid-gutter:20px;
+      }
 
       .sliderRow{
         margin-top:20px;
@@ -54,7 +59,6 @@
       </su-header>
 
       <div class="pageInnerCont padded">
-        <h2>Monthly Report for [[suIndexData.fName]] [[suIndexData.lName]]: [[readableMonth]]</h2>
         <paper-dropdown-menu
           id="chunkSelector"
           label="Reports for different times of day">
@@ -66,43 +70,46 @@
             </template>
           </paper-listbox>
         </paper-dropdown-menu>
+        <div class="app-grid">
+          <paper-card elevation="3" class="padded">
+            <div class="sliderRow">
+              <iron-icon id="iconBad" icon="icons:thumb-down"></iron-icon>
+              <paper-slider class$="[[_computeProgressColor(monthlyRepData.mood)]]" pin value="{{monthlyRepData.mood}}"></paper-slider>
+              <iron-icon id="iconGood" icon="icons:thumb-up"></iron-icon>
+            </div>
+            <p hidden="[[!monthlyRepData.mood]]" class="sliderOutput">
+              [[suIndexData.fName]]'s overall mood was <b>[[monthlyRepData.mood]]</b> out of 100 for this shift.
+            </p>
+            <p hidden="[[monthlyRepData.mood]]" class="sliderOutput">
+              Please select a value out of 100 for [[suIndexData.fName]]'s overall mood.
+            </p>
 
-        <div class="sliderRow">
-          <iron-icon id="iconBad" icon="icons:thumb-down"></iron-icon>
-          <paper-slider pin value="{{monthlyRepData.mood}}"></paper-slider>
-          <iron-icon id="iconGood" icon="icons:thumb-up"></iron-icon>
+            <paper-textarea label="Comments on Mood" value="{{monthlyRepData.moodComments}}"></paper-textarea>
+          </paper-card>
+
+          <paper-card elevation="3" class="padded">
+            <div class="sliderRow">
+              <iron-icon id="iconBad" icon="icons:thumb-down"></iron-icon>
+              <paper-slider class$="[[_computeProgressColor(monthlyRepData.health)]]" pin value="{{monthlyRepData.health}}"></paper-slider>
+              <iron-icon id="iconGood" icon="icons:thumb-up"></iron-icon>
+            </div>
+            <p hidden="[[!monthlyRepData.health]]" class="sliderOutput">
+              [[suIndexData.fName]]'s overall health was <b>[[monthlyRepData.health]]</b> out of 100 for this shift.
+            </p>
+            <p hidden="[[monthlyRepData.health]]" class="sliderOutput">
+              Please select a value out of 100 for [[suIndexData.fName]]'s overall health.
+            </p>
+
+            <paper-textarea label="Comments on Health" value="{{monthlyRepData.healthComments}}"></paper-textarea>
+          </paper-card>
+
+          <div class="divider full"></div>
+
+          <paper-textarea class="full" label="activities" value="{{monthlyRepData.activities}}"></paper-textarea>
+          <paper-textarea class="full" label="locations" value="{{monthlyRepData.locations}}"></paper-textarea>
+          <paper-textarea class="full" label="incidents" value="{{monthlyRepData.incidents}}"></paper-textarea>
+          <paper-textarea class="full" label="Summary of Month" value="{{monthlyRepData.summaryOfChunk}}"></paper-textarea>
         </div>
-        <p hidden="[[!monthlyRepData.mood]]" class="sliderOutput">
-          [[suIndexData.fName]]'s overall mood was <b>[[monthlyRepData.mood]]</b> out of 100 for this shift.
-        </p>
-        <p hidden="[[monthlyRepData.mood]]" class="sliderOutput">
-          Please select a value out of 100 for [[suIndexData.fName]]'s overall mood.
-        </p>
-
-        <paper-textarea label="Comments on Mood" value="{{monthlyRepData.moodComments}}"></paper-textarea>
-
-        <div class="sliderRow">
-          <iron-icon id="iconBad" icon="icons:thumb-down"></iron-icon>
-          <paper-slider pin value="{{monthlyRepData.health}}"></paper-slider>
-          <iron-icon id="iconGood" icon="icons:thumb-up"></iron-icon>
-        </div>
-        <p hidden="[[!monthlyRepData.health]]" class="sliderOutput">
-          [[suIndexData.fName]]'s overall health was <b>[[monthlyRepData.health]]</b> out of 100 for this shift.
-        </p>
-        <p hidden="[[monthlyRepData.health]]" class="sliderOutput">
-          Please select a value out of 100 for [[suIndexData.fName]]'s overall health.
-        </p>
-
-        <paper-textarea label="Comments on Health" value="{{monthlyRepData.healthComments}}"></paper-textarea>
-
-
-        <div class="divider"></div>
-
-        <paper-textarea label="activities" value="{{monthlyRepData.activities}}"></paper-textarea>
-        <paper-textarea label="locations" value="{{monthlyRepData.locations}}"></paper-textarea>
-        <paper-textarea label="incidents" value="{{monthlyRepData.incidents}}"></paper-textarea>
-        <paper-textarea label="Summary of Month" value="{{monthlyRepData.summaryOfChunk}}"></paper-textarea>
-
 
       </div>
 
@@ -202,6 +209,21 @@
         date=parseInt(date);
         var readableMonth=monthList[date];
         this.set("readableMonth",readableMonth);
+      },
+      _computeProgressColor:function(number){
+        console.log(number);
+        this.updateStyles();
+        var int = parseInt(number);
+        if(int<=33){
+          return "bad";
+        } else if(int>34 && int<=66){
+          return "ok";
+        } else if(int>66){
+          return "good";
+        } else {
+          return "ok";
+        };
+        this.updateStyles();
       }
 
     });
