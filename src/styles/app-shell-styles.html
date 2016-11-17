@@ -138,6 +138,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
     .toolbarInner{
       text-align:center;
+      display:flex;
+      flex-direction:row;
+      align-items:center;
+    }
+    #mobileSearch *{
+      margin-bottom:15px;
     }
     .notifyCount{
       position:absolute;
@@ -305,13 +311,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     .mobileAltToolbar{
       background-color: #f9f9f9;
       color:#cecece;
-    }
-    .mobileMainToolbar .flexRow, .mobileAltToolbar .flexRow{
-      width:100%;
       display:flex;
       flex-direction:row;
+      align-items:center;
     }
-    .mobileMainToolbar .flexRow *, .mobileAltToolbar .flexRow *{
+    .mobileAltToolbar *{
+      flex-grow:1;
+    }
+    .mobileMainToolbar{
+      display:flex;
+      flex-direction:row;
+      align-items:center;
+    }
+    .mobileMainToolbar *{
       flex-grow:1;
     }
     #desktopMenu{

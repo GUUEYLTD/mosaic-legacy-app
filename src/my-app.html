@@ -246,7 +246,6 @@
           </app-toolbar>
 
           <app-toolbar id="mobileMenu" class="mobileMainToolbar">
-            <div class="flexRow">
               <a class="inherit toolbarInner" href="/[[home]]/default/def-home"><paper-icon-button class$="[[mobileHomeButtonClass]]" icon="icons:home"></paper-icon-button></a>
               <paper-icon-button class="toolbarButton" icon="icons:apps"></paper-icon-button>
               <div class="toolbarInner">
@@ -271,26 +270,19 @@
 
                 </iron-collapse>
               </div>
-
-
               <paper-icon-button class="toolbarButton logoutButton" on-tap="logout" icon="icons:account-circle"></paper-icon-button>
-            </div>
           </app-toolbar>
 
           <app-toolbar id="mobileMenu" class="mobileAltToolbar">
-            <div class="flexRow">
               <paper-icon-button class="toolbarButton" icon="menu" on-tap="toggleDrawer"></paper-icon-button>
+
               <div class="toolbarInner">
 
-                <div class="mobileSearchInput">
-                  <span hidden="[[searchVal]]">
-                    <paper-icon-button class="toolbarButton" icon="icons:search"></paper-icon-button>
-                  </span>
-                  <span hidden="[[!searchVal]]">
-                    <paper-icon-button class="toolbarButton" icon="icons:clear" on-tap="clearSearch"></paper-icon-button>
-                  </span>
-                  <input style="display:inline-block;" type="text" value="{{searchVal::input}}" />
-                </div>
+                <paper-icon-button class="toolbarButton" icon="icons:search" on-tap="toggleMobileSearch"></paper-icon-button>
+
+                <iron-collapse id="mobileSearch" horizontal>
+                  <paper-input label="search" value="{{searchVal}}"></paper-input>
+                </iron-collapse>
 
                 <iron-collapse id="mobileSearchDropdown">
 
@@ -309,8 +301,7 @@
                 </iron-collapse>
 
               </div>
-              <paper-icon-button class="toolbarButton" icon="menu" on-tap="toggleRightDrawer"></paper-icon-button>
-            </div>
+              <paper-icon-button class="toolbarButton" icon="custom:su-drawer" on-tap="toggleRightDrawer"></paper-icon-button>
           </app-toolbar>
 
           <paper-progress class="mainProgress" indeterminate></paper-progress>
@@ -1095,6 +1086,9 @@
           this.set("homeButtonClass", "rightToolbarButton");
           this.set("mobileHomeButtonClass", "toolbarButton");
         };
+      },
+      toggleMobileSearch:function(){
+        this.$.mobileSearch.toggle();
       }
     });
 

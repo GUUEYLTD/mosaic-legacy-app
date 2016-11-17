@@ -11,23 +11,23 @@
       ],
       screenChange:function(dimensions){
         //available queries= <=767, <=1023, <=1365, <=1919
-        var appGridColumns="3";
+        var appGridColumns="4";
 
         if(dimensions.base.query767){
 
-          appGridColumns="1";
+          appGridColumns="2";
 
         } else if(dimensions.base.query1023){
 
-          appGridColumns="1";
+          appGridColumns="2";
 
         } else if(dimensions.base.query1365){
 
-          appGridColumns="1";
+          appGridColumns="3";
 
         } else if(dimensions.base.query1919){
 
-          appGridColumns="2";
+          appGridColumns="4";
 
         };
         //column style
