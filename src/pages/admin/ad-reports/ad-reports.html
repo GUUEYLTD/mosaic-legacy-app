@@ -29,6 +29,9 @@
       #reportPages{
         height:700px;
       }
+      .reportSelector{
+        padding-left:5%;
+      }
     </style>
 
     <paper-card class="pageCard">
@@ -38,9 +41,9 @@
         icon="icons:assessment">
       </admin-header>
 
-      <div class="pageInnerCont">
+      <div class="pageInnerCont vert-padded">
 
-        <paper-dropdown-menu label="Select Report Type">
+        <paper-dropdown-menu class="reportSelector" label="Select Report Type">
           <paper-listbox
             class="dropdown-content"
             attr-for-selected="name"
