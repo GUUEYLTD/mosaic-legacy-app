@@ -179,7 +179,74 @@
 
         <app-header id="appHeader" condenses reveals effects="waterfall">
           <paper-progress class="mainProgress" indeterminate></paper-progress>
+
+
+          <app-toolbar id="mobileMenu" class="mobileMainToolbar">
+            <paper-tabs class="rightMenuTabs" attr-for-selected="name" selected="{{rightMenuSelect}}" style="height:100%;">
+              <paper-tab name="home"><a class="inherit mobileToolbarInner" href="/[[home]]/default/def-home"><iron-icon icon="icons:home"></iron-icon></a></paper-tab>
+              <paper-tab name="apps"><iron-icon icon="icons:apps"></iron-icon></paper-tab>
+              <paper-tab name="notify">
+
+                <iron-icon class="dropdown-trigger" icon="social:notifications" on-tap="showMobileNotifications"></iron-icon>
+                <span class="notifyCount" hidden="{{computeNotifyHidden(notifyCount)}}">
+                  <span class="notifyContent">
+                  [[notifyCount]]
+                  </span>
+                </span>
+
+              </paper-tab>
+              <paper-tab name="logout"><iron-icon class="logoutButton" on-tap="logout" icon="icons:account-circle"></iron-icon></paper-tab>
+            </paper-tabs>
+          </app-toolbar>
+
+          <app-toolbar id="mobileMenu" class="mobileAltToolbar">
+            <paper-icon-button class="mobileToolbarButton" icon="menu" on-tap="toggleDrawer"></paper-icon-button>
+
+            <div class="toolbarInner">
+
+              <paper-icon-button icon="icons:search" on-tap="toggleMobileSearch"></paper-icon-button>
+
+              <iron-collapse id="mobileSearch" horizontal>
+                <paper-input label="search" value="{{searchVal}}"></paper-input>
+              </iron-collapse>
+
+            </div>
+            <paper-icon-button class="mobileToolbarButton" icon="custom:su-drawer" on-tap="toggleRightDrawer"></paper-icon-button>
+
+            <iron-collapse id="mobileSearchDropdown">
+
+              <template
+                is="dom-repeat"
+                items="[[suList]]"
+                as="search"
+                filter="{{mobileSearchFilter(searchVal)}}"
+                observe="fName lName"
+                initial-count="10">
+                  <a class="dropdownLinks" href="/[[home]]/care-plan/su-profile/[[search.$key]]" on-tap="hideSearch">
+                    <paper-item class="dropdownItem">[[search.fName]] [[search.lName]]</paper-item>
+                  </a>
+              </template>
+
+            </iron-collapse>
+
+            <iron-collapse id="mobileNotificationDropdown">
+
+              <template is="dom-repeat" items="[[notifiesData]]" as="guueyNotify">
+                  <paper-item class="notifyText">
+                    [[guueyNotify.message]]
+                    <paper-button class="notifyButton" on-tap="dismissNotification">dismiss</paper-button>
+                    <a style="text-decoration:none;" class="inherit" href="[[guueyNotify.url]]">
+                      <paper-button class="notifyButton">check</paper-button>
+                    </a>
+                  </paper-item>
+
+              </template>
+
+            </iron-collapse>
+          </app-toolbar>
+
           <app-toolbar id="desktopMenu">
+
             <div class="toolbarLeft">
               <paper-icon-button class="leftToolbarButton" icon="menu" on-tap="toggleDrawer"></paper-icon-button>
               <span class="menuText">menu</span>
@@ -194,115 +261,58 @@
                 <input style="display:inline-block;" type="text" value="{{searchVal::input}}" />
               </div>
 
-
-              <iron-collapse id="searchDropdown">
-
-                <template
-                  is="dom-repeat"
-                  items="[[suList]]"
-                  as="search"
-                  filter="{{searchFilter(searchVal)}}"
-                  observe="fName lName"
-                  initial-count="10">
-                    <a class="dropdownLinks" href="/[[home]]/care-plan/su-profile/[[search.$key]]" on-tap="hideSearch">
-                      <paper-item class="dropdownItem">[[search.fName]] [[search.lName]]</paper-item>
-                    </a>
-                </template>
-
-              </iron-collapse>
-
             </div>
 
             <div class="toolbarRight">
-              <a class="inherit rightToolbarButton" href="/[[home]]/default/def-home"><paper-icon-button class$="[[homeButtonClass]]" icon="icons:home"></paper-icon-button></a>
-              <paper-icon-button class="rightToolbarButton" icon="icons:apps"></paper-icon-button>
 
-              <div class="toolbarInner rightToolbarButton">
-                <paper-icon-button class="rightToolbarButton notifyMasterButton dropdown-trigger" icon="social:notifications" on-tap="showNotifications"></paper-icon-button>
-                <span class="notifyCount" hidden="{{computeNotifyHidden(notifyCount)}}">
-                  <span class="notifyContent">
-                  [[notifyCount]]
+              <paper-tabs class="rightMenuTabs" attr-for-selected="name" selected="{{rightMenuSelect}}" style="height:100%;">
+                <paper-tab name="home"><a class="inherit mobileToolbarInner" href="/[[home]]/default/def-home"><iron-icon icon="icons:home"></iron-icon></a></paper-tab>
+                <paper-tab name="apps"><iron-icon icon="icons:apps"></iron-icon></paper-tab>
+                <paper-tab name="notify">
+
+                  <iron-icon class="dropdown-trigger" icon="social:notifications" on-tap="showNotifications"></iron-icon>
+                  <span class="notifyCount" hidden="{{computeNotifyHidden(notifyCount)}}">
+                    <span class="notifyContent">
+                    [[notifyCount]]
+                    </span>
                   </span>
-                </span>
-              </div>
 
-              <iron-collapse id="notificationDropdown">
+                </paper-tab>
+                <paper-tab name="logout"><iron-icon class="logoutButton" on-tap="logout" icon="icons:account-circle"></iron-icon></paper-tab>
+              </paper-tabs>
 
-                <template is="dom-repeat" items="[[notifiesData]]" as="guueyNotify">
-                    <paper-item class="notifyText">
-                      [[guueyNotify.message]]
-                      <paper-button class="notifyButton" on-tap="dismissNotification">dismiss</paper-button>
-                      <a style="text-decoration:none;" class="inherit" href="[[guueyNotify.url]]">
-                        <paper-button class="notifyButton">check</paper-button>
-                      </a>
-                    </paper-item>
-
-                </template>
-
-              </iron-collapse>
-
-              <paper-icon-button class="rightToolbarButton logoutButton" on-tap="logout" icon="icons:account-circle"></paper-icon-button>
             </div>
 
-          </app-toolbar>
+            <iron-collapse id="searchDropdown">
 
-          <app-toolbar id="mobileMenu" class="mobileMainToolbar">
-              <a class="inherit mobileToolbarInner" href="/[[home]]/default/def-home"><paper-icon-button class$="[[mobileHomeButtonClass]]" icon="icons:home"></paper-icon-button></a>
-              <paper-icon-button class="mobileToolbarButton" icon="icons:apps"></paper-icon-button>
-              <div class="toolbarInner">
-                <paper-icon-button class="mobileToolbarButton dropdown-trigger" icon="social:notifications" on-tap="showMobileNotifications"></paper-icon-button>
-                <span class="notifyCount" hidden="{{computeNotifyHidden(notifyCount)}}">
-                  <span class="notifyContent">
-                  [[notifyCount]]
-                  </span>
-                </span>
-                <iron-collapse id="mobileNotificationDropdown">
+              <template
+                is="dom-repeat"
+                items="[[suList]]"
+                as="search"
+                filter="{{searchFilter(searchVal)}}"
+                observe="fName lName"
+                initial-count="10">
+                  <a class="dropdownLinks" href="/[[home]]/care-plan/su-profile/[[search.$key]]" on-tap="hideSearch">
+                    <paper-item class="dropdownItem">[[search.fName]] [[search.lName]]</paper-item>
+                  </a>
+              </template>
 
-                  <template is="dom-repeat" items="[[notifiesData]]" as="guueyNotify">
-                      <paper-item class="notifyText">
-                        [[guueyNotify.message]]
-                        <paper-button class="notifyButton" on-tap="dismissNotification">dismiss</paper-button>
-                        <a style="text-decoration:none;" class="inherit" href="[[guueyNotify.url]]">
-                          <paper-button class="notifyButton">check</paper-button>
-                        </a>
-                      </paper-item>
+            </iron-collapse>
 
-                  </template>
+            <iron-collapse id="notificationDropdown">
 
-                </iron-collapse>
-              </div>
-              <paper-icon-button class="mobileToolbarButton logoutButton" on-tap="logout" icon="icons:account-circle"></paper-icon-button>
-          </app-toolbar>
+              <template is="dom-repeat" items="[[notifiesData]]" as="guueyNotify">
+                  <paper-item class="notifyText">
+                    [[guueyNotify.message]]
+                    <paper-button class="notifyButton" on-tap="dismissNotification">dismiss</paper-button>
+                    <a style="text-decoration:none;" class="inherit" href="[[guueyNotify.url]]">
+                      <paper-button class="notifyButton">check</paper-button>
+                    </a>
+                  </paper-item>
 
-          <app-toolbar id="mobileMenu" class="mobileAltToolbar">
-              <paper-icon-button class="mobileToolbarButton" icon="menu" on-tap="toggleDrawer"></paper-icon-button>
+              </template>
 
-              <div class="toolbarInner">
-
-                <paper-icon-button class="mobileToolbarButton" icon="icons:search" on-tap="toggleMobileSearch"></paper-icon-button>
-
-                <iron-collapse id="mobileSearch" horizontal>
-                  <paper-input label="search" value="{{searchVal}}"></paper-input>
-                </iron-collapse>
-
-                <iron-collapse id="mobileSearchDropdown">
-
-                  <template
-                    is="dom-repeat"
-                    items="[[suList]]"
-                    as="search"
-                    filter="{{mobileSearchFilter(searchVal)}}"
-                    observe="fName lName"
-                    initial-count="10">
-                      <a class="dropdownLinks" href="/[[home]]/care-plan/su-profile/[[search.$key]]" on-tap="hideSearch">
-                        <paper-item class="dropdownItem">[[search.fName]] [[search.lName]]</paper-item>
-                      </a>
-                  </template>
-
-                </iron-collapse>
-
-              </div>
-              <paper-icon-button class="mobileToolbarButton" icon="custom:su-drawer" on-tap="toggleRightDrawer"></paper-icon-button>
+            </iron-collapse>
           </app-toolbar>
         </app-header>
         </div>
@@ -751,6 +761,10 @@
       },
 
       properties:{
+        rightMenuSelect:{
+          type:String,
+          value:"home"
+        },
         home:{
           type:String,
           reflectToAttribute:true,
@@ -833,7 +847,11 @@
         }
       },
       _pageChanged:function(page) {
-        this.styleHomeButton(page);
+        if(this.page==="def-home"){
+          this.rightMenuSelect="home";
+        } else {
+          this.rightMenuSelect=null;
+        }
         if(this.statusKnown && !this.user.emailVerified && this.currentUserType==="admin"){
           this.set("catData.category", "default");
           this.set("pageData.page", "def-verify");
@@ -1075,15 +1093,6 @@
       },
       showMobileNotifications:function(){
         this.$.mobileNotificationDropdown.toggle();
-      },
-      styleHomeButton:function(page){
-        if(page==="def-home"){
-          this.set("homeButtonClass", "rightToolbarButton atHome");
-          this.set("mobileHomeButtonClass", "mobileToolbarButton mobileAtHome");
-        } else {
-          this.set("homeButtonClass", "rightToolbarButton");
-          this.set("mobileHomeButtonClass", "mobileToolbarButton");
-        };
       },
       toggleMobileSearch:function(){
         this.$.mobileSearch.toggle();

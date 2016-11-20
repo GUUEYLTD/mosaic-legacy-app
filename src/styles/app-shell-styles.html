@@ -63,17 +63,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         overflow-y:scroll;
       }
     }
-
     .disabled{
       color:#000000 !important;
       opacity: .38 !important;
-    }
-    .mobileToolbarButton{
-
-    }
-    .mobileToolbarButton:focus{
-      background-color:#303D95;
-      border-bottom:#e51561 5px solid;
     }
     .leftToolbarButton{
       height:100%;
@@ -88,28 +80,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       padding-top:17px;
       align-self:center;
     }
-    .atHome{
-      padding-bottom:14.5px;
-      padding-top:14.5px;
-      background-color:#303D95;
-      border-bottom:#e51561 5px solid;
-    }
-    .mobileAtHome{
-      background-color:#303D95;
-      border-bottom:#e51561 5px solid;
-    }
     .notifyMasterButton{
       width:100%;
       position:relative;
     }
     paper-icon-button:hover{
       opacity:.8;
-    }
-    .rightToolbarButton:focus{
-      padding-bottom:14.5px;
-      padding-top:14.5px;
-      background-color:#303D95;
-      border-bottom:#e51561 5px solid;
     }
     a:hover {
      cursor:pointer;
@@ -165,12 +141,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       top:10%;
       height:20px;
       width:20px;
-      padding:1px;
+      padding:5px;
       margin:0;
       background-color:#e51561;
       color:#FFFFFF;
       border-radius:50%;
       text-align:center;
+      line-height:20px;
       font-size:12px;
       display:flex;
     }
@@ -270,7 +247,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
     #searchDropdown{
       top:65px;
-      width:100%;
+      left:0;
+      width:50%;
       position:absolute;
       background-color:#FFF;
       z-index:5;
@@ -278,7 +256,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
     #notificationDropdown{
       top:65px;
-      width:100%;
+      right:0;
+      width:50%;
       position:absolute;
       background-color:#FFF;
       z-index:999;
@@ -286,7 +265,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
     #mobileSearchDropdown{
       top:65px;
-      width:100%;
+      left:0;
+      width:50%;
       position:absolute;
       background-color:#FFF;
       z-index:999;
@@ -294,7 +274,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
     #mobileNotificationDropdown{
       top:65px;
-      width:100%;
+      right:0;
+      width:50%;
       position:absolute;
       background-color:#FFF;
       z-index:999;
@@ -349,6 +330,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
     #mobileMenu{
       display:var(--mobile-menu-display);
+      padding:0;
     }
     .moduleInfo{
       display:flex;
@@ -372,6 +354,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       margin-bottom:25px;
       border-bottom:1px solid #a0a0a0;
       display:inline-block;
+    }
+    .rightMenuTabs{
+      --paper-tabs-selection-bar-color:#e51561;
+      --paper-tabs-selection-bar:{
+        z-index:999;
+      }
+    }
+    paper-tab{
+      --paper-tab-ink:#e51561;
+    }
+    paper-tab.iron-selected{
+      background-color:#303D95;
+    }
+    paper-tab iron-icon{
+      --iron-icon-height:40px;
+      --iron-icon-width:40px;
     }
     </style>
   </template>
