@@ -158,7 +158,7 @@
 
         <div class="divider"></div>
 
-        <iron-selector id="linkSelector" selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
+        <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
           <a name="su-profile" href="/[[home]]/care-plan/su-profile/[[param]]">Personal Profile<a>
           <a name="su-reports" href="/[[home]]/care-plan/su-reports/[[param]]">Daily Reports</a>
           <a name="su-pre" href="/[[home]]/care-plan/su-pre/[[param]]">Pre-Admission Assessment</a>
@@ -247,10 +247,10 @@
           </app-toolbar>
 
           <app-toolbar id="mobileMenu" class="mobileMainToolbar">
-              <a class="inherit toolbarInner" href="/[[home]]/default/def-home"><paper-icon-button class$="[[mobileHomeButtonClass]]" icon="icons:home"></paper-icon-button></a>
-              <paper-icon-button class="toolbarButton" icon="icons:apps"></paper-icon-button>
+              <a class="inherit mobileToolbarInner" href="/[[home]]/default/def-home"><paper-icon-button class$="[[mobileHomeButtonClass]]" icon="icons:home"></paper-icon-button></a>
+              <paper-icon-button class="mobileToolbarButton" icon="icons:apps"></paper-icon-button>
               <div class="toolbarInner">
-                <paper-icon-button class="toolbarButton dropdown-trigger" icon="social:notifications" on-tap="showMobileNotifications"></paper-icon-button>
+                <paper-icon-button class="mobileToolbarButton dropdown-trigger" icon="social:notifications" on-tap="showMobileNotifications"></paper-icon-button>
                 <span class="notifyCount" hidden="{{computeNotifyHidden(notifyCount)}}">
                   <span class="notifyContent">
                   [[notifyCount]]
@@ -271,15 +271,15 @@
 
                 </iron-collapse>
               </div>
-              <paper-icon-button class="toolbarButton logoutButton" on-tap="logout" icon="icons:account-circle"></paper-icon-button>
+              <paper-icon-button class="mobileToolbarButton logoutButton" on-tap="logout" icon="icons:account-circle"></paper-icon-button>
           </app-toolbar>
 
           <app-toolbar id="mobileMenu" class="mobileAltToolbar">
-              <paper-icon-button class="toolbarButton" icon="menu" on-tap="toggleDrawer"></paper-icon-button>
+              <paper-icon-button class="mobileToolbarButton" icon="menu" on-tap="toggleDrawer"></paper-icon-button>
 
               <div class="toolbarInner">
 
-                <paper-icon-button class="toolbarButton" icon="icons:search" on-tap="toggleMobileSearch"></paper-icon-button>
+                <paper-icon-button class="mobileToolbarButton" icon="icons:search" on-tap="toggleMobileSearch"></paper-icon-button>
 
                 <iron-collapse id="mobileSearch" horizontal>
                   <paper-input label="search" value="{{searchVal}}"></paper-input>
@@ -302,10 +302,9 @@
                 </iron-collapse>
 
               </div>
-              <paper-icon-button class="toolbarButton" icon="custom:su-drawer" on-tap="toggleRightDrawer"></paper-icon-button>
+              <paper-icon-button class="mobileToolbarButton" icon="custom:su-drawer" on-tap="toggleRightDrawer"></paper-icon-button>
           </app-toolbar>
         </app-header>
-          <paper-icon-button class="backButton" icon="hardware:keyboard-backspace" on-tap="goBack"></paper-icon-button>
         </div>
         <!--page templates are loded in here inside iron pages-->
         <neon-animated-pages id="neonPages"
@@ -611,7 +610,6 @@
         var neonOffsetTop=this.$.neonPages.offsetTop;
         var screenHeight=window.innerHeight;
         var headerHeight=this.$.appHeader.offsetHeight;
-        console.log(headerHeight, screenHeight, neonOffsetTop);
         this.customStyle["--neon-pages-height"]=screenHeight-headerHeight+"px";
         if(this.page==="def-login"){
           this.customStyle["--login-overlay-display"]="inline-block";
@@ -983,7 +981,7 @@
           var page=e.detail.page
           this[e.detail.page]=true;
         };
-        this.customStyle["--page-loading-active-color"]="#3d4ba8";
+        this.customStyle["--page-loading-active-color"]="transparent";
         this.updateStyles();
       },
       ensureLayout:function(page){
@@ -1081,10 +1079,10 @@
       styleHomeButton:function(page){
         if(page==="def-home"){
           this.set("homeButtonClass", "rightToolbarButton atHome");
-          this.set("mobileHomeButtonClass", "toolbarButton mobileAtHome");
+          this.set("mobileHomeButtonClass", "mobileToolbarButton mobileAtHome");
         } else {
           this.set("homeButtonClass", "rightToolbarButton");
-          this.set("mobileHomeButtonClass", "toolbarButton");
+          this.set("mobileHomeButtonClass", "mobileToolbarButton");
         };
       },
       toggleMobileSearch:function(){
