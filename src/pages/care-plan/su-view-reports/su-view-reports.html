@@ -20,7 +20,6 @@
         --app-grid-columns:2;
         --app-grid-expandible-item-columns:2;
       }
-
       .reportExpand{
         background-color:#F5F2F2;
         margin:20px 0 20px 0;
@@ -66,9 +65,15 @@
       }
       #reportSelector{
         --paper-tabs-selection-bar-color:#009688;
+        --paper-tabs-container:{
+          border-bottom:2px solid #979797;
+        };
       }
       paper-tab{
         --paper-tab-ink:#009688;
+        --paper-tab-content-unselected:{
+        color:#cecece;
+        }
       }
       paper-tab.iron-selected{
         color:#009688;
@@ -101,7 +106,7 @@
       }
       .dateSub{
         display:inline-block;
-        opacity:.5;
+        color:#7d7d7d
       }
       .attrText{
         display:inline-block;
@@ -113,6 +118,9 @@
         display:inline-block;
         font-size:24px;
         font-weight:bold;
+      }
+      #dateSelector{
+        width:50%;
       }
     </style>
 
@@ -128,17 +136,17 @@
       <div class="pageInnerCont">
         <paper-card elevation="3" class="subCard">
 
-          <paper-tabs id="reportSelector" selected="0">
-            <paper-tab on-tap="viewThisDay">DISPLAY TODAY</paper-tab>
-            <paper-tab on-tap="viewThisWeek">DISPLAY THIS WEEK</paper-tab>
-            <paper-tab on-tap="viewThisMonth">DISPLAY THIS MONTH</paper-tab>
-            <paper-tab on-tap="chooseDate">CHOOSE DATE</paper-tab>
+          <paper-tabs attr-for-selected="name" id="reportSelector" selected="{{reportSelect}}">
+            <paper-tab name="today" on-tap="viewThisDay">TODAY</paper-tab>
+            <paper-tab name="week" on-tap="viewThisWeek">THIS WEEK</paper-tab>
+            <paper-tab name="month" on-tap="viewThisMonth">THIS MONTH</paper-tab>
+            <paper-tab name="choose" on-tap="chooseDate">CHOOSE DATE</paper-tab>
           </paper-tabs>
           <iron-collapse opened id="dateDisplay">
 
             <div class="innerMenu">
               <p class="dateSub">
-                [[graphDate]]
+                DATE: [[graphDate]]
               </p>
             </div>
 
@@ -159,7 +167,7 @@
           <google-chart
             id="healthGraph"
             type='line'
-            options='{"title": "Health Over Time"}'
+            options='{"title": "Health and Mood Over Time", "colors":["#6735ba", "#f76363"]}'
             cols='[{"label":"day", "type":"string"}, {"label":"Health", "type":"number"}, {"label":"Mood", "type":"number"}]'
             rows='[[graphRows]]'>
           </google-chart>
@@ -387,6 +395,10 @@
         this.setDateRangeDisplay();
       },
       properties:{
+        reportSelect:{
+          type:String,
+          value:"today"
+        },
         selectDate:{
           type:Object,
           value:{},

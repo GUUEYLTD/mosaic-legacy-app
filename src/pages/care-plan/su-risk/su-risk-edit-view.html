@@ -40,17 +40,28 @@
         margin:4%;
         overflow:hidden;
       }
+      .guttered{
+        margin-left:5%;
+        margin-right:5%;
+      }
 
     </style>
     <paper-card class="editViewCard padded">
 
+      <guuey-slider
+        class="guttered"
+        value="{{riskData.riskLevel}}">
+      </guuey-slider>
+
       <vaadin-combo-box
+        class="guttered"
         label="Category"
         items="[[riskTypes]]"
         value="{{riskData.category}}">
       </vaadin-combo-box>
 
       <guuey-date-input
+        class="guttered"
         value="{{riskData.date}}"
         label="Date of risk assessment">
       </guuey-date-input>
@@ -72,19 +83,17 @@
       </guuey-text-input>
 
       <vaadin-combo-box
+        class="guttered"
         label="Agreed Frequencey of Evaluation"
         items="[[evalFreq]]"
         value="{{riskData.agreedFrequencyOfEvaluation}}">
       </vaadin-combo-box>
 
       <guuey-date-input
+        class="guttered"
         value="{{riskData.evaluation}}"
         label="Date of risk evaluation">
       </guuey-date-input>
-
-      <guuey-slider
-        value="{{riskData.riskLevel}}">
-      </guuey-slider>
 
     </paper-card>
 
