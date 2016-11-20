@@ -80,17 +80,19 @@
         flex-direction:row;
       }
       .timeChunkLabel{
-        flex-grow:1;
+        flex-grow:2;
         text-transform:uppercase;
         color:#009688;
         text-align:left;
         padding-left:10%;
-
+        font-weight:500;
+        font-size:24px;
       }
       .timeChunkLabel:hover{
         cursor:pointer;
       }
       .timeChunkTime{
+        flex-grow:1;
         font-weight:bold;
         font-size:20px;
         text-transform:uppercase;
@@ -366,7 +368,7 @@
         </paper-item>
         <iron-collapse id="afternoon">
 
-          <div class="guuey-table">
+          <div class="guuey-table offset-table">
 
             <p class="tableScrollLabel">
               swipe left scrolls table
@@ -447,7 +449,7 @@
         </paper-item>
         <iron-collapse id="evening">
 
-          <div class="guuey-table">
+          <div class="guuey-table offset-table">
 
             <p class="tableScrollLabel">
               swipe left scrolls table
@@ -528,7 +530,7 @@
         </paper-item>
         <iron-collapse id="night">
 
-          <div class="guuey-table">
+          <div class="guuey-table offset-table">
 
             <p class="tableScrollLabel">
               swipe left scrolls table

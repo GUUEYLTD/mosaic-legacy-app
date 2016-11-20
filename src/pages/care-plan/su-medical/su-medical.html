@@ -55,18 +55,17 @@
           home="[[home]]"
           patient="[[patient]]">
         </su-header>
-        <div class="app-grid padded">
+        <div class="app-grid padded half-page">
           <div class="padded">
             <paper-input id="fileInputName" label="Asessment Name" value="{{newFileName}}"></paper-input>
           </div>
 
-          <div class="pageInnerCont padded">
+          <div class="padded">
             <paper-button
               class="guuey-button"
               on-tap="_onAddFilesClick">upload file
             </paper-button>
           </div>
-
         </div>
 
         <input
@@ -86,13 +85,13 @@
                   Document Title
                 </th>
                 <th>
+                  Location
+                </th>
+                <th>
                   Date of Upload
                 </th>
                 <th>
                   Notes
-                </th>
-                <th>
-                  Location
                 </th>
               </tr>
             </thead>
@@ -103,13 +102,13 @@
                     <paper-input id="tableInput" label="file name" value="{{upload.customName}}"></paper-input>
                   </td>
                   <td>
+                    <paper-button class="guuey-button" on-tap="openFile">go to file</paper-button>
+                  </td>
+                  <td>
                     [[upload.dateUploaded]]
                   </td>
                   <td>
                     <paper-input id="tableInput" label="comments" value="{{upload.comments}}"></paper-input>
-                  </td>
-                  <td>
-                    <paper-button class="guuey-button" on-tap="openFile">go to file</paper-button>
                   </td>
                 </tr>
               </template>
