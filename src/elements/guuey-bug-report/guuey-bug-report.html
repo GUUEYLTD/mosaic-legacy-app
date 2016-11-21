@@ -1,0 +1,149 @@
+<link rel="import" href="dependencies.html" />
+
+<dom-module id="guuey-bug-report">
+
+<template>
+
+  <firebase-document
+    id="issueDB"
+    app-name="main">
+  </firebase-document>
+
+  <style include="common-styles">
+
+    :host{
+      height:50px;
+      width:50px;
+      position:fixed;
+      bottom:50px;
+      right:50px;
+      z-index:999;
+    }
+    .reportButton{
+      height:50px;
+      width:50px;
+      color:red;
+    }
+    #bugDialog{
+      height:75%;
+      width:75%;
+      overflow:auto;
+    }
+
+  </style>
+
+  <paper-dialog class="guuey-modal guuey-danger-modal" id="bugDialog">
+
+    <h2>Report an Issue</h2>
+
+    <h3>
+      Please be as specific as possible when giving feedback!
+    </h3>
+    <P>
+      BAD EXAMPLE: I was trying to save something for a service user and it didnt work.
+      <br />
+      <br />
+      GOOD EXAMPLE: I was on the profile page and for the service user bob and his date of birth did not save. Before this happened I was on the care risk assessment page updating a risk assessment.
+    </P>
+
+    <paper-dropdown-menu label="Issue Category">
+      <paper-listbox attr-for-selected="name" selected="{{issueCat}}" class="dropdown-content">
+        <template is="dom-repeat" items="[[issueTypes]]" as="issue">
+
+          <paper-item name="[[issue]]">[[issue]]</paper-item>
+
+        </template>
+      </paper-listbox>
+    </paper-dropdown-menu>
+
+    <paper-textarea label="description" value="{{issueText}}">
+    </paper-textarea>
+
+    <div class="modal-button-container">
+      <paper-button dialog-dismiss>cancel</paper-button>
+      <paper-button id="dangerCancel" on-tap="_reportIssue">send</paper-button>
+    </div>
+
+  </paper-dialog>
+
+  <paper-icon-button class="reportButton" icon="icons:bug-report" on-tap="_openBugDialog"></paper-icon-button>
+
+</template>
+
+<script>
+
+  Polymer({
+    is:"guuey-bug-report",
+    ready:function(){
+
+    },
+    properties:{
+      issueData:{
+        type:Object,
+        value:{}
+      },
+      page:{
+        type:String
+      },
+      home:{
+        type:String
+      },
+      patient:{
+        type:String
+      },
+      user:{
+
+      },
+      issueTypes:{
+        type:Array,
+        value:[
+          "Bug",
+          "Confusion",
+          "Suggestions"
+        ]
+      }
+    },
+    observers:[
+      "inputsArrived(page, home, patient, user)"
+    ],
+    _openBugDialog:function(){
+      this.$.bugDialog.toggle();
+    },
+    inputsArrived:function(page, home, patient, user){
+      if(user){
+        console.log(page, home, patient, user.email, user.displayName, user.emailVerified);
+      }
+    },
+    _reportIssue:function(){
+      if(this.issueCat && this.issueText){
+        var path = "/homes/" + this.home + "/issues/pending";
+
+        var date = new Date();
+        date = date.getTime();
+        console.log(path, date);
+        var issueData = {
+          userEmail:this.user.email,
+          userDisplayName:this.user.displayName,
+          page:this.page,
+          patient:this.patient,
+          issueType:this.issueCat,
+          issueText:this.issueText,
+        };
+        this.$.issueDB.data=issueData;
+        this.$.issueDB.save(path, date)
+          .then(function(snapshot){
+            this.fire("openToast", {toastText:"Your issue has been sent to the development team. Thank you for your feedback."});
+            this.$.bugDialog.close();
+          }.bind(this))
+          .catch(function(err){
+            this.fire("openToast", {toastText:"There was an error reporting your error... SORRY! Please email me at TovarishFin@gmail.com"});
+          }.bind(this))
+      } else {
+        this.fire("openToast", {toastText:"Please select a category and make sure that you have filled out the issue box."});
+      }
+    }
+  });
+
+</script>
+
+</dom-module>
