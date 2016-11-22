@@ -6,6 +6,7 @@
     <style>
       :host{
         display:block;
+        padding-bottom:20px;
       }
       .sliderContainer{
         display:flex;
@@ -52,7 +53,7 @@
     </style>
 
       <div class="sliderContainer">
-        <p class="dangerLabel">
+        <p hidden$="[[hide-value]]" class="dangerLabel">
           {{_computeDanger(value)}}
         </p>
         <div class="innerContainer">
@@ -80,6 +81,10 @@
         value:{
           type:Number,
           notify:true
+        }
+        hideValue:{
+          type:Boolean,
+          value:false
         }
       },
       observers:[

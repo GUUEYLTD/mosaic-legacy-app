@@ -84,9 +84,17 @@
         flex-direction:column;
         height:70%;
       }
+      .riskSlider{
+        margin-bottom:0;
+        padding-bottom:0;
+
+      }
       .riskCardText{
-        flex-grow:3;
-        margin:0 10px 0 10px;
+        flex-grow:1;
+        margin:10px;
+        overflow:hidden;
+        white-space:nowrap;
+        text-overflow:ellipsis;
       }
       .cardDivider{
         border-bottom:1px solid #e0e0e0;
@@ -104,6 +112,7 @@
         text-align:left;
         margin-left:20px;
         font-weight:bold;
+        margin:0 0 0 10px;
       }
       .riskDate{
         flex-grow:1;
@@ -146,20 +155,19 @@
             </div>
 
             <div class="multiCardContainer">
-              <guuey-slider value="{{risk.riskLevel}}">
+              <guuey-slider class="riskSlider" value="{{risk.riskLevel}}">
               </guuey-slider>
 
               <p class="riskCardText">
                 [[risk.riskIdentified]]
               </p>
-
-              <div class="cardDivider">
-
-              </div>
-              <p class="dateHeader">
-                Date of Assessment
-              </p>
               <div class="dateContainer">
+                <div class="cardDivider">
+
+                </div>
+                <p class="dateHeader">
+                  Date of Assessment
+                </p>
                 <div class="riskDate">
                   <iron-icon icon="editor:insert-invitation"></iron-icon>{{_computeDate(risk.date)}}
                 </div>

@@ -308,6 +308,9 @@
           this.updateStyles();
         };
         if(this.page==="su-risk"){
+          //multiview styles
+          var appGridColumns="4";
+          //fab styles
           var regFabRight="60px";
           var regFabTop="-25px";
           var regFabBottom="unset";
@@ -316,6 +319,8 @@
           var editFabRight="0";
 
           if(dimensions.base.query767){
+            //multiview styles
+            appGridColumns="1";
             //fab styles
             editFabBottom="5%";
             editFabRight="5%";
@@ -324,6 +329,9 @@
             regFabBottom="5%";
             regFabPosition="fixed";
           } else if(dimensions.base.query1023){
+            //multiview styles
+            appGridColumns="2";
+            //fab styles
             editFabBottom="5%";
             editFabRight="5%";
             regFabRight="5%";
@@ -331,6 +339,9 @@
             regFabBottom="5%";
             regFabPosition="fixed";
           } else if(dimensions.base.query1365){
+            //multiview styles
+            appGridColumns="2";
+            //fab styles
             regFabRight="60px";
             regFabTop="-25px";
             regFabBottom="unset";
@@ -338,6 +349,9 @@
             editFabBottom="25px";
             editFabRight="0";
           } else if(dimensions.base.query1919){
+            //multiview styles
+            appGridColumns="3";
+            //fab styles
             regFabRight="60px";
             regFabTop="-25px";
             regFabBottom="unset";
@@ -345,6 +359,8 @@
             editFabBottom="25px";
             editFabRight="0";
           }
+          //multiview styles
+          this.customStyle["--app-grid-columns"]=appGridColumns;
           //fab styles
           this.customStyle["--reg-fab-top"]=regFabTop;
           this.customStyle["--reg-fab-bottom"]=regFabBottom;
