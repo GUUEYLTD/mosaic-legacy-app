@@ -15,8 +15,8 @@
       height:50px;
       width:50px;
       position:fixed;
-      bottom:50px;
-      right:50px;
+      bottom:1%;
+      right:1%;
       z-index:999;
     }
     .reportButton{
@@ -103,16 +103,8 @@
         ]
       }
     },
-    observers:[
-      "inputsArrived(page, home, patient, user)"
-    ],
     _openBugDialog:function(){
       this.$.bugDialog.toggle();
-    },
-    inputsArrived:function(page, home, patient, user){
-      if(user){
-        console.log(page, home, patient, user.email, user.displayName, user.emailVerified);
-      }
     },
     _reportIssue:function(){
       if(this.issueCat && this.issueText){

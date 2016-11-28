@@ -490,7 +490,7 @@
         var end = endDate.getTime()-1;
         this.$.reportsDB.limitToLast = 5;
       },
-      _computeGraphRows(data){
+      _computeGraphRows:function(data){
         var rowArr=[];
         for(x in data.base){
           var date = new Date(parseInt(data.base[x].$key)).toLocaleDateString();
@@ -570,7 +570,7 @@
           return "good";
         };
       },
-      setDateRangeDisplay(){
+      setDateRangeDisplay:function(){
         var date = new Date();
         var months = date.getMonth();
         var years = date.getFullYear();

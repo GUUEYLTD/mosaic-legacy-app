@@ -26,13 +26,12 @@
     <style include="common-styles">
     :host{
       --app-grid-columns:3;
-      --app-grid-item-height:150%;
+      --app-grid-gutter:20px;
     };
     .multiCardHeading{
       width:100%;
-      height:30%;
-      margin-top:0 !important;
-      margin-bottom:4%;
+      height:150px;
+      margin:0 !important;
       position:relative;
       background-repeat:no-repeat;
       background-size:cover;
@@ -54,7 +53,7 @@
       font-size:22px;
       overflow:hidden;
       text-overflow:ellipsis;
-      max-height:100%;
+      max-height:150px;
     }
     .multiCardMore{
       position:absolute;
@@ -63,19 +62,35 @@
       color:#FFFFFF;
     }
     .multiCardContainer{
-      display:flex;
-      flex-direction:column;
-      height:60%;
-      padding:5%;
+      height:150px;
+      padding:20px;
     }
     .multiCardMain{
-      flex-grow:2;
       overflow:hidden;
-      text-overflow:ellipsis;
-      max-height:80%;
+      position:relative;
+      height:150px;
+    }
+    .multiCardMain::after{
+      position:absolute;
+      height:100%;
+      width:100%;
+      top:0;
+      left:0;
+      background: linear-gradient(transparent 20%, #FFFFFF 80%);
+      content:" ";
     }
     .multiCardSecondary{
-
+      height:100px;
+    }
+    .multiItemContainer{
+      width:100%;
+    }
+    .multiItem{
+      height:400px;
+      width:100%;
+    }
+    .multiViewCard{
+      width:100%;
     }
     </style>
 
@@ -85,7 +100,7 @@
       <paper-button on-tap="deleteReview">delete</paper-button>
     </paper-dialog>
 
-    <paper-card class="multiViewCard app-grid" has-aspect-ratio>
+    <paper-card class="multiViewCard app-grid">
       <template
         is="dom-repeat"
         items="{{reviewsData}}"
@@ -93,30 +108,28 @@
         sort="_sortReviewDate"
         observe="nextReviewDate">
 
-        <div class="multiCardContainer">
-          <paper-card class="multiItem">
-            <div style="background-image:url(../../../../{{_computeReviewImage(review.nextReviewDate)}})" class="multiCardHeading">
-              <p on-tap="directEditModal" class="multiCardLabel">
-                [[review.name]]
-              </p>
+        <paper-card class="multiItem">
+          <div style="background-image:url(../../../../{{_computeReviewImage(review.nextReviewDate)}})" class="multiCardHeading">
+            <p on-tap="directEditModal" class="multiCardLabel">
+              [[review.name]]
+            </p>
+          </div>
+          <div class="multiCardContainer">
+            <p class="multiCardMain">
+              [[review.description]]
+            </p>
+            <div class="multiCardSecondary">
+              <iron-icon icon="icons:update"></iron-icon>{{_computeDate(review.nextReviewDate)}}
             </div>
-            <div class="multiCardContainer">
-              <p class="multiCardMain">
-                [[review.description]]
-              </p>
-              <div class="multiCardSecondary">
-                <iron-icon icon="icons:update"></iron-icon>{{_computeDate(review.nextReviewDate)}}
-              </div>
-            </div>
+          </div>
 
-            <paper-icon-button
-              icon="icons:more-vert"
-              class="multiCardMore"
-              on-tap="toggleEditModal">
-            </paper-icon-button>
+          <paper-icon-button
+            icon="icons:more-vert"
+            class="multiCardMore"
+            on-tap="toggleEditModal">
+          </paper-icon-button>
 
-          </paper-card>
-        </div>
+        </paper-card>
 
       </template>
     </paper-card>

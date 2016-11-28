@@ -269,7 +269,7 @@
 
               <paper-tabs class="rightMenuTabs" attr-for-selected="name" selected="{{rightMenuSelect}}" style="height:100%;">
                 <paper-tab name="home"><a class="inherit mobileToolbarInner" href="/[[home]]/default/def-home"><iron-icon icon="icons:home"></iron-icon></a></paper-tab>
-                <paper-tab name="apps"><iron-icon icon="icons:apps"></iron-icon></paper-tab>
+                <paper-tab id="appButton" name="apps"><iron-icon icon="icons:apps"></iron-icon></paper-tab>
                 <paper-tab name="notify">
 
                   <iron-icon class="dropdown-trigger" icon="social:notifications" on-tap="showNotifications"></iron-icon>
@@ -284,6 +284,8 @@
               </paper-tabs>
 
             </div>
+
+            <other-element position-target="[[getElement('#appButton')]]" no-overlap vertical-align="auto" horizontal-align="auto" horizontal-offset></other-element>
 
             <iron-collapse id="searchDropdown">
 
@@ -317,7 +319,6 @@
             </iron-collapse>
           </app-toolbar>
         </app-header>
-        </div>
         <!--page templates are loded in here inside iron pages-->
         <neon-animated-pages id="neonPages"
           role="main"
@@ -595,6 +596,9 @@
     Polymer({
 
       is:'my-app',
+      getElement:function(name){
+        return this.$$(name);
+      },
       //event listener for user creation
       ready:function(){
         this.addEventListener('createNewUser', this.createNewUser);

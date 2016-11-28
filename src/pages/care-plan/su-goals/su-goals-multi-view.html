@@ -80,31 +80,25 @@
       .goalDescription{
         text-align:center;
         font-size:18px;
-        height:38%;
-        margin:4%;
         overflow:hidden;
+        white-space:nowrap;
+        text-overflow:ellipsis;
+        flex-grow:1;
+      }
+
+      .goalStepsText{
+        padding-left:20px;
       }
       .goalSteps:{
         width:100%;
-        height:10%;
         margin:4%;
       }
-      .goalStepsText{
-        position:absolute;
-        bottom:5%;
-        left:30%;
-      }
       .stepsFab{
-        position:absolute;
-        bottom:5%;
-        left:5%;
+        margin-left:20px;
         background-color:#F76363;
       }
       .goalProgress{
         width:100%;
-        position:absolute;
-        bottom:20%;
-        left:0;
       }
       .goalDetails{
         width:90%;
@@ -112,6 +106,20 @@
       }
       .editButton{
         margin-top:-20px;
+      }
+      .lowerContainer{
+        margin-top:5px;
+        display:flex;
+        flex-direction:row;
+        align-items:center;
+      }
+      .lowerContainer {
+        flex-grow:1;
+      }
+      .multiBoxContent{
+        display:flex;
+        flex-direction:column;
+        height:55%;
       }
     </style>
 
@@ -140,33 +148,38 @@
               </template>
             </div>
 
-            <div class="goalDescription">
-                [[goal.description]]
-            </div>
-
             <paper-icon-button
               icon="icons:more-vert"
               class="goalMore"
               on-tap="toggleEditModal">
             </paper-icon-button>
 
+            <div class="multiBoxContent">
 
-            <div class="goalSteps">
-              <paper-progress
-                class="goalProgress"
-                min="0"
-                max="{{_computeSteps(goal.steps)}}"
-                value="{{_computeCompleteSteps(goal.steps)}}">
-              </paper-progress>
+              <div class="goalDescription">
+                  [[goal.description]]
+              </div>
 
-              <paper-fab
-                label="{{_computeSteps(goal.steps)}}"
-                class="stepsFab">
-              </paper-fab>
+              <div class="goalSteps">
+                <paper-progress
+                  class="goalProgress"
+                  min="0"
+                  max="{{_computeSteps(goal.steps)}}"
+                  value="{{_computeCompleteSteps(goal.steps)}}">
+                </paper-progress>
 
-              <p class="goalStepsText">
-                STEPS
-              </p>
+                <div class="lowerContainer">
+                  <paper-fab
+                    label="{{_computeSteps(goal.steps)}}"
+                    class="stepsFab">
+                  </paper-fab>
+
+                  <p class="goalStepsText">
+                    STEPS
+                  </p>
+                </div>
+
+              </div>
 
             </div>
 

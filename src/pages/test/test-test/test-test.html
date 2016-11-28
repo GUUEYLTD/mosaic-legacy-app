@@ -1,67 +1,68 @@
 <link rel="import" href="../../../../bower_components/polymer/polymer.html" />
-<link rel="import" Href="../../../../bower_components/polymerfire/firebase-query.html" />
-<link rel="import" href="../../../../bower_components/paper-input/paper-textarea.html" />
 <link rel="import" href="../../../../bower_components/paper-card/paper-card.html" />
-<link rel="import" href="../../../styles/common-styles.html" />
-<link rel="import" href="../../../icons/custom-icons.html" />
-<link rel="import" href="../../../../bower_components/iron-icon/iron-icon.html" />
-<!--
-`image-editor`
-image editor
+<link rel="import" href="../../../../bower_components/paper-icon-button/paper-icon-button.html" />
+<link rel="import" href="other-element.html" />
 
-@demo demo/index.html
--->
 
 <dom-module id="test-test">
   <template>
 
-    <firebase-query
-      id="suIndexDB"
-      path="/homes/[[home]]/patients/suIndex"
-      data="{{suList}}"
-      app-name="main">
-    </firebase-query>
-
     <style include="common-styles">
+      :host{
+        display:block;
+      }
+      paper-card{
+        height:80%;
+        width:80%;
+        margin-left:10%;
+        margin-right:10%;
+      }
+      #dicks{
+        height:300px;
+        width:300px;
+        background-color:red;
+      }
 
     </style>
 
-    <paper-card class="pageCard">
+      <paper-card>
 
-      icon test: <iron-icon icon="custom:su-drawer"></iron-icon>
+        <div class="flexMenu">
+          <iron-icon icon="icons:home"></iron-icon>
+          <iron-icon icon="icons:home"></iron-icon>
+          <iron-icon icon="icons:home"></iron-icon>
+          <paper-icon-button id="main" icon="icons:home"></paper-icon-button>
+        </div>
+        <div id="dicks">
 
-      <div class="pageInnerCont">
-        <template is="dom-repeat" items="[[suList]]" as="dick">
+        </div>
 
-          <p>
-            ver1: [[dick.fName]] [[dick.lName]]
-          </p>
+        <other-element
+          position-target="[[getElement('dicks')]]"
+          fit-into="[[getElement('dicks')]]"
+          vertical-align="top"
+          horizontal-align="left">
+        </other-element>
 
-        </template>
-
-        <template is="dom-repeat" items="[[suList]]" as="dick">
-
-          <p>
-          ver2:  [[dick.fName]] [[dick.lName]]
-          </p>
-
-        </template>
-      </div>
-
-    </paper-card>
+      </paper-card>
 
   </template>
 
   <script>
 
-    Polymer({
+      Polymer({
 
-      is: 'test-test',
-      ready:function(){
-        this.fire("pageLoaded", {page:this.page});
-      },
+        is: 'test-test',
+        ready:function(){
+          this.fire("pageLoaded", {page:this.page});
+        },
+        getElement:function(name){
+          console.log(this.$$(name))
+          return this.$$(name);
+        }
 
+      });
 
-    });
   </script>
+
 </dom-module>
