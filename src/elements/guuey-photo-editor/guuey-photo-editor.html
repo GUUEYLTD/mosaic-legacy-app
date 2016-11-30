@@ -68,8 +68,8 @@ image editor
       }
 
       .resize-image {
-          min-width:200px;
-          min-height:200px;
+          min-width:50px;
+          min-height:50px;
           max-width:800px;
           max-height:800px;
       }
@@ -81,7 +81,7 @@ image editor
           margin-top: -100px;
           z-index: 999;
           width: 200px;
-          height: 200px;
+          height:var(--overlay-height, 200px);
           border: solid 2px #7E57C2;
           box-sizing: content-box;
           pointer-events: none;
@@ -92,7 +92,7 @@ image editor
           content: '';
           position: absolute;
           display: block;
-          width: 204px;
+          width: 200px;
           height: 40px;
           border-left: dashed 2px #7E57C2;
           border-right: dashed 2px #7E57C2;
@@ -116,7 +116,7 @@ image editor
           position: absolute;
           display: block;
           width: 40px;
-          height: 204px;
+          height:var(--overlay-height, 200px);
           border-top: dashed 2px #7E57C2;
           border-bottom: dashed 2px #7E57C2;
       }
@@ -198,6 +198,23 @@ image editor
       #startEditButton{
         @apply(--guuey-photo-editor-button);
       }
+      .tips{
+        position:absolute;
+        left:10%;
+        top:20px;
+        z-index:999;
+        width:80%;
+        margin:auto;
+        background-color:#F0F0F0;
+        border: 1px solid black;
+        padding:10px;
+      }
+      .tips *{
+        text-transform:uppercase;
+        margin:0;
+        padding:0;
+        font-size:10px;
+      }
     </style>
       <paper-icon-button id="startEditButton" icon="image:add-a-photo" on-tap="startEdit"></paper-icon-button>
 
@@ -246,9 +263,9 @@ image editor
         this.alt_image=new Image();
         this.image_target=this.$.image;
         this.event_state={};
-        this.constrain=false;
-        this.min_width=60;
-        this.min_height=60;
+        this.constrain=true;
+        this.min_width=20;
+        this.min_height=20;
         this.max_width=800;
         this.max_height=800;
         this.resize_canvas=document.createElement("canvas");
@@ -281,7 +298,19 @@ image editor
           type:String,
           notify:true,
           observer:"valueChanged"
+        },
+        rectangle:{
+          type:Boolean,
+          observer:"_setRectangle"
         }
+      },
+      _setRectangle:function(bool){
+        console.log(bool);
+        if(bool){
+          this.customStyle["--overlay-height"]="130px";
+        } else {
+          this.customStyle["--overlay-height"]="200px";
+        };
       },
       valueChanged:function(){
         this.orig_src.src=this.image_target.src;
@@ -323,8 +352,8 @@ image editor
       save:function(){
         var width=this.$.resizeContainer.offsetWidth-2;
         var height=this.$.resizeContainer.offsetHeight-2;
-        this.save_canvas.width = height
-        this.save_canvas.height = width
+        this.save_canvas.width = width
+        this.save_canvas.height = height
         var src;
         if(this.rotated || this. cropped){
           src=this.alt_image;
