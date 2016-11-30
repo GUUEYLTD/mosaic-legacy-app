@@ -122,7 +122,43 @@
       data="{{paramData}}">
     </app-route>
     <style include="app-shell-styles">
+
+
     </style>
+
+    <paper-dialog id="appsDialog">
+      <div class="flexRow">
+        <paper-icon-button icon="modules:care-plan"></paper-icon-button>
+        <paper-icon-button icon="modules:adv-care"></paper-icon-button>
+        <paper-icon-button icon="modules:medication"></paper-icon-button>
+      </div>
+      <div class="flexRow">
+        <paper-icon-button icon="modules:training"></paper-icon-button>
+        <paper-icon-button icon="modules:health-safety"></paper-icon-button>
+        <paper-icon-button icon="modules:policies-procedures"></paper-icon-button>
+      </div>
+      <div class="flexRow">
+        <paper-icon-button icon="modules:analytics"></paper-icon-button>
+        <paper-icon-button icon="modules:communication"></paper-icon-button>
+      </div>
+      <div class="flexRow">
+        <paper-icon-button icon="modules:staff-manager"></paper-icon-button>
+        <paper-icon-button icon="modules:administration"></paper-icon-button>
+        <paper-icon-button icon="modules:meals"></paper-icon-button>
+      </div>
+    </paper-dialog>
+
+    <paper-dialog id="notifyDialog">
+      <paper-dialog-scrollable>
+
+        <template is="dom-repeat" items="[[notifiesData]]" as="guueyNotify">
+
+            <guuey-notification index="[[index]]" info="[[guueyNotify]]"></guuey-notification>
+
+        </template>
+
+      </paper-dialog-scrollable>
+    </paper-dialog>
 
     <div class="loadingOverlay">
       <paper-spinner-lite active></paper-spinner-lite>
@@ -190,7 +226,7 @@
               <paper-tab name="notify">
 
                 <iron-icon class="dropdown-trigger" icon="social:notifications" on-tap="showMobileNotifications"></iron-icon>
-                <span class="notifyCount" hidden="{{computeNotifyHidden(notifyCount)}}">
+                <span id="notifyCount" class="notifyCount" hidden="{{computeNotifyHidden(notifyCount)}}">
                   <span class="notifyContent">
                   [[notifyCount]]
                   </span>
@@ -268,12 +304,12 @@
             <div class="toolbarRight">
 
               <paper-tabs class="rightMenuTabs" attr-for-selected="name" selected="{{rightMenuSelect}}" style="height:100%;">
-                <paper-tab name="home"><a class="inherit mobileToolbarInner" href="/[[home]]/default/def-home"><iron-icon icon="icons:home"></iron-icon></a></paper-tab>
-                <paper-tab id="appButton" name="apps"><iron-icon icon="icons:apps"></iron-icon></paper-tab>
-                <paper-tab name="notify">
+                <paper-tab on-tap="openNotifications" name="home"><a class="inherit mobileToolbarInner" href="/[[home]]/default/def-home"><iron-icon icon="icons:home"></iron-icon></a></paper-tab>
+                <paper-tab id="appButton" name="apps" on-tap="openApps"><iron-icon icon="icons:apps"></iron-icon></paper-tab>
+                <paper-tab id="notifyButton" name="notify" on-tap="openNotifications">
 
-                  <iron-icon class="dropdown-trigger" icon="social:notifications" on-tap="showNotifications"></iron-icon>
-                  <span class="notifyCount" hidden="{{computeNotifyHidden(notifyCount)}}">
+                  <iron-icon icon="social:notifications"></iron-icon>
+                  <span id="notifyCount" class="notifyCount" hidden="{{computeNotifyHidden(notifyCount)}}">
                     <span class="notifyContent">
                     [[notifyCount]]
                     </span>
@@ -284,8 +320,6 @@
               </paper-tabs>
 
             </div>
-
-            <other-element position-target="[[getElement('#appButton')]]" no-overlap vertical-align="auto" horizontal-align="auto" horizontal-offset></other-element>
 
             <iron-collapse id="searchDropdown">
 
@@ -303,20 +337,6 @@
 
             </iron-collapse>
 
-            <iron-collapse id="notificationDropdown">
-
-              <template is="dom-repeat" items="[[notifiesData]]" as="guueyNotify">
-                  <paper-item class="notifyText">
-                    [[guueyNotify.message]]
-                    <paper-button class="notifyButton" on-tap="dismissNotification">dismiss</paper-button>
-                    <a style="text-decoration:none;" class="inherit" href="[[guueyNotify.url]]">
-                      <paper-button class="notifyButton">check</paper-button>
-                    </a>
-                  </paper-item>
-
-              </template>
-
-            </iron-collapse>
           </app-toolbar>
         </app-header>
         <!--page templates are loded in here inside iron pages-->
@@ -614,6 +634,8 @@
         this.addEventListener('dbLoaded', this.disableDBLoading);
         this.addEventListener('pageLoading', this.enablePageLoading);
         this.addEventListener('pageLoaded', this.disablePageLoading);
+        this.addEventListener('dismissNotification',this.dismissNotification);
+        this.addEventListener('checkNotification', this.checkNotification);
         this.addEventListener('app-drawer-transitioned', this.resizeDrawerImage);
         this.fire("pageLoaded",{page:this.page});
         this.addEventListener("resize", this.resizeElements);
@@ -821,7 +843,8 @@
         '_pageRouteChanged(pageData.page)',
         '_paramRouteChanged(paramData.param)',
         '_authKnown(statusKnown)',
-        '_computeNotificationCount(notifiesData)'
+        '_computeNotificationCount(notifiesData)',
+        '_computeNotifyDialogHidden(notifiesData.*)'
       ],
       behaviors: [
         Polymer.shellResizeBehavior
@@ -1029,15 +1052,25 @@
         this.set("page", "def-error");
       },
       _computeNotificationCount:function(notifiesData){
+        var count;
         this.$.notifyDB.query
           .on("value",function(snapshot){
-            var count=snapshot.numChildren();
+            count=snapshot.numChildren();
             this.notifyCount=count;
           }.bind(this));
       },
+      _computeNotifyDialogHidden:function(count){
+        if(count.base.length<1){
+          this.$.notifyDialog.close();
+          this.$.notifyCount.style="opacity:0;";
+        } else {
+          this.$.notifyCount.style="opacity:1;";
+        };
+      },
       dismissNotification:function(e){
-        var data=e.model.guueyNotify;
-        var key=e.model.guueyNotify.$key;
+        var key = e.detail.data.$key;
+        var data = e.detail.data;
+        var index = e.detail.index;
         delete data.$key;
         this.$.notifiableDB.path=null;
         this.$.notifiableDB.data=data;
@@ -1046,12 +1079,15 @@
             this.$.notifiableDB.path="/homes/"+this.home+"/notifications/notify/"+key;
             this.$.notifiableDB.destroy()
               .then(function(){
-                this.splice("notifiesData",e.model.index,1);
+                var test = this.notifiesData.indexOf(key);
+                this.splice("notifiesData", test, 1);
+                this.notifyPath("notifiesData");
                 this.$.notifiableDB.path="/homes/"+this.home+"/notifications/notify/"+key;
               }.bind(this));
           }.bind(this));
       },
       computeNotifyHidden:function(count){
+        console.log(count);
         if(count<1){
           return true;
         } else {
@@ -1102,6 +1138,35 @@
       },
       toggleMobileSearch:function(){
         this.$.mobileSearch.toggle();
+      },
+      openApps:function(e){
+        console.log(e.currentTarget);
+        var offset = - (e.currentTarget.offsetWidth);
+        console.log(offset);
+        this.$.appsDialog.positionTarget = e.currentTarget;
+        this.$.appsDialog.horizontalOffset = -115;
+        this.$.appsDialog.verticalAlign = "top";
+        this.$.appsDialog.horizontalAlign = "auto";
+        this.$.appsDialog.noOverlap = true;
+        this.$.appsDialog.toggle();
+      },
+      openNotifications:function(e){
+        console.log(e.currentTarget);
+        var offset = (e.currentTarget.offsetHeight);
+        console.log(offset);
+        //this.$.notifyDialog.positionTarget = e.currentTarget;
+        //this.$.notifyDialog.horizontalOffset = -115;
+        this.$.notifyDialog.verticalAlign = "top";
+        this.$.notifyDialog.horizontalAlign = "right";
+        this.$.notifyDialog.verticalOffset = offset;
+        this.$.notifyDialog.noOverlap = true;
+        if(this.notifiesData.length<1){
+          return;
+        };
+        this.$.notifyDialog.toggle();
+      },
+      checkNotification:function(){
+        this.$.notifyDialog.close();
       }
     });
 

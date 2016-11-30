@@ -1,7 +1,7 @@
 <link rel="import" href="../../../../bower_components/polymer/polymer.html" />
 <link rel="import" href="../../../../bower_components/paper-card/paper-card.html" />
-<link rel="import" href="../../../../bower_components/paper-icon-button/paper-icon-button.html" />
-<link rel="import" href="other-element.html" />
+
+<link rel="import" href="../../../elements/guuey-notification/guuey-notification.html" />
 
 
 <dom-module id="test-test">
@@ -12,37 +12,20 @@
         display:block;
       }
       paper-card{
-        height:80%;
         width:80%;
         margin-left:10%;
         margin-right:10%;
-      }
-      #dicks{
-        height:300px;
-        width:300px;
-        background-color:red;
       }
 
     </style>
 
       <paper-card>
 
-        <div class="flexMenu">
-          <iron-icon icon="icons:home"></iron-icon>
-          <iron-icon icon="icons:home"></iron-icon>
-          <iron-icon icon="icons:home"></iron-icon>
-          <paper-icon-button id="main" icon="icons:home"></paper-icon-button>
-        </div>
-        <div id="dicks">
+        <template is="dom-repeat" items="[[notifies]]" as="notify">
 
-        </div>
+          <guuey-notification info="{{notify}}"></guuey-notification>
 
-        <other-element
-          position-target="[[getElement('dicks')]]"
-          fit-into="[[getElement('dicks')]]"
-          vertical-align="top"
-          horizontal-align="left">
-        </other-element>
+        </template>
 
       </paper-card>
 
@@ -56,9 +39,40 @@
         ready:function(){
           this.fire("pageLoaded", {page:this.page});
         },
-        getElement:function(name){
-          console.log(this.$$(name))
-          return this.$$(name);
+        properties:{
+          notifies:{
+            type:Array,
+            value:[
+              {
+                message:"stuff and thingsstuff and things stuff and things stuff and things stuff and things stuff and things stuff and things stuff and things stuff and things stuff and things stuff and things stuff and things stuff and things stuff and things stuff and things stuff and things stuff and things",
+                url:"/",
+                fName:"bob",
+                lName:"durkington",
+                time:"2:00 am"
+              },
+              {
+                message:"stuff and things",
+                url:"/",
+                fName:"bob",
+                lName:"durkington",
+                time:"2:00 am"
+              },
+              {
+                message:"stuff and things",
+                url:"/",
+                fName:"bob",
+                lName:"durkington",
+                time:"2:00 am"
+              },
+              {
+                message:"stuff and things",
+                url:"/",
+                fName:"bob",
+                lName:"durkington",
+                time:"2:00 am"
+              }
+            ]
+          }
         }
 
       });

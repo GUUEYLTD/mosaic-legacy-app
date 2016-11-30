@@ -22,12 +22,18 @@
       app-name="main"
       data="{{timesData}}">
     </firebase-document>
-
+    <firebase-document
+      id="suDB"
+      app-name="main">
+    </firebase-document>
   </template>
 </dom-module>
 <script>
   Polymer({
     is:"guuey-notify",
+    ready:function(){
+
+    },
     properties:{
       notifyRoute:{
         type:String,
@@ -44,6 +50,18 @@
       },
       //used for setting the id of the info that is being notified on
       notifyTarget:{
+        type:String
+      },
+      notifyData:{
+        type:Object
+      },
+      lName:{
+        type:String
+      },
+      fName:{
+        type:String
+      },
+      image:{
         type:String
       },
       //used for daily med notifcations only
@@ -117,6 +135,7 @@
           var time=this._computeTime(this.timesData, chunk);
           this.notifyData={
             message:this.notifyMessage,
+
             url:this.notifyUrl,
             location:this.$.notifyTargetDB.path,
             conditions:{
@@ -128,6 +147,7 @@
               notifiable:Date.now()
             },
           };
+          this.setPersonInfo(this.notifyData);
           this.$.notifiableDB.setStoredValue(path+"-"+chunk, this.notifyData)
           this.$.notifiableDB.path=null;
           this.notifyData=null;
@@ -148,6 +168,7 @@
           notifiable:Date.now()
         },
       };
+      this.setPersonInfo(this.notifyData);
       this.$.notifiableDB.setStoredValue(path, this.notifyData)
       this.$.notifiableDB.path=null;
       this.notifyData=null;
@@ -165,6 +186,13 @@
       } else {
         this.setDefaultNotify();
       };
+    },
+    setPersonInfo:function(obj){
+      var date = new Date();
+      obj.date = date.getTime();
+      obj.fName = this.fName ? this.fName : "No";
+      obj.lName = this.lName ? this.lName : "Name";
+      obj.image = this.image ? this.image : null;
     },
     //use when deleting an object that potentially has notifications on it
     //operates off of the original path and home

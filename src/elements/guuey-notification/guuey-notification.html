@@ -1,0 +1,166 @@
+<link rel="import" href="dependencies.html" />
+
+<dom-module id="guuey-notification">
+
+  <template>
+
+    <style>
+      :host{
+        display:block;
+        width:calc(100%);
+        box-sizing: border-box;
+        margin-bottom:10px;
+      }
+      paper-card{
+        padding:10px;
+        width:100%;
+      }
+      .flexRow{
+        display:flex;
+        flex-direction:row;
+      }
+      .flexCol{
+        display:flex;
+        flex-direction:row;
+      }
+      .left{
+        width:50px;
+        padding-right:10px;
+      }
+      .right{
+        flex-grow:1;
+        display:block;
+      }
+      .time{
+        color:#9b9b9b;
+        flex-grow:1;
+        text-align:right;
+      }
+      .topSpacer{
+        min-width:20px;
+      }
+      .name{
+        color:#686868;
+        flex-grow:1;
+        text-align:left;
+      }
+      .message{
+        display:block;
+        color:#9b9b9b;
+      }
+      .divider{
+        width:100%;
+        height:1px;
+        background-color:#9b9b9b;
+        margin:10px 0 10px 0;
+      }
+      .profileImage{
+        width:50px;
+        height:50px;
+        border-radius:50%;
+        clip:auto;
+      }
+      paper-button{
+        color:#009282;
+      }
+
+    </style>
+
+    <paper-card elevation="3">
+      <div class="flexCol">
+        <div class="left">
+          <img class="profileImage" src="[[image]]" />
+        </div>
+
+        <div class="right">
+          <div class="flexRow">
+            <p class="name">
+              [[fName]] [[lName]]
+            </p>
+            <div class="topSpacer"></div>
+            <p class="time">
+              [[time]]
+            </p>
+          </div>
+
+          <p class="message">
+            [[message]]
+          </p>
+          <div class="divider"></div>
+          <a style="text-decoration:none;" class="inherit" href="[[url]]">
+            <paper-button on-tap="checkNotification"><iron-icon icon="icons:icons:reply"></iron-icon>check</paper-button>
+          </a>
+          <paper-button on-tap="dismissNotification"><iron-icon icon="icons:delete-forever"></iron-icon>dismiss</paper-button>
+
+        </div>
+      </div>
+
+
+
+    </paper-card>
+
+  </template>
+
+  <script>
+
+    Polymer({
+      is:"guuey-notification",
+      properties:{
+        info:{
+          type:Object,
+          notify:true,
+          observer:"_infoChanged"
+        },
+        index:{
+          type:Number
+        }
+      },
+      _infoChanged:function(info){
+        this.fName = info.fName ? info.fName : "First";
+        this.lName = info.lName ? info.lName : "Last";
+        this.time = info.date ? this._computeDate(info.date) : "Time Not Set";
+        this.message = info.message ? info.message : "Message Not Set";
+        this.url = info.url ? info.url : "#";
+        this.image = info.image ? info.image : "/images/defaultAvatar.png"
+      },
+      dismissNotification:function(){
+        this.fire("dismissNotification",{data:this.info, index:this.index});
+        console.log("dismiss");
+      },
+      checkNotification:function(){
+        this.fire("checkNotification");
+      },
+      _computeDate:function(data){
+        var date = new Date(data);
+        return date.toLocaleString();
+      },
+      _computeName:function(fName, lName){
+        console.log(fName, lName);
+        var first;
+        var last;
+        if(!fName){
+          first = "First";
+        } else {
+          first = fName;
+        };
+        if(!lName){
+          last = "Last";
+        } else {
+          last = lName;
+        };
+        console.log(first, last);
+        return first + " " + last;
+      },
+      _computeTime:function(time){
+        var returnTime;
+        if(!time){
+          returnTime = "Time Not Set";
+        } else {
+          returnTime = time;
+        };
+      }
+    });
+
+  </script>
+
+</dom-module>
