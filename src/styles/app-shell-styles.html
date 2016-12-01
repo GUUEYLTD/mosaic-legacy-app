@@ -371,9 +371,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       --iron-icon-height:40px;
       --iron-icon-width:40px;
     }
+    .desktopTab{
+      --iron-icon-height:30px;
+      --iron-icon-width:30px;
+    }
     #appsDialog{
       min-height:100px;
-      width:350px;
+      width:var(--apps-dialog-width);
     }
     .flexRow{
       display:flex;
@@ -386,6 +390,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         width:100%;
       };
     }
+    /*
     #appsDialog::before{
       height:20px;
       width:20px;
@@ -396,6 +401,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       right:calc(50% - 20px);
       content:" ";
     }
+    */
     /*
     #appsDialog::before{
       width: 0;
@@ -411,7 +417,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     */
     #notifyDialog{
       min-height:100px;
-      width:50%;
+
     }
     /*
     #notifyDialog::before{

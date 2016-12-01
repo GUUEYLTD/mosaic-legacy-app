@@ -9,6 +9,8 @@
 <link rel="import" href="../../../../bower_components/paper-icon-button/paper-icon-button.html" />
 <link rel="import" href="../../../../bower_components/paper-button/paper-button.html" />
 <link rel="import" href="../../../../bower_components/paper-dialog/paper-dialog.html" />
+<link rel="import" href="../../../../bower_components/iron-collapse/iron-collapse.html" />
+
 
 <!--temp animations till hero animations work-->
 <link rel="import" href="../../../../bower_components/neon-animation/animations/scale-up-animation.html" />
@@ -27,42 +29,71 @@
   <template>
 
   <style include="common-styles">
-    .detailBar{
-      background-color:#E0E0E0;
-      width:100%;
-      background-repeat:no-repeat;
-      background-size:auto 100%;
-      background-position:bottom left;
-      margin: 0px 0 20px 0;
-    }
-    .inputContainer{
-      padding:20px;
-    }
-    .detailBarInput{
-      width:50%;
-      padding:0% 25% 20px 25%;
-      --paper-input-container-color:#4DB6AC;
-      --paper-input-container-input-color:#4DB6AC;
-      padding:var(--detail-bar-padding);
-    }
-    .descriptionContainer{
-      margin-top:20px;
-    }
-    .descriptionContainer paper-input{
-      width:50%;
-      padding:0% 25% 20px 25%;
-      --paper-input-container-color:#FFFFFF;
-      --paper-input-container-input-color:#FFFFFF;
-      padding:var(--description-container-padding);
-    }
     .detailDescription{
       background-color:#4DB6AC;
       width:100%;
+      height:150px;
       background-repeat:no-repeat;
-      background-size:auto 100%;
+      background-size:150px 150px;
       background-position:bottom left;
       margin: 0px 0 20px 0;
     }
+    .descriptionViewText{
+      color:#FFFFFF;
+
+    }
+    .descriptionViewText:hover{
+      cursor:pointer;
+      opacity:.8;
+    }
+    .descriptionEditInput{
+      --paper-input-container-color:#FFFFFF;
+      --paper-input-container-input-color:#FFFFFF;
+    }
+    /* new styles */
+    .topEditCard{
+      width:calc(100% - 40px);
+      margin:20px;
+      --paper-card-header-image:{
+        width:150px;
+        float:right;
+      };
+      --paper-card-header:{
+        background-color:var(--category-background-color);
+      };
+      --paper-card-header-color:#FFFFFF;
+    }
+    .topEditCategory{
+
+    }
+    .guuey-table{
+      width:100%;
+      padding:0;
+      display:block;
+    }
+    .guuey-table table{
+      padding:0;
+    }
+    #descriptionView{
+      display:flex;
+      flex-direction:row;
+      align-items:center;
+      width:calc(100% - 160px);
+      float:right;
+      height:100%;
+    }
+    #descriptionEdit{
+      display:flex;
+      flex-direction:row;
+      align-items:center;
+      width:calc(100% - 160px);
+      float:right;
+      height:100%;
+    }
+    #descriptionEditButton{
+      color:#FFFFFF;
+    }
+
   </style>
 
     <paper-dialog id="stepModal" class="guuey-modal guuey-add-modal">
@@ -89,124 +120,126 @@
       </div>
     </paper-dialog>
 
-    <paper-card class="editViewCard">
+    <paper-card elevation="3" class="editViewCard">
 
-      <div
-        class="detailBar"
-        style="background-image:url(../../../../{{_computeGoalImage(goalData.category)}})">
+      <paper-card image="[[_computeGoalImage(goalData.category)]]" heading="[[goalData.category]]" class="topEditCard">
+        <div class="card-content">
+          <guuey-date-input
+            value="{{goalData.startDate}}"
+            label="Start Date">
+          </guuey-date-input>
+
+          <guuey-date-input
+            value="{{goalData.finishDate}}"
+            label="Estimated Finish Date">
+          </guuey-date-input>
+
           <vaadin-combo-box
-            allow-custom-value
-            label="Category"
-            items="[[goalTypes]]"
-            value="{{goalData.category}}"
-            class="detailBarInput">
+            label="coordinator"
+            items="[[userList]]"
+            value="{{goalData.coordinator}}">
           </vaadin-combo-box>
-      </div>
+        </div>
+
+
+      </paper-card>
 
       <div class="inputContainer">
 
-        <guuey-date-input
-          value="{{goalData.startDate}}"
-          label="Start Date">
-        </guuey-date-input>
+        <div
+        class="detailDescription"
+        style="background-image:url(../../../../images/target_goals.png">
+          <iron-collapse opened on-tap="_toggleCollapses" id="descriptionView" horizontal>
+            <p class="descriptionViewText">
+              [[goalData.description]]
+            </p>
+          </iron-collapse>
 
-        <guuey-date-input
-          value="{{goalData.finishDate}}"
-          label="Estimated Finish Date">
-        </guuey-date-input>
-
-        <vaadin-combo-box
-          label="coordinator"
-          items="[[userList]]"
-          value="{{goalData.coordinator}}">
-        </vaadin-combo-box>
-
-      </div>
-
-      <div
-      class="detailDescription"
-      style="background-image:url(../../../../images/target_goals.png">
-        <div class="descriptionContainer">
-          <paper-input
-            label="Goal Description"
-            value="{{goalData.description}}"
-            required
-            auto-validate
-            pattern="[a-zA-Z\s\.\d]*"
-            error-message="Please enter a description without special characters.">
-          </paper-input>
+          <iron-collapse id=descriptionEdit horizontal>
+            <paper-icon-button id="descriptionEditButton" on-tap="_toggleCollapses" icon="icons:close"></paper-icon-button>
+            <paper-input
+              label="Goal Description"
+              value="{{goalData.description}}"
+              required
+              auto-validate
+              pattern="[a-zA-Z\s\.\d]*"
+              error-message="Please enter a description without special characters."
+              class="descriptionEditInput">
+            </paper-input>
+          </iron-collapse>
         </div>
-      </div>
 
-      <div class="guuey-table">
+        <div class="guuey-table">
 
-        <p class="tableScrollLabel">
-          swipe left scrolls table
-        </p>
+          <p class="tableScrollLabel">
+            swipe left scrolls table
+          </p>
 
-        <table>
-          <thead>
-            <tr>
-              <th>
-                Step #
-              </th>
-              <th>
-                Description
-              </th>
-              <th>
-                Completed?
-              </th>
-              <th>
-                Edit
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <template
-              is="dom-repeat"
-              items="{{stepsData}}"
-              as="step"
-              sort="_sortSteps"
-              observe="order description">
+          <table>
+            <thead>
+              <tr>
+                <th>
+                  Step #
+                </th>
+                <th>
+                  Description
+                </th>
+                <th>
+                  Completed?
+                </th>
+                <th>
+                  Edit
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <template
+                is="dom-repeat"
+                items="{{stepsData}}"
+                as="step"
+                sort="_sortSteps"
+                observe="order description">
+                <tr>
+                  <td>
+                    <center>
+                      <paper-fab label="[[step.order]]"></paper-fab>
+                    </center>
+                  </td>
+                  <td>
+                    <paper-input value="{{step.description}}"></paper-input>
+                  </td>
+                  <td>
+                    <paper-checkbox
+                      on-change="checkboxChanged"
+                      checked="{{step.completed}}">
+                    </paper-checkbox>
+
+                  </td>
+                  <td>
+                    <paper-icon-button icon="editor:border-color" class="editButton" on-tap="editStep">edit</paper-icon-button>
+                  </td>
+                </tr>
+              </template>
               <tr>
                 <td>
                   <center>
-                    <paper-fab label="[[step.order]]"></paper-fab>
+                    <paper-fab icon="icons:add" on-tap="addStep"></paper-fab>
                   </center>
                 </td>
                 <td>
-                  <paper-input value="{{step.description}}"></paper-input>
+                  Add a new step.
                 </td>
                 <td>
-                  <paper-checkbox
-                    on-change="checkboxChanged"
-                    checked="{{step.completed}}">
-                  </paper-checkbox>
-
+                  <paper-checkbox disabled checked></paper-checkbox>
                 </td>
                 <td>
-                  <paper-icon-button icon="editor:border-color" class="editButton" on-tap="editStep">edit</paper-icon-button>
+                  <paper-icon-button disabled icon="editor:border-color" class="editButton" on-tap="editStep">edit</paper-icon-button>
                 </td>
               </tr>
-            </template>
-            <tr>
-              <td>
-                <center>
-                  <paper-fab icon="icons:add" on-tap="addStep"></paper-fab>
-                </center>
-              </td>
-              <td>
-                Add a new step.
-              </td>
-              <td>
-                <paper-checkbox disabled checked></paper-checkbox>
-              </td>
-              <td>
-                <paper-icon-button disabled icon="editor:border-color" class="editButton" on-tap="editStep">edit</paper-icon-button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+            </tbody>
+          </table>
+
+        </div>
 
       </div>
 
@@ -292,22 +325,35 @@
       _computeGoalImage:function(cat){
         switch(cat) {
           case "Accommodation":
-              return "images/goals/accommodation.png"
+              this.customStyle["--category-background-color"] = "#ffd600";
+              this.updateStyles();
+              return "/images/goals/accommodation.png";
               break;
           case "Finance And Budget":
-              return "images/goals/financeAndBudget.png"
+              this.customStyle["--category-background-color"] = "#4db6ac";
+              this.updateStyles();
+              return "/images/goals/financeAndBudget.png";
               break;
           case "Social Skills":
-              return "images/goals/socialSkills.png"
+            this.customStyle["--category-background-color"] = "#2196f3";
+            this.updateStyles();
+              return "/images/goals/socialSkills.png";
               break;
           case "Medical Treatment":
-              return "images/goals/medicalTreatment.png"
+              this.customStyle["--category-background-color"] = "#00bcd4";
+              this.updateStyles();
+              return "/images/goals/medicalTreatment.png";
               break;
           case "Mental Health":
-              return "images/goals/mentalHealth.png"
+              this.customStyle["--category-background-color"] = "#ff8a65";
+              this.updateStyles();
+              return "/images/goals/mentalHealth.png";
               break;
           default:
-              return "images/goals/other.png"
+              this.customStyle["--category-background-color"] = "#b39ddb";
+              this.updateStyles();
+              return "/images/goals/other.png";
+              break;
         };
       },
       //function to sort steps based on order
@@ -315,6 +361,12 @@
         if (a.order === b.order) return 0;
         return a.order < b.order ? -1 : 1;
       },
+      _toggleCollapses:function(){
+        this.$.descriptionView.toggle();
+        this.$.descriptionView.notifyResize();
+        this.$.descriptionEdit.toggle();
+        this.$.descriptionEdit.notifyResize();
+      }
     });
 
   </script>

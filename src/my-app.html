@@ -140,6 +140,7 @@
       <div class="flexRow">
         <paper-icon-button icon="modules:analytics"></paper-icon-button>
         <paper-icon-button icon="modules:communication"></paper-icon-button>
+        <paper-icon-button icon="modules:reporting"></paper-icon-button>
       </div>
       <div class="flexRow">
         <paper-icon-button icon="modules:staff-manager"></paper-icon-button>
@@ -197,17 +198,17 @@
         <div class="divider"></div>
 
         <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
-          <a name="su-profile" href="/[[home]]/care-plan/su-profile/[[param]]">Personal Profile<a>
-          <a name="su-reports" href="/[[home]]/care-plan/su-reports/[[param]]">Daily Reports</a>
-          <a name="su-pre" href="/[[home]]/care-plan/su-pre/[[param]]">Pre-Admission Assessment</a>
-          <a name="su-care" href="/[[home]]/care-plan/su-care/[[param]]">Care Plan</a>
-          <a name="su-care-review" href="/[[home]]/care-plan/su-care-review/[[param]]">Care Plan Review</a>
-          <a name="su-medical" href="/[[home]]/care-plan/su-medical/[[param]]">Medical Assessment</a>
-          <a name="su-medication" href="/[[home]]/care-plan/su-medication/[[param]]">Medication Outline</a>
-          <a name="su-risk" href="/[[home]]/care-plan/su-risk/[[param]]">Risk Assessment</a>
-          <a name="su-goals" href="/[[home]]/care-plan/su-goals/[[param]]">Personal Goals</a>
-          <a name="su-monthly-reports" href="/[[home]]/care-plan/su-monthly-reports/[[param]]">Monthly Reports</a>
-          <a name="su-view-reports" href="/[[home]]/care-plan/su-view-reports/[[param]]">View Reports</a>
+          <a on-tap="closeDrawer" name="su-profile" href="/[[home]]/care-plan/su-profile/[[param]]">Personal Profile<a>
+          <a on-tap="closeDrawer" name="su-reports" href="/[[home]]/care-plan/su-reports/[[param]]">Daily Reports</a>
+          <a on-tap="closeDrawer" name="su-pre" href="/[[home]]/care-plan/su-pre/[[param]]">Pre-Admission Assessment</a>
+          <a on-tap="closeDrawer" name="su-care" href="/[[home]]/care-plan/su-care/[[param]]">Care Plan</a>
+          <a on-tap="closeDrawer" name="su-care-review" href="/[[home]]/care-plan/su-care-review/[[param]]">Care Plan Review</a>
+          <a on-tap="closeDrawer" name="su-medical" href="/[[home]]/care-plan/su-medical/[[param]]">Medical Assessment</a>
+          <a on-tap="closeDrawer" name="su-medication" href="/[[home]]/care-plan/su-medication/[[param]]">Medication Outline</a>
+          <a on-tap="closeDrawer" name="su-risk" href="/[[home]]/care-plan/su-risk/[[param]]">Risk Assessment</a>
+          <a on-tap="closeDrawer" name="su-goals" href="/[[home]]/care-plan/su-goals/[[param]]">Personal Goals</a>
+          <a on-tap="closeDrawer" name="su-monthly-reports" href="/[[home]]/care-plan/su-monthly-reports/[[param]]">Monthly Reports</a>
+          <a on-tap="closeDrawer" name="su-view-reports" href="/[[home]]/care-plan/su-view-reports/[[param]]">View Reports</a>
         </iron-selector>
 
       </app-drawer>
@@ -220,12 +221,12 @@
 
 
           <app-toolbar id="mobileMenu" class="mobileMainToolbar">
-            <paper-tabs class="rightMenuTabs" attr-for-selected="name" selected="{{rightMenuSelect}}" style="height:100%;">
+            <paper-tabs id="mobileTabs" class="rightMenuTabs" attr-for-selected="name" selected="{{rightMenuSelect}}" style="height:100%;">
               <paper-tab name="home"><a class="inherit mobileToolbarInner" href="/[[home]]/default/def-home"><iron-icon icon="icons:home"></iron-icon></a></paper-tab>
-              <paper-tab name="apps"><iron-icon icon="icons:apps"></iron-icon></paper-tab>
-              <paper-tab name="notify">
+              <paper-tab on-tap="openApps" name="apps"><iron-icon icon="icons:apps"></iron-icon></paper-tab>
+              <paper-tab on-tap="openNotifications" name="notify">
 
-                <iron-icon class="dropdown-trigger" icon="social:notifications" on-tap="showMobileNotifications"></iron-icon>
+                <iron-icon class="dropdown-trigger" icon="social:notifications"></iron-icon>
                 <span id="notifyCount" class="notifyCount" hidden="{{computeNotifyHidden(notifyCount)}}">
                   <span class="notifyContent">
                   [[notifyCount]]
@@ -267,20 +268,6 @@
 
             </iron-collapse>
 
-            <iron-collapse id="mobileNotificationDropdown">
-
-              <template is="dom-repeat" items="[[notifiesData]]" as="guueyNotify">
-                  <paper-item class="notifyText">
-                    [[guueyNotify.message]]
-                    <paper-button class="notifyButton" on-tap="dismissNotification">dismiss</paper-button>
-                    <a style="text-decoration:none;" class="inherit" href="[[guueyNotify.url]]">
-                      <paper-button class="notifyButton">check</paper-button>
-                    </a>
-                  </paper-item>
-
-              </template>
-
-            </iron-collapse>
           </app-toolbar>
 
           <app-toolbar id="desktopMenu">
@@ -304,9 +291,9 @@
             <div class="toolbarRight">
 
               <paper-tabs class="rightMenuTabs" attr-for-selected="name" selected="{{rightMenuSelect}}" style="height:100%;">
-                <paper-tab on-tap="openNotifications" name="home"><a class="inherit mobileToolbarInner" href="/[[home]]/default/def-home"><iron-icon icon="icons:home"></iron-icon></a></paper-tab>
-                <paper-tab id="appButton" name="apps" on-tap="openApps"><iron-icon icon="icons:apps"></iron-icon></paper-tab>
-                <paper-tab id="notifyButton" name="notify" on-tap="openNotifications">
+                <paper-tab class="desktopTab" name="home"><a class="inherit mobileToolbarInner" href="/[[home]]/default/def-home"><iron-icon icon="icons:home"></iron-icon></a></paper-tab>
+                <paper-tab class="desktopTab" id="appButton" name="apps" on-tap="openApps"><iron-icon icon="icons:apps"></iron-icon></paper-tab>
+                <paper-tab  class="desktopTab" id="notifyButton" name="notify" on-tap="openNotifications">
 
                   <iron-icon icon="social:notifications"></iron-icon>
                   <span id="notifyCount" class="notifyCount" hidden="{{computeNotifyHidden(notifyCount)}}">
@@ -316,7 +303,7 @@
                   </span>
 
                 </paper-tab>
-                <paper-tab name="logout"><iron-icon class="logoutButton" on-tap="logout" icon="icons:account-circle"></iron-icon></paper-tab>
+                <paper-tab class="desktopTab" name="logout"><iron-icon class="logoutButton" on-tap="logout" icon="icons:account-circle"></iron-icon></paper-tab>
               </paper-tabs>
 
             </div>
@@ -1007,6 +994,9 @@
       openDrawer:function(){
         this.$.suDrawer.open();
       },
+      closeDrawer:function(){
+        this.$.suDrawer.close();
+      },
       enableDBLoading:function(){
         this.customStyle["--db-loading-display"]="flex";
         this.updateStyles();
@@ -1087,7 +1077,6 @@
           }.bind(this));
       },
       computeNotifyHidden:function(count){
-        console.log(count);
         if(count<1){
           return true;
         } else {
@@ -1140,25 +1129,20 @@
         this.$.mobileSearch.toggle();
       },
       openApps:function(e){
-        console.log(e.currentTarget);
-        var offset = - (e.currentTarget.offsetWidth);
-        console.log(offset);
-        this.$.appsDialog.positionTarget = e.currentTarget;
-        this.$.appsDialog.horizontalOffset = -115;
+        this.$.appsDialog.positionTarget = e.currentTarget.parentNode;
         this.$.appsDialog.verticalAlign = "top";
-        this.$.appsDialog.horizontalAlign = "auto";
+        this.$.appsDialog.horizontalAlign = "left";
         this.$.appsDialog.noOverlap = true;
+        if(e.currentTarget.parentNode.id === "mobileTabs"){
+          this.customStyle["--apps-dialog-width"]="50%";
+          this.updateStyles();
+        };
         this.$.appsDialog.toggle();
       },
       openNotifications:function(e){
-        console.log(e.currentTarget);
-        var offset = (e.currentTarget.offsetHeight);
-        console.log(offset);
-        //this.$.notifyDialog.positionTarget = e.currentTarget;
-        //this.$.notifyDialog.horizontalOffset = -115;
+        this.$.notifyDialog.positionTarget = e.currentTarget.parentNode;
         this.$.notifyDialog.verticalAlign = "top";
-        this.$.notifyDialog.horizontalAlign = "right";
-        this.$.notifyDialog.verticalOffset = offset;
+        this.$.notifyDialog.horizontalAlign = "left";
         this.$.notifyDialog.noOverlap = true;
         if(this.notifiesData.length<1){
           return;
