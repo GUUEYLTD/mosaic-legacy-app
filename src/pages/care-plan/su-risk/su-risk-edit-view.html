@@ -44,27 +44,50 @@
         margin-left:5%;
         margin-right:5%;
       }
+      .topEditCard{
+        margin:10px 5% 10px 5%;
+        width:90%;
+        --paper-card-header-color:#FFFFFF;
+        --paper-card-header-image:{
+          width:150px;
+          float:right;
+        };
+        --paper-card-header:{
+          background-color:var(--category-background-color);
+        };
+      }
+      .topEditCard .flexRow{
+        margin:20px;
+        display:flex;
+        flex-direction:row;
+      }
+      .topEditCard .flexRow *{
+        align-self:center;
+        padding:20px;
+      }
+      .topEditCard .flexRow guuey-date-input{
+        width:20%;
+      }
+      .topEditCard .flexRow guuey-slider{
+        flex-grow:1;
+      }
 
     </style>
     <paper-card class="editViewCard padded">
 
-      <guuey-slider
-        class="guttered"
-        value="{{riskData.riskLevel}}">
-      </guuey-slider>
+      <paper-card image="[[_computeGoalImage(riskData.category)]]" heading="[[riskData.category]]" elevation="3" class="topEditCard">
+        <div class="flexRow">
+          <guuey-date-input
+            value="{{riskData.date}}"
+            label="Date of risk assessment">
+          </guuey-date-input>
 
-      <vaadin-combo-box
-        class="guttered"
-        label="Category"
-        items="[[riskTypes]]"
-        value="{{riskData.category}}">
-      </vaadin-combo-box>
-
-      <guuey-date-input
-        class="guttered"
-        value="{{riskData.date}}"
-        label="Date of risk assessment">
-      </guuey-date-input>
+          <guuey-slider
+            hide-value
+            value="{{riskData.riskLevel}}">
+          </guuey-slider>
+        </div>
+      </paper-card>
 
       <guuey-text-input
         value="{{riskData.backgroundOfRisk}}"
@@ -141,7 +164,51 @@
       behaviors:[
         Polymer.editViewResizeBehavior,
         //Polymer.multiEditAnimationBehavior
-      ]
+      ],
+      _computeGoalImage:function(cat){
+        switch(cat) {
+          case "Moving & Handling":
+              this.customStyle["--category-background-color"] = "#ab47bc";
+              this.updateStyles();
+              return "/images/risks/movingHandling.png";
+              break;
+          case "Slips & Trips":
+              this.customStyle["--category-background-color"] = "#9ccc65";
+              this.updateStyles();
+              return "/images/risks/slipsTrips.png";
+              break;
+          case "Violence & Agression":
+            this.customStyle["--category-background-color"] = "#ffb74d";
+            this.updateStyles();
+              return "/images/risks/violenceAgression.png";
+              break;
+          case "Falls From Windows & Balconies":
+              this.customStyle["--category-background-color"] = "#f06292";
+              this.updateStyles();
+              return "/images/risks/falls.png";
+              break;
+          case "Scalding & Burning":
+              this.customStyle["--category-background-color"] = "#4dd0e1";
+              this.updateStyles();
+              return "/images/risks/scaldingBurning.png";
+              break;
+          case "Bedrail Entrapment":
+              this.customStyle["--category-background-color"] = "#4db6ac";
+              this.updateStyles();
+              return "/images/risks/bedrailEntrapment.png";
+              break;
+          case "Legionella":
+              this.customStyle["--category-background-color"] = "#ff8a65";
+              this.updateStyles();
+              return "/images/risks/legionella.png";
+              break;
+          default:
+              this.customStyle["--category-background-color"] = "#9575cd";
+              this.updateStyles();
+              return "/images/risks/other.png";
+              break;
+        };
+      },
     });
 
   </script>

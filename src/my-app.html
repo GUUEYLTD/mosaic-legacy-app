@@ -222,9 +222,9 @@
 
           <app-toolbar id="mobileMenu" class="mobileMainToolbar">
             <paper-tabs id="mobileTabs" class="rightMenuTabs" attr-for-selected="name" selected="{{rightMenuSelect}}" style="height:100%;">
-              <paper-tab name="home"><a class="inherit mobileToolbarInner" href="/[[home]]/default/def-home"><iron-icon icon="icons:home"></iron-icon></a></paper-tab>
-              <paper-tab on-tap="openApps" name="apps"><iron-icon icon="icons:apps"></iron-icon></paper-tab>
-              <paper-tab on-tap="openNotifications" name="notify">
+              <paper-tab class="mobileTab" name="home"><a class="inherit mobileToolbarInner" href="/[[home]]/default/def-home"><iron-icon icon="icons:home"></iron-icon></a></paper-tab>
+              <paper-tab class="mobileTab" on-tap="openApps" name="apps"><iron-icon icon="icons:apps"></iron-icon></paper-tab>
+              <paper-tab class="mobileTab" on-tap="openNotifications" name="notify">
 
                 <iron-icon class="dropdown-trigger" icon="social:notifications"></iron-icon>
                 <span id="notifyCount" class="notifyCount" hidden="{{computeNotifyHidden(notifyCount)}}">
@@ -234,7 +234,7 @@
                 </span>
 
               </paper-tab>
-              <paper-tab name="logout"><iron-icon class="logoutButton" on-tap="logout" icon="icons:account-circle"></iron-icon></paper-tab>
+              <paper-tab class="mobileTab" name="logout"><iron-icon class="logoutButton" on-tap="logout" icon="icons:account-circle"></iron-icon></paper-tab>
             </paper-tabs>
           </app-toolbar>
 
@@ -995,7 +995,9 @@
         this.$.suDrawer.open();
       },
       closeDrawer:function(){
-        this.$.suDrawer.close();
+        if(this.dimensions.query1023){
+          this.$.suDrawer.close();
+        };
       },
       enableDBLoading:function(){
         this.customStyle["--db-loading-display"]="flex";
