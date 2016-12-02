@@ -40,10 +40,17 @@
         color:#E53935;
       }
       .sliderOutput{
-        text-align:center;
-        font-size:120%;
-        margin:10px;
-        padding:10px;
+        text-align:left;
+        font-size:12px;
+        color:#757575;
+      }
+      #chunkSelector{
+        margin-left:20px;
+      }
+      .attrCardLabel{
+        font-size:16px;
+        text-transform:uppercase;
+        color:#757575;
       }
     </style>
 
@@ -70,13 +77,14 @@
             </template>
           </paper-listbox>
         </paper-dropdown-menu>
+
         <div class="app-grid">
           <paper-card elevation="3" class="padded">
-            <div class="sliderRow">
-              <iron-icon id="iconBad" icon="icons:thumb-down"></iron-icon>
-              <paper-slider class$="[[_computeProgressColor(monthlyRepData.mood)]]" pin value="{{monthlyRepData.mood}}"></paper-slider>
-              <iron-icon id="iconGood" icon="icons:thumb-up"></iron-icon>
-            </div>
+
+            <p class="attrCardLabel">
+              mood
+            </p>
+
             <p hidden="[[!monthlyRepData.mood]]" class="sliderOutput">
               [[suIndexData.fName]]'s overall mood was <b>[[monthlyRepData.mood]]</b> out of 100 for this shift.
             </p>
@@ -84,21 +92,33 @@
               Please select a value out of 100 for [[suIndexData.fName]]'s overall mood.
             </p>
 
+            <div class="sliderRow">
+              <iron-icon id="iconBad" icon="icons:thumb-down"></iron-icon>
+              <paper-slider class$="[[_computeProgressColor(monthlyRepData.mood)]]" pin value="{{monthlyRepData.mood}}"></paper-slider>
+              <iron-icon id="iconGood" icon="icons:thumb-up"></iron-icon>
+            </div>
+
             <paper-textarea label="Comments on Mood" value="{{monthlyRepData.moodComments}}"></paper-textarea>
           </paper-card>
 
           <paper-card elevation="3" class="padded">
-            <div class="sliderRow">
-              <iron-icon id="iconBad" icon="icons:thumb-down"></iron-icon>
-              <paper-slider class$="[[_computeProgressColor(monthlyRepData.health)]]" pin value="{{monthlyRepData.health}}"></paper-slider>
-              <iron-icon id="iconGood" icon="icons:thumb-up"></iron-icon>
-            </div>
+
+            <p class="attrCardLabel">
+              health
+            </p>
+
             <p hidden="[[!monthlyRepData.health]]" class="sliderOutput">
               [[suIndexData.fName]]'s overall health was <b>[[monthlyRepData.health]]</b> out of 100 for this shift.
             </p>
             <p hidden="[[monthlyRepData.health]]" class="sliderOutput">
               Please select a value out of 100 for [[suIndexData.fName]]'s overall health.
             </p>
+
+            <div class="sliderRow">
+              <iron-icon id="iconBad" icon="icons:thumb-down"></iron-icon>
+              <paper-slider class$="[[_computeProgressColor(monthlyRepData.health)]]" pin value="{{monthlyRepData.health}}"></paper-slider>
+              <iron-icon id="iconGood" icon="icons:thumb-up"></iron-icon>
+            </div>
 
             <paper-textarea label="Comments on Health" value="{{monthlyRepData.healthComments}}"></paper-textarea>
           </paper-card>
