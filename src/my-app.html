@@ -593,7 +593,9 @@
 
     <paper-toast
       id="mainToast"
-      class="fit-bottom">
+      class="fit-bottom"
+      duration="15000">
+      <paper-button on-tap="_closeToast">close</paper-button>
     </paper-toast>
 
   </template>
@@ -990,6 +992,9 @@
       openToast:function(e){
         this.$.mainToast.text=e.detail.toastText;
         this.$.mainToast.open();
+      },
+      _closeToast:function(){
+        this.$.mainToast.close();
       },
       openDrawer:function(){
         this.$.suDrawer.open();

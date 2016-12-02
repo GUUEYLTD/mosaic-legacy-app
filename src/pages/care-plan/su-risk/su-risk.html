@@ -26,7 +26,8 @@
     <firebase-document
       id="riskDB"
       data="{{riskData}}"
-      app-name="main">
+      app-name="main"
+      transactions-completed="[[_dbLoaded()]]">
     </firebase-document>
 
     <style include="common-styles"></style>
@@ -127,6 +128,7 @@
             </su-risk-multi-view>
 
             <su-risk-edit-view
+              db-loaded="[[dbLoaded]]"
               name="edit-view"
               risk-data="{{riskData}}">
             </su-risk-edit-view>
@@ -151,6 +153,10 @@
         this.addEventListener("deleteRisk", this.deleteRisk);
       },
       properties:{
+        dbLoaded:{
+          type:Boolean,
+          value:false
+        },
         page:{
           type:String,
         },
@@ -259,6 +265,10 @@
             this.fire("openToast", {toastText:"Date of risk assessment is reqiured."});
           };
         }.bind(this));
+      },
+      _dbLoaded:function(e){
+        console.log(e);
+        console.log("done");
       }
     });
 

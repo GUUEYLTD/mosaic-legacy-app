@@ -128,6 +128,10 @@
 
       is:"su-risk-edit-view",
       properties:{
+        dbLoaded:{
+          type:Boolean,
+          value:false
+        },
         riskData:{
           type:Object,
           notify:true,
@@ -164,6 +168,9 @@
       behaviors:[
         Polymer.editViewResizeBehavior,
         //Polymer.multiEditAnimationBehavior
+      ],
+      observers:[
+        "_riskDataChanged(riskData.*)"
       ],
       _computeGoalImage:function(cat){
         switch(cat) {
@@ -209,6 +216,14 @@
               break;
         };
       },
+      _riskDataChanged:function(riskData){
+        console.log(riskData);
+        if(this.dbLoaded && this.riskData.base != {}){
+          var date = new Date();
+          console.log(date.getTime());
+          this.riskData.changed;
+        }
+      }
     });
 
   </script>
