@@ -150,7 +150,7 @@
     </paper-dialog>
 
     <paper-dialog id="notifyDialog">
-      <paper-dialog-scrollable>
+      <paper-dialog-scrollable id="notifyDialogScroll">
 
         <template is="dom-repeat" items="[[notifiesData]]" as="guueyNotify">
 
@@ -159,6 +159,13 @@
         </template>
 
       </paper-dialog-scrollable>
+    </paper-dialog>
+
+    <paper-dialog id="logoutDialog">
+
+      <paper-button dialog-dismiss>cancel</paper-button>
+      <paper-button on-tap="logout">logout</paper-button>
+
     </paper-dialog>
 
     <div class="loadingOverlay">
@@ -234,7 +241,7 @@
                 </span>
 
               </paper-tab>
-              <paper-tab class="mobileTab" name="logout"><iron-icon class="logoutButton" on-tap="logout" icon="icons:account-circle"></iron-icon></paper-tab>
+              <paper-tab class="mobileTab" name="logout"><iron-icon on-tap="logout" icon="icons:account-circle"></iron-icon></paper-tab>
             </paper-tabs>
           </app-toolbar>
 
@@ -303,7 +310,7 @@
                   </span>
 
                 </paper-tab>
-                <paper-tab class="desktopTab" name="logout"><iron-icon class="logoutButton" on-tap="logout" icon="icons:account-circle"></iron-icon></paper-tab>
+                <paper-tab class="desktopTab" name="logout" on-tap="openLogout"><iron-icon icon="icons:account-circle"></iron-icon></paper-tab>
               </paper-tabs>
 
             </div>
@@ -1136,21 +1143,20 @@
         this.$.mobileSearch.toggle();
       },
       openApps:function(e){
-        this.$.appsDialog.positionTarget = e.currentTarget.parentNode;
+        this.$.appsDialog.positionTarget = e.currentTarget;
         this.$.appsDialog.verticalAlign = "top";
-        this.$.appsDialog.horizontalAlign = "left";
+        this.$.appsDialog.horizontalAlign = "right";
         this.$.appsDialog.noOverlap = true;
-        if(e.currentTarget.parentNode.id === "mobileTabs"){
-          this.customStyle["--apps-dialog-width"]="50%";
-          this.updateStyles();
-        };
+        this.$.appsDialog.horizontalOffset = 20;
         this.$.appsDialog.toggle();
       },
       openNotifications:function(e){
-        this.$.notifyDialog.positionTarget = e.currentTarget.parentNode;
+        this.$.notifyDialog.positionTarget = e.currentTarget;
         this.$.notifyDialog.verticalAlign = "top";
-        this.$.notifyDialog.horizontalAlign = "left";
+        this.$.notifyDialog.horizontalAlign = "right";
         this.$.notifyDialog.noOverlap = true;
+        this.$.notifyDialog.horizontalOffset = 20;
+        this.$.notifyDialogScroll.dialogElement = this.$.notifyDialog;
         if(this.notifiesData.length<1){
           return;
         };
@@ -1158,6 +1164,14 @@
       },
       checkNotification:function(){
         this.$.notifyDialog.close();
+      },
+      openLogout:function(e){
+        this.$.logoutDialog.positionTarget = e.currentTarget;
+        this.$.logoutDialog.verticalAlign = "top";
+        this.$.logoutDialog.horizontalAlign = "right";
+        this.$.logoutDialog.noOverlap = true;
+        this.$.logoutDialog.horizontalOffset = 20;
+        this.$.logoutDialog.toggle();
       }
     });
 

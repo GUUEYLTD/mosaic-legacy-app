@@ -90,9 +90,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     a:hover {
      cursor:pointer;
     }
-    .logoutButton{
-      color:#e51561;
-    }
 
     .backButton{
       position:absolute;
@@ -376,8 +373,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       --iron-icon-width:30px;
     }
     #appsDialog{
+      width:300px;
       min-height:100px;
-      width:var(--apps-dialog-width);
+      position:relative;
     }
     .flexRow{
       display:flex;
@@ -390,7 +388,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         width:100%;
       };
     }
-    /*
+
+    #appsDialog{
+      max-height:80%;
+    }
+
     #appsDialog::before{
       height:20px;
       width:20px;
@@ -398,40 +400,46 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       transform: rotate(45deg);
       position:absolute;
       top:-10px;
-      right:calc(50% - 20px);
+      right:20px;
       content:" ";
     }
-    */
-    /*
-    #appsDialog::before{
-      width: 0;
-      height: 0;
-      border-left: 20px solid transparent;
-      border-right: 20px solid transparent;
-      border-bottom: 20px solid #FFFFFF;
-      content:"";
-      position:absolute;
-      top:-20px;
-      right:50%;
-    }
-    */
-    #notifyDialog{
-      min-height:100px;
 
+
+    #notifyDialog{
+      max-height:80%;
+      margin-top:20px;
     }
-    /*
+    #notifyDialogScroll{
+      --paper-dialog-scrollable:{
+        max-height:calc(300px);
+      };
+    }
+
     #notifyDialog::before{
-      width: 0;
-      height: 0;
-      border-left: 20px solid transparent;
-      border-right: 20px solid transparent;
-      border-bottom: 20px solid #FFFFFF;
-      content:"";
+      height:20px;
+      width:20px;
+      background-color:#FFFFFF;
+      transform: rotate(45deg);
       position:absolute;
-      top:-20px;
-      right:50%;
+      top:-10px;
+      right:20px;
+      content:" ";
     }
-    */
+
+    #logoutDialog{
+      max-height:80%;
+    }
+    #logoutDialog::before{
+      height:20px;
+      width:20px;
+      background-color:#FFFFFF;
+      transform: rotate(45deg);
+      position:absolute;
+      top:-10px;
+      right:20px;
+      content:" ";
+    }
+
     </style>
   </template>
 </dom-module>

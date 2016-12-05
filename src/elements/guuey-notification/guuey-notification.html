@@ -7,19 +7,12 @@
     <style>
       :host{
         display:block;
-        width:calc(100%);
         box-sizing: border-box;
-        margin-bottom:10px;
-      }
-      paper-card{
+        box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12), 0 3px 5px -1px rgba(0, 0, 0, 0.4);
+        margin:10px;
         padding:10px;
-        width:100%;
       }
-      .flexRow{
-        display:flex;
-        flex-direction:row;
-      }
-      .flexCol{
+      .flexNotify{
         display:flex;
         flex-direction:row;
       }
@@ -49,7 +42,7 @@
         color:#9b9b9b;
       }
       .divider{
-        width:100%;
+        width:calc(100% - 20px);
         height:1px;
         background-color:#9b9b9b;
         margin:10px 0 10px 0;
@@ -62,30 +55,31 @@
       }
       paper-button{
         color:#009282;
+        display:inline;
       }
 
     </style>
 
-    <paper-card elevation="3">
-      <div class="flexCol">
+
+      <div class="flexNotify">
         <div class="left">
           <img class="profileImage" src="[[image]]" />
         </div>
 
         <div class="right">
-          <div class="flexRow">
-            <p class="name">
+          <div class="flexNotify">
+            <span class="name">
               [[fName]] [[lName]]
-            </p>
+            </span>
             <div class="topSpacer"></div>
-            <p class="time">
+            <span class="time">
               [[time]]
-            </p>
+            </span>
           </div>
 
-          <p class="message">
+          <span class="message">
             [[message]]
-          </p>
+          </span>
           <div class="divider"></div>
           <a style="text-decoration:none;" class="inherit" href="[[url]]">
             <paper-button on-tap="checkNotification"><iron-icon icon="icons:icons:reply"></iron-icon>check</paper-button>
@@ -96,8 +90,6 @@
       </div>
 
 
-
-    </paper-card>
 
   </template>
 

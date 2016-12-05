@@ -202,14 +202,25 @@
           "afternoon",
           "night"
         ];
+        /*
+        night
+          2000
+          till 0800
+        day
+          0800
+          till 1400
+        afternoon
+          1400
+          till 2000
+        */
         var timeChunk;
-        if(hours>=4 && hours<12){
+        if(hours>=8 && hours<14){
           timeChunk="morning";
         };
-        if(hours>=12 && hours<20){
+        if(hours>=14 && hours<20){
           timeChunk="afternoon";
         };
-        if(hours>=20 || hours<4){
+        if(hours>=20 || hours<8){
           timeChunk="night";
         };
         //set the two calculated time values... used in db ops as well
