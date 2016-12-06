@@ -235,7 +235,71 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         width:100%;
       }
       /* multi view styles */
-      
+      .multiCardHeading{
+        width:100%;
+        height:150px;
+        margin:0 !important;
+        position:relative;
+        background-repeat:no-repeat;
+        background-size:cover;
+        background-position:bottom right;
+      }
+      .multiCardHeading:hover{
+        cursor:pointer;
+        opacity:.8;
+      }
+      .multiCardLabel{
+        width:75%;
+        position:absolute;
+        bottom:10px;
+        left:10px;
+        padding:0px;
+        margin:0px;
+        color:#FFFFFF;
+        line-height:22px;
+        font-size:22px;
+        overflow:hidden;
+        text-overflow:ellipsis;
+        max-height:150px;
+      }
+      .multiCardMore{
+        position:absolute;
+        top:1%;
+        right:1%;
+        color:#FFFFFF;
+      }
+      .multiCardContainer{
+        height:150px;
+        padding:20px;
+      }
+      .multiCardMain{
+        overflow:hidden;
+        position:relative;
+        height:150px;
+        margin:0;
+      }
+      .multiCardMain::after{
+        position:absolute;
+        height:100%;
+        width:100%;
+        top:0;
+        left:0;
+        background: linear-gradient(transparent 20%, #FFFFFF 80%);
+        content:" ";
+      }
+      .multiCardSecondary{
+        height:100px;
+      }
+      .multiItemContainer{
+        width:100%;
+      }
+      .multiItem{
+        height:400px;
+        width:100%;
+      }
+      .multiViewCard{
+        width:100%;
+      }
       /* misc */
       .bad{
         color:#E53935;

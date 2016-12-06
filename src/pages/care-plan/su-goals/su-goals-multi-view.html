@@ -31,95 +31,28 @@
     <style include="common-styles">
       :host{
         --app-grid-columns:3;
-        --app-grid-item-height:150%;
-      }
-      .goalLabel:nth-child(1){
-        width:100%;
-        position:absolute;
-        bottom:32px;
-        left:10px;
-        padding:0px;
-        margin:0px;
-        color:#FFFFFF;
-        line-height:22px;
-        font-size:22px;
-      }
-      .goalLabel:nth-child(2){
-        width:100%;
-        position:absolute;
-        bottom:10px;
-        left:10px;
-        padding:0px;
-        margin:0px;
-        color:#FFFFFF;
-        line-height:22px;
-        font-size:22px;
-      }
-      .goalMore{
-        position:absolute;
-        top:1%;
-        right:1%;
-        color:#FFFFFF;
-      }
-      .goalBox{
-        margin:20px;
-      }
-      .goalHeading{
-        width:100%;
-        height:40%;
-        margin-bottom:4%;
-        position:relative;
-        background-repeat:no-repeat;
-        background-size:cover;
-        background-position:bottom right;
-      }
-      .goalHeading:hover{
-        cursor:pointer;
-        opacity:.8;
-      }
-      .goalDescription{
-        text-align:center;
-        font-size:18px;
-        overflow:hidden;
-        white-space:nowrap;
-        text-overflow:ellipsis;
-        flex-grow:1;
-      }
-
-      .goalStepsText{
-        padding-left:20px;
-      }
-      .goalSteps:{
-        width:100%;
-        margin:4%;
-      }
-      .stepsFab{
-        margin-left:20px;
-        background-color:#F76363;
+        --app-grid-gutter:20px;
       }
       .goalProgress{
         width:100%;
-      }
-      .goalDetails{
-        width:90%;
-        margin:20px 5% 20px 5%;
-      }
-      .editButton{
-        margin-top:-20px;
       }
       .lowerContainer{
         margin-top:5px;
         display:flex;
         flex-direction:row;
         align-items:center;
-      }
-      .lowerContainer {
         flex-grow:1;
       }
-      .multiBoxContent{
-        display:flex;
-        flex-direction:column;
-        height:55%;
+      .stepsFab{
+        margin-left:20px;
+        background-color:#F76363;
+      }
+      .goalStepsText{
+        padding-left:20px;
+      }
+      .goalSteps:{
+        width:100%;
+        margin:4%;
       }
     </style>
 
@@ -129,37 +62,27 @@
       <paper-button on-tap="deleteGoal">delete</paper-button>
     </paper-dialog>
 
-    <paper-card class="multiViewCard app-grid" has-aspect-ratio>
+    <paper-card class="multiViewCard app-grid">
+      <template
+        is="dom-repeat"
+        items="[[goalsData]]"
+        as="goal">
 
-      <template id="goalRepeat" is="dom-repeat" items="[[goalsData]]" as="goal">
-        {{_computeQueryCount(goal)}}
-
-        <div class="goalBoxContainer">
-
-          <paper-card elevation="3" class="goalBox">
-
-            <div style="background-image:url(../../../../{{_computeGoalImage(goal.category)}})" class="goalHeading">
+        <paper-card class="multiItem">
+          <div style="background-image:url(../../../../{{_computeGoalImage(goal.category)}})" class="multiCardHeading">
+            <p on-tap="directEditModal" class="multiCardLabel">
               <template is="dom-repeat" items="[[computeDisplayCat(goal.category)]]" as="goalEl">
 
-                <p on-tap="directEditModal" parent-key="[[goal.$key]]" class="goalLabel">
-                  [[goalEl]]
-                </p>
+                [[goalEl]]
 
               </template>
-            </div>
-
-            <paper-icon-button
-              icon="icons:more-vert"
-              class="goalMore"
-              on-tap="toggleEditModal">
-            </paper-icon-button>
-
-            <div class="multiBoxContent">
-
-              <div class="goalDescription">
-                  [[goal.description]]
-              </div>
-
+            </p>
+          </div>
+          <div class="multiCardContainer">
+            <p class="multiCardMain">
+              [[goal.description]]
+            </p>
+            <div class="multiCardSecondary">
               <div class="goalSteps">
                 <paper-progress
                   class="goalProgress"
@@ -180,15 +103,18 @@
                 </div>
 
               </div>
-
             </div>
+          </div>
 
-          </paper-card>
+          <paper-icon-button
+            icon="icons:more-vert"
+            class="multiCardMore"
+            on-tap="toggleEditModal">
+          </paper-icon-button>
 
-        </div>
+        </paper-card>
 
       </template>
-
     </paper-card>
 
   </template>
