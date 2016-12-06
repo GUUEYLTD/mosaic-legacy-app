@@ -244,10 +244,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         background-size:cover;
         background-position:bottom right;
       }
-      .multiCardHeading:hover{
-        cursor:pointer;
-        opacity:.8;
-      }
       .multiCardLabel{
         width:75%;
         position:absolute;
@@ -261,6 +257,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         overflow:hidden;
         text-overflow:ellipsis;
         max-height:150px;
+      }
+      .multiCardLabel:hover{
+        z-index:1;
+        cursor:pointer;
+        opacity:.8;
       }
       .multiCardMore{
         position:absolute;

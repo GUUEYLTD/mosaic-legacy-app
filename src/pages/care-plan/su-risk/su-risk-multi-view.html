@@ -31,70 +31,18 @@
 
       :host{
         --app-grid-columns:3;
-        --app-grid-item-height:150%;
+        --app-grid-gutter:20px;
       }
-      .riskBox{
-        margin:20px;
-        padding: 0 !important;
-      }
-      .riskHeading{
+      guuey-slider{
         width:100%;
-        height:30%;
-        margin-top:0 !important;
-        margin-bottom:4%;
-        position:relative;
-        background-repeat:no-repeat;
-        background-size:cover;
-        background-position:bottom right;
+        height:60px;
+        margin:0;
+        padding:0;
       }
-      .riskHeading:hover{
-        cursor:pointer;
-        opacity:.8;
-      }
-      .riskLabel:nth-child(1){
-        width:100%;
-        position:absolute;
-        bottom:37px;
-        left:10px;
-        padding:0px;
-        margin:0px;
-        color:#FFFFFF;
-        font-size:22px;
-        line-height:22px;
-      }
-      .riskLabel:nth-child(2){
-        width:100%;
-        position:absolute;
-        bottom:10px;
-        left:10px;
-        padding:0px;
-        margin:0px;
-        color:#FFFFFF;
-        font-size:22px;
-        line-height:22px;
-      }
-      .riskMore{
-        position:absolute;
-        top:1%;
-        right:1%;
-        color:#FFFFFF;
-      }
-      .multiCardContainer{
-        display:flex;
-        flex-direction:column;
-        height:70%;
-      }
-      .riskSlider{
-        margin-bottom:0;
-        padding-bottom:0;
-
-      }
-      .riskCardText{
-        flex-grow:2;
-        margin:10px;
-        overflow:hidden;
-        white-space:nowrap;
-        text-overflow:ellipsis;
+      .multiCardMain{
+        margin:0;
+        padding:0;
+        height:90px;
       }
       .cardDivider{
         border-bottom:1px solid #e0e0e0;
@@ -118,7 +66,6 @@
         flex-grow:1;
         text-align:left;
         margin-left:20px;
-
         opacity:.8;
       }
 
@@ -130,42 +77,32 @@
       <paper-button on-tap="deleteRisk">delete</paper-button>
     </paper-dialog>
 
-    <paper-card class="multiViewCard app-grid" has-aspect-ratio>
+    <!--begin review view -->
 
-      <!--
-      <div hidden="{{queryCount}}">
+    <paper-card class="multiViewCard app-grid">
+      <template
+        is="dom-repeat"
+        items="{{risksData}}"
+        as="risk">
 
-      </div>
-      -->
-
-      <template is="dom-repeat" items="{{risksData}}" as="risk">
-        {{_computeQueryCount(risk)}}
-
-        <div class="riskContainer">
-
-          <paper-card elevation="3" class="riskBox">
-
-            <div style="background-image:url(../../../../{{_computeRiskImage(risk.category)}})" class="riskHeading">
+        <paper-card class="multiItem">
+          <div style="background-image:url(../../../../{{_computeRiskImage(risk.category)}})" class="multiCardHeading">
+            <p on-tap="directEditModal" class="multiCardLabel">
               <template is="dom-repeat" items="[[computeDisplayCat(risk.category)]]" as="riskEl">
 
-                <p on-tap="directEditModal" parent-key="[[risk.$key]]" class="riskLabel">
                   [[riskEl]]
-                </p>
 
               </template>
+            </p>
+          </div>
+          <div class="multiCardContainer">
+            <guuey-slider hide-value value="{{risk.riskLevel}}"></guuey-slider>
+            <div class="multiCardMain">
+              [[risk.riskIdentified]]
             </div>
-
-            <div class="multiCardContainer">
-              <guuey-slider hide-value class="riskSlider" value="{{risk.riskLevel}}">
-              </guuey-slider>
-
-              <p class="riskCardText">
-                [[risk.riskIdentified]]
-              </p>
+            <div class="multiCardSecondary">
               <div class="dateContainer">
-                <div class="cardDivider">
-
-                </div>
+                <div class="cardDivider"></div>
                 <p class="dateHeader">
                   Date of Assessment
                 </p>
@@ -178,21 +115,20 @@
                 </div>
               </div>
             </div>
+          </div>
 
-            <paper-icon-button
-              icon="icons:more-vert"
-              class="riskMore"
-              on-tap="toggleEditModal">
-            </paper-icon-button>
-
-
-          </paper-card>
+          <paper-icon-button
+            icon="icons:more-vert"
+            class="multiCardMore"
+            on-tap="toggleEditModal">
+          </paper-icon-button>
 
         </paper-card>
 
       </template>
+    </paper-card>
 
-    </div>
+    <!-- end review view -->
 
   </template>
 
