@@ -162,10 +162,11 @@
     </paper-dialog>
 
     <paper-dialog id="logoutDialog">
-
-      <paper-button dialog-dismiss>cancel</paper-button>
-      <paper-button on-tap="logout">logout</paper-button>
-
+      <guuey-account-display
+        user-image="[[user.photoURL]]"
+        display-name="Jeff Dudeson"
+        user-email="[[user.email]]">
+      </guuey-account-display>
     </paper-dialog>
 
     <div class="loadingOverlay">
@@ -633,6 +634,8 @@
         this.addEventListener('dismissNotification',this.dismissNotification);
         this.addEventListener('checkNotification', this.checkNotification);
         this.addEventListener('app-drawer-transitioned', this.resizeDrawerImage);
+        this.addEventListener('logout', this.logout);
+        this.addEventListener('cancelLogout', this.cancelLogout);
         this.fire("pageLoaded",{page:this.page});
         this.addEventListener("resize", this.resizeElements);
         this.$.storage._downloadFile(this.$.storage.path);
@@ -932,6 +935,9 @@
       logout:function(){
         this.$.auth.signOut();
         window.location="/default/default/def-login";
+      },
+      cancelLogout:function(){
+        this.$.logoutDialog.close();
       },
       //other stuff
       handleError:function(error){

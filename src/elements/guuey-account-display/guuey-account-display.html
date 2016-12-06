@@ -1,0 +1,102 @@
+<link rel="import" href="dependencies.html" />
+
+<dom-module is="guuey-account-display">
+
+  <template>
+
+    <style>
+
+      :host{
+        display:block;
+        width:100%;
+      }
+      .accountCard{
+        padding:10px;
+      }
+      .mainRow{
+        display:flex;
+        flex-direction:row;
+        align-items:center;
+      }
+      .roundedImage{
+        width:50px;
+        height:50px;
+        border-radius:50%;
+        clip:auto;
+      }
+      .textCol{
+        flex-grow:1;
+        margin:10px;
+        display:flex;
+        flex-direction:column;
+      }
+      .mainText{
+        margin:0;
+        color:#555555;
+        font-weight:bold;
+        font-size:13px;
+      }
+      .secondaryText{
+        margin:0;
+        color:#555555;
+        font-weight:lighter;
+        font-size:11px;
+      }
+      .secondRow{
+        display:flex;
+        flex-direction:row;
+        align-items:center;
+      }
+      .secondRow *{
+        flex-grow:1;
+      }
+    </style>
+    <paper-card class="accountCard" elevation="3">
+
+      <div class="mainRow">
+        <img class="roundedImage" src="/images/defaultAvatar.png" />
+        <div class="textCol">
+          <p class="mainText">
+            [[displayName]]
+          </p>
+          <p class="secondaryText">
+            [[userEmail]]
+          </p>
+        </div>
+
+      </div>
+
+      <div class="secondRow">
+        <paper-button on-tap="cancel">cancel</paper-button>
+        <paper-button on-tap="logout">logout</paper-button>
+      </div>
+
+    </paper-card>
+  </template>
+
+  <script>
+
+    Polymer({
+      is:"guuey-account-display",
+      properties:{
+        userImage:{
+          type:String
+        },
+        displayName:{
+          type:String
+        },
+        userEmail:{
+          type:String
+        }
+      },
+      cancel:function(){
+        this.fire("cancelLogout");
+      },
+      logout:function(){
+        this.fire("logout");
+      }
+    });
+
+  </script>
+
+</dom-module>
