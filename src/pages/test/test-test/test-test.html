@@ -1,31 +1,63 @@
 <link rel="import" href="../../../../bower_components/polymer/polymer.html" />
 <link rel="import" href="../../../../bower_components/paper-card/paper-card.html" />
-
-<link rel="import" href="../../../elements/guuey-notification/guuey-notification.html" />
+<link rel="import" href="../../../../bower_components/paper-button/paper-button.html" />
+<link rel="import" href="../../../behaviors/multi-view-resize-behavior.html" />
+<link rel="import" href="../../../elements/media-queries/media-queries.html" />
+<link rel="import" href="../../../elements/guuey-truncate/guuey-truncate.html" />
+<link rel="import" href="../../../styles/common-styles.html" />
 
 
 <dom-module id="test-test">
   <template>
 
+    <media-queries
+      dimensions="{{dimensions}}">
+    </media-queries>
+
     <style include="common-styles">
       :host{
-        display:block;
+        --app-grid-columns:3;
+        --app-grid-gutter:20px;
       }
-      paper-card{
+      .pageCard{
         width:80%;
-        margin-left:10%;
-        margin-right:10%;
+        margin:0 10% 0 10%;
       }
-
+      .testContent{
+        height:150px;
+        margin:0;
+      }
     </style>
 
-      <paper-card>
+      <paper-card class="pageCard app-grid">
+        <template id="domRepeat" is="dom-repeat" items="[[items]]" as="item">
 
-        <template is="dom-repeat" items="[[notifies]]" as="notify">
+          <paper-card class="multiItem">
+            <div style="background-color:purple;" class="multiCardHeading">
+              <p on-tap="directEditModal" class="multiCardLabel">
+                [[item.title]]
+              </p>
+            </div>
+            <div class="multiCardContainer">
+              <p class="testContent">
+                <guuey-truncate>
+                  [[item.body]]
+                </guuey-truncate>
+              </p>
+              <div class="multiCardSecondary">
+                [[item.footer]]
+              </div>
+            </div>
 
-          <guuey-notification info="{{notify}}"></guuey-notification>
+            <paper-icon-button
+              icon="icons:more-vert"
+              class="multiCardMore"
+              on-tap="toggleEditModal">
+            </paper-icon-button>
 
+          </paper-card>
         </template>
+
 
       </paper-card>
 
@@ -38,43 +70,43 @@
         is: 'test-test',
         ready:function(){
           this.fire("pageLoaded", {page:this.page});
+          this.addEventListener("truncate-read-more", this._readMore);
         },
         properties:{
-          notifies:{
+          items:{
             type:Array,
             value:[
               {
-                message:"stuff and thingsstuff and things stuff and things stuff and things stuff and things stuff and things stuff and things stuff and things stuff and things stuff and things stuff and things stuff and things stuff and things stuff and things stuff and things stuff and things stuff and things",
-                url:"/",
-                fName:"bob",
-                lName:"durkington",
-                time:"2:00 am"
+                title:"stuff and things",
+                body:"other things and stuff sdfdsfsdfds o sdf f f f f f f f f f f f f f ksfjsdf dsjskdfjsdkfj s sdfdsfds fsther things and stuff oth sdfsdfds fsdf dser things and stuff other things and stuff other things other things and stuff other things and stuff other things and stuff other things and stuff other things and stuff other things and stuff other things and stuff other things and stuff other things and stuff",
+                footer:"things and stuff"
               },
               {
-                message:"stuff and things",
-                url:"/",
-                fName:"bob",
-                lName:"durkington",
-                time:"2:00 am"
+                title:"stuff and things",
+                body:"and stuff other things and stuff other things and stuff other things and stuff other things and stuff other things and stuff",
+                footer:"things and stuff"
               },
               {
-                message:"stuff and things",
-                url:"/",
-                fName:"bob",
-                lName:"durkington",
-                time:"2:00 am"
+                title:"stuff and things",
+                body:" and stuff other things and stuff other things and stuff other things and stuff",
+                footer:"things and stuff"
               },
               {
-                message:"stuff and things",
-                url:"/",
-                fName:"bob",
-                lName:"durkington",
-                time:"2:00 am"
-              }
+                title:"stuff and things",
+                body:"stuff other things and stuff",
+                footer:"things and stuff"
+              },
             ]
           }
+        },
+        behaviors:[
+          Polymer.multiViewResizeBehavior
+        ],
+        _readMore:function(e){
+          console.log(e.path);
+          console.log(e.path[5]);
+          console.log(this.$.domRepeat.modelForElement(e.path[5]));
         }
-
       });
 
   </script>

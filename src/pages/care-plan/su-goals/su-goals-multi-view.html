@@ -14,6 +14,7 @@
 <link rel="import" href="../../../../bower_components/neon-animation/animations/scale-down-animation.html" />
 
 <link rel="import" href="../../../elements/media-queries/media-queries.html" />
+<link rel="import" href="../../../elements/guuey-truncate/guuey-truncate.html" />
 
 <link rel="import" href="../../../behaviors/multi-view-resize-behavior.html" />
 <link rel="import" href="../../../behaviors/multi-edit-animation-behavior.html" />
@@ -64,6 +65,7 @@
 
     <paper-card class="multiViewCard app-grid">
       <template
+        id="domRepeat"
         is="dom-repeat"
         items="[[goalsData]]"
         as="goal">
@@ -80,7 +82,7 @@
           </div>
           <div class="multiCardContainer">
             <p class="multiCardMain">
-              [[goal.description]]
+              <guuey-truncate>[[goal.description]]</guuey-truncate>
             </p>
             <div class="multiCardSecondary">
               <div class="goalSteps">
@@ -125,7 +127,7 @@
 
       is:"su-goals-multi-view",
       ready:function(){
-
+        this.addEventListener("truncate-read-more", this._readMore);
       },
       properties:{
         goalsData:{
@@ -209,7 +211,6 @@
         this.fire("editGoal");
       },
       computeDisplayCat:function(goal){
-        console.log(goal)
         if(goal.indexOf("&")!= -1){
           var arr = goal.split(" & ");
           arr[0]+=" &";
@@ -227,6 +228,10 @@
           arr.push(goal);
           return arr;
         };
+      },
+      _readMore:function(e){
+        this.goalId = this.$.domRepeat.modelForElement(e.path[5]).goal.$key;
+        this.fire("editGoal");
       }
     });
 

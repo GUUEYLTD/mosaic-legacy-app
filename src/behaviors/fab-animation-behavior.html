@@ -1,7 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html" />
 <link rel="import" href="../../bower_components/neon-animation/neon-animatable-behavior.html" />
 <link rel="import" href="../../bower_components/neon-animation/neon-animation-runner-behavior.html" />
-<link rel="import" href="../../bower_components/neon-animation/animations/slide-from-left-animation.html" />
 <link rel="import" href="../../bower_components/neon-animation/animations/fade-out-animation.html" />
 <link rel="import" href="../../bower_components/neon-animation/animations/fade-in-animation.html" />
 
@@ -21,30 +20,30 @@
             {
               name:"fade-out-animation",
               node:this.$.regFab,
-              timing:{delay:400, duration:500}
+              timing:{delay:400, duration:1000}
             },
             {
               name:"fade-in-animation",
               node:this.$.editFab,
-              timing:{delay:100, duration:500}
+              timing:{delay:100, duration:1000}
             }
           ],
           "regState":[
             {
               name:"fade-out-animation",
               node:this.$.editFab,
-              timing:{delay:400, duration:500}
+              timing:{delay:400, duration:1000}
             },
             {
               name:"fade-in-animation",
               node:this.$.regFab,
-              timing:{delay:400, duration:500}
+              timing:{delay:400, duration:1000}
             }
           ]
         }
       },
       animateEditViewFab:function(){
-        this.$.editFab.style.left=this.$$(".pageCard").offsetLeft + this.$$(".pageCard").offsetWidth - (this.$$(".pageCard").offsetWidth*.05) - this.$.editFab.offsetWidth/2 + "px";
+        this.$.editFab.style.left=this.$$(".pageCard").offsetLeft + this.$$(".pageCard").offsetWidth + (this.$$(".pageCard").offsetWidth*.05) + "px";
         this.playAnimation("editState", "edit");
       },
       animateMultiViewFab:function(){
@@ -52,7 +51,7 @@
       },
       _neonAnimationFinish:function(e){
         if(e.detail==="edit"){
-          this.$.editFab.style.left=this.$$(".pageCard").offsetLeft + this.$$(".pageCard").offsetWidth - (this.$$(".pageCard").offsetWidth*.05) - this.$.editFab.offsetWidth/2 + "px";
+          this.$.editFab.style.left=this.$$(".pageCard").offsetLeft + this.$$(".pageCard").offsetWidth + (this.$$(".pageCard").offsetWidth*.05) + "px";
           this.$.regFab.style.opacity=0;
           this.$.regFab.disabled=true;
           this.$.editFab.style.opacity=1;

@@ -1,0 +1,107 @@
+<link rel="import" href="dependencies.html" />
+
+<dom-module id="guuey-truncate">
+
+  <template>
+
+    <style>
+
+    :host{
+    }
+    #container{
+      display:block;
+      max-height:var(--container-max-height, 100%);
+    }
+    #moreButton{
+      height:50px;
+      width:100%;
+      display:var(--more-button-display, none);
+      text-align:center;
+      margin:0;
+    }
+    </style>
+    <div id="container">
+      <content id="mainText"></content>
+    </div>
+
+    <paper-button on-tap="_readMore" id="moreButton">read more</paper-button>
+
+
+  </template>
+
+  <script>
+
+    Polymer({
+      is:"guuey-truncate",
+      ready:function(){
+
+      },
+      attached:function(){
+        this.$.mainText.getDistributedNodes()[0].textContent.trim();
+        this.textContent = this.$.mainText.getDistributedNodes()[0].nodeValue.trim();
+        this._truncateContent();
+      },
+      properties:{
+        textContent:{
+          type:String
+        },
+        textContent:{
+          type:String
+        },
+        tooLong:{
+          type:Boolean,
+          value: false
+        },
+        heightVal:{
+          type:Number
+        },
+        scrollVal:{
+          type:Number
+        },
+
+      },
+      _truncateContent:function(){
+        this.async(function(){
+          this.heightVal = this.$.container.clientHeight;
+          this.scrollVal = this.$.container.scrollHeight;
+          this._checkContent();
+          if(this.tooLong){
+            this.customStyle["--container-max-height"]="calc(100% - 50px)";
+            this.customStyle["--more-button-display"]="block";
+            this.updateStyles();
+          };
+          while(this.tooLong){
+            this._popContent();
+            this._checkContent(true);
+            this._finish();
+          };
+        });
+        Polymer.dom.flush();
+      },
+      _checkContent:function(moreButton){
+        this.heightVal = this.$.container.clientHeight;
+
+        this.scrollVal = this.$.container.scrollHeight;
+        if(this.scrollVal > this.heightVal){
+          this.tooLong = true;
+        } else {
+          this.tooLong = false;
+        };
+      },
+      _popContent:function(){
+        this.textContent = this.textContent.substring(0, this.textContent.length - 1);
+        this.$.mainText.getDistributedNodes()[0].nodeValue = this.textContent;
+      },
+      _finish:function(){
+        this.textContent = this.textContent.substring(0, this.textContent.length - 4);
+        this.textContent += "..."
+        this.$.mainText.getDistributedNodes()[0].nodeValue = this.textContent;
+      },
+      _readMore:function(){
+        this.fire("truncate-read-more", {parent:this.parentNode});
+      }
+    });
+
+  </script>
+
+</dom-module>

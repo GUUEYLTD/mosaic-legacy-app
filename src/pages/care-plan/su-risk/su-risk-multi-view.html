@@ -13,6 +13,7 @@
 
 <link rel="import" href="../../../elements/guuey-slider/guuey-slider.html" />
 <link rel="import" href="../../../elements/media-queries/media-queries.html" />
+<link rel="import" href="../../../elements/guuey-truncate/guuey-truncate.html" />
 
 <link rel="import" href="../../../behaviors/multi-edit-animation-behavior.html" />
 <link rel="import" href="../../../behaviors/multi-view-resize-behavior.html" />
@@ -81,6 +82,7 @@
 
     <paper-card class="multiViewCard app-grid">
       <template
+        id="domRepeat"
         is="dom-repeat"
         items="{{risksData}}"
         as="risk">
@@ -98,7 +100,7 @@
           <div class="multiCardContainer">
             <guuey-slider hide-value value="{{risk.riskLevel}}"></guuey-slider>
             <div class="multiCardMain">
-              [[risk.riskIdentified]]
+              <guuey-truncate>[[risk.riskIdentified]]</guuey-truncate>
             </div>
             <div class="multiCardSecondary">
               <div class="dateContainer">
@@ -137,6 +139,9 @@
     Polymer({
 
       is:"su-risk-multi-view",
+      ready:function(){
+        this.addEventListener("truncate-read-more", this._readMore);
+      },
       properties:{
         risksData:{
           type:Object,
@@ -232,6 +237,10 @@
           arr.push(risk);
           return arr;
         };
+      },
+      _readMore:function(e){
+        this.riskId = this.$.domRepeat.modelForElement(e.path[5]).risk.$key;
+        this.fire("editRisk", {riskId:this.riskId});
       }
     });
 

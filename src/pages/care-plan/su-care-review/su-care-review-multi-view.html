@@ -9,6 +9,7 @@
 <link rel="import" href="../../../../bower_components/iron-icon/iron-icon.html" />
 
 <link rel="import" href="../../../elements/media-queries/media-queries.html" />
+<link rel="import" href="../../../elements/guuey-truncate/guuey-truncate.html" />
 
 <link rel="import" href="../../../behaviors/multi-edit-animation-behavior.html" />
 <link rel="import" href="../../../behaviors/multi-view-resize-behavior.html" />
@@ -38,6 +39,7 @@
 
     <paper-card class="multiViewCard app-grid">
       <template
+        id="domRepeat"
         is="dom-repeat"
         items="{{reviewsData}}"
         as="review"
@@ -52,7 +54,7 @@
           </div>
           <div class="multiCardContainer">
             <p class="multiCardMain">
-              [[review.description]]
+              <guuey-truncate>[[review.description]]</guuey-truncate>
             </p>
             <div class="multiCardSecondary">
               <iron-icon icon="icons:update"></iron-icon>{{_computeDate(review.nextReviewDate)}}
@@ -77,6 +79,9 @@
     Polymer({
 
       is:"su-care-review-multi-view",
+      ready:function(){
+        this.addEventListener("truncate-read-more", this._readMore)
+      },
       properties:{
         viewType:{
           type:String,
@@ -161,9 +166,13 @@
         };
       },
       directEditModal:function(e){
-        this.reviewId=e.model.review.$key;
+        this.reviewId = e.model.review.$key;
         this.fire("editReview", {reviewId:this.reviewId});
       },
+      _readMore:function(e){
+        this.reviewId = this.$.domRepeat.modelForElement(e.path[5]).review.$key;
+        this.fire("editReview", {reviewId:this.reviewId});
+      }
     });
 
   </script>
