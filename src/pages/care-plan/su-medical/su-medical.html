@@ -46,7 +46,15 @@
         padding-bottom:20px;
         width:90%;
       }
-
+      .topInput{
+        padding:20px;
+      }
+      .topInput *{
+        display:inline-block;
+        max-width:200px;
+        text-align:center;
+        margin:20px;
+      }
     </style>
 
       <paper-card class="pageCard" elevation="3">
@@ -55,17 +63,15 @@
           home="[[home]]"
           patient="[[patient]]">
         </su-header>
-        <div class="app-grid padded half-page">
-          <div class="padded">
-            <paper-input id="fileInputName" label="Asessment Name" value="{{newFileName}}"></paper-input>
-          </div>
+        <div class="topInput">
 
-          <div class="padded">
-            <paper-button
-              class="guuey-button"
-              on-tap="_onAddFilesClick">upload file
-            </paper-button>
-          </div>
+          <paper-input id="fileInputName" label="Asessment Name" value="{{newFileName}}"></paper-input>
+
+          <paper-button
+            class="guuey-button"
+            on-tap="_onAddFilesClick">upload file
+          </paper-button>
+
         </div>
 
         <input
