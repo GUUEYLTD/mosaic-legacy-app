@@ -26,8 +26,7 @@
     <firebase-document
       id="riskDB"
       data="{{riskData}}"
-      app-name="main"
-      transactions-completed="[[_dbLoaded()]]">
+      app-name="main">
     </firebase-document>
 
     <style include="common-styles"></style>
@@ -265,10 +264,6 @@
             this.fire("openToast", {toastText:"Date of risk assessment is reqiured."});
           };
         }.bind(this));
-      },
-      _dbLoaded:function(e){
-        console.log(e);
-        console.log("done");
       }
     });
 

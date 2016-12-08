@@ -43,7 +43,8 @@
         }
       },
       animateEditViewFab:function(){
-        this.$.editFab.style.left=this.$$(".pageCard").offsetLeft + this.$$(".pageCard").offsetWidth + (this.$$(".pageCard").offsetWidth*.05) + "px";
+        //this.$.editFab.style.left=this.$$(".pageCard").offsetLeft + this.$$(".pageCard").offsetWidth + (this.$$(".pageCard").offsetWidth*.05) + "px";
+        this.$.editFab.style.right = ((window.offsetWidth - 256) * .05) + "px";
         this.playAnimation("editState", "edit");
       },
       animateMultiViewFab:function(){
@@ -51,12 +52,15 @@
       },
       _neonAnimationFinish:function(e){
         if(e.detail==="edit"){
-          this.$.editFab.style.left=this.$$(".pageCard").offsetLeft + this.$$(".pageCard").offsetWidth + (this.$$(".pageCard").offsetWidth*.05) + "px";
+          console.log(window.innerWidth);
+          this.$.editFab.style.right = ((window.innerWidth - 256) * .05) + 256 + "px";
+          //this.$.editFab.style.left=this.$$(".pageCard").offsetLeft + this.$$(".pageCard").offsetWidth + (this.$$(".pageCard").offsetWidth*.05) + "px";
           this.$.regFab.style.opacity=0;
           this.$.regFab.disabled=true;
           this.$.editFab.style.opacity=1;
           this.$.editFab.disabled=false;
         } else if(e.detail==="multi"){
+          console.log("multi");
           this.$.editFab.style.opacity=0;
           this.$.editFab.disabled=true;
           this.$.regFab.style.opacity=1;
