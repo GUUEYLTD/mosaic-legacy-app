@@ -7,14 +7,19 @@
     <style>
 
     :host{
+      height:300px;
     }
     #container{
       display:block;
+      max-height:100%;
       max-height:var(--container-max-height, 100%);
+      overflow:hidden;
+      filter:var(--container-blur, blur(5px));
     }
     #moreButton{
       height:50px;
       width:100%;
+      display:none;
       display:var(--more-button-display, none);
       text-align:center;
       margin:0;
@@ -39,7 +44,10 @@
       attached:function(){
         this.$.mainText.getDistributedNodes()[0].textContent.trim();
         this.textContent = this.$.mainText.getDistributedNodes()[0].nodeValue.trim();
-        this._truncateContent();
+        setTimeout(function(){
+          this._truncateContent();
+          this._displayReady();
+        }.bind(this), 500);
       },
       properties:{
         textContent:{
@@ -58,8 +66,10 @@
         scrollVal:{
           type:Number
         },
-
       },
+      observers:[
+
+      ],
       _truncateContent:function(){
         this.async(function(){
           this.heightVal = this.$.container.clientHeight;
@@ -80,7 +90,6 @@
       },
       _checkContent:function(moreButton){
         this.heightVal = this.$.container.clientHeight;
-
         this.scrollVal = this.$.container.scrollHeight;
         if(this.scrollVal > this.heightVal){
           this.tooLong = true;
@@ -99,6 +108,10 @@
       },
       _readMore:function(){
         this.fire("truncate-read-more", {parent:this.parentNode});
+      },
+      _displayReady:function(){
+        this.customStyle["--container-blur"]="blur(0)";
+        this.updateStyles();
       }
     });
 
