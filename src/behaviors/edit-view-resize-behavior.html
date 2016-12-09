@@ -10,82 +10,34 @@
         "screenChange(dimensions.*)"
       ],
       screenChange:function(dimensions){
+        console.log(dimensions);
         if(this.page==="su-goals" || this.page==="su-risk"){
-          var tableScrollLableColor="transparent";
-          var tableOverflow="unset";
-          var tbodyDisplay="table-row-group";
-          var theadTrPosition="unset";
-          var theadTrDisplay="table-row";
-          var theadTrTdWidth="unset";
-          var tdThMinWidth="unset";
-          var tdThLastWidth="unset";
-          var detailBarPadding="0% 25% 20px 25%";
-          var descriptionContainerPadding="0% 25% 20px 25%";
+          var tableScrollLabelColor="transparent"
 
-          if(dimensions.base.query640){
-            tableScrollLableColor="inherit";
-            tableOverflow="scroll";
-            tbodyDisplay="block";
-            theadTrPosition="relative";
-            theadTrDisplay="block";
-            theadTrTdWidth="150px";
-            tdThMinWidth="150px";
-            tdThLastWidth="150px";
-            detailBarPadding="0% 10% 20px 40%";
-            descriptionContainerPadding="0% 10% 20px 40%";
+          if(dimensions.base.query1365){
+            //table style
+            var tableScrollLabelColor="transparent"
 
-          } else if(dimensions.base.query750){
-            tableScrollLableColor="inherit";
-            tableOverflow="scroll";
-            tbodyDisplay="block";
-            theadTrPosition="relative";
-            theadTrDisplay="block";
-            theadTrTdWidth="150px";
-            tdThMinWidth="150px";
-            tdThLastWidth="150px";
-            detailBarPadding="0% 10% 20px 40%";
-            descriptionContainerPadding="0% 10% 20px 40%";
+          } else if(dimensions.base.query767){
+            //table style
+            tableScrollLabelColor="inherit";
 
-          } else if(dimensions.base.query900){
-            tableScrollLableColor="inherit";
-            tableOverflow="scroll";
-            tbodyDisplay="block";
-            theadTrPosition="relative";
-            theadTrDisplay="block";
-            theadTrTdWidth="150px";
-            tdThMinWidth="150px";
-            tdThLastWidth="150px";
-            detailBarPadding="0% 25% 20px 25%";
-            descriptionContainerPadding="0% 25% 20px 25%";
+          } else if(dimensions.base.query1023){
+            //table style
+            tableScrollLabelColor="inherit";
 
-          } else if(dimensions.base.query1100){
-            tableScrollLableColor="transparent";
-            tableOverflow="unset";
-            tbodyDisplay="table-row-group";
-            theadTrPosition="unset";
-            theadTrDisplay="table-row";
-            theadTrTdWidth="unset";
-            tdThMinWidth="unset";
-            tdThLastWidth="unset";
-            detailBarPadding="0% 25% 20px 25%";
-            descriptionContainerPadding="0% 25% 20px 25%";
+          } else if(dimensions.base.query1365){
+            //table style
+            tableScrollLabelColor="inherit";
 
-          };
+          } else if(dimensions.base.query1919){
 
-          //table style
-          this.customStyle["--table-scroll-lable-color"]=tableScrollLableColor;
-          this.customStyle["--table-overflow"]=tableOverflow;
-          this.customStyle["--tbody-display"]=tbodyDisplay;
-          this.customStyle["--thead-tr-position"]=theadTrPosition;
-          this.customStyle["--thead-tr-display"]=theadTrDisplay;
-          this.customStyle["--thead-tr-td-width"]=theadTrTdWidth;
-          this.customStyle["--td-th-min-width"]=tdThMinWidth;
-          this.customStyle["--td-th-last-width"]=tdThLastWidth;
+              //table style
+              tableScrollLabelColor="transparent";
 
-          //description and detail bar padding
-          this.customStyle["--detail-bar-padding"]=detailBarPadding;
-          this.customStyle["--description-container-padding"]=descriptionContainerPadding;
-          this.updateStyles();
+            };
+            this.customStyle["--table-scroll-lable-color"]=tableScrollLabelColor;
+            this.updateStyles();
         } else if(this.page==="su-care-review"){
           //list styles
           var guueyListFloatLeft="left";

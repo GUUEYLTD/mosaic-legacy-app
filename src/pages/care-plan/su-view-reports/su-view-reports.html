@@ -61,7 +61,7 @@
       }
       .innerMenu *{
         flex-grow:1;
-        margin:20px;
+        margin:20px 20px 20px 30px;
       }
       #reportSelector{
         width:75%;
@@ -156,8 +156,8 @@
           <iron-collapse id="dateSelector">
 
             <div class="innerMenu">
-              <vaadin-combo-box id="selectYear" items="[[yearList]]" label="Custom Year" value="{{selectDate.year}}"></vaadin-combo-box>
-              <vaadin-combo-box id="selectMonth" items="[[monthList]]" label="Custom Month" value="{{selectDate.month}}"></vaadin-combo-box>
+              <vaadin-combo-box id="selectYear" items="[[yearList]]" label="Select Year" value="{{selectDate.year}}"></vaadin-combo-box>
+              <vaadin-combo-box id="selectMonth" items="[[monthList]]" label="Select Month" value="{{selectDate.month}}"></vaadin-combo-box>
             </div>
 
           </iron-collapse>
@@ -168,7 +168,7 @@
           <google-chart
             id="healthGraph"
             type='line'
-            options='{"title": "Health and Mood Over Time", "colors":["#6735ba", "#f76363"]}'
+            options='{"title": "Health and Mood Over Time", "colors":["#6735ba", "#f76363"], "legend":{"position":"top"}, "chartArea":{"left":"20px", "top":"20px", "width":"90%"}}'
             cols='[{"label":"day", "type":"string"}, {"label":"Health", "type":"number"}, {"label":"Mood", "type":"number"}]'
             rows='[[graphRows]]'>
           </google-chart>
@@ -454,6 +454,7 @@
         this.$.reportsDB.startAt = now.toString();
         this.$.reportsDB.endAt = now.toString();
         this.$.reportsDB.path = "homes/"+this.home+"/patients/"+this.patient+"/dailyReports";
+        this.$.dateSelector.hide();
       },
       viewThisWeek:function(){
         var date = new Date();
@@ -467,6 +468,7 @@
         this.$.selectYear.value=null;
         this.$.reportsDB.startAt=week.toString();
         this.$.reportsDB.endAt=now.toString();
+        this.$.dateSelector.hide();
       },
       viewThisMonth:function(){
         var date = new Date();
@@ -480,6 +482,7 @@
         this.$.selectYear.value=null;
         this.$.reportsDB.startAt = now.toString();
         this.$.reportsDB.endAt = end.toString();
+        this.$.dateSelector.hide();
       },
       viewThisYear:function(){
         var date = new Date();

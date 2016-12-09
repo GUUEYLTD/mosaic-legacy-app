@@ -4,6 +4,10 @@
 
   <style include="paper-dialog-shared-styles">
 
+  .padded{
+    padding:20px;
+  }
+
   .addGoalHeader h2{
     margin-top:0;
     padding:15px;
@@ -25,14 +29,14 @@
         pattern="[a-zA-Z\s\.!\d]*"
         error-message="Please describe the step.">
       </paper-input>
-      <paper-input
+      <vaadin-combo-box
         label="step number"
-        value="{{newStepData.order}}"
+        items="[[stepOptions]]"
+        value="{{stepData.order}}"
         required
         auto-validate
-        pattern="\d{1,1}"
         error-message="Please enter a step from 1 to 9">
-      </paper-input>
+      </vaadin-combo-box>
 
       <paper-checkbox checked="{{newStepData.completed}}">Completed</paper-checkbox>
 
@@ -44,6 +48,7 @@
       <h2>Add New Goal</h2>
     </div>
 
+    <div class="padded">
       <vaadin-combo-box
         allow-custom-value
         label="Category"
@@ -151,6 +156,7 @@
 
       <paper-button on-tap="cancelNewGoal">cancel</paper-button>
       <paper-button on-tap="saveNewGoal">save</paper-button>
+    </div>
 
   </template>
 
@@ -202,6 +208,20 @@
         users:{
           type:Array,
           value:[]
+        },
+        stepOptions:{
+          type:Array,
+          value:[
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9"
+          ]
         }
       },
       //animation functions

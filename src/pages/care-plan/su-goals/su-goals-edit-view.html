@@ -28,77 +28,84 @@
 
   <template>
 
-  <style include="common-styles">
-    .detailDescription{
-      background-color:#4DB6AC;
-      width:100%;
-      height:150px;
-      background-repeat:no-repeat;
-      background-size:150px 150px;
-      background-position:bottom left;
-      margin: 0px 0 20px 0;
-    }
-    .descriptionViewText{
-      color:#FFFFFF;
-      font-size:20px;
+    <media-queries dimensions="{{dimensions}}"></media-queries>
 
-    }
-    .descriptionViewText:hover{
-      cursor:pointer;
-      opacity:.8;
-    }
-    .descriptionEditInput{
-      --paper-input-container-color:#FFFFFF;
-      --paper-input-container-input-color:#FFFFFF;
-    }
-    /* new styles */
-    .topEditCard{
-      width:calc(100% - 40px);
-      margin:20px;
-      --paper-card-header-image:{
-        width:150px;
+    <style include="common-styles">
+      .detailDescription{
+        background-color:#4DB6AC;
+        width:100%;
+        height:150px;
+        background-repeat:no-repeat;
+        background-size:150px 150px;
+        background-position:bottom left;
+        margin: 0 0 20px 0;
+      }
+      .descriptionViewText{
+        color:#FFFFFF;
+        font-size:20px;
+        padding:20px;
+      }
+      .descriptionViewText:hover{
+        cursor:pointer;
+        opacity:.8;
+      }
+      .descriptionEditInput{
+        --paper-input-container-color:#FFFFFF;
+        --paper-input-container-input-color:#FFFFFF;
+      }
+      /* new styles */
+      .topEditCard{
+        width:calc(100% - 40px);
+        margin:20px;
+        --paper-card-header-image:{
+          width:150px;
+          float:right;
+        };
+        --paper-card-header:{
+          background-color:var(--category-background-color);
+        };
+        --paper-card-header-color:#FFFFFF;
+      }
+      .topEditCategory{
+
+      }
+      .guuey-table{
+        width:100%;
+        padding:0;
+        display:block;
+      }
+      .guuey-table table{
+        padding:0;
+      }
+      .guuey-table paper-fab{
+        float:left;
+      }
+      #descriptionView{
+        display:flex;
+        flex-direction:row;
+        align-items:center;
+        width:calc(100% - 160px);
         float:right;
-      };
-      --paper-card-header:{
-        background-color:var(--category-background-color);
-      };
-      --paper-card-header-color:#FFFFFF;
-    }
-    .topEditCategory{
-
-    }
-    .guuey-table{
-      width:100%;
-      padding:0;
-      display:block;
-    }
-    .guuey-table table{
-      padding:0;
-    }
-    #descriptionView{
-      display:flex;
-      flex-direction:row;
-      align-items:center;
-      width:calc(100% - 160px);
-      float:right;
-      height:100%;
-    }
-    #descriptionEdit{
-      display:flex;
-      flex-direction:row;
-      align-items:center;
-      width:calc(100% - 160px);
-      float:right;
-      height:100%;
-    }
-    #descriptionEdit paper-input{
-      width: calc(100% - 10px);
-    }
-    #descriptionEditButton{
-      color:#FFFFFF;
-    }
-
-  </style>
+        height:100%;
+      }
+      #descriptionEdit{
+        display:flex;
+        flex-direction:row;
+        align-items:center;
+        width:calc(100% - 160px);
+        float:right;
+        height:100%;
+      }
+      #descriptionEdit paper-input{
+        width: calc(100% - 10px);
+      }
+      #descriptionEditButton{
+        color:#FFFFFF;
+      }
+      .stepNumber{
+        background-color:#F76363;
+      }
+    </style>
 
     <paper-dialog id="stepModal" class="guuey-modal guuey-add-modal">
       <h2>Add/update Step</h2>
@@ -108,16 +115,17 @@
         required
         auto-validate
         pattern="[a-zA-Z\s\.!\d]*"
-        error-message="Please describe the step.">
+        error-message="Please describe the step."
+        allow-custom-value="false">
       </paper-input>
-      <paper-input
+      <vaadin-combo-box
         label="step number"
+        items="[[stepOptions]]"
         value="{{stepData.order}}"
         required
         auto-validate
-        pattern="\d{1,1}"
         error-message="Please enter a step from 1 to 9">
-      </paper-input>
+      </vaadin-combo-box>
       <div class="modal-button-container">
         <paper-button on-tap="cancelStep">cancel</paper-button>
         <paper-button on-tap="saveStep">save</paper-button>
@@ -148,7 +156,7 @@
 
       </paper-card>
 
-      <div class="inputContainer">
+      <div class="inputContainer padded">
 
         <div
         class="detailDescription"
@@ -206,7 +214,7 @@
                 <tr>
                   <td>
                     <center>
-                      <paper-fab label="[[step.order]]"></paper-fab>
+                      <paper-fab class="stepNumber" label="[[step.order]]"></paper-fab>
                     </center>
                   </td>
                   <td>
@@ -295,6 +303,20 @@
         viewType:{
           type:String,
           value:"edit-view"
+        },
+        stepOptions:{
+          type:Array,
+          value:[
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9"
+          ]
         }
       },
       behaviors:[
