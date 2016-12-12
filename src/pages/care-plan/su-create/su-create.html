@@ -180,6 +180,9 @@
       ready:function(){
         this.fire("pageLoaded", {page:this.page});
       },
+      detached:function(){
+        console.log("detached");
+      },
       properties:{
         page:{
           type:String,
@@ -555,33 +558,35 @@
           }.bind(this));
       },
       requirementsMet:function(data){
-        if(!data.fName){
-          this.fire("openToast", {toastText: "First name is required before saving the new service user."});
-          return;
-        } else if(!data.lName){
-          this.fire("openToast", {toastText: "Last name is required before saving the new service user."});
-          return;
-        } else if(!data.dob){
-          this.fire("openToast", {toastText: "Date of birth is required before saving the new service user."});
-          return;
-        } else if(!data.dateAssessed){
-          this.fire("openToast", {toastText: "Date of assessment is required before saving the new service user."});
-          return;
-        } else if(!data.partnership){
-          this.fire("openToast", {toastText: "Partnership status is required before saving the new service user."});
-          return;
-        } else if(!data.whereAssessed){
-          this.fire("openToast", {toastText: "Where assessed is required before saving the new service user."});
-        } else if(!data.religion){
-          this.fire("openToast", {toastText: "Religion is required before saving the new service user."});
-        } else if(!data.ethnicity){
-          this.fire("openToast", {toastText: "Ethnicity is required before saving the new service user."});
-        } else if(!data.nationality){
-          this.fire("openToast", {toastText: "Nationality is required before saving the new service user."});
-        } else {
-          this.createNewPatient();
-          this.fire("openToast", {toastText: "New service user has been saved. You can continue editing on this page or navigate to other pages for the service user."});
-          this.fire("openDrawer");
+        if(this.page === "su-create"){
+          if(!data.fName){
+            this.fire("openToast", {toastText: "First name is required before saving the new service user."});
+            return;
+          } else if(!data.lName){
+            this.fire("openToast", {toastText: "Last name is required before saving the new service user."});
+            return;
+          } else if(!data.dob){
+            this.fire("openToast", {toastText: "Date of birth is required before saving the new service user."});
+            return;
+          } else if(!data.dateAssessed){
+            this.fire("openToast", {toastText: "Date of assessment is required before saving the new service user."});
+            return;
+          } else if(!data.partnership){
+            this.fire("openToast", {toastText: "Partnership status is required before saving the new service user."});
+            return;
+          } else if(!data.whereAssessed){
+            this.fire("openToast", {toastText: "Where assessed is required before saving the new service user."});
+          } else if(!data.religion){
+            this.fire("openToast", {toastText: "Religion is required before saving the new service user."});
+          } else if(!data.ethnicity){
+            this.fire("openToast", {toastText: "Ethnicity is required before saving the new service user."});
+          } else if(!data.nationality){
+            this.fire("openToast", {toastText: "Nationality is required before saving the new service user."});
+          } else {
+            this.createNewPatient();
+            this.fire("openToast", {toastText: "New service user has been saved. You can continue editing on this page or navigate to other pages for the service user."});
+            this.fire("openDrawer");
+          };
         };
       }
     });

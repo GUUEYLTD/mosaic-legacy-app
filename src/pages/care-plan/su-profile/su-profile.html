@@ -35,11 +35,6 @@
       worker-url="../../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
     </app-indexeddb-mirror>
 
-    <firebase-document
-      id="suIndexDB"
-      app-name="main">
-    </firebase-document>
-
     <style include="common-styles">
       :host{
         --app-grid-columns:2;
@@ -72,7 +67,8 @@
         page="Personal Profile"
         patient="[[patient]]"
         home="[[home]]"
-        setimage>
+        setimage
+        su-index-data={{suIndexData}}>
       </su-header>
 
       <div class="innerCont padded">
@@ -83,7 +79,7 @@
 
             <paper-input
               label="First Name"
-              value="{{profileData.fName}}"
+              value="{{suIndexData.fName}}"
               tabindex="1"
               required
               auto-validate
@@ -93,7 +89,7 @@
 
             <paper-input
               label="Last Name"
-              value="{{profileData.lName}}"
+              value="{{suIndexData.lName}}"
               tabindex="2"
               required
               auto-validate
@@ -868,7 +864,6 @@
       observers:[
         "requirementsMet(profileData)",
         "secondaryRequirementsMet(nextOfKinData)",
-        "nameChanged(profileData.fName, profileData.lName)"
       ],
       behaviors:[
         Polymer.carePlanAnimation,
@@ -927,14 +922,6 @@
               return true;
             };
           };
-        };
-      },
-      nameChanged:function(fName, lName){
-        if(fName!=null){
-          this.$.suIndexDB.setStoredValue("/homes/"+this.home+"/patients/suIndex/"+this.patient+"/fName",fName);
-        };
-        if(lName!=null){
-          this.$.suIndexDB.setStoredValue("/homes/"+this.home+"/patients/suIndex/"+this.patient+"/lName",lName);
         };
       }
     });

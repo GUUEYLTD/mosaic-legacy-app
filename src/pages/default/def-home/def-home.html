@@ -7,6 +7,13 @@
       dimensions="{{dimensions}}">
     </media-queries>
 
+    <firebase-document
+      id="settingsDB"
+      app-name="main"
+      path="/homes/[[home]]/settings"
+      data="{{settingsData}}">
+    </firebase-document>
+
     <firebase-query
       id="suIndexDB"
       path="/homes/[[home]]/patients/suIndex"
@@ -43,6 +50,7 @@
     .suBoxImage{
       width:100%;
       height:70%;
+      filter:blur(var(--su-image-blur, 50px));
     }
     .suBoxImage:hover{
       cursor:pointer;
@@ -211,7 +219,8 @@
         },
       },
       observers:[
-        "dbLoaded(patientList)"
+        "dbLoaded(patientList)",
+        "_suBlurValueChanged(settingsData.suBlurValue)"
       ],
       behaviors:[
         Polymer.defPagesAnimation,
@@ -304,6 +313,10 @@
             this.fire("dbLoaded");
         }.bind(this));
       },
+      _suBlurValueChanged:function(value){
+        this.customStyle["--su-image-blur"] = (value / 10) + "px";
+        this.updateStyles();
+      }
     });
 
   </script>

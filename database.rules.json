@@ -13,9 +13,13 @@
         "details": {
           ".read": "root.child('homes').child($home).child('users').child(auth.uid).child('home').val()===$home"
         },
+        "settings": {
+          ".read": "root.child('homes').child($home).child('users').child(auth.uid).child('home').val()===$home && (root.child('homes').child($home).child('users').child(auth.uid).child('role').val()==='admin' || root.child('homes').child($home).child('users').child(auth.uid).child('role').val()==='manager')",
+          ".write": "root.child('homes').child($home).child('users').child(auth.uid).child('home').val()===$home && (root.child('homes').child($home).child('users').child(auth.uid).child('role').val()==='admin' || root.child('homes').child($home).child('users').child(auth.uid).child('role').val()==='manager')"
+        },
         "reports": {
-          ".read": "root.child('homes').child($home).child('users').child(auth.uid).child('home').val()===$home && root.child('homes').child($home).child('users').child(auth.uid).child('role').val()==='admin'",
-          ".write": "root.child('homes').child($home).child('users').child(auth.uid).child('home').val()===$home && root.child('homes').child($home).child('users').child(auth.uid).child('role').val()==='admin'"
+          ".read": "root.child('homes').child($home).child('users').child(auth.uid).child('home').val()===$home && (root.child('homes').child($home).child('users').child(auth.uid).child('role').val()==='admin' || root.child('homes').child($home).child('users').child(auth.uid).child('role').val()==='manager')",
+          ".write": "root.child('homes').child($home).child('users').child(auth.uid).child('home').val()===$home && (root.child('homes').child($home).child('users').child(auth.uid).child('role').val()==='admin' || root.child('homes').child($home).child('users').child(auth.uid).child('role').val()==='manager')"
         },
         "users": {
           ".read": "data.child(auth.uid).child('home').val()===$home",
@@ -55,6 +59,9 @@
                 }
               }
             }
+          },
+          "suIndex":{
+            ".validate":"newData.val() !=null"
           }
         },
         "issues":{
