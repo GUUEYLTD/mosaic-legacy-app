@@ -65,7 +65,7 @@
         </su-header>
         <div class="topInput">
 
-          <paper-input id="fileInputName" label="Asessment Name" value="{{newFileName}}"></paper-input>
+          <paper-input id="fileInputName" label="Asessment Name (optional)" value="{{newFileName}}"></paper-input>
 
           <paper-button
             class="guuey-button"
@@ -81,9 +81,6 @@
           hidden>
         </input>
         <div class="guuey-table">
-          <p class="tableScrollLabel">
-            swipe left scrolls table
-          </p>
           <table>
             <thead>
               <tr>
@@ -154,7 +151,9 @@
         Polymer.suResizeBehavior
       ],
       fileChange:function(e) {
+        console.log(e);
         var file = e.target.files[0];
+        console.log(file);
         this.uploadedFile=file;
         this.$.pdf._uploadFile(file)
         .then(function(fileLoc) {
@@ -164,11 +163,12 @@
             this.$.fileLocDB.data={
             location:fileLoc,
             dateUploaded:date,
-            customName:this.newFileName
+            customName:(this.newFileName || file.name)
           };
           this.$.fileLocDB.save(path,null)
             .then(function(snapshot){
               this.newFileName=null;
+              this.$.fileLocDB.path = null;
             }.bind(this));
         }.bind(this))
         .catch(function(error){

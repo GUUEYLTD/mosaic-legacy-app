@@ -11,7 +11,7 @@
     <firebase-document
       id="dailyRepDB"
       app-name="main"
-      path="homes/[[home]]/patients/[[patient]]/dailyReports/[[currentDate]]/[[selectedChunk]]"
+      path="homes/[[home]]/patients/[[patient]]/dailyReports/[[currentDate]]/[[lowerCase(selectedChunk)]]"
       data="{{dailyRepData}}">
     </firebase-document>
 
@@ -165,9 +165,9 @@
         chunkList:{
           type:Array,
           value:[
-            "morning",
-            "afternoon",
-            "night"
+            "Morning",
+            "Afternoon",
+            "Night"
           ]
         },
         dailyRepData:{
@@ -198,9 +198,9 @@
         //function to set the hours to get time chunks and calculate
         var hours=date.getHours();
         var altChunks=[
-          "morning",
-          "afternoon",
-          "night"
+          "Morning",
+          "Afternoon",
+          "Night"
         ];
         /*
         night
@@ -215,20 +215,19 @@
         */
         var timeChunk;
         if(hours>=8 && hours<14){
-          timeChunk="morning";
+          timeChunk="Morning";
         };
         if(hours>=14 && hours<20){
-          timeChunk="afternoon";
+          timeChunk="Afternoon";
         };
         if(hours>=20 || hours<8){
-          timeChunk="night";
+          timeChunk="Night";
         };
         //set the two calculated time values... used in db ops as well
         this.set("currentChunk",timeChunk);
         this.set("currentDate", currentDate);
       },
       _computeProgressColor:function(number){
-        console.log(number);
         this.updateStyles();
         var int = parseInt(number);
         if(int<=33){
@@ -241,8 +240,10 @@
           return "ok";
         };
         this.updateStyles();
+      },
+      lowerCase:function(chunk){
+        return chunk.toLowerCase();
       }
-
     });
 
   </script>

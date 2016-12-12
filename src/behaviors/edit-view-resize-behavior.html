@@ -12,32 +12,7 @@
       screenChange:function(dimensions){
         console.log(dimensions);
         if(this.page==="su-goals" || this.page==="su-risk"){
-          var tableScrollLabelColor="transparent"
 
-          if(dimensions.base.query1365){
-            //table style
-            var tableScrollLabelColor="transparent"
-
-          } else if(dimensions.base.query767){
-            //table style
-            tableScrollLabelColor="inherit";
-
-          } else if(dimensions.base.query1023){
-            //table style
-            tableScrollLabelColor="inherit";
-
-          } else if(dimensions.base.query1365){
-            //table style
-            tableScrollLabelColor="inherit";
-
-          } else if(dimensions.base.query1919){
-
-              //table style
-              tableScrollLabelColor="transparent";
-
-            };
-            this.customStyle["--table-scroll-lable-color"]=tableScrollLabelColor;
-            this.updateStyles();
         } else if(this.page==="su-care-review"){
           //list styles
           var guueyListFloatLeft="left";

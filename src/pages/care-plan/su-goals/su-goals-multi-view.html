@@ -37,23 +37,23 @@
       .goalProgress{
         width:100%;
       }
-      .lowerContainer{
-        margin-top:5px;
-        display:flex;
-        flex-direction:row;
-        align-items:center;
-        flex-grow:1;
-      }
       .stepsFab{
-        margin-left:20px;
         background-color:#F76363;
+      }
+      .stepsFab:hover{
+        cursor:default;
       }
       .goalStepsText{
         padding-left:20px;
       }
-      .goalSteps:{
-        width:100%;
-        margin:4%;
+      .flexRow{
+        display:flex;
+        flex-direction:row;
+        align-items:center;
+        height:75px;
+      }
+      flexRow *{
+        vertical-align:middle;
       }
     </style>
 
@@ -85,7 +85,6 @@
               <guuey-truncate>[[goal.description]]</guuey-truncate>
             </p>
             <div class="multiCardSecondary">
-              <div class="goalSteps">
                 <paper-progress
                   class="goalProgress"
                   min="0"
@@ -93,7 +92,7 @@
                   value="{{_computeCompleteSteps(goal.steps)}}">
                 </paper-progress>
 
-                <div class="lowerContainer">
+                <div class="flexRow">
                   <paper-fab
                     label="{{_computeSteps(goal.steps)}}"
                     class="stepsFab">
@@ -104,7 +103,6 @@
                   </p>
                 </div>
 
-              </div>
             </div>
           </div>
 

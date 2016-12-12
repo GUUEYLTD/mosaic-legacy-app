@@ -7,8 +7,8 @@
     <style>
 
       :host{
-        display:block;
-        width:100%;
+        display:inline-block;
+        padding:10px;
       }
       .accountCard{
         padding:10px;
@@ -51,7 +51,7 @@
         flex-grow:1;
       }
     </style>
-    <paper-card class="accountCard" elevation="3">
+
 
       <div class="mainRow">
         <img class="roundedImage" src="/images/defaultAvatar.png" />
@@ -71,7 +71,7 @@
         <paper-button on-tap="logout">logout</paper-button>
       </div>
 
-    </paper-card>
+
   </template>
 
   <script>

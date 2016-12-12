@@ -198,45 +198,15 @@
 
         };
         if(this.page==="su-medical"){
-          //working off max 900
-          var tableScrollLabelColor="transparent"
 
-          if(dimensions.base.query1365){
-            //table style
-            var tableScrollLabelColor="transparent"
-
-          } else if(dimensions.base.query767){
-            //table style
-            tableScrollLabelColor="inherit";
-
-          } else if(dimensions.base.query1023){
-            //table style
-            tableScrollLabelColor="inherit";
-
-          } else if(dimensions.base.query1365){
-            //table style
-            tableScrollLabelColor="inherit";
-
-          } else if(dimensions.base.query1919){
-
-              //table style
-              tableScrollLabelColor="transparent";
-
-            };
-            this.customStyle["--table-scroll-lable-color"]=tableScrollLabelColor;
-            this.updateStyles();
         };
         if(this.page==="su-medication"){
-          //table style
-          var tableScrollLabelColor="transparent"
           //fab styles
           var mainFabPosition="absolute";
           var mainFabTop="-30px";
           var mainFabBottom="unset";
           var mainFabRight="5%";
           if(dimensions.base.query767){
-            //table style
-            tableScrollLabelColor="inherit";
 
             //fab styles
             mainFabPosition="fixed";
@@ -244,25 +214,18 @@
             mainFabBottom="5%";
             mainFabRight="5%";
           } else if(dimensions.base.query1023){
-            //table style
-            tableScrollLabelColor="inherit";
             //fab styles
             mainFabPosition="fixed";
             mainFabTop="unset";
             mainFabBottom="5%";
             mainFabRight="5%";
           } else if(dimensions.base.query1365){
-            //table style
-            tableScrollLabelColor="inherit";
             //fab styles
             mainFabPosition="absolute";
             mainFabTop="-30px";
             mainFabBottom="unset";
             mainFabRight="5%";
           } else if(dimensions.base.query1919){
-
-            //table style
-            tableScrollLabelColor="transparent";
 
             //fab styles
             mainFabPosition="absolute";
@@ -270,7 +233,6 @@
             mainFabBottom="unset";
             mainFabRight="5%";
           };
-          this.customStyle["--table-scroll-lable-color"]=tableScrollLabelColor;
 
           this.customStyle["--main-fab-position"]=mainFabPosition;
           this.customStyle["--main-fab-top"]=mainFabTop;

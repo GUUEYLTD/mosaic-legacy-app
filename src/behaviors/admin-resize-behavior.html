@@ -30,36 +30,23 @@
 
       };
       if(this.page==="ad-payment"){
-        //table style
-        var tableScrollLabelColor="transparent";
         //columns
         var appGridColumns="2";
 
         if(dimensions.base.query767){
-          //table style
-          tableScrollLabelColor="inherit";
           //columns
           var appGridColumns="1";
         } else if(dimensions.base.query1023){
-          //table style
-          tableScrollLabelColor="inherit";
           //columns
           var appGridColumns="1";
         } else if(dimensions.base.query1365){
-          //table style
-          tableScrollLabelColor="inherit";
           //columns
           var appGridColumns="1";
         } else if(dimensions.base.query1919){
 
-          //table style
-          tableScrollLabelColor="transparent";
-
           //columns
           var appGridColumns="2";
         };
-        this.customStyle["--table-scroll-lable-color"]=tableScrollLabelColor;
-        this.customStyle["--table-scroll-lable-color"]=tableScrollLabelColor;
 
         this.updateStyles();
       };
@@ -79,16 +66,12 @@
 
       };
       if(this.page==="ad-users"){
-        //table style
-        var tableScrollLabelColor="transparent"
         //fab styles
         var mainFabPosition="absolute";
         var mainFabTop="-25px";
         var mainFabBottom="unset";
         var mainFabRight="-25px";
         if(dimensions.base.query767){
-          //table style
-          tableScrollLabelColor="inherit";
 
           //fab styles
           mainFabPosition="fixed";
@@ -96,16 +79,12 @@
           mainFabBottom="5%";
           mainFabRight="5%";
         } else if(dimensions.base.query1023){
-          //table style
-          tableScrollLabelColor="inherit";
           //fab styles
           mainFabPosition="fixed";
           mainFabTop="unset";
           mainFabBottom="5%";
           mainFabRight="5%";
         } else if(dimensions.base.query1365){
-          //table style
-          tableScrollLabelColor="inherit";
           //fab styles
           var mainFabPosition="absolute";
           var mainFabTop="-25px";
@@ -113,16 +92,12 @@
           var mainFabRight="-25px";
         } else if(dimensions.base.query1919){
 
-          //table style
-          tableScrollLabelColor="transparent";
-
           //fab styles
           var mainFabPosition="absolute";
           var mainFabTop="-25px";
           var mainFabBottom="unset";
           var mainFabRight="-25px";
         };
-        this.customStyle["--table-scroll-lable-color"]=tableScrollLabelColor;
 
         this.customStyle["--main-fab-position"]=mainFabPosition;
         this.customStyle["--main-fab-top"]=mainFabTop;

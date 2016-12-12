@@ -14,7 +14,12 @@
     background-color:#673AB7;
     color:#FFFFFF;
   }
-
+  .stepsFab{
+    background-color:#F76363;
+  }
+  .stepsFab:hover{
+    cursor:default;
+  }
   </style>
 
   <template>
@@ -96,7 +101,7 @@
           <thead>
             <tr>
               <th>
-                Step #
+                Step
               </th>
               <th>
                 Description
@@ -119,7 +124,7 @@
               <tr>
                 <td>
                   <center>
-                    <paper-fab label="[[step.order]]"></paper-fab>
+                    <paper-fab class="stepsFab" label="[[step.order]]"></paper-fab>
                   </center>
                 </td>
                 <td>
