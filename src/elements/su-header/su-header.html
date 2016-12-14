@@ -163,7 +163,27 @@ setimage(boolean)
         width:100%;
         height:150px;
         height:var(--header-image-height);
-        filter:blur(var(--su-image-blur, 50px));
+      }
+      .headerProfileImage:after{
+        content:'\A';
+        position:absolute;
+        width:100%;
+        height:100%;
+        top:0;
+        left:0;
+        opacity:var(--privacy-overlay-opacity, .8);
+        background-color:var(--privacy-overlay-color, #000000);
+        transition: opacity .25s ease-in-out;
+      }
+      .headerProfileImage:hover:after{
+        content:'\A';
+        position:absolute;
+        width:100%;
+        height:100%;
+        top:0;
+        left:0;
+        opacity:0;
+        background-color:var(--privacy-overlay-color, #000000);
       }
     </style>
 
@@ -258,7 +278,7 @@ setimage(boolean)
       },
       observers:[
         "editQuery(query1600, query1400, query1200, query1000, query800, query600)",
-        "_suBlurValueChanged(settingsData.suBlurValue)"
+        "_suSettingsChanged(settingsData.*)"
       ],
       _computeHeaderName:function(fName, lName){
           return fName+" "+lName;
@@ -277,8 +297,9 @@ setimage(boolean)
       print:function(e){
         this.fire("print");
       },
-      _suBlurValueChanged:function(value){
-        this.customStyle["--su-image-blur"] = (value / 10) + "px";
+      _suSettingsChanged:function(value){
+        this.customStyle["--privacy-overlay-opacity"] = String(value.base.privacyOverlayOpacity / 100);
+        this.customStyle["--privacy-overlay-color"] = String(value.base.privacyOverlayColor);
         this.updateStyles();
       },
       editQuery:function(query1600, query1400, query1200, query1000, query800, query600){

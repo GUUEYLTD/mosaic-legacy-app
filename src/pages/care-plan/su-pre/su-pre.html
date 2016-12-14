@@ -49,8 +49,8 @@
       <paper-textarea maxlength="75" label="Name the New Section" value="{{customData.label}}"></paper-textarea>
       <paper-textarea label="Describe the New Section" value="{{customData.label2}}"></paper-textarea>
       <div class="modal-button-container">
-        <paper-button on-tap="cancelNewSection">cancel</paper-button>
-        <paper-button on-tap="saveNewSection">save</paper-button>
+        <paper-button class="cancel-button" on-tap="cancelNewSection">cancel</paper-button>
+        <paper-button class="confirm-button" on-tap="saveNewSection">save</paper-button>
       </div>
     </paper-dialog>
 

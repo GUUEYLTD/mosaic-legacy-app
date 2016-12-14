@@ -4,20 +4,30 @@
   <template>
 
     <style>
-
+      :host{
+        display:block;
+        box-sizing: border-box;
+      }
       #timeChunks{
         display:flex;
         flex-direction:row;
+      }
+      paper-item:first-child{
+        margin-left:0px;
+      }
+      paper-item:last-child{
+        margin-right:0px;
       }
       paper-item{
         display:inline-block;
         flex-grow:1;
         text-transform:uppercase;
         text-align: center;
+        margin:5px;
         --paper-item-selected:{
-          border:2px solid green;
+          border:2px solid #009688;
           color:#FFFFFF;
-          background-color:green;
+          background-color:#009688;
         }
         --paper-item:{
           border:1px solid grey;
@@ -26,7 +36,7 @@
       }
       paper-item:hover{
         cursor:pointer;
-          border:2px solid green;
+          border:2px solid #009688;
           color:grey;
 
       }
@@ -34,7 +44,16 @@
         padding:10px;
         margin:0;
       }
+      .select-label{
+        color:#757575;
+        display:block;
+        font-size:13px;
+      }
     </style>
+
+    <p class="select-label">
+      Select Frequency
+    </p>
 
     <iron-selector
       id="timeChunks"

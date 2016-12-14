@@ -23,9 +23,19 @@
       min-height:800px;
     }
     #exampleBlurImage{
-      filter:blur(var(--su-image-blur));
+      position:relative;
       height:200px;
       width:200px;
+    }
+    #exampleBlurImage:after{
+      content:'\A';
+      position:absolute;
+      width:100%;
+      height:100%;
+      top:0;
+      left:0;
+      opacity:var(--privacy-overlay-opacity, 8);
+      background-color:var(--privacy-overlay-color, '#000000');
     }
     .example{
       text-align:center;
@@ -48,15 +58,19 @@
         <div class="app-grid">
           <div class="control">
             <div>
-               Image Blur Percentage: [[suBlurValue]]%
+               Image Overlay Opacity Percentage: [[privacyOverlayOpacity]]%
+               <br />
+               Image Overlay Color: [[privacyOverlayColor]]
             </div>
-            <paper-slider id="blurSlider" value="[[settingsData.suBlurValue]]" immediate-value="{{suBlurValue}}"></paper-slider>
-            <paper-button on-tap="_saveBlur">save</paper-button>
+            <paper-slider id="blurSlider" value="[[settingsData.privacyOverlayOpacity]]" immediate-value="{{privacyOverlayOpacity}}"></paper-slider>
+            <input type="color" value="{{privacyOverlayColor::input}}"/>
+            <paper-button on-tap="_saveSuSettings">save</paper-button>
           </div>
 
           <div class="example">
             <iron-image sizing="cover" id="exampleBlurImage" src="/images/people/001m.jpg"></iron-image>
           </div>
+
 
         </div>
       </div>
@@ -71,28 +85,37 @@
       is: 'ad-settings',
       ready:function(){
         this.fire("pageLoaded", {page:this.page});
+        this.customStyle["--privacy-overlay-color"]="#000000";
+        this.customStyle["--privacy-overlay-opacity"]="0";
+        this.updateStyles();
       },
       properties:{
-        suBlurValue:{
+        privacyOverlayOpacity:{
           type:Number,
-          observer:"_blurValueChanged"
+          observer:"_privacyOverlayOpacityChanged"
+        },
+        privacyOverlayColor:{
+          type:String,
+          observer:"_privacyOverlayColorChanged"
         }
       },
       behaviors:[
         Polymer.adminPagesAnimation,
         Polymer.adminResizeBehavior
       ],
-      _blurValueChanged:function(value){
-        this.customStyle["--su-image-blur"]=(value / 10)+"px";
+      _privacyOverlayOpacityChanged:function(value){
+        this.customStyle["--privacy-overlay-opacity"] = String(value / 100);
         this.updateStyles();
       },
-      _saveBlur:function(){
+      _privacyOverlayColorChanged:function(value){
+        this.customStyle["--privacy-overlay-color"] = value;
+        this.updateStyles();
+      },
+      _saveSuSettings:function(){
         //this.settingsData.suImageBlur = this.blurValue;
-        var path = "homes/"+this.home+"/settings/suBlurValue";
-        this.$.settingsDB.setStoredValue(path, this.suBlurValue)
-          .then(function(snapshot){
-            console.log(snapshot);
-          });
+        var path = "homes/"+this.home+"/settings/";
+        this.$.settingsDB.setStoredValue(path+"privacyOverlayOpacity", this.privacyOverlayOpacity || .8);
+        this.$.settingsDB.setStoredValue(path+"privacyOverlayColor", this.privacyOverlayColor || "#000000");
       }
     });
 

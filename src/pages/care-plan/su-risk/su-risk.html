@@ -49,19 +49,16 @@
       </guuey-date-input>
 
       <paper-textarea
-        class="dialogHalf"
         label="Background of Risk"
         value="{{riskData.backgroundOfRisk}}">
       </paper-textarea>
 
       <paper-textarea
-        class="dialogHalf"
         label="Risk Identified"
         value="{{riskData.riskIdentified}}">
       </paper-textarea>
 
       <paper-textarea
-        class="dialogHalf"
         label="Crisis Plan"
         value="{{riskData.crisisPlan}}">
       </paper-textarea>
@@ -84,8 +81,8 @@
         value="{{riskData.riskLevel}}">
       </guuey-slider>
       <div class="modal-button-container">
-        <paper-button on-tap="cancelNewRisk">cancel</paper-button>
-        <paper-button on-tap="saveNewRisk">save</paper-button>
+        <paper-button class="cancel-button" on-tap="cancelNewRisk">cancel</paper-button>
+        <paper-button class="confirm-button" on-tap="saveNewRisk">save</paper-button>
       </div>
 
     </paper-dialog>

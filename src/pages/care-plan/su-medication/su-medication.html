@@ -122,6 +122,13 @@
         margin-right:110px;
         padding:0;
       }
+      .left-partial{
+        width:200px;
+      }
+      .delete-button{
+        padding:8px;
+        float:left;
+      }
     </style>
 
     <paper-dialog
@@ -140,6 +147,7 @@
         <h2>Add Medication</h2>
 
         <paper-input
+          class="left-partial"
           label="Medication Name"
           value="{{newMed.medicine}}"
           required
@@ -183,8 +191,8 @@
         </guuey-weekday-selector>
 
         <div class="modal-button-container">
-          <paper-button dialog-dismiss>Cancel</paper-button>
-          <paper-button on-tap="saveMed">Save</paper-button>
+          <paper-button class="cancel-button" dialog-dismiss>Cancel</paper-button>
+          <paper-button class="confirm-button" on-tap="saveMed">Save</paper-button>
         </div>
 
     </paper-dialog>
@@ -237,9 +245,9 @@
       </guuey-weekday-selector>
 
       <div class="modal-button-container">
-        <paper-button dialog-dismiss>Cancel</paper-button>
-        <paper-button on-tap="deleteMed">Delete</paper-button>
-        <paper-button on-tap="saveEditMed">Save</paper-button>
+        <paper-icon-button class="delete-button" icon="icons:delete-forever" on-tap="deleteMed"></paper-icon-button>
+        <paper-button class="cancel-button" dialog-dismiss>Cancel</paper-button>
+        <paper-button class="confirm-button" on-tap="saveEditMed">Save</paper-button>
       </div>
 
     </paper-dialog>

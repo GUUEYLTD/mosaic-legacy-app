@@ -48,9 +48,30 @@
       position:relative;
     }
     .suBoxImage{
+      position:relative;
       width:100%;
       height:70%;
-      filter:blur(var(--su-image-blur, 50px));
+    }
+    .suBoxImage:after{
+      content:'\A';
+      position:absolute;
+      width:100%;
+      height:100%;
+      top:0;
+      left:0;
+      opacity:var(--privacy-overlay-opacity, .8);
+      background-color:var(--privacy-overlay-color, #000000);
+      transition: opacity .25s ease-in-out;
+    }
+    .suBoxImage:hover:after{
+      content:'\A';
+      position:absolute;
+      width:100%;
+      height:100%;
+      top:0;
+      left:0;
+      opacity:0;
+      background-color:var(--privacy-overlay-color, #000000);
     }
     .suBoxImage:hover{
       cursor:pointer;
@@ -220,7 +241,7 @@
       },
       observers:[
         "dbLoaded(patientList)",
-        "_suBlurValueChanged(settingsData.suBlurValue)"
+        "_suSettingsChanged(settingsData.*)"
       ],
       behaviors:[
         Polymer.defPagesAnimation,
@@ -313,8 +334,9 @@
             this.fire("dbLoaded");
         }.bind(this));
       },
-      _suBlurValueChanged:function(value){
-        this.customStyle["--su-image-blur"] = (value / 10) + "px";
+      _suSettingsChanged:function(value){
+        this.customStyle["--privacy-overlay-opacity"] = String(value.base.privacyOverlayOpacity / 100);
+        this.customStyle["--privacy-overlay-color"] = String(value.base.privacyOverlayColor);
         this.updateStyles();
       }
     });

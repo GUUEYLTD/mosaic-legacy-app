@@ -175,23 +175,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         background-color:#FF0000;
         color:#FFF;
       }
-      .modal-date-input{
-        --date-paper-input-style:{
-          margin-right:20px;
-          margin-left:20px;
-        };
-      }
       .guuey-add-modal paper-button{
         color:#673AB7;
+        padding:10px;
       }
       .guuey-view-modal paper-button{
         color:#3d4ba8;
+        padding:10px;
       }
       .guuey-danger-modal paper-button{
         color:#FF0000;
+        padding:10px;
       }
       .guuey-danger-modal #dangerCancel{
         color:#009688;
+        padding:10px;
       }
       .guuey-modal{
         width:600px;
@@ -208,17 +206,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       .guuey-modal *{
         padding:20px;
       }
+      .guuey-modal .cancel-button{
+        color:inherit;
+      }
+      .guuey-modal .confirm-button{
+        color:#FFFFFF;
+        background-color:#009688;
+      }
       .guuey-modal .dialogHalf{
-        width:40%;
+        width:200px;
         display:inline-block;
-        text-align:center;
       }
       .modal-button-container{
-        display:flex;
-        flex-direction:row;
+        text-align:right;
       }
       .modal-button-container paper-button{
-        flex-grow:1;
+        padding:10px;
         display:inline-block;
         text-align:center;
       }

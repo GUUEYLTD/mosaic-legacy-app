@@ -14,8 +14,8 @@
         text-transform:uppercase;
         text-align: center;
         --paper-item-selected:{
-          border:2px solid green;
-          color:green;
+          border:2px solid #009688;
+          color:#009688;
         }
         --paper-item:{
           border:1px solid grey;
@@ -23,16 +23,18 @@
         }
       }
       .checkBoxContainer{
-        display:inline-block;
         flex-grow:1;
         text-align:center;
       }
-      .checkBoxLabel{
+      .checkBoxContainer p{
         display:block;
         text-transform:uppercase;
+        text-align:center;
       }
       paper-checkbox{
-        --paper-checkbox-checked-color:green;
+        display:block;
+        margin-left:8px
+        --paper-checkbox-checked-color:#009688;
       }
     </style>
 
@@ -41,9 +43,9 @@
         selected-values="{{value}}">
         <template is="dom-repeat" items="[[weekdays]]" as="weekday">
           <div value="[[weekday]]" class="checkBoxContainer">
-            <div class="checkBoxLabel">
+            <p>
               [[weekday]]
-            </div>
+            </p>
             <paper-checkbox checked="{{_computechecked(value, weekday)}}"></paper-checkbox>
           </div>
         </template>
