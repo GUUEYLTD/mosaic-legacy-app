@@ -27,6 +27,16 @@
       height:200px;
       width:200px;
     }
+    #exampleBlurImage:hover:after{
+      content:'\A';
+      position:absolute;
+      width:100%;
+      height:100%;
+      top:0;
+      left:0;
+      opacity:0;
+      background-color:var(--privacy-overlay-color, '#000000');
+    }
     #exampleBlurImage:after{
       content:'\A';
       position:absolute;
@@ -36,6 +46,7 @@
       left:0;
       opacity:var(--privacy-overlay-opacity, 8);
       background-color:var(--privacy-overlay-color, '#000000');
+      transition: opacity .25s ease-in-out;
     }
     .example{
       text-align:center;
@@ -46,6 +57,17 @@
     }
     #blurSlider{
       width:100%;
+    }
+    .guuey-su-name{
+      color:transparent;
+      transition:color .5s;
+    }
+    .guuey-su-name:first-letter{
+      color:#000000;
+    }
+    .guuey-su-name:hover{
+      color:#000000;
+      cursor:pointer;
     }
     </style>
 
@@ -64,11 +86,28 @@
             </div>
             <paper-slider id="blurSlider" value="[[settingsData.privacyOverlayOpacity]]" immediate-value="{{privacyOverlayOpacity}}"></paper-slider>
             <input type="color" value="{{privacyOverlayColor::input}}"/>
-            <paper-button on-tap="_saveSuSettings">save</paper-button>
+            <paper-button on-tap="_savePrivacyOverlaySettings">save overlay settings</paper-button>
           </div>
 
           <div class="example">
             <iron-image sizing="cover" id="exampleBlurImage" src="/images/people/001m.jpg"></iron-image>
+          </div>
+
+          <div class="control">
+            <paper-toggle-button checked="{{privacyNameEnabled}}">Hide Full Service User Names</paper-toggle-button>
+            <paper-button on-tap="_savePrivacyNameSettings">save name settings</paper-button>
+          </div>
+
+          <div class="example">
+            <p>
+              Non-Privacy Mode: John Doe
+            </p>
+            Privacy Mode:
+            <p class="guuey-su-name">John</p>
+            <p class="guuey-su-name">Doe</p>
+            <p>
+              Current Mode: [[filterName(privacyNameEnabled, 'John')]] [[filterName(privacyNameEnabled, 'Doe')]]
+            </p>
           </div>
 
 
@@ -103,6 +142,12 @@
         Polymer.adminPagesAnimation,
         Polymer.adminResizeBehavior
       ],
+      observers:[
+        "_settingsChanged(settingsData.*)"
+      ],
+      _settingsChanged(settings){
+        this.privacyNameEnabled = settings.base.privacyNameEnabled || false;
+      },
       _privacyOverlayOpacityChanged:function(value){
         this.customStyle["--privacy-overlay-opacity"] = String(value / 100);
         this.updateStyles();
@@ -111,11 +156,21 @@
         this.customStyle["--privacy-overlay-color"] = value;
         this.updateStyles();
       },
-      _saveSuSettings:function(){
-        //this.settingsData.suImageBlur = this.blurValue;
+      _savePrivacyOverlaySettings:function(){
         var path = "homes/"+this.home+"/settings/";
         this.$.settingsDB.setStoredValue(path+"privacyOverlayOpacity", this.privacyOverlayOpacity || .8);
         this.$.settingsDB.setStoredValue(path+"privacyOverlayColor", this.privacyOverlayColor || "#000000");
+      },
+      _savePrivacyNameSettings:function(){
+        var path = "homes/"+this.home+"/settings/";
+        this.$.settingsDB.setStoredValue(path+"privacyNameEnabled", this.privacyNameEnabled || false);
+      },
+      filterName:function(privacyNameEnabled, name){
+        if(privacyNameEnabled){
+          return name.trim().charAt(0).toUpperCase() + ".";
+        } else {
+          return name;
+        };
       }
     });
 

@@ -211,7 +211,7 @@ setimage(boolean)
           <template is="dom-if" if="[[firstName]]">
 
             <span class="patientNameText">
-              {{firstname}} {{lastname}}
+              [[_returnName(settingsData.privacyNameEnabled, firstname)]] [[_returnName(settingsData.privacyNameEnabled, lastname)]]
             </span>
             <paper-icon-button
               class="headerPrint"
@@ -224,7 +224,7 @@ setimage(boolean)
           <template is="dom-if" if="{{_nofirstname(firstname)}}">
 
             <span class="patientNameText">
-              {{_computeHeaderName(suIndexData.fName, suIndexData.lName)}}
+              {{_computeHeaderName(settingsData.privacyNameEnabled, suIndexData.fName, suIndexData.lName)}}
             </span>
             <paper-icon-button
               class="headerPrint"
@@ -280,8 +280,23 @@ setimage(boolean)
         "editQuery(query1600, query1400, query1200, query1000, query800, query600)",
         "_suSettingsChanged(settingsData.*)"
       ],
-      _computeHeaderName:function(fName, lName){
-          return fName+" "+lName;
+      _computeHeaderName:function(privacyNameEnabled, fName, lName){
+          if(privacyNameEnabled){
+            var newFname = typeof fName ==="string" ? fName.trim().charAt(0).toUpperCase() + "." : "";
+            var newLName = typeof lName ==="string" ? lName.trim().charAt(0).toUpperCase() + "." : "";
+            return newFname + " " + newLName;
+          } else {
+            var newFname = typeof fName ==="string" ? fName : "";
+            var newLName = typeof lName ==="string" ? lName : "";
+            return newFname + " " + newLName;
+          };
+      },
+      _returnName:function(privacyNameEnabled, name){
+        if(privacyNameEnabled){
+          return name.trim().charAt(0).toUpperCase() + ".";
+        } else {
+          return name;
+        };
       },
       _nofirstname:function(firstname){
         if(firstname){

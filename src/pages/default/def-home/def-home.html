@@ -98,6 +98,20 @@
       position:absolute;
       bottom:0;
     }
+    .guuey-su-name{
+      color:var(--privacy-name-transparency, transparent);
+      transition:color .25s ease-in-out;
+      margin:0;
+      padding:0;
+      text-transform:capitalize;
+    }
+    .guuey-su-name:first-letter{
+      color:#000000;
+    }
+    .guuey-su-name:hover{
+      color:#000000;
+      cursor:pointer;
+    }
     .suEdit{
       position:absolute;
       bottom:0;
@@ -173,9 +187,12 @@
                   suspended
                 </p>
                 <div class="suLower">
-                  [[su.fName]]
-                  <br />
-                  [[su.lName]]
+                  <p class="guuey-su-name">
+                    [[su.fName]]
+                  </p>
+                  <p class="guuey-su-name">
+                    [[su.lName]]
+                  </p>
                 </div>
                 <paper-icon-button class="suEdit" on-tap="openSuspendedDialog" icon="icons:more-vert"></paper-icon-button>
               </paper-card>
@@ -196,9 +213,12 @@
                     on-tap="goProfile">
                   </iron-image>
                 <div class="suLower">
-                  [[su.fName]]
-                  <br />
-                  [[su.lName]]
+                  <p class="guuey-su-name">
+                    [[su.fName]]
+                  </p>
+                  <p class="guuey-su-name">
+                    [[su.lName]]
+                  </p>
                 </div>
                 <paper-icon-button class="suEdit" on-tap="openDialog" icon="icons:more-vert"></paper-icon-button>
               </paper-card>
@@ -335,6 +355,14 @@
         }.bind(this));
       },
       _suSettingsChanged:function(value){
+        if(value.base.privacyNameEnabled){
+          console.log("hitting");
+          this.customStyle["--privacy-name-transparency"] = "transparent";
+        } else {
+          console.log("not hitting");
+          this.customStyle["--privacy-name-transparency"] = "#000000";
+        };
+
         this.customStyle["--privacy-overlay-opacity"] = String(value.base.privacyOverlayOpacity / 100);
         this.customStyle["--privacy-overlay-color"] = String(value.base.privacyOverlayColor);
         this.updateStyles();

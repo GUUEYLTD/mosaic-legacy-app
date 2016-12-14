@@ -156,6 +156,8 @@
 
             <guuey-notification index="[[index]]" info="[[guueyNotify]]"></guuey-notification>
 
+
+
         </template>
 
       </paper-dialog-scrollable>
@@ -1154,6 +1156,8 @@
         this.$.appsDialog.horizontalAlign = "right";
         this.$.appsDialog.noOverlap = true;
         this.$.appsDialog.horizontalOffset = 20;
+        this.$.logoutDialog.close();
+        this.$.notifyDialog.close();
         this.$.appsDialog.toggle();
       },
       openNotifications:function(e){
@@ -1166,6 +1170,8 @@
         if(this.notifiesData.length<1){
           return;
         };
+        this.$.appsDialog.close();
+        this.$.logoutDialog.close();
         this.$.notifyDialog.toggle();
       },
       checkNotification:function(){
@@ -1177,6 +1183,8 @@
         this.$.logoutDialog.horizontalAlign = "right";
         this.$.logoutDialog.noOverlap = true;
         this.$.logoutDialog.horizontalOffset = 20;
+        this.$.notifyDialog.close();
+        this.$.appsDialog.close();
         this.$.logoutDialog.toggle();
       }
     });
