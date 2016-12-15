@@ -1,65 +1,339 @@
 <link rel="import" href="../../../../bower_components/polymer/polymer.html" />
 <link rel="import" href="../../../../bower_components/paper-card/paper-card.html" />
 <link rel="import" href="../../../../bower_components/paper-button/paper-button.html" />
-<link rel="import" href="../../../behaviors/multi-view-resize-behavior.html" />
-<link rel="import" href="../../../elements/media-queries/media-queries.html" />
-<link rel="import" href="../../../elements/guuey-truncate/guuey-truncate.html" />
-<link rel="import" href="../../../styles/common-styles.html" />
+<link rel="import" href="../../../../bower_components/iron-collapse/iron-collapse.html" />
 
 
 <dom-module id="test-test">
   <template>
 
-    <media-queries
-      dimensions="{{dimensions}}">
-    </media-queries>
+    <style>
 
-    <style include="common-styles">
       :host{
-        --app-grid-columns:3;
-        --app-grid-gutter:20px;
+        background-color:#2fc19e;
       }
-      .pageCard{
-        width:80%;
-        margin:0 10% 0 10%;
+      .padded{
+        padding:20px;
       }
-      .testContent{
-        height:150px;
+      .loginBox{
+        width:300px;
+        height:450px;
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%,-50%);
+      }
+      .register-card{
+        background-color:#7e57c2;
+      }
+      .register-card paper-input{
+        --paper-input-container-color:#FFFFFF;
+        --paper-input-container-focus-color:#2fc19e;
+      }
+      .login-card paper-input{
+        --paper-input-container-focus-color:#2fc19e;
+      }
+      .card-heading{
+        width:300px;
+        height:60px;
+        position:relative;
+      }
+      .tab-wrapper {
+        display: inline-block;
+        padding: 10px;
+        overflow: hidden;
+        width:100px;
+        height:100%;
+        position:absolute;
+        top:0;
+        right:0;
+        padding:0;
         margin:0;
+      }
+      .tab-wrapper:hover {
+        cursor: pointer;
+      }
+      .tab-wrapper:hover [class*="button"]:after {
+        -webkit-transform: scale(1) translateZ(0);
+        -moz-transform: scale(1) translateZ(0);
+        -ms-transform: scale(1) translateZ(0);
+        -o-transform: scale(1) translateZ(0);
+        transform: scale(1) translateZ(0);
+        -webkit-transition: all 0.5s ease;
+        -moz-transition: all 0.5s ease;
+        transition: all 0.5s ease;
+      }
+
+      [class*="button"] {
+        color: inherit;
+        position: relative;
+        z-index: 10;
+      }
+      [class*="button"]:after {
+        content: "";
+        width: 150%;
+        height: 0;
+        padding-top: 150%;
+        object-fit: contain;
+        position: absolute;
+        top: 10%;
+        right: 30%;
+        margin: -75%;
+        opacity: 1;
+        border-radius: 50%;
+        -webkit-transform: scale(0) translateZ(0);
+        -moz-transform: scale(0) translateZ(0);
+        -ms-transform: scale(0) translateZ(0);
+        -o-transform: scale(0) translateZ(0);
+        transform: scale(0) translateZ(0);
+        -webkit-transition: all 0.2s ease;
+        -moz-transition: all 0.2s ease;
+        transition: all 0.2s ease;
+        z-index: -1;
+      }
+      [class*="login"]:after{
+        background-color: #FFFFFF;
+      }
+      [class*="register"]:after{
+        background-color: #7e57c2;
+      }
+      [class*="forgot"]:after{
+        background-color: #7e57c2;
+      }
+      @-webkit-keyframes scaler {
+        0%, 50% {
+          -webkit-transform: scale(0) translateZ(0);
+        }
+        100% {
+          -webkit-transform: scale(1) translateZ(0);
+        }
+      }
+      @-moz-keyframes scaler {
+        0%, 50% {
+          -moz-transform: scale(0) translateZ(0);
+        }
+        100% {
+          -moz-transform: scale(1) translateZ(0);
+        }
+      }
+      @keyframes scaler {
+        0%, 50% {
+          -webkit-transform: scale(0) translateZ(0);
+          -moz-transform: scale(0) translateZ(0);
+          -ms-transform: scale(0) translateZ(0);
+          -o-transform: scale(0) translateZ(0);
+          transform: scale(0) translateZ(0);
+        }
+        100% {
+          -webkit-transform: scale(1) translateZ(0);
+          -moz-transform: scale(1) translateZ(0);
+          -ms-transform: scale(1) translateZ(0);
+          -o-transform: scale(1) translateZ(0);
+          transform: scale(1) translateZ(0);
+        }
+      }
+      .register-button{
+        position:absolute;
+        right:0;
+        top:0;
+        --paper-button-ink-color:#7e57c2;
+        color:#7e57c2;
+        transition: all 0.5s ease;
+        --paper-button:{
+          font-size:12px;
+          font-weight:bold;
+        };
+      }
+      .login-button, .forgot-button{
+        position:absolute;
+        right:0;
+        top:0;
+        --paper-button-ink-color:#2fc19e;
+        color:#2fc19e;
+        transition: all 0.5s ease;
+        --paper-button:{
+          font-size:14px;
+          font-weight:bold;
+          padding-left:0;
+          margin-left:0;
+        };
+      }
+      .white{
+        --paper-button-ink-color:#FFFFFF;
+        color:#FFFFFF;
+      }
+      .mode-name{
+        position:absolute;
+        bottom:0;
+        left:0;
+        width:200px;
+        text-transform:uppercase;
+        margin:0;
+        padding-left:20px;
+        font-weight:bold;
+        font-size:130%;
+      }
+      .mode-login{
+        color:#2fc19e;
+      }
+      .mode-register{
+        color:#FFFFFF;
+      }
+      .login{
+
+      }
+      .action-button{
+        position:absolute;
+        bottom:80px;
+        left:20px;
+        right:20px;
+        margin:0;
+        background-color:#2fc19e;
+        color:#FFFFFF;
+      }
+      .forgot-password{
+        position:absolute;
+        bottom:10px;
+        left:0;
+        right:0;
+        text-align:center;
+        font-size:14px;
+        color:grey;
+        transition: all .25s ease;
+      }
+      .forgot-password:hover{
+        cursor:pointer;
+        opacity:.7;
+      }
+      #forgotPass{
+        background-color:#FFFFFF;
+        z-index:2;
+      }
+      .forgot-box{
+        position:relative;
       }
     </style>
 
-      <paper-card class="pageCard app-grid">
-        <template id="domRepeat" is="dom-repeat" items="[[items]]" as="item">
+    <iron-collapse id="forgotPass" class="loginBox">
 
-          <paper-card class="multiItem">
-            <div style="background-color:purple;" class="multiCardHeading">
-              <p on-tap="directEditModal" class="multiCardLabel">
-                [[item.title]]
-              </p>
+        <div class="card-heading">
+          <div class="tab-wrapper">
+            <paper-button on-tap="cancelForgot" class="forgot-button">X</paper-button>
+          </div>
+          <div class="mode-name mode-login">
+              Forgot Password
+          </div>
+        </div>
+        <div class="padded">
+          <iron-collapse id="forgotSection">
+
+            <p>
+              Please enter your email below and click reset password. A password reset email will be sent to your account email.
+            </p>
+            <paper-input label="Email Address" value="{{forgotEmail}}"></paper-input>
+
+            <paper-button on-tap="resetPass">reset password</paper-button>
+
+          </iron-collapse>
+
+          <iron-collapse id="forgotSuccess">
+
+            Success! Your password reset email has been sent to [[forgotEmail]]. Please allow 5 minutes before trying to send the password email again.
+
+          </iron-collapse>
+
+          <iron-collapse id="forgotError">
+            <p>
+              Oops! Something went wrong! The error is:
+              [[error]]
+            </p>
+            <p>
+              Please try again, contact your care home administrator, or contact support.
+            </p>
+
+          </iron-collapse>
+        </div>
+        <p on-tap="_closeForgotPass" class="forgot-password">
+          Go Back
+        </p>
+
+    </iron-collapse>
+
+    <span hidden$="[[loginDisplay]]">
+      <paper-card elevation="3" class="loginBox login-card">
+          <div class="card-heading">
+            <div id="registerWrapper" class="tab-wrapper">
+              <paper-button on-tap="_toggleTab" class="register-button">Register</paper-button>
             </div>
-            <div class="multiCardContainer">
-              <p class="testContent">
-                <guuey-truncate>
-                  [[item.body]]
-                </guuey-truncate>
-              </p>
-              <div class="multiCardSecondary">
-                [[item.footer]]
-              </div>
+            <div class="mode-name mode-login">
+                log in
             </div>
+          </div>
+          <div class="padded">
+            <paper-input
+              label="Your Email Address"
+              value="{{username}}"
+              required
+              auto-validate
+              pattern="[a-zA-Z0-9_\.\+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-\.]+"
+              error-message="Please enter a valid email.">
+            </paper-input>
+            <paper-input label="Password" type="password" label="password" value="{{password}}"></paper-input>
+            <paper-button class="guuey-button action-button" on-tap="emailSignIn">log in</paper-button>
+          </div>
+          <p on-tap="_openForgotPass" class="forgot-password">
+            Forgot your password?
+          </p>
+      </paper-card>
+    </span>
 
-            <paper-icon-button
-              icon="icons:more-vert"
-              class="multiCardMore"
-              on-tap="toggleEditModal">
-            </paper-icon-button>
+    <span hidden$="[[!loginDisplay]]">
+      <paper-card elevation="3" class="loginBox register-card">
+          <div class="card-heading">
+            <div class="tab-wrapper">
+              <paper-button on-tap="_toggleTab" class="login-button">X</paper-button>
+            </div>
+            <div class="mode-name mode-register">
+                register
+            </div>
+          </div>
 
-          </paper-card>
-        </template>
-
+          <div class="padded">
+            <paper-input
+              id="registerUsername"
+              label="Your Email Address"
+              label="Email"
+              value="{{newAccount.username}}"
+              required
+              auto-validate
+              pattern="[a-zA-Z0-9_\.\+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-\.]+"
+              error-message="Please enter a valid email.">
+            </paper-input>
+            <paper-input
+              id="registerPassword"
+              label="Password"
+              type="password"
+              value="{{newAccount.password}}"
+              required
+              auto-validate
+              pattern="^(?=.*\d).{8,16}$"
+              error-message="Password must be between 8 and 16 characters long and include at least one number.">
+            </paper-input>
+            <paper-input
+              id="registerPasswordConfirm"
+              class="registerInput"
+              label="Confirm Password"
+              type="password"
+              value="{{newAccount.passwordConfirm}}"
+              required
+              auto-validate
+              pattern="{{newAccount.password}}"
+              error-message="Passwords must match">
+            </paper-input>
+            <paper-button on-tap="createNewAccount" class="guuey-button action-button">register</paper-button>
+          </div>
 
       </paper-card>
+    </span>
 
   </template>
 
@@ -70,42 +344,36 @@
         is: 'test-test',
         ready:function(){
           this.fire("pageLoaded", {page:this.page});
-          this.addEventListener("truncate-read-more", this._readMore);
+        },
+        attached:function(){
+          this.$.registerWrapper.addEventListener('mouseover', this._applyHovered);
+          this.$.registerWrapper.addEventListener('mouseout', this._removeHovered);
         },
         properties:{
-          items:{
-            type:Array,
-            value:[
-              {
-                title:"stuff and things",
-                body:"other things and stuff sdfdsfsdfds o sdf f f f f f f f f f f f f f ksfjsdf dsjskdfjsdkfj s sdfdsfds fsther things and stuff oth sdfsdfds fsdf dser things and stuff other things and stuff other things other things and stuff other things and stuff other things and stuff other things and stuff other things and stuff other things and stuff other things and stuff other things and stuff other things and stuff",
-                footer:"things and stuff"
-              },
-              {
-                title:"stuff and things",
-                body:"and stuff other things and stuff other things and stuff other things and stuff other things and stuff other things and stuff",
-                footer:"things and stuff"
-              },
-              {
-                title:"stuff and things",
-                body:" and stuff other things and stuff other things and stuff other things and stuff",
-                footer:"things and stuff"
-              },
-              {
-                title:"stuff and things",
-                body:"stuff other things and stuff",
-                footer:"things and stuff"
-              },
-            ]
+          loginDisplay:{
+            type:Boolean,
+            value:false
           }
         },
         behaviors:[
-          Polymer.multiViewResizeBehavior
+
         ],
-        _readMore:function(e){
-          console.log(e.path);
-          console.log(e.path[5]);
-          console.log(this.$.domRepeat.modelForElement(e.path[5]));
+        _toggleTab:function(){
+          this.loginDisplay = !this.loginDisplay;
+        },
+        _applyHovered:function(e){
+          console.log(e);
+          console.log(this);
+          this.querySelector("paper-button").classList.add("white");
+        },
+        _removeHovered:function(e){
+          this.querySelector("paper-button").classList.remove("white");
+        },
+        _openForgotPass:function(){
+          this.$.forgotPass.show();
+        },
+        _closeForgotPass:function(){
+          this.$.forgotPass.hide();
         }
       });
 

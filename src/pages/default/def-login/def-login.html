@@ -4,10 +4,6 @@
 
   <template>
 
-    <media-queries
-      dimensions="{{dimensions}}">
-    </media-queries>
-
     <firebase-auth
       id="forgotUser"
       app-name="main">
@@ -23,223 +19,231 @@
         left:0;
         bottom:0;
         right:0;
-        --app-grid-columns:2;
-        --app-grid-expandible-item-columns: 2;
-        --app-grid-item-height:10%;
       }
-      paper-button{
-        margin:0px;
-      }
-      .loginBoxContainer{
-        position:relative;
-        width:100%;
-        height:100%;
+      .padded{
+        padding:20px;
       }
       .loginBox{
-        max-width:320px;
-        max-height:640px;
-        position:absolute;
-        top:50%;
-        left:50%;
-        transform:translate(-50%, -50%);
+        width:300px;
+        height:450px;
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%,-50%);
       }
-      .registerBox{
-        max-width:320px;
-        max-height:640px;
-        position:absolute;
-        top:50%;
-        left:50%;
-        transform:translate(-50%, -50%);
+      .register-card{
         background-color:#7e57c2;
-        color:#FFFFFF;
       }
-      .loginHeader{
-        color:#2fc19e;
-        text-transform:uppercase;
-        font-size:24px;
-        font-weight:bold;
-        text-align:center;
-
-      }
-      .loginHeader p{
-        padding:0;
-        margin:0;
-        padding-top:10px;
-
-      }
-      .loginButton{
-        background-color:#41847d;
-        color:#FFFFFF;
-
-        @apply(--app-grid-expandible-item);
-      }
-      .toggleToRegister{
-
-        background-color:#41847d;
-        color:#FFFFFF;
-      }
-      .toggleToRegister:hover{
-        background-color:#7e57c2;
-        color:#FFFFFF;
-      }
-      .registerHeader{
-        color:#FFFFFF;
-        text-transform:uppercase;
-        font-size:24px;
-        font-weight:bold;
-        text-align:center;
-      }
-      .registerHeader p{
-        padding:0;
-        margin:0;
-        padding-top:10px;
-      }
-      .registerButton{
-        background-color:#41847d;
-        color:#FFFFFF;
-        @apply(--app-grid-expandible-item);
-      }
-      .toggleToLogin{
-        background-color:#41847d;
-        color:#FFFFFF;
-      }
-      .toggleToLogin:hover{
-        background-color:#FFFFFF;
-        color:#2fc19e;
-      }
-      .registerInput{
+      .register-card paper-input{
         --paper-input-container-color:#FFFFFF;
         --paper-input-container-focus-color:#2fc19e;
-        --paper-input-container-input-color:#2fc19e;
-        @apply(--app-grid-expandible-item);
-        margin:-5% 10% 5% 10%;
       }
-      .registerInput:first-of-type{
-        margin:0% 10% 5% 10%;
+      .login-card paper-input{
+        --paper-input-container-focus-color:#2fc19e;
       }
-      .loginInput{
-        --paper-input-container-focus-color:#7e57c2;
-        --paper-input-container-input-color:#7e57c2;
-        @apply(--app-grid-expandible-item);
-        margin:-5% 10% 5% 10%;
+      .card-heading{
+        width:300px;
+        height:60px;
+        position:relative;
       }
-      .loginInput:first-of-type{
-        margin:0% 10% 5% 10%;
+      .tab-wrapper {
+        display: inline-block;
+        padding: 10px;
+        overflow: hidden;
+        width:100px;
+        height:100%;
+        position:absolute;
+        top:0;
+        right:0;
+        padding:0;
+        margin:0;
       }
-      #forgotButton{
-        @apply(--app-grid-expandible-item);
-        opacity:.5;
+      .tab-wrapper:hover {
+        cursor: pointer;
       }
-      #forgotButton:hover{
-        opacity:1;
+      .tab-wrapper:hover [class*="button"]:after {
+        -webkit-transform: scale(1) translateZ(0);
+        -moz-transform: scale(1) translateZ(0);
+        -ms-transform: scale(1) translateZ(0);
+        -o-transform: scale(1) translateZ(0);
+        transform: scale(1) translateZ(0);
+        -webkit-transition: all 0.5s ease;
+        -moz-transition: all 0.5s ease;
+        transition: all 0.5s ease;
       }
-      #forgotSection{
-        @apply(--app-grid-expandible-item);
-        padding:20px;
+
+      [class*="button"] {
+        color: inherit;
+        position: relative;
+        z-index: 10;
       }
-      #forgotSuccess{
-        @apply(--app-grid-expandible-item);
-        padding:20px;
+      [class*="button"]:after {
+        content: "";
+        width: 150%;
+        height: 0;
+        padding-top: 150%;
+        object-fit: contain;
+        position: absolute;
+        top: 10%;
+        right: 30%;
+        margin: -75%;
+        opacity: 1;
+        border-radius: 50%;
+        -webkit-transform: scale(0) translateZ(0);
+        -moz-transform: scale(0) translateZ(0);
+        -ms-transform: scale(0) translateZ(0);
+        -o-transform: scale(0) translateZ(0);
+        transform: scale(0) translateZ(0);
+        -webkit-transition: all 0.2s ease;
+        -moz-transition: all 0.2s ease;
+        transition: all 0.2s ease;
+        z-index: -1;
       }
-      #forgotError{
-        @apply(--app-grid-expandible-item);
-        padding:20px;
+      [class*="login"]:after{
+        background-color: #FFFFFF;
+      }
+      [class*="register"]:after{
+        background-color: #7e57c2;
+      }
+      [class*="forgot"]:after{
+        background-color: #7e57c2;
+      }
+      @-webkit-keyframes scaler {
+        0%, 50% {
+          -webkit-transform: scale(0) translateZ(0);
+        }
+        100% {
+          -webkit-transform: scale(1) translateZ(0);
+        }
+      }
+      @-moz-keyframes scaler {
+        0%, 50% {
+          -moz-transform: scale(0) translateZ(0);
+        }
+        100% {
+          -moz-transform: scale(1) translateZ(0);
+        }
+      }
+      @keyframes scaler {
+        0%, 50% {
+          -webkit-transform: scale(0) translateZ(0);
+          -moz-transform: scale(0) translateZ(0);
+          -ms-transform: scale(0) translateZ(0);
+          -o-transform: scale(0) translateZ(0);
+          transform: scale(0) translateZ(0);
+        }
+        100% {
+          -webkit-transform: scale(1) translateZ(0);
+          -moz-transform: scale(1) translateZ(0);
+          -ms-transform: scale(1) translateZ(0);
+          -o-transform: scale(1) translateZ(0);
+          transform: scale(1) translateZ(0);
+        }
+      }
+      .register-button{
+        position:absolute;
+        right:0;
+        top:0;
+        --paper-button-ink-color:#7e57c2;
+        color:#7e57c2;
+        transition: all 0.5s ease;
+        --paper-button:{
+          font-size:12px;
+          font-weight:bold;
+        };
+      }
+      .login-button, .forgot-button{
+        position:absolute;
+        right:0;
+        top:0;
+        --paper-button-ink-color:#2fc19e;
+        color:#2fc19e;
+        transition: all 0.5s ease;
+        --paper-button:{
+          font-size:14px;
+          font-weight:bold;
+          padding-left:0;
+          margin-left:0;
+        };
+      }
+      .white{
+        --paper-button-ink-color:#FFFFFF;
+        color:#FFFFFF;
+      }
+      .mode-name{
+        position:absolute;
+        bottom:0;
+        left:0;
+        width:200px;
+        text-transform:uppercase;
+        margin:0;
+        padding-left:20px;
+        font-weight:bold;
+        font-size:130%;
+      }
+      .mode-login{
+        color:#2fc19e;
+      }
+      .mode-register{
+        color:#FFFFFF;
+      }
+      .login{
+
+      }
+      .action-button{
+        position:absolute;
+        bottom:80px;
+        left:20px;
+        right:20px;
+        margin:0;
+        background-color:#2fc19e;
+        color:#FFFFFF;
+      }
+      .forgot-password{
+        position:absolute;
+        bottom:10px;
+        left:0;
+        right:0;
+        text-align:center;
+        font-size:14px;
+        color:grey;
+        transition: all .25s ease;
+      }
+      .forgot-password:hover{
+        cursor:pointer;
+        opacity:.7;
+      }
+      #forgotPass{
+        background-color:#FFFFFF;
+        z-index:2;
+      }
+      .forgot-box{
+        position:relative;
       }
     </style>
-    <div class="loginBoxContainer">
+    <iron-collapse id="forgotPass" class="loginBox">
 
-      <span hidden="{{registerHidden(state)}}">
-        <paper-card
-          elevation="3"
-          class="app-grid registerBox">
-
-          <div class="registerHeader">
-            <p>
-              register
-            </p>
+        <div class="card-heading">
+          <div class="tab-wrapper">
+            <paper-button on-tap="_cancelForgotPass" class="forgot-button">X</paper-button>
           </div>
-
-          <paper-button class="toggleToLogin" on-tap="toggleState">Login</paper-button>
-          <paper-input
-            id="registerHome"
-            on-valid="valid"
-            class="registerInput"
-            label="Care Home Name"
-            value="{{newAccount.home}}"
-            required
-            auto-validate
-            pattern="[a-zA-Z0-9\.\s]*"
-            error-message="Invalid home name.">
-          </paper-input>
-          <paper-input
-            id="registerUsername"
-            class="registerInput"
-            label="Email"
-            value="{{newAccount.username}}"
-            required
-            auto-validate
-            pattern="[a-zA-Z0-9_\.\+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-\.]+"
-            error-message="Please enter a valid email.">
-          </paper-input>
-          <paper-input
-            id="registerPassword"
-            class="registerInput"
-            label="Password"
-            type="password"
-            value="{{newAccount.password}}"
-            required
-            auto-validate
-            pattern="^(?=.*\d).{8,16}$"
-            error-message="Password must be between 8 and 16 characters long and include at least one number.">
-          </paper-input>
-          <paper-input
-            id="registerPasswordConfirm"
-            class="registerInput"
-            label="Confirm Password"
-            type="password"
-            value="{{newAccount.passwordConfirm}}"
-            required
-            auto-validate
-            pattern="{{newAccount.password}}"
-            error-message="Passwords must match">
-          </paper-input>
-          <paper-button class="registerButton" on-tap="createNewAccount">Create an Account</paper-button>
-
-        </paper-card>
-      </span>
-
-      <span hidden="{{loginHidden(state)}}">
-
-        <paper-card
-          elevation="3"
-          class="app-grid loginBox">
-
-          <div class="loginHeader">
-            <p>
-              log in
-            </p>
+          <div class="mode-name mode-login">
+              Forgot Password
           </div>
-
-          <paper-button class="toggleToRegister" on-tap="toggleState">Register</paper-button>
-          <paper-input
-            class="loginInput"
-            label="username"
-            value="{{username}}"
-            required
-            auto-validate
-            pattern="[a-zA-Z0-9_\.\+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-\.]+"
-            error-message="Please enter a valid email."></paper-input>
-          <paper-input class="loginInput" type="password" label="password" value="{{password}}"></paper-input>
-          <paper-button class="loginButton" on-tap="emailSignIn">Login</paper-button>
-          <paper-button id="forgotButton" on-tap="openForgotPass">Forgot Password?</paper-button>
+        </div>
+        <div class="padded">
           <iron-collapse id="forgotSection">
 
             <p>
               Please enter your email below and click reset password. A password reset email will be sent to your account email.
             </p>
-            <paper-input label="Email Address" value="{{forgotEmail}}"></paper-input>
-
-            <paper-button on-tap="resetPass">reset password</paper-button>
+            <paper-input
+              label="Your Email Address"
+              value="{{forgotEmail}}"
+              required
+              auto-validate
+              pattern="[a-zA-Z0-9_\.\+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-\.]+"
+              error-message="Please enter a valid email.">
+            </paper-input>
 
           </iron-collapse>
 
@@ -259,12 +263,94 @@
             </p>
 
           </iron-collapse>
+        </div>
 
-        </paper-card>
+        <paper-button hidden$="[[!showReset]]" class="guuey-button action-button" on-tap="resetPass">Reset Password</paper-button>
 
-      </span>
+        <paper-button hidden$="[[!showTryAgain]]" class="guuey-button action-button" on-tap="goTostartReset">Try again</paper-button>
 
-    </div>
+        <p on-tap="_closeForgotPass" class="forgot-password">
+          Go Back
+        </p>
+
+    </iron-collapse>
+
+    <span hidden$="[[loginDisplay]]">
+      <paper-card elevation="3" class="loginBox login-card">
+          <div class="card-heading">
+            <div id="registerWrapper" class="tab-wrapper">
+              <paper-button on-tap="_toggleTab" class="register-button">Register</paper-button>
+            </div>
+            <div class="mode-name mode-login">
+                log in
+            </div>
+          </div>
+          <div class="padded">
+            <paper-input
+              label="Your Email Address"
+              value="{{username}}"
+              required
+              auto-validate
+              pattern="[a-zA-Z0-9_\.\+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-\.]+"
+              error-message="Please enter a valid email.">
+            </paper-input>
+            <paper-input label="Password" type="password" label="password" value="{{password}}"></paper-input>
+            <paper-button class="guuey-button action-button" on-tap="emailSignIn">log in</paper-button>
+          </div>
+          <p on-tap="_openForgotPass" class="forgot-password">
+            Forgot your password?
+          </p>
+      </paper-card>
+    </span>
+
+    <span hidden$="[[!loginDisplay]]">
+      <paper-card elevation="3" class="loginBox register-card">
+          <div class="card-heading">
+            <div class="tab-wrapper">
+              <paper-button on-tap="_toggleTab" class="login-button">X</paper-button>
+            </div>
+            <div class="mode-name mode-register">
+                register
+            </div>
+          </div>
+
+          <div class="padded">
+            <paper-input
+              id="registerUsername"
+              label="Your Email Address"
+              label="Email"
+              value="{{newAccount.username}}"
+              required
+              auto-validate
+              pattern="[a-zA-Z0-9_\.\+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-\.]+"
+              error-message="Please enter a valid email.">
+            </paper-input>
+            <paper-input
+              id="registerPassword"
+              label="Password"
+              type="password"
+              value="{{newAccount.password}}"
+              required
+              auto-validate
+              pattern="^(?=.*\d).{8,16}$"
+              error-message="Password must be between 8 and 16 characters long and include at least one number.">
+            </paper-input>
+            <paper-input
+              id="registerPasswordConfirm"
+              class="registerInput"
+              label="Confirm Password"
+              type="password"
+              value="{{newAccount.passwordConfirm}}"
+              required
+              auto-validate
+              pattern="{{newAccount.password}}"
+              error-message="Passwords must match">
+            </paper-input>
+            <paper-button on-tap="createNewAccount" class="guuey-button action-button">register</paper-button>
+          </div>
+
+      </paper-card>
+    </span>
 
   </template>
 
@@ -291,10 +377,25 @@
             home:""
           },
         },
-        state:{
-          type:String,
-          value:'login'
+        loginDisplay:{
+          type:Boolean,
+          value:false
+        },
+        showReset:{
+          type:Boolean,
+          value:true
+        },
+        showTryAgain:{
+          type:Boolean,
+          value:false
         }
+      },
+      ready:function(){
+        this.fire("pageLoaded", {page:this.page});
+      },
+      attached:function(){
+        this.$.registerWrapper.addEventListener('mouseover', this._applyHovered);
+        this.$.registerWrapper.addEventListener('mouseout', this._removeHovered);
       },
       observers:[
 
@@ -306,7 +407,6 @@
       validateInputs:function(){
         var validArray=[];
         var result=false;
-        validArray.push(this.$.registerHome.validate());
         validArray.push(this.$.registerUsername.validate());
         validArray.push(this.$.registerPassword.validate());
         validArray.push(this.$.registerPasswordConfirm.validate());
@@ -321,34 +421,10 @@
         return result;
       },
       createNewAccount:function(){
-        console.log(this.validateInputs());
         if(this.validateInputs()){
           this.fire('createNewAccount',this.newAccount);
         } else {
           this.fire("openToast", {toastText:"Your entered details are invalid, or you have not entered a username or password."})
-        };
-      },
-      //computed binding to show correct card
-      registerHidden:function(state){
-        if(state==="register"){
-          return false;
-        } else {
-          return true;
-        };
-      },
-      //computed binding to show correct card
-      loginHidden:function(state){
-        if(state==="login"){
-          return false;
-        } else {
-          return true;
-        };
-      },
-      toggleState:function(){
-        if(this.state==="login"){
-          this.state="register";
-        } else {
-          this.state="login";
         };
       },
       emailSignIn:function(){
@@ -358,22 +434,47 @@
         };
         this.fire('emailSignIn',details);
       },
-      openForgotPass:function(){
-        this.$.forgotSection.toggle();
-      },
       resetPass:function(){
         this.$.forgotUser.auth.sendPasswordResetEmail(this.forgotEmail)
           .then(function(){
             this.$.forgotSuccess.show();
             this.$.forgotError.hide();
             this.$.forgotSection.hide();
+            this.showReset = false;
+            this.showTryAgain = false;
           }.bind(this),
           function(error){
+            this.$.forgotSection.hide();
             this.$.forgotSuccess.hide();
             this.$.forgotError.show();
             this.error=error;
+            this.showReset = false;
+            this.showTryAgain = true;
           }.bind(this));
       },
+      _toggleTab:function(){
+        this.loginDisplay = !this.loginDisplay;
+      },
+      _applyHovered:function(e){
+        this.querySelector("paper-button").classList.add("white");
+      },
+      _removeHovered:function(e){
+        this.querySelector("paper-button").classList.remove("white");
+      },
+      _openForgotPass:function(){
+        this.$.forgotPass.show();
+        this.$.forgotSection.show();
+      },
+      _closeForgotPass:function(){
+        this.$.forgotPass.hide();
+      },
+      goTostartReset:function(){
+        this.$.forgotSuccess.hide();
+        this.$.forgotError.hide();
+        this.$.forgotSection.show();
+        this.showReset = true;
+        this.showTryAgain = false;
+      }
     });
 
   </script>

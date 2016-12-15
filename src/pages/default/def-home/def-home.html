@@ -356,10 +356,8 @@
       },
       _suSettingsChanged:function(value){
         if(value.base.privacyNameEnabled){
-          console.log("hitting");
           this.customStyle["--privacy-name-transparency"] = "transparent";
         } else {
-          console.log("not hitting");
           this.customStyle["--privacy-name-transparency"] = "#000000";
         };
 
