@@ -42,11 +42,10 @@
           desktopMenuDisplay="flex";
           mobileMenuDisplay="none";
         };
-
         this.customStyle["--desktop-menu-display"]=desktopMenuDisplay;
         this.customStyle["--mobile-menu-display"]=mobileMenuDisplay;
         this.updateStyles();
-
+        this.fire("resize");
       },
     };
 
