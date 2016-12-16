@@ -9,6 +9,10 @@
       app-name="main">
     </firebase-auth>
 
+    <iron-localstorage name="recent-users"
+      value="{{users}}">
+    </iron-localstorage>
+
     <style include="app-grid-style">
       :host {
         display: block;
@@ -218,10 +222,47 @@
         background-color:#FFFFFF;
         z-index:2;
       }
+      #recentUsers{
+        background-color:#FFFFFF;
+        z-index:2;
+      }
       .forgot-box{
         position:relative;
       }
+      .account-select{
+        color:#FFFFFF;
+        position:absolute;
+        text-align:center;
+        top:50%;
+        left:50%;
+        transform: translate(-50%, calc(-50% + 245px ));
+        transition:all .25s;
+      }
+      .account-select:hover{
+        cursor:pointer;
+        opacity:.7;
+      }
+      .recent-user:hover{
+        cursor:pointer;
+        background-color:#cecece;
+      }
     </style>
+
+    <iron-collapse id="recentUsers" class="loginBox">
+      <div class="card-heading">
+        <div class="tab-wrapper">
+          <paper-button on-tap="_toggleRecentUsers" class="forgot-button">X</paper-button>
+        </div>
+        <div class="mode-name mode-login">
+            Select User
+        </div>
+      </div>
+      <template is="dom-repeat" items="[[users]]" as="user">
+        <paper-item class="recent-user" on-tap="_setUser">[[user]]</paper-item>
+      </template>
+
+    </iron-collapse>
+
     <iron-collapse id="forgotPass" class="loginBox">
 
         <div class="card-heading">
@@ -352,7 +393,15 @@
           </div>
 
       </paper-card>
+
     </span>
+
+    <p hidden$="[[recentUsersOpen]]" on-tap="_toggleRecentUsers" class="account-select">
+      Sign in with a different account
+    </p>
+    <p hidden$="[[!recentUsersOpen]]" on-tap="_toggleRecentUsers" class="account-select">
+      Go back
+    </p>
 
   </template>
 
@@ -361,6 +410,13 @@
     Polymer({
 
       is: 'def-login',
+      ready:function(){
+        this.fire("pageLoaded", {page:this.page});
+      },
+      attached:function(){
+        this.$.registerWrapper.addEventListener('mouseover', this._applyHovered);
+        this.$.registerWrapper.addEventListener('mouseout', this._removeHovered);
+      },
       properties:{
         page:{
           type:String,
@@ -390,14 +446,11 @@
         showTryAgain:{
           type:Boolean,
           value:false
-        }
-      },
-      ready:function(){
-        this.fire("pageLoaded", {page:this.page});
-      },
-      attached:function(){
-        this.$.registerWrapper.addEventListener('mouseover', this._applyHovered);
-        this.$.registerWrapper.addEventListener('mouseout', this._removeHovered);
+        },
+        recentUsersOpen:{
+          type:Boolean,
+          value:false
+        },
       },
       observers:[
 
@@ -467,7 +520,7 @@
         this.$.forgotPass.show();
         this.$.forgotSection.show();
       },
-      _closeForgotPass:function(){
+      _cancelForgotPass:function(){
         this.$.forgotPass.hide();
       },
       goTostartReset:function(){
@@ -476,6 +529,15 @@
         this.$.forgotSection.show();
         this.showReset = true;
         this.showTryAgain = false;
+      },
+      _toggleRecentUsers:function(){
+        this.$.forgotPass.hide();
+        this.$.recentUsers.toggle();
+        this.recentUsersOpen= !this.recentUsersOpen;
+      },
+      _setUser:function(e){
+        this.username = e.model.user;
+        this._toggleRecentUsers();
       }
     });
 

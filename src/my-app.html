@@ -6,6 +6,12 @@
     <media-queries
       dimensions="{{dimensions}}">
     </media-queries>
+
+    <iron-localstorage
+      id="recentUsers"
+      name="recent-users"
+      on-iron-localstorage-load-empty="_initializeRecentUsers">
+    </iron-localstorage>
     <!--firebase app and auth config-->
     <firebase-app
       name="main"
@@ -845,8 +851,15 @@
         '_paramRouteChanged(paramData.param)',
         '_authKnown(statusKnown)',
         '_computeNotificationCount(notifiesData)',
-        '_computeNotifyDialogHidden(notifiesData.*)'
+        '_computeNotifyDialogHidden(notifiesData.*)',
+        '_userChanged(user)'
       ],
+      _userChanged:function(user){
+        if(user && !this.$.recentUsers.value.includes(this.user.email)){
+          this.$.recentUsers.value.push(this.user.email);
+          this.$.recentUsers.save();
+        };
+      },
       behaviors: [
         Polymer.shellResizeBehavior
       ],
@@ -1186,6 +1199,9 @@
         this.$.notifyDialog.close();
         this.$.appsDialog.close();
         this.$.logoutDialog.toggle();
+      },
+      _initializeRecentUsers:function(){
+        this.$.recentUsers.value=[];
       }
     });
 
