@@ -171,9 +171,10 @@
 
     <paper-dialog id="logoutDialog">
       <guuey-account-display
-        user-image="[[user.photoURL]]"
-        display-name="Jeff Dudeson"
-        user-email="[[user.email]]">
+        user-image="[[_computeUserPhoto(user.photoURL)]]"
+        display-name="[[_computeDisplayName(user.displayName)]]"
+        user-email="[[user.email]]"
+        home="[[home]]">
       </guuey-account-display>
     </paper-dialog>
 
@@ -376,6 +377,14 @@
             home="[[home]]"
             name="def-verify">
           </def-verify>
+          <def-account
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            home="[[home]]"
+            name="def-account">
+          </def-account>
           <!--error 404 page-->
           <def-error
             current-page="[[currentPage]]"
@@ -855,8 +864,19 @@
         '_userChanged(user)'
       ],
       _userChanged:function(user){
-        if(user && !this.$.recentUsers.value.includes(this.user.email)){
-          this.$.recentUsers.value.push(this.user.email);
+        var userExists = true;
+        if(this.$.recentUsers.value){
+          var userExists = this.$.recentUsers.value.some(function(existingUser){
+            return existingUser.email === user.email ? true : false;
+          });
+        };
+        if(user && !userExists){
+          var newRecentUser = {
+            displayName:user.displayName,
+            email:user.email,
+            photoURL:user.photoURL
+          };
+          this.$.recentUsers.value.push(newRecentUser);
           this.$.recentUsers.save();
         };
       },
@@ -1202,6 +1222,18 @@
       },
       _initializeRecentUsers:function(){
         this.$.recentUsers.value=[];
+      },
+      _computeUserPhoto:function(photo){
+        console.log(photo);
+        return photo || "/images/defaultAvatar.png"
+      },
+      _computeDisplayName:function(name){
+        console.log(name);
+        if(name === "undefined undefined"){
+          return "click here to set display name.";
+        } else {
+          return name;
+        };
       }
     });
 

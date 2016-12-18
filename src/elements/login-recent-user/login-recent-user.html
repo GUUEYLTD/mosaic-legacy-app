@@ -1,6 +1,6 @@
 <link rel="import" href="dependencies.html" />
 
-<dom-module is="guuey-account-display">
+<dom-module is="login-recent-user">
 
   <template>
 
@@ -8,15 +8,22 @@
 
       :host{
         display:inline-block;
+        box-sizing:border-box;
         padding:10px;
+        width:100%;
       }
       .accountCard{
         padding:10px;
       }
       .mainRow{
+        width:100%;
         display:flex;
         flex-direction:row;
         align-items:center;
+      }
+      .mainRow:hover{
+        opacity:.7;
+        cursor:pointer;
       }
       .roundedImage{
         width:50px;
@@ -42,22 +49,13 @@
         font-weight:lighter;
         font-size:11px;
       }
-      .secondRow{
-        display:flex;
-        flex-direction:row;
-        align-items:center;
-      }
-      .secondRow *{
-        flex-grow:1;
-      }
       .ref-wrap{
         text-decoration:none;
       }
     </style>
 
-    <a class="ref-wrap" href="/[[home]]/default/def-account">
+      <paper-card elevation="3" class="mainRow">
 
-      <div class="mainRow">
         <img class="roundedImage" src="[[userImage]]" />
         <div class="textCol">
           <p class="mainText">
@@ -68,22 +66,14 @@
           </p>
         </div>
 
-      </div>
-
-    </a>
-
-      <div class="secondRow">
-        <paper-button on-tap="cancel">cancel</paper-button>
-        <paper-button on-tap="logout">logout</paper-button>
-      </div>
-
+      </paper-card>
 
   </template>
 
   <script>
 
     Polymer({
-      is:"guuey-account-display",
+      is:"login-recent-user",
       properties:{
         userImage:{
           type:String
@@ -94,12 +84,6 @@
         userEmail:{
           type:String
         }
-      },
-      cancel:function(){
-        this.fire("cancelLogout");
-      },
-      logout:function(){
-        this.fire("logout");
       }
     });
 

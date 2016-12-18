@@ -15,19 +15,19 @@
       app-name="main">
     </firebase-document>
 
-  <firebase-storage
-    id="storage"
-    app-name="main"
-    set-name="false"
-    path="uploads/[[home]]/home-image.png"
-    use64="true"
-    url="{{homeImage}}">
-  </firebase-storage>
+    <firebase-storage
+      id="storage"
+      app-name="main"
+      set-name="false"
+      path="uploads/[[home]]/home-image.png"
+      use64="true"
+      url="{{homeImage}}">
+    </firebase-storage>
 
-  <iron-media-query
-    query="(max-width:600px)"
-    query-matches="{{query600}}">
-  </iron-media-query>
+    <iron-media-query
+      query="(max-width:600px)"
+      query-matches="{{query600}}">
+    </iron-media-query>
 
     <style include="common-styles"></style>
 
@@ -198,12 +198,10 @@
         Polymer.adminResizeBehavior
       ],
       _inputChanged:function(image) {
-        console.log(image);
         this.$.storage._uploadFile(image)
         .then(function(fileLoc) {
           Polymer.dom(this.$.homeImage).setAttribute("src", fileLoc);
           this.fileLoc=fileLoc;
-          console.log(fileLoc);
         }.bind(this))
         .catch(function(error){
 

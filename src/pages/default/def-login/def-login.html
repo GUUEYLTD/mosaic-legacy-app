@@ -222,10 +222,6 @@
         background-color:#FFFFFF;
         z-index:2;
       }
-      #recentUsers{
-        background-color:#FFFFFF;
-        z-index:2;
-      }
       .forgot-box{
         position:relative;
       }
@@ -242,26 +238,33 @@
         cursor:pointer;
         opacity:.7;
       }
-      .recent-user:hover{
-        cursor:pointer;
-        background-color:#cecece;
+      .recent-users{
+        background-color:#FFFFFF;
+        z-index:2;
+        position:absolute;
+        width:300px;
+        height:450px;
+        top:-100%;
+        left:50%;
+        transform: translate(-50%, -50%);
+        transition:all .5s;
+      }
+      .recent-users-visible{
+        top:50%;
       }
     </style>
+    <div id="recentUsers" class="recent-users">
 
-    <iron-collapse id="recentUsers" class="loginBox">
-      <div class="card-heading">
-        <div class="tab-wrapper">
-          <paper-button on-tap="_toggleRecentUsers" class="forgot-button">X</paper-button>
-        </div>
-        <div class="mode-name mode-login">
-            Select User
-        </div>
-      </div>
       <template is="dom-repeat" items="[[users]]" as="user">
-        <paper-item class="recent-user" on-tap="_setUser">[[user]]</paper-item>
+        <login-recent-user
+          user-image="[[_computeUserPhoto(user.photoURL)]]"
+          display-name="[[_computeDisplayName(user.displayName)]]"
+          user-email="[[user.email]]"
+          on-tap="_setUser">
+        </login-recent-user>
       </template>
 
-    </iron-collapse>
+    </div>
 
     <iron-collapse id="forgotPass" class="loginBox">
 
@@ -532,12 +535,22 @@
       },
       _toggleRecentUsers:function(){
         this.$.forgotPass.hide();
-        this.$.recentUsers.toggle();
+        this.$.recentUsers.classList.toggle("recent-users-visible");
         this.recentUsersOpen= !this.recentUsersOpen;
       },
       _setUser:function(e){
-        this.username = e.model.user;
+        this.username = e.model.user.email;
         this._toggleRecentUsers();
+      },
+      _computeUserPhoto:function(photo){
+        return photo || "/images/defaultAvatar.png";
+      },
+      _computeDisplayName:function(name){
+        if(name === "undefined undefined"){
+          return "no display name";
+        } else {
+          return name;
+        };
       }
     });
 

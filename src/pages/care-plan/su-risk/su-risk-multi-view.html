@@ -17,6 +17,7 @@
 
 <link rel="import" href="../../../behaviors/multi-edit-animation-behavior.html" />
 <link rel="import" href="../../../behaviors/multi-view-resize-behavior.html" />
+<link rel="import" href="../../../behaviors/multi-view-grid-behavior.html" />
 
 <link rel="import" href="../../../styles/common-styles.html" />
 
@@ -81,6 +82,7 @@
 
     <paper-card class="multiViewCard app-grid">
       <template
+        strip-whitespace
         id="domRepeat"
         is="dom-repeat"
         items="{{risksData}}"
@@ -157,6 +159,7 @@
       },
       behaviors:[
         Polymer.multiViewResizeBehavior,
+        Polymer.multiViewGridBehavior
         //Polymer.multiEditAnimationBehavior
       ],
       _computeQueryCount:function(risk){

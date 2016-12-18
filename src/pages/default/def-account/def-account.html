@@ -1,17 +1,6 @@
-<link rel="import" href="../../../../bower_components/polymer/polymer.html" />
-<link rel="import" href="../../../../bower_components/paper-card/paper-card.html" />
-<link rel="import" href="../../../../bower_components/paper-button/paper-button.html" />
-<link rel="import" href="../../../../bower_components/iron-collapse/iron-collapse.html" />
-<link rel="import" href="../../../../bower_components/paper-input/paper-input.html" />
-<link rel="import" href="../../../../bower_components/paper-dialog/paper-dialog.html" />
+<link rel="import" href="dependencies.html" />
 
-<link rel="import" href="../../../elements/guuey-photo-editor/guuey-photo-editor.html" />
-<link rel="import" href="../../../elements/firebase-storage/firebase-storage.html" />
-
-<link rel="import" href="../../../styles/common-styles.html" />
-
-
-<dom-module id="test-test">
+<dom-module id="def-account">
   <template>
 
     <firebase-auth
@@ -53,14 +42,12 @@
     <paper-card class="main">
 
       <div class="pageInnerCont padded">
+        <h2>Current Info</h2>
         <p>
           displayName : [[user.displayName]]
         </p>
         <p>
           email : [[user.email]]
-        </p>
-        <p>
-          photoURL : [[user.photoURL]]
         </p>
         <img src="[[user.photoURL]]" />
         <h2>basic info</h2>
@@ -84,9 +71,9 @@
 
       Polymer({
 
-        is: 'test-test',
+        is: 'def-account',
         ready:function(){
-          this.fire("pageLoaded", this.page);
+          this.fire("pageLoaded", {page:this.page});
         },
         properties:{
           user:{
@@ -117,15 +104,18 @@
 
           if(this.displayNameUpdate){
             updateObj.displayName = this.displayNameUpdate;
+            this.$.auth.user.updateProfile(updateObj)
+              .then(function(){
+                this.fire("openToast", {toastText: "Account updated."});
+              }.bind(this), function(err){
+                this.fire("openToast", {toastText: "There was an error updating your account: "+err});
+              }.bind(this));
           };
 
           if(this.photoURLUpdate){
-            //console.log(this.photoURLUpdate);
-            //create the photo location first
             this.$.storage._uploadFile(this.photoURLUpdate)
             .then(function(fileLoc) {
                 updateObj.photoURL = fileLoc;
-                console.log(updateObj);
                 this.$.auth.user.updateProfile(updateObj)
                   .then(function(){
                     this.fire("openToast", {toastText: "Account updated."});

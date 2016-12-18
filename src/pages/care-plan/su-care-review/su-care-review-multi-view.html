@@ -11,8 +11,8 @@
 <link rel="import" href="../../../elements/media-queries/media-queries.html" />
 <link rel="import" href="../../../elements/guuey-truncate/guuey-truncate.html" />
 
-<link rel="import" href="../../../behaviors/multi-edit-animation-behavior.html" />
 <link rel="import" href="../../../behaviors/multi-view-resize-behavior.html" />
+<link rel="import" href="../../../behaviors/multi-view-grid-behavior.html" />
 
 <link rel="import" href="../../../styles/common-styles.html" />
 
@@ -26,7 +26,6 @@
 
     <style include="common-styles">
     :host{
-      --app-grid-columns:3;
       --app-grid-gutter:20px;
     };
     </style>
@@ -39,6 +38,7 @@
 
     <paper-card class="multiViewCard app-grid">
       <template
+        strip-whitespace
         id="domRepeat"
         is="dom-repeat"
         items="{{reviewsData}}"
@@ -94,6 +94,7 @@
       },
       behaviors:[
         Polymer.multiViewResizeBehavior,
+        Polymer.multiViewGridBehavior
         //Polymer.multiEditAnimationBehavior
       ],
       toggleEditModal:function(e){

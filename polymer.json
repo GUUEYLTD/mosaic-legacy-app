@@ -23,7 +23,8 @@
   "src/pages/care-plan/su-view-reports/su-view-reports.html",
   "src/pages/default/def-login/def-login.html",
   "src/pages/default/def-home/def-home.html",
-  "src/pages/default/def-verify/def-verify.html"
+  "src/pages/default/def-verify/def-verify.html",
+  "src/pages/default/def-account/def-account.html"
   ],
   "sourceGlobs": [
    "src/**/*",

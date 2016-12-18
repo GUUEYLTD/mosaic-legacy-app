@@ -18,6 +18,7 @@
 
 <link rel="import" href="../../../behaviors/multi-view-resize-behavior.html" />
 <link rel="import" href="../../../behaviors/multi-edit-animation-behavior.html" />
+<link rel="import" href="../../../behaviors/multi-view-grid-behavior.html" />
 
 <link rel="import" href="../../../styles/common-styles.html" />
 
@@ -65,6 +66,7 @@
 
     <paper-card class="multiViewCard app-grid">
       <template
+        strip-whitespace
         id="domRepeat"
         is="dom-repeat"
         items="[[goalsData]]"
@@ -143,7 +145,8 @@
       },
       behaviors:[
         Polymer.multiViewResizeBehavior,
-        Polymer.multiEditAnimationBehavior
+        //Polymer.multiEditAnimationBehavior,
+        Polymer.multiViewGridBehavior
       ],
       editGoal:function(e){
         this.fire("editGoal");
@@ -199,7 +202,6 @@
         return stepCount;
       },
       toggleEditModal:function(e){
-        //this.heroElement=Polymer.dom(e.target).parentNode;
         this.$.editModal.positionTarget = e.target;
         this.goalId = e.model.goal.$key;
         this.$.editModal.toggle();
