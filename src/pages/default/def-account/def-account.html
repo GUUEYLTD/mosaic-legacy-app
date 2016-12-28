@@ -40,16 +40,12 @@
     </paper-dialog>
 
     <paper-card class="main">
-
+      <account-header
+        name="[[user.displayName]]"
+        email="[[user.email]]"
+        photo="[[user.photoURL]]">
+      </account-header>
       <div class="pageInnerCont padded">
-        <h2>Current Info</h2>
-        <p>
-          displayName : [[user.displayName]]
-        </p>
-        <p>
-          email : [[user.email]]
-        </p>
-        <img src="[[user.photoURL]]" />
         <h2>basic info</h2>
         <paper-input label="update display name" value="{{displayNameUpdate}}"></paper-input>
         <guuey-photo-editor value="{{photoURLUpdate}}"></guuey-photo-editor>

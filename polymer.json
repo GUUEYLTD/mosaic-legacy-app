@@ -9,6 +9,7 @@
   "src/pages/admin/ad-support/ad-support.html",
   "src/pages/admin/ad-users/ad-users.html",
   "src/pages/admin/ad-reports/ad-reports.html",
+  "src/pages/admin/ad-payment/ad-payment.html",
 	"src/pages/care-plan/su-care/su-care.html",
   "src/pages/care-plan/su-care-review/su-care-review.html",
   "src/pages/care-plan/su-create/su-create.html",
@@ -24,7 +25,8 @@
   "src/pages/default/def-login/def-login.html",
   "src/pages/default/def-home/def-home.html",
   "src/pages/default/def-verify/def-verify.html",
-  "src/pages/default/def-account/def-account.html"
+  "src/pages/default/def-account/def-account.html",
+  "src/pages/test/test-test/test-test.html"
   ],
   "sourceGlobs": [
    "src/**/*",

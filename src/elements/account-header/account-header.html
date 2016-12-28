@@ -1,33 +1,38 @@
-<!--
-a header area element for the service users area...
-page=(string)
-  the current page that the user is on
-home(string)
-  the home uid in use REQUIRED
-patient(string)
-  the current patient in order to get name for the header
-  if no patient is declared then header will say "please select a patient"
-firstname(string)
-  used in place of home and patient can be put directly in
-lastname(string)
-  used in place of home and patient, can be put directly in
-base64(string)
-  base64 used for image source
-setimage(boolean)
-  set in order to allow the image to be set to something else
-  default is false
--->
+
 <link rel="import" href="dependencies.html" />
-<dom-module id="su-header">
+<dom-module id="account-header">
 
   <template>
-    <!--firebase connection for the header info-->
-    <firebase-document
-      id="accountDB"
-      app-name="main"
-      path="/homes/[[home]]/settings"
-      data="{{accountData}}">
-    </firebase-document>
+
+    <iron-media-query
+      query="(max-width:1600px)"
+      query-matches="{{query1600}}">
+    </iron-media-query>
+
+    <iron-media-query
+      query="(max-width:1400px)"
+      query-matches="{{query1400}}">
+    </iron-media-query>
+
+    <iron-media-query
+      query="(max-width:1200px)"
+      query-matches="{{query1200}}">
+    </iron-media-query>
+
+    <iron-media-query
+      query="(max-width:1000px)"
+      query-matches="{{query1000}}">
+    </iron-media-query>
+
+    <iron-media-query
+      query="(max-width:800px)"
+      query-matches="{{query800}}">
+    </iron-media-query>
+
+    <iron-media-query
+      query="(max-width:600px)"
+      query-matches="{{query600}}">
+    </iron-media-query>
 
     <style include="app-grid-style"></style>
     <style>
@@ -111,37 +116,10 @@ setimage(boolean)
           opacity:.52;
         };
       }
-      .headerPrint{
-        opacity:.54;
-        position:absolute;
-        top:5px;
-        right:5px;
-      }
       .headerProfileImage{
         width:100%;
         height:150px;
         height:var(--header-image-height);
-      }
-      .headerProfileImage:after{
-        content:'\A';
-        position:absolute;
-        width:100%;
-        height:100%;
-        top:0;
-        left:0;
-        opacity:var(--privacy-overlay-opacity, .8);
-        background-color:var(--privacy-overlay-color, #000000);
-        transition: opacity .25s ease-in-out;
-      }
-      .headerProfileImage:hover:after{
-        content:'\A';
-        position:absolute;
-        width:100%;
-        height:100%;
-        top:0;
-        left:0;
-        opacity:0;
-        background-color:var(--privacy-overlay-color, #000000);
       }
     </style>
 
@@ -154,47 +132,26 @@ setimage(boolean)
           placeholder="../../../images/defaultAvatar.png"
           preload
           fade
-          src="[[suIndexData.image]]">
+          src="[[photo]]">
         </iron-image>
 
           <guuey-photo-editor
             class="imageButton"
-            value="{{suIndexData.image}}">
+            value="{{photo}}">
           </guuey-photo-editor>
 
       </div>
       <div class="headerInfoRow">
         <div class="patientName">
 
-          <template is="dom-if" if="[[firstName]]">
-
-            <span class="patientNameText">
-              [[_returnName(settingsData.privacyNameEnabled, firstname)]] [[_returnName(settingsData.privacyNameEnabled, lastname)]]
-            </span>
-            <paper-icon-button
-              class="headerPrint"
-              icon="icons:print"
-              on-tap="print">
-            </paper-icon-button>
-
-          </template>
-
-          <template is="dom-if" if="{{_nofirstname(firstname)}}">
-
-            <span class="patientNameText">
-              {{_computeHeaderName(settingsData.privacyNameEnabled, suIndexData.fName, suIndexData.lName)}}
-            </span>
-            <paper-icon-button
-              class="headerPrint"
-              icon="icons:print"
-              on-tap="print">
-            </paper-icon-button>
-          </template>
+          <span class="patientNameText">
+            [[_returnName(name)]]
+          </span>
 
         </div>
         <div class="pageName">
           <span class="pageNameText">
-            {{page}}
+            Account Information
           </span>
         </div>
       </div>
@@ -206,74 +163,26 @@ setimage(boolean)
   <script>
 
     Polymer({
-      is: 'su-header',
+      is: 'account-header',
       ready:function(){
 
       },
       properties:{
-        page:{
+        name:{
           type:String
         },
-        patient:{
+        email:{
           type:String
         },
-        home:{
+        photo:{
           type:String
-        },
-        suIndexData:{
-          type:Object,
-          observer:"_computeHeaderName",
-          notify:true
-        },
-        setimage:{
-          type:Boolean,
-          value:false
-        },
-        firstname:{
-          type:String,
-          value:""
         }
       },
       observers:[
         "editQuery(query1600, query1400, query1200, query1000, query800, query600)",
-        "_suSettingsChanged(settingsData.*)"
       ],
-      _computeHeaderName:function(privacyNameEnabled, fName, lName){
-          if(privacyNameEnabled){
-            var newFname = typeof fName ==="string" ? fName.trim().charAt(0).toUpperCase() + "." : "";
-            var newLName = typeof lName ==="string" ? lName.trim().charAt(0).toUpperCase() + "." : "";
-            return newFname + " " + newLName;
-          } else {
-            var newFname = typeof fName ==="string" ? fName : "";
-            var newLName = typeof lName ==="string" ? lName : "";
-            return newFname + " " + newLName;
-          };
-      },
-      _returnName:function(privacyNameEnabled, name){
-        if(privacyNameEnabled){
-          return name.trim().charAt(0).toUpperCase() + ".";
-        } else {
-          return name;
-        };
-      },
-      _nofirstname:function(firstname){
-        if(firstname){
-          return false;
-        } else {
-          return true;
-        }
-      },
-      _suBlurValueChanged:function(value){
-        this.customStyle["--su-image-blur"] = (this.suBlurValue / 10)+"px";
-        this.updateStyles();
-      },
-      print:function(e){
-        this.fire("print");
-      },
-      _suSettingsChanged:function(value){
-        this.customStyle["--privacy-overlay-opacity"] = String(value.base.privacyOverlayOpacity / 100);
-        this.customStyle["--privacy-overlay-color"] = String(value.base.privacyOverlayColor);
-        this.updateStyles();
+      _returnName:function(name){
+        return name ==="undefined undefined" ? this.email : this.name;
       },
       editQuery:function(query1600, query1400, query1200, query1000, query800, query600){
         if(query600){

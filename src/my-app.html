@@ -174,7 +174,8 @@
         user-image="[[_computeUserPhoto(user.photoURL)]]"
         display-name="[[_computeDisplayName(user.displayName)]]"
         user-email="[[user.email]]"
-        home="[[home]]">
+        home="[[home]]"
+        on-tap="closeLogout">
       </guuey-account-display>
     </paper-dialog>
 
@@ -787,7 +788,6 @@
                           .then(function(){
                             this.$.auth.user.sendEmailVerification()
                               .then(function() {
-                                console.log(this.user.email);
                               this.fire("openToast",{toastText:"Email sent."});
                             }.bind(this), function(error) {
                               this.fire("openToast",{toastText:error});
@@ -1220,15 +1220,16 @@
         this.$.appsDialog.close();
         this.$.logoutDialog.toggle();
       },
+      closeLogout:function(){
+        this.$.logoutDialog.close();
+      },
       _initializeRecentUsers:function(){
         this.$.recentUsers.value=[];
       },
       _computeUserPhoto:function(photo){
-        console.log(photo);
         return photo || "/images/defaultAvatar.png"
       },
       _computeDisplayName:function(name){
-        console.log(name);
         if(name === "undefined undefined"){
           return "click here to set display name.";
         } else {

@@ -1,26 +1,11 @@
-
 <link rel="import" href="dependencies.html" />
 
 <dom-module id="ad-payment">
-
   <template>
 
     <media-queries
       dimensions="{{dimensions}}">
     </media-queries>
-
-    <firebase-document
-      id="paymentDB"
-      path="/homes/[[home]]/details/payment"
-      data="{{paymentData}}"
-      app-name="main">
-    </firebase-document>
-    <firebase-document
-      id="subscriptionDB"
-      path="/homes/[[home]]/details/customer"
-      data="{{subscriptionData}}"
-      app-name="main">
-    </firebase-document>
 
     <firebase-query
       id="suIndexDB"
@@ -28,523 +13,579 @@
       app-name="main">
     </firebase-query>
 
-    <guuey-stripe
-      id="guueyStripe"
-      home="[[home]]"
-      payment-data="{{paymentData}}"
-      subscription-data="{{subscriptionData}}">
-    </guuey-stripe>
+    <firebase-document
+      app-name="main"
+      id="customerDB"
+      path="/homes/[[home]]/details"
+      data="{{customer}}">
+    </firebase-document>
+
+    <iron-ajax
+      id="initSubCall"
+      handle-as="json"
+      on-response="_handleInitialSubResponse"
+      debounce-duration="300"
+      method="POST"
+      content-type="application/json">
+    </iron-ajax>
+
+    <iron-ajax
+      id="plansList"
+      handle-as="json"
+      on-response="_handlePlansList"
+      debounce-duration="300"
+      method="POST"
+      content-type="application/json">
+    </iron-ajax>
+
+    <iron-ajax
+      id="stripeCustomerCall"
+      handle-as="json"
+      on-response="_handleStripeCustomerCall"
+      debounce-duration="300"
+      method="POST"
+      content-type="application/json">
+    </iron-ajax>
+
+    <iron-ajax
+      id="addCardCall"
+      handle-as="json"
+      on-response="_handleAddCardCall"
+      debounce-duration="300"
+      method="POST"
+      content-type="application/json">
+    </iron-ajax>
+
+    <iron-ajax
+      id="deleteCardCall"
+      handle-as="json"
+      on-response="_handleDeleteCardCall"
+      debounce-duration="300"
+      method="POST"
+      content-type="application/json">
+    </iron-ajax>
+
+    <iron-ajax
+      id="stripeCustomerCall"
+      handle-as="json"
+      on-response="_handleStripeCustomerCall"
+      debounce-duration="300"
+      method="POST"
+      content-type="application/json">
+    </iron-ajax>
+
+    <iron-ajax
+      id="defaultCardCall"
+      handle-as="json"
+      on-response="_handleDefaultCardCall"
+      debounce-duration="300"
+      method="POST"
+      content-type="application/json">
+    </iron-ajax>
+
+    <iron-ajax
+      id="listPlansCall"
+      handle-as="json"
+      on-response="_handleListPlansCall"
+      debounce-duration="300"
+      method="POST"
+      content-type="application/json">
+    </iron-ajax>
+
+    <iron-ajax
+      id="addPlanCall"
+      handle-as="json"
+      on-response="_handleAddPlanCall"
+      debounce-duration="300"
+      method="POST"
+      content-type="application/json">
+    </iron-ajax>
+
+    <iron-ajax
+      id="deletePlanCall"
+      handle-as="json"
+      on-response="_handleDeletePlanCall"
+      debounce-duration="300"
+      method="POST"
+      content-type="application/json">
+    </iron-ajax>
+
+    <iron-ajax
+      id="chargesCall"
+      handle-as="json"
+      on-response="_handleChargesCall"
+      debounce-duration="300"
+      method="POST"
+      content-type="application/json">
+    </iron-ajax>
 
     <style include="common-styles">
-      :host{
-        --app-grid-columns:3;
-        --app-grid-item-height:100px;
-        --app-grid-expandible-item-columns:3;
-      }
-      paper-button{
-        padding:20px;
-      }
-      paper-input{
-        padding:20px;
-      }
-      .buttonWrapper{
-        padding:20px;
-      }
-      .buttonWrapper paper-button{
-        width:100%;
-        height:100%;
-      }
-      .guuey-table{
-        @apply(--app-grid-expandible-item);
-      }
-      .modules{
-        display:flex;
-        flex-direction:row;
-        flex-wrap:wrap;
-      }
-      .modules *{
-        flex-grow:1;
-        width:33.3%;
-        margin-left:0;
-        margin-right:0;
-        padding-left:0;
-        padding-right:0;
-      }
-      .modal-button-container{
-        @apply(--app-grid-expandible-item);
-      }
-      .cancel{
-        @apply(--app-grid-expandible-item);
-      }
-      #cancelText{
-        text-align:center;
-        color:red;
-        text-transform:uppercase;
-      }
-      #cancelText:hover{
-        cursor:pointer;
-      }
-      #payButton{
-        @apply(--app-grid-expandible-item);
-      }
-      .newSub{
-        display:flex;
-        flex-direction:row;
-        flex-wrap:wrap;
-      }
-      .newSub *{
-        flex-grow:1;
-        width:30%;
-        padding:20px;
-      }
-      .newSub .divider{
-        width:100%;
-      }
-      .subExists paper-input{
-        --paper-input-container-disabled:{
-          opacity:.7;
-        };
+      .main{
+        margin: 50px 10% 50px 10%;
+        width:80%;
+        min-height:700px;
       }
     </style>
 
-    <paper-dialog
-      id="editSubscription"
-      class="guuey-modal guuey-add-modal">
+    <paper-dialog id="addCardDialog">
 
-      <h2>Update Subscription</h2>
+      <gold-cc-input
+        id="cardNumber"
+        auto-validate
+        label="credit card"
+        value="{{cardNumber}}"
+        card-type="{{cardType}}"
+        error-message="please enter a valid card number.">
+      </gold-cc-input>
 
-      <div class="modules">
-        <paper-radio-button disabled checked="{{selectedModules.core}}" name="core">core</paper-radio-button>
-        <paper-radio-button checked="{{selectedModules.staffManager}}" name="staffManager">Staff Manager</paper-radio-button>
-        <paper-radio-button checked="{{selectedModules.advancedCare}}" name="advancedCare">Advanced Care</paper-radio-button>
-        <paper-radio-button checked="{{selectedModules.training}}" name="training">Training</paper-radio-button>
-        <paper-radio-button checked="{{selectedModules.policiesAndProcedures}}" name="policiesAndProcedures">Policies And Procedures</paper-radio-button>
-        <paper-radio-button checked="{{selectedModules.healthAndSafety}}" name="healthAndSafety">Health And Safety</paper-radio-button>
-        <paper-radio-button checked="{{selectedModules.medication}}" name="medication">Medication</paper-radio-button>
-        <paper-radio-button checked="{{selectedModules.analytics}}" name="analytics">Analytics</paper-radio-button>
-        <paper-radio-button checked="{{selectedModules.mealPlanning}}" name="mealPlanning">Meal Planning</paper-radio-button>
-      </div>
+      <gold-cc-cvc-input
+        id="cvc"
+        auto-validate
+        card-type="[[cardType]]"
+        error-message="please enter a valid cvc code (on back of your card)."
+        value="{{cvc}}">
+      </gold-cc-cvc-input>
 
-      <p>
-        Selected Modules: {{_computeModuleCount(selectedModules.*)}}
-      </p>
-      <p>
-        Current Service User Count: [[userCount]]
-      </p>
-      <p>
-        Monthly Price: £{{_computeMonthlyPrice(userCount, moduleCount)}}
-      </p>
-      <p>
-        Subscription Name: {{_computeSubscriptionName(userCount, moduleCount)}}
-      </p>
-      <div class="modal-button-container">
-        <paper-button dialog-dismiss>cancel</paper-button>
-        <paper-button on-tap="updateSubscription">save</paper-button>
-      </div>
+      <gold-cc-expiration-input
+        id="expDate"
+        auto-validate
+        label="expirationDate"
+        value="{{expDate}}"
+        error-message="please enter a valid expiration date.">
+      </gold-cc-expiration-input>
 
-    </paper-dialog>
-
-    <paper-dialog class="guuey-modal guuey-danger-modal" id="cancelSubscription">
-
-      <h2>Cancel Subscription</h2>
-
-      <h3>
-        Are you sure that you want to cancel your subscription? All user data will be inaccessible until a new subscription is set and paid for.
-      </h3>
-
-      <div class="modal-button-container">
-        <paper-button id="dangerCancel" dialog-dismiss>cancel</paper-button>
-        <paper-button on-tap="cancelSubscription">Confirm</paper-button>
-      </div>
+      <paper-button
+        id="addCardButton"
+        class="guuey-button"
+        on-tap="confirmAddCard">
+        add card
+      </paper-button>
 
     </paper-dialog>
 
     <paper-card class="pageCard">
       <admin-header
-        page="Payment"
+        page="Care Home Profile"
         icon="icons:payment">
       </admin-header>
 
-      <!--test area-->
-
       <div class="pageInnerCont padded">
-        <span hidden$="[[subscriptionExists]]">
-          <div class="newSub" class="app-grid">
+        <h1>payments</h1>
 
-            <gold-cc-input
-              id="cardNumber"
-              auto-validate
-              label="credit card"
-              value="{{cardNumber}}"
-              card-type="{{cardType}}"
-              error-message="please enter a valid card number.">
-            </gold-cc-input>
+        <span hidden$="[[customer.customerID]]">
 
-            <gold-cc-cvc-input
-              id="cvc"
-              auto-validate
-              card-type="[[cardType]]"
-              error-message="please enter a valid cvc code (on back of your card)."
-              value="{{cvc}}">
-            </gold-cc-cvc-input>
+          <p>
+            Let's start by getting payments setup. You can update your subscription and modules after.
+          </p>
 
-            <gold-cc-expiration-input
-              id="expDate"
-              auto-validate
-              label="expirationDate"
-              value="{{expDate}}"
-              error-message="please enter a valid expiration date.">
-            </gold-cc-expiration-input>
+          <gold-cc-input
+            id="cardNumber"
+            auto-validate
+            label="credit card"
+            value="{{cardNumber}}"
+            card-type="{{cardType}}"
+            error-message="please enter a valid card number.">
+          </gold-cc-input>
 
-            <gold-email-input
-              id="email"
-              auto-validate
-              label="email"
-              value="{{email}}"
-              error-message="please enter a valid email.">
-            </gold-email-input>
+          <gold-cc-cvc-input
+            id="cvc"
+            auto-validate
+            card-type="[[cardType]]"
+            error-message="please enter a valid cvc code (on back of your card)."
+            value="{{cvc}}">
+          </gold-cc-cvc-input>
 
-            <gold-phone-input
-              id="phone"
-              auto-validate
-              label="phone number"
-              value="{{phone}}"
-              country-code="44"
-              error-message="please enter a valid phone number.">
-            </gold-phone-input>
+          <gold-cc-expiration-input
+            id="expDate"
+            auto-validate
+            label="expirationDate"
+            value="{{expDate}}"
+            error-message="please enter a valid expiration date.">
+          </gold-cc-expiration-input>
 
-            <div class="divider"></div>
+          <gold-email-input
+            id="email"
+            auto-validate
+            label="email"
+            value="{{email}}"
+            error-message="please enter a valid email.">
+          </gold-email-input>
 
-            <paper-radio-button disabled checked="{{selectedModules.core}}" name="core">core</paper-radio-button>
-            <paper-radio-button checked="{{selectedModules.staffManager}}" name="staffManager">Staff Manager</paper-radio-button>
-            <paper-radio-button checked="{{selectedModules.advancedCare}}" name="advancedCare">Advanced Care</paper-radio-button>
-            <paper-radio-button checked="{{selectedModules.training}}" name="training">Training</paper-radio-button>
-            <paper-radio-button checked="{{selectedModules.policiesAndProcedures}}" name="policiesAndProcedures">Policies And Procedures</paper-radio-button>
-            <paper-radio-button checked="{{selectedModules.healthAndSafety}}" name="healthAndSafety">Health And Safety</paper-radio-button>
-            <paper-radio-button checked="{{selectedModules.medication}}" name="medication">Medication</paper-radio-button>
-            <paper-radio-button checked="{{selectedModules.analytics}}" name="analytics">Analytics</paper-radio-button>
-            <paper-radio-button checked="{{selectedModules.mealPlanning}}" name="mealPlanning">Meal Planning</paper-radio-button>
+          <gold-phone-input
+            id="phone"
+            auto-validate
+            label="phone number"
+            value="{{phone}}"
+            country-code="44"
+            error-message="please enter a valid phone number.">
+          </gold-phone-input>
 
-            <p>
-              Selected Modules: {{_computeModuleCount(selectedModules.*)}}
-            </p>
-            <p>
-              Current Service User Count: [[userCount]]
-            </p>
-            <p>
-              Monthly Price: £{{_computeMonthlyPrice(userCount, moduleCount)}}
-            </p>
-            <p>
-              Subscription Name: {{_computeSubscriptionName(userCount, moduleCount)}}
-            </p>
+          <paper-button
+            id="payButton"
+            class="guuey-button"
+            on-tap="initialSub">
+            add payment method
+          </paper-button>
 
-            <paper-button
-              id="payButton"
-              class="guuey-button"
-              on-tap="startSubscription">
-              start supscription
-            </paper-button>
-
-          </div>
         </span>
 
-        <span hidden$="[[!subscriptionExists]]">
+        <span hidden$="[[!customer.customerID]]">
+          <template is="dom-repeat" items="[[cardList]]" as="card">
+            <br />
+            [[card.brand]] ending in [[card.last4]]
+            <paper-button on-tap="deleteCard">delete card</paper-button>
+            <paper-button on-tap="setDefaultCard">set as default</paper-button>
+            <br />
 
-          <div  class="subExists pageInnerCont padded app-grid">
+          </template>
 
-            <paper-input disabled label="Subscription" value="[[subscriptionData.subscriptions.data.0.plan.name]]"></paper-input>
+          <paper-button on-tap="addCard">add another card</paper-button>
 
-            <paper-input disabled label="Customer Number" value="[[home]]"></paper-input>
+          <h2>Active Plans</h2>
+          <template is="dom-repeat" items="[[activePlanList]]" as="plan">
+            <br />
+            [[plan.plan.name]] [[plan.quantity]] <paper-button on-tap="deletePlan">Remove Plan</paper-button>
+            <br />
+          </template>
 
-            <paper-input disabled label="Activated" value="[[convertEpoch(subscriptionData.subscriptions.data.0.created)]]"></paper-input>
+          <h2>Available Plans</h2>
 
-            <span class="buttonWrapper">
-              <paper-button class="guuey-button" on-tap="editSubscription">edit subscription</paper-button>
-            </span>
+          <template is="dom-repeat" items="[[plansList]]" as="availablePlan" filter="{{_alreadyOwned(activePlanList)}}">
+            <br />
+            <paper-button on-tap="addPlan">add [[availablePlan.name]]</paper-button>
+            <br />
+          </template>
 
-            <paper-input disabled label="Payment Method" value="Card ending in [[subscriptionData.sources.data.0.last4]]"></paper-input>
+          <h2>Previous Payments</h2>
+          <template is="dom-repeat" items="[[chargesList]]" as="charge">
+            <br />
+            [[charge.statement_descriptor]]
+            <br />
+            [[_computeChargeAmount(charge.amount, charge.currency)]]
+            <br />
+            [[_computeDate(charge.created)]]
+            <br />
 
-            <paper-input disabled label="Payment Interval" value="Monthly"></paper-input>
-
-            <paper-input disabled label="Next Billing Date" value="[[convertEpoch(subscriptionData.subscriptions.data.0.current_period_end)]]"></paper-input>
-
-            <span class="buttonWrapper">
-              <paper-button class="guuey-button">edit payment</paper-button>
-            </span>
-
-            <div class="cancel">
-              <p on-tap="startCancel" id="cancelText">
-                cancel
-              </p>
-            </div>
-
-            <div class="guuey-table">
-
-                <table id="billingTable">
-                  <thead>
-                    <tr>
-                      <th>
-                        Billing Date
-                      </th>
-                      <th>
-                        Payment
-                      </th>
-                      <th>
-                        Type
-                      </th>
-                      <th>
-                        Print
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>
-                        23 May 2015
-                      </td>
-                      <td>
-                        390,00 EUR
-                      </td>
-                      <td>
-                        Invoice
-                      </td>
-                      <td>
-                        <paper-icon-button icon="icons:print"></paper-icon-button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        23 June 2015
-                      </td>
-                      <td>
-                        390,00 EUR
-                      </td>
-                      <td>
-                        Invoice
-                      </td>
-                      <td>
-                        <paper-icon-button icon="icons:print"></paper-icon-button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        23 July 2015
-                      </td>
-                      <td>
-                        390,00 EUR
-                      </td>
-                      <td>
-                        Invoice
-                      </td>
-                      <td>
-                        <paper-icon-button icon="icons:print"></paper-icon-button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-            </div>
-          </div>
-
+          </template>
         </span>
 
       </div>
 
-      <div style="height:100px;">
-        <!--spacer-->
-      </div>
     </paper-card>
 
   </template>
 
+  <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
   <script>
 
-    Polymer({
+      Polymer({
+        is: 'ad-payment',
+        ready:function(){
+          this.fire("pageLoaded", this.page);
 
-      is: 'ad-payment',
-      ready:function(){
-        this.fire("pageLoaded", {page:this.page});
-        this.$.suIndexDB.query.once("value")
-        .then(function(data){
-          this._computeUserCount(data.val());
-        }.bind(this));
-      },
-      properties:{
-        home:{
-          type:String,
+          Stripe.setPublishableKey('pk_test_HelqkF6yfrw7IvyTtgtOG7Sb');
+
+          this.$.suIndexDB.query.once("value")
+          .then(function(data){
+            this._computeUserCount(data.val());
+          }.bind(this));
+
+          this.$.customerDB.ref.once("value")
+          .then(function(data){
+            console.log(data.val());
+            if(data.val().customerID != null){
+              this._getCustomerInfo();
+              this._getCharges();
+            };
+          }.bind(this));
+
+          this._listPlans();
         },
-        date:{
-          type:String,
-          value:"today"
-        },
-        paymentData:{
-          type:Object,
-          observer:"paymentDataChanged"
-        },
-        subscriptionData:{
-          type:Object,
-          observer:"subscriptionDataChanged"
-        },
-        subscriptionExists:{
-          type:Boolean,
-          value:false
-        },
-        selectedModules:{
-          type:Object,
-          value:{
-            core:true
+        properties:{
+          userCount:{
+            type:Number,
+            value:1
+          },
+          availablePlans:{
+            type:Array,
+            value:[]
+          },
+          params:{
+            type:Object,
+            value:{}
+          },
+          cardList:{
+            type:Array,
+            value:[]
+          },
+          activePlanList:{
+            type:Array,
+            value:[]
+          },
+          plansList:{
+            type:Array,
+            value:[]
+          },
+          chargesList:{
+            type:Array,
+            value:[]
           }
         },
-        userCount:{
-          type:Number,
-          value:1
+        behaviors:[
+          Polymer.adminPagesAnimation,
+          Polymer.adminResizeBehavior
+        ],
+        //utility functions
+        splitDate:function(date){
+          var dateArr=date.split("/");
+          var dateObj={};
+          dateObj.expMonth=dateArr[0];
+          if(dateObj.expMonth.length<2){
+            dateObj.expMonth=0+dateObj.expMonth;
+          };
+          dateObj.expYear=dateArr[1];
+          return dateObj;
         },
-        moduleCount:{
-          type:Number,
-          value:1
-        },
-        modulePrice:{
-          type:Number,
-          value:9.99
-        },
-        plan:{
-          type:String,
-          observer:"planChanged"
-        },
-        planId:{
-          type:String,
-          value:""
-        },
-      },
-      observers:[
 
-      ],
-      behaviors:[
-        Polymer.adminPagesAnimation,
-        Polymer.adminResizeBehavior
-      ],
-      planChanged:function(plan){
-        this.planId="M"+this.moduleCount+"U"+this.userCount;
-      },
-      editSubscription:function(){
-        this.$.editSubscription.open();
-      },
-      startCancel:function(){
-        this.$.cancelSubscription.open();
-      },
-      _computeModuleCount:function(modules){
-        var count=0;
-        for(x in modules.base){
-          if(modules.base[x]===true){
-            count++;
+        clearCardInputs:function(){
+          this.cardNumber="";
+          this.cvc="";
+          this.expDate="";
+        },
+
+        //intial computes
+        _computeChargeAmount(amount, currency){
+          console.log(amount, currency)
+          var unit = currency === "gbp" ? "£" : "€";
+          var moneyAmount = amount / 100;
+          return unit + moneyAmount;
+        },
+        _computeDate:function(created){
+          var date = new Date(created);
+          return date.toLocaleDateString();
+        },
+        _computeCIDExists:function(cid){
+          if(cid){
+            return true;
+          } else {
+            return false;
           };
-        };
-        this.set("moduleCount", count);
-        return count;
-      },
-      _computeUserCount:function(users){
-        var userCount=0;
-        for(x in users){
-          if(users[x].currentStatus==="active"){
-            userCount++;
+        },
+        _computeUserCount:function(users){
+          var userCount=0;
+          for(x in users){
+            if(users[x].currentStatus==="active"){
+              userCount++;
+            };
           };
-        };
-        this.set("userCount", userCount);
-      },
-      _computeMonthlyPrice:function(userCount, moduleCount){
-        var price=userCount*moduleCount*this.modulePrice;
-        this.set("price", price);
-        return price;
-      },
-      _computeSubscriptionName:function(userCount, moduleCount){
-          var baseName="Core Plan "+userCount+(userCount===1?" User":" Users");
-        if(moduleCount===1){
-          this.plan=baseName;
-          return baseName;
-        } else {
-          moduleCount--;
-          baseName=baseName+" +"+moduleCount+(moduleCount===1?" Module":" Modules");
-          this.plan=baseName;
-          return baseName;
-        };
-      },
-      paymentDataChanged:function(data){
-        //console.log(data);
-      },
-      handleResponse:function(e){
-        console.log(e.detail.response);
-      },
-      convertEpoch:function(date){
-        var date = new Date(date*1000);
-        var day = date.getDate();
-        var month = date.getMonth()+1;
-        var year = date.getFullYear();
-        return day+"."+month+"."+year;
-      },
-      startSubscription:function(){
-        if(this.checkValid()){
-          var params={
-            cardNumber:this.cardNumber,
-            cvc:this.cvc,
-            expDate:this.expDate,
+          this.set("userCount", userCount);
+        },
+        _getCustomerInfo:function(){
+          this.$.stripeCustomerCall.body={
+            customerId:this.customer.customerID
+          };
+          this.$.stripeCustomerCall.url="https://glacial-tor-36526.herokuapp.com/payments/customerinfo";
+          this.$.stripeCustomerCall.generateRequest();
+        },
+        _listPlans:function(){
+          this.$.listPlansCall.body={
+            request:"listPlans"
+          };
+          this.$.listPlansCall.url="https://glacial-tor-36526.herokuapp.com/payments/listplans"
+          this.$.listPlansCall.generateRequest();
+        },
+        _alreadyOwned:function(owned){
+          return function(plan){
+            return !owned.find(item => item.plan.id === plan.id);
+          };
+        },
+
+        //card input validation functions
+        checkValid:function(params){
+          var checkArr=[
+            this.$.cardNumber,
+            this.$.cvc,
+            this.$.expDate,
+            //this.$.phone,
+            //this.$.email
+          ];
+          var valid=true;
+          for(i=0; i<checkArr.length; i++){
+            if(checkArr[i].invalid || !checkArr[i].value){
+              valid=false;
+            };
+          };
+          return valid;
+        },
+        addCard:function(){
+          this.$.addCardDialog.open();
+        },
+        initialSub:function(){
+          if(this.checkValid() && !this.customer.customerID){
+            var params={
+              cardNumber:this.cardNumber,
+              cvc:this.cvc,
+              expDate:this.expDate,
+              home:this.home,
+              plan:this.plan,
+              users:this.userCount,
+              modules:this.moduleCount,
+              planId:this.planId
+            };
+            this.initialSubCall(params);
+          } else {
+            this.fire("openToast",{toastText:"Your payment could not be processed due to missing or bad information. Please check the information in the form and try again."});
+          };
+        },
+        confirmAddCard:function(){
+          if(this.checkValid() && this.customer.customerID){
+            var params={
+              cardNumber:this.cardNumber,
+              cvc:this.cvc,
+              expDate:this.expDate
+            };
+            var dateObj=this.splitDate(this.expDate);
+            Stripe.card.createToken({
+              number:this.cardNumber,
+              cvc:this.cvc,
+              exp_month:dateObj.expMonth,
+              exp_year:dateObj.expYear
+            }, this.addCardCall.bind(this));
+          };
+        },
+
+        //api calls
+        initialSubCall:function(params){
+          this.params=params;
+          var dateObj=this.splitDate(params.expDate);
+          Stripe.card.createToken({
+            number: params.cardNumber,
+            cvc: params.cvc,
+            exp_month: dateObj.expMonth,
+            exp_year: dateObj.expYear,
+          }, this.handleInitialSubCall.bind(this));
+        },
+        handleInitialSubCall:function(status, res){
+          if(res.error){
+            this.fire("openToast",{toastText:"Your payment could not be processed for the following reason: "+res.error.message});
+          } else {
+            this.$.initSubCall.url="https://glacial-tor-36526.herokuapp.com/payments/initialsub";
+            this.$.initSubCall.body={
+              stripeToken:res.id,
+              home:this.params.home,
+              plan:this.params.plan,
+              users:this.params.users,
+              planId:"core1"
+            };
+            this.$.initSubCall.generateRequest();
+          };
+        },
+        addCardCall:function(status, res){
+          if(res.error){
+            this.fire("openToast", {toastText:"Your card could not be added for the following reason: "+res.error.message});
+          } else {
+            this.$.addCardCall.url="https://glacial-tor-36526.herokuapp.com/payments/addcard";
+            this.$.addCardCall.body={
+              stripeToken:res.id,
+              customerId:this.customer.customerID
+            };
+            this.$.addCardCall.generateRequest();
+          };
+        },
+        deleteCard:function(e){
+          console.log(e.model.card);
+          this.$.deleteCardCall.url="https://glacial-tor-36526.herokuapp.com/payments/deletecard";
+          this.$.deleteCardCall.body={
+            customerId:this.customer.customerID,
+            cardId:e.model.card.id
+          };
+          this.$.deleteCardCall.generateRequest();
+        },
+        setDefaultCard:function(e){
+          this.$.defaultCardCall.url="https://glacial-tor-36526.herokuapp.com/payments/setdefaultcard"
+          this.$.defaultCardCall.body={
+            customerId:this.customer.customerID,
+            cardId:e.model.card.id
+          };
+          this.$.defaultCardCall.generateRequest();
+        },
+        addPlan:function(e){
+          this.$.addPlanCall.body={
             home:this.home,
-            plan:this.plan,
+            planName:e.model.availablePlan.name,
+            customerId:this.customer.customerID,
+            planId:e.model.availablePlan.id,
             users:this.userCount,
-            modules:this.moduleCount,
-            planId:this.planId
           };
-          console.log(params);
-          this.$.guueyStripe.startSubscription(params);
-        } else {
-          this.fire("openToast",{toastText:"Your payment could not be processed due to missing or bad information. Please check the information in the form and try again."});
-        };
-      },
-      updateSubscription:function(){
-        var params={
-          subscriptionId:this.subscriptionId,
-          home:this.home,
-          plan:this.plan,
-          userCount:this.userCount,
-          moduleCount:this.moduleCount,
-          planId:this.planId
-        };
-        this.$.guueyStripe.updateSubscription(params);
-        this.$.editSubscription.close();
-      },
-      cancelSubscription:function(){
-        var params={
-          subscriptionId:this.subscriptionId,
-          home:this.home
-        };
-        console.log(params);
-        this.$.guueyStripe.cancelSubscription(params);
-        this.$.cancelSubscription.close();
-      },
-      subscriptionDataChanged:function(data){
-        if(data.subscriptions){
-          this.subscriptionId=data.subscriptions.data[0].id;
-          this.set("subscriptionExists", true);
-        } else {
-          this.set("subscriptionExists", false);
+          this.$.addPlanCall.url="http://localhost:3000/payments/addplan";
+          this.$.addPlanCall.generateRequest();
+        },
+        deletePlan:function(e){
+          console.log(e);
+          this.$.deletePlanCall.body={
+            home:this.home,
+            planName:e.model.plan.plan.name,
+            customerId:this.customer.customerID,
+            planId:e.model.plan.plan.id,
+            subId:e.model.plan.id
+          };
+          this.$.deletePlanCall.url="http://localhost:3000/payments/deleteplan";
+          this.$.deletePlanCall.generateRequest();
+        },
+        _getCharges:function(){
+          this.$.chargesCall.body={
+            customerId:this.customer.customerID
+          };
+          this.$.chargesCall.url="http://localhost:3000/payments/getcharges";
+          this.$.chargesCall.generateRequest();
+        },
+        //handle api calls
+        _handleInitialSubResponse:function(e){
+          console.log(e.detail.response);
+          this.clearCardInputs();
+          this._getCustomerInfo();
+        },
+        _handleAddCardCall:function(e){
+          console.log(e.detail.response);
+          this.clearCardInputs();
+          this.$.addCardDialog.open();
+          this._getCustomerInfo();
+          this.fire("openToast", {toastText:"Your"+e.detail.reponse.brand+" ending in "+e.detail.response.last4+" has been added."});
+        },
+        _handleStripeCustomerCall:function(e){
+          console.log(e.detail.response);
+          this.set("activePlanList", e.detail.response.subscriptions.data);
+          this.set("cardList", e.detail.response.sources.data);
+        },
+        _handleDeleteCardCall:function(e){
+          console.log(e.detail.response);
+          if(e.detail.response.deleted === true){
+            this._getCustomerInfo();
+            this.fire("openToast", {toastText:"Your card has been removed."});
+          };
+        },
+        _handleDefaultCardCall:function(e){
+          console.log(e.detail.response);
+          this.fire("openToast", {toastText:"Your default card has been set."});
+        },
+        _handleListPlansCall:function(e){
+          this.set("plansList", e.detail.response.data);
+        },
+        _handleAddPlanCall:function(e){
+          this._getCustomerInfo();
+          console.log(e);
+          this.fire("openToast", {toastText:"You have successfully added the module named "+e.detail.response.planName+" to your supscription."});
+        },
+        _handleDeletePlanCall:function(e){
+          this._getCustomerInfo();
+          console.log(e);
+          this.fire("openToast", {toastText:"Plan removed"});
+        },
+        _handleChargesCall:function(e){
+          console.log(e.detail.response);
+          this.set("chargesList", e.detail.response.data);
         }
-      },
-      checkValid:function(params){
-        var checkArr=[
-          this.$.cardNumber,
-          this.$.cvc,
-          this.$.expDate,
-          //this.$.phone,
-          //this.$.email
-        ];
-        console.log(checkArr);
-        var valid=true;
-        for(i=0; i<checkArr.length; i++){
-          if(checkArr[i].invalid || !checkArr[i].value){
-            valid=false;
-          };
-        };
-        return valid;
-      },
-    });
+      });
 
   </script>
 
