@@ -292,7 +292,6 @@
 
           this.$.customerDB.ref.once("value")
           .then(function(data){
-            console.log(data.val());
             if(data.val().customerID != null){
               this._getCustomerInfo();
               this._getCharges();
@@ -355,7 +354,6 @@
 
         //intial computes
         _computeChargeAmount(amount, currency){
-          console.log(amount, currency)
           var unit = currency === "gbp" ? "£" : "€";
           var moneyAmount = amount / 100;
           return unit + moneyAmount;
@@ -493,7 +491,6 @@
           };
         },
         deleteCard:function(e){
-          console.log(e.model.card);
           this.$.deleteCardCall.url="https://glacial-tor-36526.herokuapp.com/payments/deletecard";
           this.$.deleteCardCall.body={
             customerId:this.customer.customerID,
@@ -521,7 +518,6 @@
           this.$.addPlanCall.generateRequest();
         },
         deletePlan:function(e){
-          console.log(e);
           this.$.deletePlanCall.body={
             home:this.home,
             planName:e.model.plan.plan.name,
@@ -541,31 +537,26 @@
         },
         //handle api calls
         _handleInitialSubResponse:function(e){
-          console.log(e.detail.response);
           this.clearCardInputs();
           this._getCustomerInfo();
         },
         _handleAddCardCall:function(e){
-          console.log(e.detail.response);
           this.clearCardInputs();
           this.$.addCardDialog.open();
           this._getCustomerInfo();
           this.fire("openToast", {toastText:"Your"+e.detail.reponse.brand+" ending in "+e.detail.response.last4+" has been added."});
         },
         _handleStripeCustomerCall:function(e){
-          console.log(e.detail.response);
           this.set("activePlanList", e.detail.response.subscriptions.data);
           this.set("cardList", e.detail.response.sources.data);
         },
         _handleDeleteCardCall:function(e){
-          console.log(e.detail.response);
           if(e.detail.response.deleted === true){
             this._getCustomerInfo();
             this.fire("openToast", {toastText:"Your card has been removed."});
           };
         },
         _handleDefaultCardCall:function(e){
-          console.log(e.detail.response);
           this.fire("openToast", {toastText:"Your default card has been set."});
         },
         _handleListPlansCall:function(e){
@@ -573,16 +564,13 @@
         },
         _handleAddPlanCall:function(e){
           this._getCustomerInfo();
-          console.log(e);
           this.fire("openToast", {toastText:"You have successfully added the module named "+e.detail.response.planName+" to your supscription."});
         },
         _handleDeletePlanCall:function(e){
           this._getCustomerInfo();
-          console.log(e);
           this.fire("openToast", {toastText:"Plan removed"});
         },
         _handleChargesCall:function(e){
-          console.log(e.detail.response);
           this.set("chargesList", e.detail.response.data);
         }
       });
