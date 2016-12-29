@@ -120,10 +120,14 @@
     </iron-ajax>
 
     <style include="common-styles">
-      .main{
-        margin: 50px 10% 50px 10%;
-        width:80%;
-        min-height:700px;
+      :host{
+        --app-grid-columns:2;
+      }
+      .guuey-table{
+        padding:0;
+      }
+      .guuey-table table{
+        padding:0;
       }
     </style>
 
@@ -170,7 +174,6 @@
       </admin-header>
 
       <div class="pageInnerCont padded">
-        <h1>payments</h1>
 
         <span hidden$="[[customer.customerID]]">
 
@@ -230,43 +233,166 @@
         </span>
 
         <span hidden$="[[!customer.customerID]]">
-          <template is="dom-repeat" items="[[cardList]]" as="card">
-            <br />
-            [[card.brand]] ending in [[card.last4]]
-            <paper-button on-tap="deleteCard">delete card</paper-button>
-            <paper-button on-tap="setDefaultCard">set as default</paper-button>
-            <br />
 
-          </template>
+            <h2>Saved Cards</h2>
+            <div class="guuey-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>
+                      Card Type
+                    </th>
+                    <th>
+                      Last 4
+                    </th>
+                    <th>
+                      Remove Card
+                    </th>
+                    <th>
+                      Set As Default
+                    </th>
+                  </tr>
+                </thead>
 
-          <paper-button on-tap="addCard">add another card</paper-button>
+                <template is="dom-repeat" items="[[cardList]]" as="card">
+                  <tr>
+                    <td>
+                      [[card.brand]]
+                    </td>
+                    <td>
+                      [[card.last4]]
+                    </td>
+                    <td>
+                      <paper-button class="guuey-button" on-tap="deleteCard">remove card</paper-button>
+                    </td>
+                    <td>
+                      <paper-button class="guuey-button" on-tap="setDefaultCard">set as default</paper-button>
+                    </td>
+                  </tr>
+                </template>
+              </table>
+            </div>
+            <paper-button class="guuey-button" on-tap="addCard">add another card</paper-button>
+
+          <div class="divider"></div>
 
           <h2>Active Plans</h2>
-          <template is="dom-repeat" items="[[activePlanList]]" as="plan">
-            <br />
-            [[plan.plan.name]] [[plan.quantity]] <paper-button on-tap="deletePlan">Remove Plan</paper-button>
-            <br />
-          </template>
+          <div class="guuey-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>
+                    Subscription Name
+                  </th>
+                  <th>
+                    Service Users
+                  </th>
+                  <th>
+                    Monthly Price
+                  </th>
+                  <th>
+                    Next Payment
+                  </th>
+                  <th>
+                    Remove Plan
+                  </th>
+                </tr>
+              </thead>
+                <template is="dom-repeat" items="[[activePlanList]]" as="plan">
+                  <tr>
+                    <td>
+                      [[plan.plan.name]]
+                    </td>
+                    <td>
+                      [[plan.quantity]]
+                    </td>
+                    <td>
+                      [[_computeSubMonthlyPrice(plan.plan.amount, plan.plan.currency, plan.quantity)]]
+                    </td>
+                    <td>
+                      [[_computeDate(plan.current_period_end)]]
+                    </td>
+                    <td>
+                      <paper-button class="guuey-button" on-tap="deletePlan">Remove Plan</paper-button>
+                    </td>
+                  </tr>
+                </template>
+            </table>
+          </div>
+
+          <div class="divider"></div>
 
           <h2>Available Plans</h2>
+          <div class="guuey-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>
+                    Subscription Name
+                  </th>
+                  <th>
+                    Service Users
+                  </th>
+                  <th>
+                    Monthly Price
+                  </th>
+                  <th>
+                    Add Subscription
+                  </th>
+                </tr>
+              </thead>
+              <template is="dom-repeat" items="[[plansList]]" as="availablePlan" filter="{{_alreadyOwned(activePlanList)}}">
+                <tr>
+                  <td>
+                    [[availablePlan.name]]
+                  </td>
+                  <td>
+                    [[userCount]]
+                  </td>
+                  <td>
+                    [[_computeSubMonthlyPrice(availablePlan.amount, availablePlan.currency, userCount)]]
+                  </td>
+                  <td>
+                    <paper-button class="guuey-button" on-tap="addPlan">add Subscription</paper-button>
+                  </td>
+                </tr>
+              </template>
+            </table>
+          </div>
 
-          <template is="dom-repeat" items="[[plansList]]" as="availablePlan" filter="{{_alreadyOwned(activePlanList)}}">
-            <br />
-            <paper-button on-tap="addPlan">add [[availablePlan.name]]</paper-button>
-            <br />
-          </template>
+          <div class="divider"></div>
 
           <h2>Previous Payments</h2>
-          <template is="dom-repeat" items="[[chargesList]]" as="charge">
-            <br />
-            [[charge.statement_descriptor]]
-            <br />
-            [[_computeChargeAmount(charge.amount, charge.currency)]]
-            <br />
-            [[_computeDate(charge.created)]]
-            <br />
-
-          </template>
+          <div class="guuey-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>
+                    Billing Descriptor
+                  </th>
+                  <th>
+                    Amount
+                  </th>
+                  <th>
+                    Date Charged
+                  </th>
+                </tr>
+              </thead>
+              <template is="dom-repeat" items="[[chargesList]]" as="charge">
+                <tr>
+                  <td>
+                    [[charge.statement_descriptor]]
+                  </td>
+                  <td>
+                    [[_computeChargeAmount(charge.amount, charge.currency)]]
+                  </td>
+                  <td>
+                    [[_computeDate(charge.created)]]
+                  </td>
+                </tr>
+              </template>
+            </table>
+          </div>
         </span>
 
       </div>
@@ -353,13 +479,20 @@
         },
 
         //intial computes
-        _computeChargeAmount(amount, currency){
+        _computeChargeAmount:function(amount, currency){
           var unit = currency === "gbp" ? "£" : "€";
           var moneyAmount = amount / 100;
           return unit + moneyAmount;
         },
+        _computeSubMonthlyPrice:function(amount, currency, users){
+          console.log(users, typeof users);
+          var unit = currency === "gbp" ? "£" : "€";
+          var moneyAmount = (amount / 100) * users
+          return unit + moneyAmount;
+        },
         _computeDate:function(created){
-          var date = new Date(created);
+          var date = new Date(0);
+          date.setUTCSeconds(created);
           return date.toLocaleDateString();
         },
         _computeCIDExists:function(cid){
@@ -547,6 +680,7 @@
           this.fire("openToast", {toastText:"Your"+e.detail.reponse.brand+" ending in "+e.detail.response.last4+" has been added."});
         },
         _handleStripeCustomerCall:function(e){
+          console.log(e.detail.response);
           this.set("activePlanList", e.detail.response.subscriptions.data);
           this.set("cardList", e.detail.response.sources.data);
         },
@@ -560,6 +694,7 @@
           this.fire("openToast", {toastText:"Your default card has been set."});
         },
         _handleListPlansCall:function(e){
+          console.log(e.detail.response.data);
           this.set("plansList", e.detail.response.data);
         },
         _handleAddPlanCall:function(e){
