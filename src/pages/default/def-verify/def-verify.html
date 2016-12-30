@@ -16,6 +16,15 @@
           on-error="handleError">
         </firebase-auth>
 
+        <iron-ajax
+          id="trialSetCall"
+          handle-as="json"
+          on-response="_handleTrialSetCall"
+          debounce-duration="300"
+          method="POST"
+          content-type="application/json">
+        </iron-ajax>
+
         <style include="common-styles">
             .pageCard{
               min-height:600px;
@@ -270,11 +279,19 @@
                   //email address verified
                   this.verifyResponse=resp;
                   this.verifySuccess=true;
+                  this.startTrial();
                 }.bind(this))
                 .catch(function(error){
                   this.verifyErrorMessage=error;
                   this.verifyError=true;
                 }.bind(this));
+            },
+            startTrial:function(){
+              this.$.trialSetCall.body={
+                home:this.home
+              };
+              this.$.trialSetCall.url="http://localhost:3000/trial/starttrial";
+              this.$.trialSetCall.generateRequest();
             }
         });
     </script>

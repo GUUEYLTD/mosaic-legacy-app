@@ -1,0 +1,76 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html" />
+
+<script>
+
+  (function(){
+    "use-strict";
+    Polymer.accountCreateBehavior={
+      is:"account-create-behavior",
+      saveHome:function(){
+        this.$.homeDB.path=null;
+        this.$.homeDB.data={
+          details:{
+            name:"Please set home name."
+          },
+          users:{}
+        };
+        return this.$.homeDB.save('/homes',null);
+      },
+      saveHomeIndex:function(){
+        var homePath = '/homes';
+        this.homeUID = this.$.homeDB.path.slice(homePath.length+1);
+        return this.$.homeIndexDB.setStoredValue("/homeIndex/"+this.homeUID, this.homeUID)
+      },
+      saveHomeAdmin:function(username){
+        this.$.userDB.path=null;
+        this.$.userDB.data={
+          role:'admin',
+          home:this.homeUID,
+          email:username
+        };
+        return this.$.userDB.save('/homes/'+this.homeUID+'/users', this.user.uid)
+      },
+      saveUserIndex:function(){
+        this.$.userIndexDB.path=null;
+        this.$.userIndexDB.data={
+          home:this.homeUID
+        };
+        return this.$.userIndexDB.save('/userIndex', this.user.uid)
+      },
+      sendEmailVerification:function(){
+        return this.user.sendEmailVerification();
+      },
+      //function to create new user for new home
+      createNewAccount:function(e){
+        //create new user for new home
+        var that = this;
+        this.$.auth.createUserWithEmailAndPassword(e.detail.username, e.detail.password)
+        .then(function(user){
+          that.user=user;
+          that.saveHome(e.detail.home)
+          .then(function(home){
+            that.saveHomeIndex()
+            .then(function(homeIndex){
+              that.saveHomeAdmin(e.detail.username)
+              .then(function(admin){
+                that.saveUserIndex()
+                .then(function(userIndex){
+                  that.sendEmailVerification()
+                  .then(function(ver) {
+                    that.fire("openToast",{toastText:"Verification Email sent."});
+                    window.location="/"+that.homeUID+"/default/def-home";
+                  })
+                })
+              })
+            })
+          })
+        })
+        .catch(function(error){
+          that.fire("openToast",{toastText:error});
+        })
+      },
+    };
+
+  })();
+
+</script>

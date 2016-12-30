@@ -754,56 +754,6 @@
 
           return text;
       },
-      //function to create new user for new home
-      createNewAccount:function(e){
-        //create new user for new home
-        this.$.auth.createUserWithEmailAndPassword(e.detail.username, e.detail.password)
-          .then(function(user){
-            this.$.homeDB.path=null;
-            this.$.homeDB.data={
-              details:{
-                name:e.detail.home
-              },
-              users:{}
-            };
-            this.$.homeDB.save('/homes',null)
-              .then(function(){
-                var homePath = '/homes';
-                var homeUID = this.$.homeDB.path.slice(homePath.length+1);
-                this.$.homeIndexDB.setStoredValue("/homeIndex/"+homeUID,homeUID)
-                  .then(function(){
-                    this.$.userDB.path=null;
-                    this.$.userDB.data={
-                      role:'admin',
-                      home:homeUID,
-                      email:e.detail.username
-                    };
-                    this.$.userDB.save('/homes/'+homeUID+'/users', user.uid)
-                      .then(function(){
-                        this.$.userIndexDB.path=null;
-                        this.$.userIndexDB.data={
-                          home:homeUID
-                        };
-                        this.$.userIndexDB.save('/userIndex',user.uid)
-                          .then(function(){
-                            this.$.auth.user.sendEmailVerification()
-                              .then(function() {
-                              this.fire("openToast",{toastText:"Email sent."});
-                            }.bind(this), function(error) {
-                              this.fire("openToast",{toastText:error});
-                            }.bind(this));
-                            window.location="/"+homeUID+"/default/def-home";
-                          }.bind(this));
-                      }.bind(this));
-                  }.bind(this));
-              }.bind(this));
-          }.bind(this))
-          .catch(function(error){
-            this.$.mainToast.text=error;
-            this.$.mainToast.open()
-          }.bind(this));
-      },
-
       properties:{
         rightMenuSelect:{
           type:String,
@@ -881,7 +831,9 @@
         };
       },
       behaviors: [
-        Polymer.shellResizeBehavior
+        Polymer.shellResizeBehavior,
+        Polymer.pageChangeMiddleware,
+        Polymer.accountCreateBehavior
       ],
       _homeRouteChanged:function(home){
         this.home=home || 'default';

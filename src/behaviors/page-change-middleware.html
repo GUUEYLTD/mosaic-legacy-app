@@ -1,0 +1,19 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html" />
+
+<script>
+
+  (function(){
+    "use-strict";
+    Polymer.pageChangeMiddleware={
+      is:"page-change-middleware",
+      observers:[
+        "_middleware(page)"
+      ],
+      _middleware:function(page){
+        console.log("catching page changes. current page is: "+page);
+      }
+    };
+
+  })();
+
+</script>
