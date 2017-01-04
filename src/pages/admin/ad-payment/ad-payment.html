@@ -294,6 +294,9 @@
                     Next Payment
                   </th>
                   <th>
+                    Status
+                  </th>
+                  <th>
                     Remove Plan
                   </th>
                 </tr>
@@ -308,6 +311,9 @@
                     </td>
                     <td>
                       [[_computeSubMonthlyPrice(plan.plan.amount, plan.plan.currency, plan.quantity)]]
+                    </td>
+                    <td>
+                      [[_computePlanStatus(plan.status)]]
                     </td>
                     <td>
                       [[_computeDate(plan.current_period_end)]]
@@ -511,18 +517,22 @@
           };
           this.set("userCount", userCount);
         },
+        _computePlanStatus:function(plan){
+          console.log(plan);
+          return plan.replace("_", " ");
+        },
         _getCustomerInfo:function(){
           this.$.stripeCustomerCall.body={
             customerId:this.customer.customerID
           };
-          this.$.stripeCustomerCall.url="https://glacial-tor-36526.herokuapp.com/payments/customerinfo";
+          this.$.stripeCustomerCall.url="http://localhost:3000/payments/customerinfo";
           this.$.stripeCustomerCall.generateRequest();
         },
         _listPlans:function(){
           this.$.listPlansCall.body={
             request:"listPlans"
           };
-          this.$.listPlansCall.url="https://glacial-tor-36526.herokuapp.com/payments/listplans"
+          this.$.listPlansCall.url="http://localhost:3000/payments/listplans"
           this.$.listPlansCall.generateRequest();
         },
         _alreadyOwned:function(owned){
@@ -600,7 +610,7 @@
           if(res.error){
             this.fire("openToast",{toastText:"Your payment could not be processed for the following reason: "+res.error.message});
           } else {
-            this.$.initSubCall.url="https://glacial-tor-36526.herokuapp.com/payments/initialsub";
+            this.$.initSubCall.url="http://localhost:3000/payments/initialsub";
             this.$.initSubCall.body={
               stripeToken:res.id,
               home:this.params.home,
@@ -615,7 +625,7 @@
           if(res.error){
             this.fire("openToast", {toastText:"Your card could not be added for the following reason: "+res.error.message});
           } else {
-            this.$.addCardCall.url="https://glacial-tor-36526.herokuapp.com/payments/addcard";
+            this.$.addCardCall.url="http://localhost:3000/payments/addcard";
             this.$.addCardCall.body={
               stripeToken:res.id,
               customerId:this.customer.customerID
@@ -624,7 +634,7 @@
           };
         },
         deleteCard:function(e){
-          this.$.deleteCardCall.url="https://glacial-tor-36526.herokuapp.com/payments/deletecard";
+          this.$.deleteCardCall.url="http://localhost:3000/payments/deletecard";
           this.$.deleteCardCall.body={
             customerId:this.customer.customerID,
             cardId:e.model.card.id
@@ -632,7 +642,7 @@
           this.$.deleteCardCall.generateRequest();
         },
         setDefaultCard:function(e){
-          this.$.defaultCardCall.url="https://glacial-tor-36526.herokuapp.com/payments/setdefaultcard"
+          this.$.defaultCardCall.url="http://localhost:3000/payments/setdefaultcard"
           this.$.defaultCardCall.body={
             customerId:this.customer.customerID,
             cardId:e.model.card.id
@@ -647,7 +657,7 @@
             planId:e.model.availablePlan.id,
             users:this.userCount,
           };
-          this.$.addPlanCall.url="https://glacial-tor-36526.herokuapp.com/payments/addplan";
+          this.$.addPlanCall.url="http://localhost:3000/payments/addplan";
           this.$.addPlanCall.generateRequest();
         },
         deletePlan:function(e){
@@ -658,14 +668,14 @@
             planId:e.model.plan.plan.id,
             subId:e.model.plan.id
           };
-          this.$.deletePlanCall.url="https://glacial-tor-36526.herokuapp.com/payments/deleteplan";
+          this.$.deletePlanCall.url="http://localhost:3000/payments/deleteplan";
           this.$.deletePlanCall.generateRequest();
         },
         _getCharges:function(){
           this.$.chargesCall.body={
             customerId:this.customer.customerID
           };
-          this.$.chargesCall.url="https://glacial-tor-36526.herokuapp.com/payments/getcharges";
+          this.$.chargesCall.url="http://localhost:3000/payments/getcharges";
           this.$.chargesCall.generateRequest();
         },
         //handle api calls

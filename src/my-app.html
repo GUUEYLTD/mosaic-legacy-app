@@ -61,7 +61,7 @@
     <!--SAME AS ABOVE MOVE LATER USED TO GET PROFILE INFO FOR SIDEBAR-->
     <firebase-document
       path="/homes/[[home]]/details"
-      data="[[careHomeProfile]]"
+      data="{{careHomeProfile}}"
       app-name="main">
     </firebase-document>
     <!--firebase doc to create new home... NEEDS TO GO ELSEWHERE LATER!-->
@@ -84,6 +84,13 @@
       id="notifiableDB"
       app-name="main">
     </firebase-document>
+
+    <firebase-query
+      id="paymentsDB"
+      app-name="main"
+      path="/payments/[[home]]"
+      data="{{payments}}">
+    </firebase-query>
 
     <firebase-query
       id="notifyDB"
@@ -127,10 +134,7 @@
       pattern="/:param"
       data="{{paramData}}">
     </app-route>
-    <style include="app-shell-styles">
-
-
-    </style>
+    <style include="app-shell-styles"></style>
 
     <paper-dialog id="appsDialog">
       <div class="flexRow">
@@ -162,8 +166,6 @@
 
             <guuey-notification index="[[index]]" info="[[guueyNotify]]"></guuey-notification>
 
-
-
         </template>
 
       </paper-dialog-scrollable>
@@ -177,6 +179,12 @@
         home="[[home]]"
         on-tap="closeLogout">
       </guuey-account-display>
+    </paper-dialog>
+
+    <paper-dialog modal id="lockedDialog">
+      <p>
+        [[restrictDialogText]]
+      </p>
     </paper-dialog>
 
     <div class="loadingOverlay">
@@ -778,7 +786,6 @@
         page:{
           type:String,
           reflectToAttribute:true,
-          observer:'_pageChanged',
         },
         param:{
           type:String,
@@ -788,10 +795,8 @@
         login:{
           type:Object,
         },
-        company: {
-          name:"Beecholme Adult Care",
-          userCount:"12",
-          notifications:"4"
+        payments:{
+          type:Object,
         },
         //routes that do not get overriden by not being logged in
         noAuthRoutes:{
@@ -860,38 +865,6 @@
         if(cat!='default'){
           this.category=this.catData.category;
         }
-      },
-      _pageChanged:function(page) {
-        if(this.page==="def-home"){
-          this.rightMenuSelect="home";
-        } else {
-          this.rightMenuSelect=null;
-        }
-        if(this.statusKnown && !this.user.emailVerified && this.currentUserType==="admin"){
-          this.set("catData.category", "default");
-          this.set("pageData.page", "def-verify");
-        };
-        if(page==="def-home" && !this[page]){
-          this.enableDBLoading();
-        } else {
-          this.disableDBLoading();
-        };
-        if(page!="def-home" && !this[page]){
-          this.enablePageLoading();
-        };
-        // load page import on demand.
-        this.importHref(
-          this.resolveUrl('pages/'+this.category+'/' + page +'/'+page+'.html'),
-          function(){
-            this.currentCat=this.temp_currentCat;
-            this.intendedCat=this.temp_intendedCat;
-            this.selected=this.page;
-            this.ensureLayout(this.page);
-
-          },
-          function(){
-            this.errorRedirect();
-          }, false);
       },
       _paramChanged:function(param){
         this.param=this.paramData.param || '';
@@ -1003,50 +976,6 @@
         if(this.dimensions.query1023){
           this.$.suDrawer.close();
         };
-      },
-      enableDBLoading:function(){
-        this.customStyle["--db-loading-display"]="flex";
-        this.updateStyles();
-      },
-      disableDBLoading:function(e){
-        if(e){
-          var page=e.detail.page
-          this[e.detail.page]=true;
-        };
-        this.customStyle["--db-loading-display"]="none";
-        this.updateStyles();
-      },
-      enablePageLoading:function(){
-        this.customStyle["--page-loading-active-color"]="#FFEB3B";
-        this.updateStyles();
-      },
-      disablePageLoading:function(e){
-        if(e){
-          var page=e.detail.page
-          this[e.detail.page]=true;
-        };
-        this.customStyle["--page-loading-active-color"]="transparent";
-        this.updateStyles();
-      },
-      ensureLayout:function(page){
-        if(page.slice(0,3)==="def" || page.slice(0,2)==="ad" || page==="su-create"){
-          this.$.appDrawerLayout.forceNarrow=true;
-          //this.$.appHeader.resizerShouldNotify('notifyBadge');
-          this.$.appHeader.notifyResize();
-          //this.$.notifyBadge.updatePosition();
-          //this.$.appHeader.resetLayout();
-          this.$.suDrawer.close();
-        } else {
-          this.$.appDrawerLayout.forceNarrow=false;
-          //this.$.appHeader.resizerShouldNotify('notifyBadge');
-          this.$.appHeader.notifyResize();
-          //this.$.notifyBadge.updatePosition();
-          //this.$.appHeader.resetLayout();
-        };
-      },
-      errorRedirect:function(){
-        this.set("category", "default");
-        this.set("page", "def-error");
       },
       _computeNotificationCount:function(notifiesData){
         var count;

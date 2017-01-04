@@ -9,9 +9,154 @@
       observers:[
         "_middleware(page)"
       ],
-      _middleware:function(page){
-        console.log("catching page changes. current page is: "+page);
-      }
+      properties:{
+        adTrialOver:{
+          type:String,
+          value: "Trial Period is over please update payment info to continue service usage."
+        },
+        swTrialOver:{
+          type:String,
+          value: "Trial Period is over please inform your supervisor that payment information must be updated in order to continue."
+        },
+        adNoPayment:{
+          type:String,
+          value: "Due to no payment, your accounts have been locked. Please update payment information in order to continue."
+        },
+        swNoPayment:{
+          type:String,
+          value: "Due to no payment, your account has been locked. Please inform your supervisor that valid payment information must be updated in order to continue."
+        },
+        noCoreText:{
+          type:String,
+          value: "It looks like your main service plan has been removed. If you feel this is in error, please contact support."
+        }
+      },
+      setRightMenuSelect:function(){
+        if(this.page==="def-home"){
+          this.rightMenuSelect="home";
+        } else {
+          this.rightMenuSelect=null;
+        };
+      },
+      verifyReroute:function(){
+        if(this.statusKnown && !this.user.emailVerified && this.currentUserType === "admin"){
+          this.set("catData.category", "default");
+          this.set("pageData.page", "def-verify");
+        };
+      },
+      paymentReroute:function(){
+        this.$.paymentsDB.ref.once("value", function(snapshot){
+          var payments = snapshot.val();
+          console.log(payments);
+          var core1 = false;
+          for(x in payments){
+            if(payments[x].id === "core1"){
+              core1 = payments[x];
+            };
+          };
+          console.log(core1);
+          if(payments && payments.trial){
+            if(payements.trial.status === "canceled"){
+              this.restrictToastText = this.adTrialOver;
+              this.restrictDialogText = this.swTrialOver;
+            };
+          } else if(core1){
+            if(core1.status === "canceled"){
+              this.restrictToastText = this.adNoPayment;
+              this.restrictDialogText = this.swNoPayment;
+            }
+          } else {
+            this.restrictDialogText = this.noCoreText;
+          };
+
+          if(payments && payments.trial && payments.trial.status === "canceled" && this.currentUserType === "admin"){
+            this.set("catData.category", "admin");
+            this.set("pageData.page", "ad-payment");
+          }else if(core1 && core1.status === "canceled" && this.currentUserType != "admin"){
+            this.$.lockedDialog.open();
+          } else if(!core1){
+            //this.$.lockedDialog.open();
+          };
+        }.bind(this));
+      },
+      toggleLoadingDisplay:function(page){
+        if(page==="def-home" && !this[page]){
+          this.enableDBLoading();
+        } else {
+          this.disableDBLoading();
+        };
+        if(page!="def-home" && !this[page]){
+          this.enablePageLoading();
+        };
+      },
+      enableDBLoading:function(){
+        this.customStyle["--db-loading-display"]="flex";
+        this.updateStyles();
+      },
+      disableDBLoading:function(e){
+        if(e){
+          var page=e.detail.page
+          this[e.detail.page]=true;
+        };
+        this.customStyle["--db-loading-display"]="none";
+        this.updateStyles();
+      },
+      enablePageLoading:function(){
+        this.customStyle["--page-loading-active-color"]="#FFEB3B";
+        this.updateStyles();
+      },
+      disablePageLoading:function(e){
+        if(e){
+          var page=e.detail.page
+          this[e.detail.page]=true;
+        };
+        this.customStyle["--page-loading-active-color"]="transparent";
+        this.updateStyles();
+      },
+      lazyLoadPage:function(page){
+        // load page import on demand.
+        this.importHref(
+          this.resolveUrl('pages/'+this.category+'/' + page +'/'+page+'.html'),
+          function(){
+            this.currentCat=this.temp_currentCat;
+            this.intendedCat=this.temp_intendedCat;
+            this.selected=this.page;
+            this.ensureLayout(this.page);
+            if(this.payments.status === "delinquent"){
+              this.fire("openToast", {toastText:this.restrictToastText});
+            };
+          },
+          function(){
+            this.errorRedirect();
+          }, false);
+      },
+      ensureLayout:function(page){
+        if(page.slice(0,3)==="def" || page.slice(0,2)==="ad" || page==="su-create"){
+          this.$.appDrawerLayout.forceNarrow=true;
+          //this.$.appHeader.resizerShouldNotify('notifyBadge');
+          this.$.appHeader.notifyResize();
+          //this.$.notifyBadge.updatePosition();
+          //this.$.appHeader.resetLayout();
+          this.$.suDrawer.close();
+        } else {
+          this.$.appDrawerLayout.forceNarrow=false;
+          //this.$.appHeader.resizerShouldNotify('notifyBadge');
+          this.$.appHeader.notifyResize();
+          //this.$.notifyBadge.updatePosition();
+          //this.$.appHeader.resetLayout();
+        };
+      },
+      errorRedirect:function(){
+        this.set("category", "default");
+        this.set("page", "def-error");
+      },
+      _middleware:function(page) {
+        this.setRightMenuSelect();
+        this.toggleLoadingDisplay(page)
+        this.lazyLoadPage(page);
+        this.paymentReroute();
+        this.verifyReroute();
+      },
     };
 
   })();
