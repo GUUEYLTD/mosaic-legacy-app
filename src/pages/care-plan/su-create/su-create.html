@@ -547,13 +547,16 @@
         Polymer.suResizeBehavior
       ],
       createNewPatient:function(){
-        var path="/homes/"+this.home+"/patients/"+this.patient+"/currentStatus";
+        var path = "/homes/"+this.home+"/patients/"+this.patient+"/currentStatus";
+        var date = new Date();
+        var now = date.getTime();
         this.$.newPatientDB.setStoredValue(path, "active")
           .then(function(val){
             this.$.suIndexDB.data.fName=this.$.newPatientDB.data.fName;
             this.$.suIndexDB.data.lName=this.$.newPatientDB.data.lName;
             this.$.suIndexDB.data.currentStatus="active";
             this.$.suIndexDB.data.home=this.home;
+            this.$.suIndexDB.data.created = now;
             this.$.suIndexDB.save("/homes/"+this.home+"/patients/suIndex", this.patient);
           }.bind(this));
       },

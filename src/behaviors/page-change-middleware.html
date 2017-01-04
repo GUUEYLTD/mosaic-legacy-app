@@ -31,6 +31,13 @@
           value: "It looks like your main service plan has been removed. If you feel this is in error, please contact support."
         }
       },
+      checkAdmin:function(){
+        if(this.currentUserType != "admin" && this.catData.category === "admin"){
+          this.set("catData.category", "default");
+          this.set("pageData.page", "def-home");
+          this.fire("openToast", {toastText: "That page is for admins only. Returned to default page."});
+        };
+      },
       setRightMenuSelect:function(){
         if(this.page==="def-home"){
           this.rightMenuSelect="home";
@@ -47,14 +54,12 @@
       paymentReroute:function(){
         this.$.paymentsDB.ref.once("value", function(snapshot){
           var payments = snapshot.val();
-          console.log(payments);
           var core1 = false;
           for(x in payments){
             if(payments[x].id === "core1"){
               core1 = payments[x];
             };
           };
-          console.log(core1);
           if(payments && payments.trial){
             if(payements.trial.status === "canceled"){
               this.restrictToastText = this.adTrialOver;
@@ -133,29 +138,24 @@
       ensureLayout:function(page){
         if(page.slice(0,3)==="def" || page.slice(0,2)==="ad" || page==="su-create"){
           this.$.appDrawerLayout.forceNarrow=true;
-          //this.$.appHeader.resizerShouldNotify('notifyBadge');
           this.$.appHeader.notifyResize();
-          //this.$.notifyBadge.updatePosition();
-          //this.$.appHeader.resetLayout();
           this.$.suDrawer.close();
         } else {
           this.$.appDrawerLayout.forceNarrow=false;
-          //this.$.appHeader.resizerShouldNotify('notifyBadge');
           this.$.appHeader.notifyResize();
-          //this.$.notifyBadge.updatePosition();
-          //this.$.appHeader.resetLayout();
         };
       },
       errorRedirect:function(){
-        this.set("category", "default");
-        this.set("page", "def-error");
+        this.set("catData.category", "default");
+        this.set("pageData.page", "def-error");
       },
       _middleware:function(page) {
+        this.checkAdmin();
         this.setRightMenuSelect();
-        this.toggleLoadingDisplay(page)
-        this.lazyLoadPage(page);
+        this.toggleLoadingDisplay(this.page);
         this.paymentReroute();
         this.verifyReroute();
+        this.lazyLoadPage(this.page);
       },
     };
 

@@ -299,7 +299,7 @@
           <app-toolbar id="desktopMenu">
 
             <div class="toolbarLeft">
-              <paper-icon-button class="leftToolbarButton" icon="menu" on-tap="toggleDrawer"></paper-icon-button>
+              <paper-icon-button style="[[_computeUserIsAdmin(currentUserType)]]" class="leftToolbarButton" icon="menu" on-tap="toggleDrawer"></paper-icon-button>
               <span class="menuText">menu</span>
 
               <div class="searchInput">
@@ -840,6 +840,9 @@
         Polymer.pageChangeMiddleware,
         Polymer.accountCreateBehavior
       ],
+      _computeUserIsAdmin:function(userType){
+        return userType === "admin" ? "" : "display:none;";
+      },
       _homeRouteChanged:function(home){
         this.home=home || 'default';
       },

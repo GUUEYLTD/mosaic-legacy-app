@@ -26,7 +26,8 @@
   "src/pages/default/def-home/def-home.html",
   "src/pages/default/def-verify/def-verify.html",
   "src/pages/default/def-account/def-account.html",
-  "src/pages/test/test-test/test-test.html"
+  "src/pages/test/test-test/test-test.html",
+  "src/pages/default/def-error/def-error.html"
   ],
   "sourceGlobs": [
    "src/**/*",
@@ -37,6 +38,5 @@
     "manifest.json",
     "bower_components/webcomponentsjs/webcomponents-lite.min.js",
     "bower_components/app-storage//app-indexeddb-mirror/app-indexeddb-mirror-worker.js",
-    "src/pages/default/def-error/def-error.html"
   ]
 }
