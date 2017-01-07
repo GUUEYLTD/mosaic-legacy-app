@@ -96,6 +96,9 @@
         bottom:5%;
         left:20px;
       }
+      .accountButton:hover{
+        cursor:pointer;
+      }
       .pageNameText{
         font-size:16px;
         font-size:var(--page-name-font-size);
@@ -134,7 +137,6 @@
           fade
           src="[[photo]]">
         </iron-image>
-
           <guuey-photo-editor
             class="imageButton"
             value="{{photo}}">
@@ -145,7 +147,26 @@
         <div class="patientName">
 
           <span class="patientNameText">
-            [[_returnName(name)]]
+            <iron-collapse id="currentName" horizontal opened>
+              [[_returnName(name)]]
+              <iron-icon
+                class="accountButton"
+                on-tap="editDisplayName"
+                icon="icons:create">
+              </iron-icon>
+            </iron-collapse>
+
+            <iron-collapse id="newName" horizontal>
+              <paper-input
+                style="display:inline-block;"
+                value="{{newName}}">
+              </paper-input>
+              <iron-icon
+                class="accountButton"
+                on-tap="confirmEditDisplayName"
+                icon="icons:check">
+              </iron-icon>
+            </iron-collapse>
           </span>
 
         </div>
@@ -165,7 +186,7 @@
     Polymer({
       is: 'account-header',
       ready:function(){
-
+        this.addEventListener("transitionend", this.collapseTransitioned)
       },
       properties:{
         name:{
@@ -175,14 +196,41 @@
           type:String
         },
         photo:{
-          type:String
-        }
+          type:String,
+          observer:"photoChanged"
+        },
       },
       observers:[
-        "editQuery(query1600, query1400, query1200, query1000, query800, query600)",
+        "editQuery(query1600, query1400, query1200, query1000, query800, query600)"
       ],
       _returnName:function(name){
-        return name ==="undefined undefined" ? this.email : this.name;
+        return name ==="No Display Name" ? this.email : this.name;
+      },
+      editDisplayName:function(e){
+        this.addEventListener("transitionend", this.collapseTransitioned);
+        this.$.currentName.hide();
+      },
+      confirmEditDisplayName:function(e){
+        this.fire("updateDisplayName", {name:this.newName});
+        this.addEventListener("transitionend", this.collapseTransitioned);
+        this.$.newName.hide();
+      },
+      collapseTransitioned:function(e){
+        if(e.path[0].id === "newName"){
+          this.removeEventListener("transitionend", this.collapseTransitioned);
+          this.$.currentName.toggle();
+        };
+        if(e.path[0].id === "currentName"){
+          this.removeEventListener("transitionend", this.collapseTransitioned);
+          this.$.newName.toggle();
+
+        };
+      },
+      photoChanged:function(photo){
+        var isBase64 = photo.includes("data:image/png;base64");
+        if(isBase64){
+          this.fire("AccountPhotoChanged", {photo:photo});
+        };
       },
       editQuery:function(query1600, query1400, query1200, query1000, query800, query600){
         if(query600){
