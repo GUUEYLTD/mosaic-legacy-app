@@ -1,0 +1,229 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html" />
+<link rel="import" href="../../../bower_components/paper-card/paper-card.html" />
+<link rel="import" href="../../../bower_components/vaadin-combo-box/vaadin-combo-box.html" />
+
+<!--temp animations till hero animations work-->
+<link rel="import" href="../../../bower_components/neon-animation/animations/scale-up-animation.html" />
+<link rel="import" href="../../../bower_components/neon-animation/animations/scale-down-animation.html" />
+
+<link rel="import" href="../../elements/guuey-text-input/guuey-text-input.html" />
+<link rel="import" href="../../elements/guuey-slider/guuey-slider.html" />
+<link rel="import" href="../../elements/guuey-date-input/guuey-date-input.html" />
+<link rel="import" href="../../elements/media-queries/media-queries.html" />
+
+<link rel="import" href="../../behaviors/multi-edit-animation-behavior.html" />
+<link rel="import" href="../../behaviors/edit-view-resize-behavior.html" />
+
+<link rel="import" href="../../styles/common-styles.html" />
+
+<dom-module id="su-risk-edit-view">
+
+  <template>
+
+    <media-queries
+      dimensions="{{dimensions}}">
+    </media-queries>
+
+    <style include="common-styles">
+
+      .dateInput{
+        padding-top:40px;
+      }
+      .inputWrapper{
+        padding:20px;
+      }
+      .riskDescription{
+        text-align:center;
+        font-size:18px;
+        height:50%;
+        max-height:50%;
+        margin:4%;
+        overflow:hidden;
+      }
+      .guttered{
+        margin-left:5%;
+        margin-right:5%;
+      }
+      .topEditCard{
+        margin:10px 5% 10px 5%;
+        width:90%;
+        --paper-card-header-color:#FFFFFF;
+        --paper-card-header-image:{
+          width:150px;
+          float:right;
+        };
+        --paper-card-header:{
+          background-color:var(--category-background-color);
+        };
+      }
+      .topEditCard .flexRow{
+        margin:20px;
+        display:flex;
+        flex-direction:row;
+      }
+      .topEditCard .flexRow *{
+        align-self:center;
+        padding:20px;
+      }
+      .topEditCard .flexRow guuey-date-input{
+        width:20%;
+      }
+      .topEditCard .flexRow guuey-slider{
+        flex-grow:1;
+      }
+
+    </style>
+    <paper-card class="editViewCard padded">
+
+      <paper-card image="[[_computeGoalImage(riskData.category)]]" heading="[[riskData.category]]" elevation="3" class="topEditCard">
+        <div class="flexRow">
+          <guuey-date-input
+            value="{{riskData.date}}"
+            label="Date of risk assessment">
+          </guuey-date-input>
+
+          <guuey-slider
+            hide-value
+            value="{{riskData.riskLevel}}">
+          </guuey-slider>
+        </div>
+      </paper-card>
+
+      <guuey-text-input
+        value="{{riskData.backgroundOfRisk}}"
+        label="Background of Risk">
+      </guuey-text-input>
+
+      <guuey-text-input
+        value="{{riskData.riskIdentified}}"
+        label="Risk Identified">
+      </guuey-text-input>
+
+      <guuey-text-input
+        value="{{riskData.crisisPlan}}"
+        label="crisis Plan"
+        label2="How to Address">
+      </guuey-text-input>
+
+      <vaadin-combo-box
+        class="guttered"
+        label="Agreed Frequencey of Evaluation"
+        items="[[evalFreq]]"
+        value="{{riskData.agreedFrequencyOfEvaluation}}">
+      </vaadin-combo-box>
+
+      <guuey-date-input
+        class="guttered"
+        value="{{riskData.evaluation}}"
+        label="Date of risk evaluation">
+      </guuey-date-input>
+
+    </paper-card>
+
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is:"su-risk-edit-view",
+      properties:{
+        dbLoaded:{
+          type:Boolean,
+          value:false
+        },
+        riskData:{
+          type:Object,
+          notify:true,
+        },
+        viewType:{
+          type:String,
+          value:"edit-view"
+        },
+        evalFreq:{
+          type:Array,
+          value:[
+            "daily",
+            "weekly",
+            "bi-weekly",
+            "monthly",
+            "bi-monthly",
+            "yearly"
+          ]
+        },
+        riskTypes:{
+          type:Array,
+          value:[
+            "Moving & Handling",
+            "Slips & Trips",
+            "Violence & Agression",
+            "Falls From Windows & Balconies",
+            "Scalding & Burning",
+            "Bedrail Entrapment",
+            "Legionella",
+            "Other"
+          ]
+        }
+      },
+      behaviors:[
+        Polymer.editViewResizeBehavior,
+        //Polymer.multiEditAnimationBehavior
+      ],
+      observers:[
+        "_riskDataChanged(riskData.*)"
+      ],
+      _computeGoalImage:function(cat){
+        switch(cat) {
+          case "Moving & Handling":
+              this.customStyle["--category-background-color"] = "#ab47bc";
+              this.updateStyles();
+              return "/images/risks/movingHandling.png";
+              break;
+          case "Slips & Trips":
+              this.customStyle["--category-background-color"] = "#9ccc65";
+              this.updateStyles();
+              return "/images/risks/slipsTrips.png";
+              break;
+          case "Violence & Agression":
+            this.customStyle["--category-background-color"] = "#ffb74d";
+            this.updateStyles();
+              return "/images/risks/violenceAgression.png";
+              break;
+          case "Falls From Windows & Balconies":
+              this.customStyle["--category-background-color"] = "#f06292";
+              this.updateStyles();
+              return "/images/risks/falls.png";
+              break;
+          case "Scalding & Burning":
+              this.customStyle["--category-background-color"] = "#4dd0e1";
+              this.updateStyles();
+              return "/images/risks/scaldingBurning.png";
+              break;
+          case "Bedrail Entrapment":
+              this.customStyle["--category-background-color"] = "#4db6ac";
+              this.updateStyles();
+              return "/images/risks/bedrailEntrapment.png";
+              break;
+          case "Legionella":
+              this.customStyle["--category-background-color"] = "#ff8a65";
+              this.updateStyles();
+              return "/images/risks/legionella.png";
+              break;
+          default:
+              this.customStyle["--category-background-color"] = "#9575cd";
+              this.updateStyles();
+              return "/images/risks/other.png";
+              break;
+        };
+      },
+      _riskDataChanged:function(riskData){
+        if(this.dbLoaded && this.riskData.base != {}){
+          var date = new Date();
+          this.riskData.changed;
+        }
+      }
+    });
+
+  </script>
+
+</dom-module>

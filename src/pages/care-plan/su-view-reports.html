@@ -1,0 +1,616 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html" />
+<link rel="import" href="../../../bower_components/polymerfire/firebase-document.html" />
+<link rel="import" href="../../../bower_components/paper-card/paper-card.html" />
+<link rel="import" href="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror.html" />
+<link rel="import" href="../../../bower_components/vaadin-combo-box/vaadin-combo-box.html" />
+<link rel="import" href="../../../bower_components/paper-item/paper-item.html" />
+<link rel="import" href="../../../bower_components/paper-input/paper-textarea.html" />
+<link rel="import" href="../../../bower_components/paper-slider/paper-slider.html" />
+<link rel="import" href="../../../bower_components/iron-icon/iron-icon.html" />
+<link rel="import" href="../../../bower_components/iron-icons/iron-icons.html" />
+<link rel="import" href="../../../bower_components/iron-list/iron-list.html" />
+<link rel="import" href="../../../bower_components/iron-collapse/iron-collapse.html" />
+<link rel="import" href="../../../bower_components/paper-progress/paper-progress.html" />
+<link rel="import" href="../../../bower_components/google-chart/google-chart.html" />
+<link rel="import" href="../../../bower_components/paper-tabs/paper-tabs.html" />
+
+<link rel="import" href="../../elements/su-header/su-header.html" />
+<link rel="import" href="../../elements/media-queries/media-queries.html" />
+
+<link rel="import" href="../../behaviors/animations/care-plan-animation.html" />
+<link rel="import" href="../../behaviors/su-print-behavior.html" />
+<link rel="import" href="../../behaviors/su-resize-behavior.html" />
+
+<link rel="import" href="../../styles/common-styles.html" />
+
+
+<dom-module id="su-view-reports">
+
+  <template>
+
+    <media-queries
+      dimensions="{{dimensions}}">
+    </media-queries>
+
+    <firebase-query
+      id="reportsDB"
+      app-name="main"
+      data="{{reportsData}}">
+    </firebase-query>
+
+    <style include="common-styles">
+
+      :host{
+        --app-grid-columns:2;
+        --app-grid-expandible-item-columns:2;
+      }
+      .reportExpand{
+        background-color:#F5F2F2;
+        margin:20px 0 20px 0;
+        padding:20px;
+        text-align:center;
+      }
+      .reportExpand :hover{
+        cursor:pointer;
+
+      }
+      .reportExpand h2{
+        width:100%;
+        text-align:center;
+      }
+      .reportSection{
+        padding:20px;
+      }
+      .reportSection .reportText{
+        --paper-input-container-disabled:{
+          opacity:.9;
+        };
+        --paper-input-container-underline-disabled:{
+          display:none;
+        }
+      }
+      .reportSection paper-progress{
+        width:100%;
+      }
+      #healthGraph{
+        width:100%;
+      }
+      #moodGraph{
+        margin-top:20px;
+        width:100%;
+      }
+      .innerMenu{
+        display:flex;
+        flex-direction:row;
+      }
+      .innerMenu *{
+        flex-grow:1;
+        margin:20px 20px 20px 30px;
+      }
+      #reportSelector{
+        width:75%;
+        --paper-tabs-selection-bar-color:#009688;
+        --paper-tabs-container:{
+          border-bottom:2px solid #979797;
+        };
+      }
+      paper-tab{
+        --paper-tab-ink:#009688;
+        --paper-tab-content-unselected:{
+        color:#cecece;
+        }
+      }
+      paper-tab.iron-selected{
+        color:#009688;
+      }
+      .morning{
+        border-left:#FFC200 5px solid;
+        padding:20px;
+      }
+      .morning h3{
+        color:#FFC200;
+        text-transform:uppercase;
+        display:inline-block;
+        margin-right:20px;
+      }
+      .afternoon{
+        border-left:#FF5607 5px solid;
+        padding:20px;
+      }
+      .afternoon h3{
+        color:#FF5607;
+        text-transform:uppercase;
+      }
+      .night{
+        border-left:#6735BA 5px solid;
+        padding:20px;
+      }
+      .night h3{
+        color:#6735BA;
+        text-transform:uppercase;
+      }
+      .dateSub{
+        display:inline-block;
+        color:#7d7d7d
+      }
+      .attrText{
+        display:inline-block;
+        text-transform:uppercase;
+        opacity:.8;
+        margin-right:20px;
+      }
+      .percentage{
+        display:inline-block;
+        font-size:24px;
+        font-weight:bold;
+      }
+      #dateSelector{
+        width:50%;
+      }
+    </style>
+
+    <paper-card class="pageCard">
+      <su-header
+        id="suHeader"
+        page="View Reports"
+        patient="[[patient]]"
+        home="[[home]]"
+        su-index-data="{{suIndexData}}"
+        setimage>
+      </su-header>
+      <div class="pageInnerCont">
+        <paper-card elevation="3" class="subCard">
+
+          <paper-tabs attr-for-selected="name" id="reportSelector" selected="{{reportSelect}}">
+            <paper-tab name="today" on-tap="viewThisDay">TODAY</paper-tab>
+            <paper-tab name="week" on-tap="viewThisWeek">THIS WEEK</paper-tab>
+            <paper-tab name="month" on-tap="viewThisMonth">THIS MONTH</paper-tab>
+            <paper-tab name="choose" on-tap="chooseDate">CHOOSE DATE</paper-tab>
+          </paper-tabs>
+          <iron-collapse opened id="dateDisplay">
+
+            <div class="innerMenu">
+              <p class="dateSub">
+                DATE: [[graphDate]]
+              </p>
+            </div>
+
+          </iron-collapse>
+
+          <iron-collapse id="dateSelector">
+
+            <div class="innerMenu">
+              <vaadin-combo-box id="selectYear" items="[[yearList]]" label="Select Year" value="{{selectDate.year}}"></vaadin-combo-box>
+              <vaadin-combo-box id="selectMonth" items="[[monthList]]" label="Select Month" value="{{selectDate.month}}"></vaadin-combo-box>
+            </div>
+
+          </iron-collapse>
+          <!--
+          <paper-button on-tap="viewThisYear" raised>display this year</paper-button>
+          -->
+
+          <google-chart
+            id="healthGraph"
+            type='line'
+            options='{"title": "Health and Mood Over Time", "colors":["#6735ba", "#f76363"], "legend":{"position":"top"}, "chartArea":{"left":"20px", "top":"20px", "width":"90%"}}'
+            cols='[{"label":"day", "type":"string"}, {"label":"Health", "type":"number"}, {"label":"Mood", "type":"number"}]'
+            rows='[[graphRows]]'>
+          </google-chart>
+
+        </paper-card>
+
+        <template is="dom-repeat" items="[[reportsData]]" as="report">
+
+          <paper-item class="reportExpand" on-tap="toggleSection">
+            <h2>[[_computeReadableDate(report.$key)]]</h2>
+          </paper-item>
+          <iron-collapse class="reportSection" id="r[[report.$key]]">
+            <div class="morning app-grid">
+              <div class="full">
+                <h3>Morning</h3><p class="dateSub">[[_computeReadableDate(report.$key)]]</p>
+              </div>
+              <div class="padded">
+                <p class="attrText">
+                  Health
+                </p>
+                <p class$="[[_computeStatusColor(report.morning.health)]]">
+                  [[report.morning.health]]%
+                </p>
+                <paper-progress class$="[[_computeProgressColor(report.morning.health)]]" min="0" max="100" value="[[report.morning.health]]"></paper-progress>
+                <paper-textarea
+                  class="reportText"
+                  disabled
+                  label="Health Comments"
+                  value="[[report.morning.healthComments]]">
+                </paper-textarea>
+              </div>
+
+              <div class="padded">
+                <p class="attrText">
+                  Mood
+                </p>
+                <p class$="[[_computeStatusColor(report.morning.mood)]]">
+                  [[report.morning.mood]]%
+                </p>
+                <paper-progress class$="[[_computeProgressColor(report.morning.mood)]]" min="0" max="100" value="[[report.morning.mood]]"></paper-progress>
+                <paper-textarea
+                  class="reportText"
+                  disabled
+                  label="Mood Comments"
+                  value="[[report.morning.moodComments]]">
+                </paper-textarea>
+              </div>
+
+              <paper-textarea
+                class="reportText full"
+                disabled
+                label="Activities"
+                value="[[report.morning.activities]]">
+              </paper-textarea>
+              <paper-textarea
+                class="reportText full"
+                disabled
+                label="Incidents"
+                value="[[report.morning.incidents]]">
+              </paper-textarea>
+              <paper-textarea
+                class="reportText full"
+                disabled
+                label="Locations Visited"
+                value="[[report.morning.locations]]">
+              </paper-textarea>
+              <paper-textarea
+                class="reportText full"
+                disabled
+                label="Summary"
+                value="[[report.morning.summaryOfChunk]]">
+              </paper-textarea>
+            </div>
+
+            <div class="divider">
+
+            </div>
+
+            <div class="afternoon app-grid">
+              <div class="full">
+                <h3>Afternoon</h3><p class="dateSub">[[_computeReadableDate(report.$key)]]</p>
+              </div>
+              <div class="padded">
+                <p class="attrText">
+                  Health
+                </p>
+                <p class$="[[_computeStatusColor(report.afternoon.health)]]">
+                  [[report.afternoon.health]]%
+                </p>
+                <paper-progress class$="[[_computeProgressColor(report.afternoon.health)]]" min="0" max="100" value="[[report.afternoon.health]]"></paper-progress>
+                <paper-textarea
+                  class="reportText"
+                  disabled
+                  label="Health Comments"
+                  value="[[report.afternoon.healthComments]]">
+                </paper-textarea>
+              </div>
+
+              <div class="padded">
+                <p class="attrText">
+                  Mood
+                </p>
+                <p class$="[[_computeStatusColor(report.afternoon.mood)]]">
+                  [[report.afternoon.mood]]%
+                </p>
+                <paper-progress class$="[[_computeProgressColor(report.afternoon.mood)]]" min="0" max="100" value="[[report.afternoon.mood]]"></paper-progress>
+                <paper-textarea
+                  class="reportText"
+                  disabled
+                  label="Mood Comments"
+                  value="[[report.afternoon.moodComments]]">
+                </paper-textarea>
+              </div>
+
+              <paper-textarea
+                class="reportText full"
+                disabled
+                label="Activities"
+                value="[[report.afternoon.activities]]">
+              </paper-textarea>
+              <paper-textarea
+                class="reportText full"
+                disabled
+                label="Incidents"
+                value="[[report.afternoon.incidents]]">
+              </paper-textarea>
+              <paper-textarea
+                class="reportText full"
+                disabled
+                label="Locations Visited"
+                value="[[report.afternoon.locations]]">
+              </paper-textarea>
+              <paper-textarea
+                class="reportText full"
+                disabled
+                label="Summary"
+                value="[[report.afternoon.summaryOfChunk]]">
+              </paper-textarea>
+            </div>
+
+            <div class="divider">
+
+            </div>
+
+            <div class="night">
+              <div class="full">
+                <h3>Night</h3><p class="dateSub">[[_computeReadableDate(report.$key)]]</p>
+              </div>
+
+              <div class="padded">
+                <p class="attrText">
+                  Health
+                </p>
+                <p class$="[[_computeStatusColor(report.night.health)]]">
+                  [[report.night.health]]%
+                </p>
+                <paper-progress class$="[[_computeProgressColor(report.night.health)]]" min="0" max="100" value="[[report.night.health]]"></paper-progress>
+                <paper-textarea
+                  class="reportText"
+                  disabled
+                  label="Health Comments"
+                  value="[[report.night.healthComments]]">
+                </paper-textarea>
+              </div>
+
+              <div class="padded">
+                <p class="attrText">
+                  Mood
+                </p>
+                <p class$="[[_computeStatusColor(report.night.mood)]]">
+                  [[report.night.mood]]%
+                </p>
+                <paper-progress class$="[[_computeProgressColor(report.night.mood)" min="0" max="100" value="[[report.night.mood]]"></paper-progress>
+                <paper-textarea
+                  class="reportText"
+                  disabled
+                  label="Mood Comments"
+                  value="[[report.night.moodComments]]">
+                </paper-textarea>
+              </div>
+
+              <paper-textarea
+                class="reportText"
+                disabled
+                label="Activites"
+                value="[[report.night.activities]]">
+              </paper-textarea>
+              <paper-textarea
+                class="reportText"
+                disabled
+                label="Incidents"
+                value="[[report.night.incidents]]">
+              </paper-textarea>
+              <paper-textarea
+                class="reportText"
+                disabled
+                label="Locations Visited"
+                value="[[report.night.locations]]">
+              </paper-textarea>
+              <paper-textarea
+                class="reportText"
+                disabled
+                label="Summary"
+                value="[[report.night.summaryOfChunk]]">
+              </paper-textarea>
+            </div>
+
+          </iron-collapse>
+
+        </template>
+      </div>
+    </paper-card>
+
+  </template>
+
+  <script>
+
+    Polymer({
+      is:"su-view-reports",
+      ready:function(){
+        this.fire("pageLoaded",{page:this.page});
+        this._computeYearList();
+        this.$.selectYear.value=this._computeCurrentYear();
+        this.viewThisDay();
+        this.setDateRangeDisplay();
+      },
+      properties:{
+        reportSelect:{
+          type:String,
+          value:"today"
+        },
+        selectDate:{
+          type:Object,
+          value:{},
+          //observer:"_selectChanged"
+        },
+        yearList:{
+          type:Array,
+          value:[]
+        },
+        monthList:{
+          type:Array,
+          value:[
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "june",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December"
+          ]
+        },
+      },
+      observers:[
+        "_computeGraphRows(reportsData.*)",
+        "_selectChanged(selectDate.*)"
+      ],
+      behaviors:[
+        Polymer.carePlanAnimation,
+        Polymer.suPrintBehavior,
+        Polymer.suResizeBehavior
+      ],
+      _computeReadableDate:function(data){
+        var date = new Date(parseInt(data));
+        return date.toLocaleDateString();
+      },
+      toggleSection:function(e){
+        this.$$("#r"+e.model.report.$key).toggle();
+      },
+      viewThisDay:function(){
+        var date = new Date();
+        var days = date.getDate();
+        var months = date.getMonth();
+        var years = date.getFullYear();
+        var date = new Date(years, months, days);
+        var now = date.getTime();
+        this.$.selectYear.value=null;
+        this.$.reportsDB.startAt = now.toString();
+        this.$.reportsDB.endAt = now.toString();
+        this.$.reportsDB.path = "homes/"+this.home+"/patients/"+this.patient+"/dailyReports";
+        this.$.dateSelector.hide();
+      },
+      viewThisWeek:function(){
+        var date = new Date();
+        var days = date.getDate();
+        var months = date.getMonth();
+        var years = date.getFullYear();
+        var date = new Date(years, months, days);
+        var now = date.getTime();
+        var nowWeekday = date.getDay();
+        var week = now - (1000 * 60 * 60 * 24 * nowWeekday);
+        this.$.selectYear.value=null;
+        this.$.reportsDB.startAt=week.toString();
+        this.$.reportsDB.endAt=now.toString();
+        this.$.dateSelector.hide();
+      },
+      viewThisMonth:function(){
+        var date = new Date();
+        var months = date.getMonth();
+        var years = date.getFullYear();
+        var date = new Date(years, months);
+        var nextMonths = months+1;
+        var endDate = new Date(years, nextMonths);
+        var now = date.getTime();
+        var end = endDate.getTime()-1;
+        this.$.selectYear.value=null;
+        this.$.reportsDB.startAt = now.toString();
+        this.$.reportsDB.endAt = end.toString();
+        this.$.dateSelector.hide();
+      },
+      viewThisYear:function(){
+        var date = new Date();
+        var years = date.getFullYear();
+        var date = new Date(years, 0);
+        var nextYears = years+1;
+        var endDate = new Date(nextYears, 0);
+        var now = date.getTime();
+        var end = endDate.getTime()-1;
+        this.$.reportsDB.limitToLast = 5;
+      },
+      _computeGraphRows:function(data){
+        var rowArr=[];
+        for(x in data.base){
+          var date = new Date(parseInt(data.base[x].$key)).toLocaleDateString();
+          //need data and value
+          var mornHealth=0;
+          var mornModd=0;
+          var afterHealth=0;
+          var afterMood=0;
+          var nightHealth=0;
+          var nightMood=0;
+          if(data.base[x].morning){
+            mornHealth = data.base[x].morning.health;
+            mornMood = data.base[x].morning.mood;
+          };
+          if(data.base[x].afternoon){
+            afterHealth = data.base[x].afternoon.health;
+            afterMood = data.base[x].afternoon.mood;
+          };
+          if(data.base[x].night){
+            nightHealth = data.base[x].night.health;
+            nightMood = data.base[x].night.mood;
+          };
+          var morning = [date, mornHealth, mornMood];
+          var afternoon = [date, afterHealth, afterMood];
+          var night = [date, nightHealth, nightMood];
+          rowArr.push(morning, afternoon, night);
+        };
+        this.graphRows = rowArr;
+      },
+      _selectChanged:function(date){
+        if(date.base.month && date.base.year){
+          var months = date.base.month;
+          var years = parseInt(date.base.year);
+          var dateMonths = this.monthList.indexOf(months);
+          var date = new Date(years, dateMonths);
+
+          var nextMonths = dateMonths+1;
+          var endDate = new Date(years, nextMonths);
+          var now = date.getTime();
+          var end = endDate.getTime()-1;
+          this.$.reportsDB.startAt = now.toString();
+          this.$.reportsDB.endAt = end.toString();
+          this.graphDate = this.monthList[months] + " " + years;
+        };
+      },
+      _computeYearList:function(){
+        var date = new Date();
+        year = date.getFullYear();
+        prevYear = date.getFullYear() - 1;
+        this.yearList = [year.toString(), prevYear.toString()];
+      },
+      _computeCurrentYear:function(){
+        var date = new Date();
+        return date.getFullYear();
+      },
+      _computeStatusColor:function(number){
+        var int = parseInt(number);
+        if(int<=33){
+          return "percentage bad";
+        };
+        if(int>34 && int<=66){
+          return "percentage ok";
+        };
+        if(int>66){
+          return "percentage good";
+        };
+      },
+      _computeProgressColor:function(number){
+        var int = parseInt(number);
+        if(int<=33){
+          return "bad";
+        };
+        if(int>34 && int<=66){
+          return "ok";
+        };
+        if(int>66){
+          return "good";
+        };
+      },
+      setDateRangeDisplay:function(){
+        var date = new Date();
+        var months = date.getMonth();
+        var years = date.getFullYear();
+        var vagueDate = new Date(years, months);
+        this.graphDate = this.monthList[months] + " " + years;
+      },
+      chooseDate:function(){
+        this.$.dateSelector.toggle();
+        this.$.dateDisplay.toggle();
+      }
+    });
+
+  </script>
+
+</dom-module>

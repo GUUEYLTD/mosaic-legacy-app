@@ -1,0 +1,273 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html" />
+<link rel="import" href="../../../bower_components/polymerfire/firebase-document.html" />
+<link rel="import" href="../../../bower_components/paper-card/paper-card.html" />
+<link rel="import" href="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror.html" />
+<link rel="import" href="../../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html" />
+<link rel="import" href="../../../bower_components/paper-item/paper-item.html" />
+<link rel="import" href="../../../bower_components/paper-listbox/paper-listbox.html" />
+<link rel="import" href="../../../bower_components/paper-input/paper-textarea.html" />
+<link rel="import" href="../../../bower_components/paper-slider/paper-slider.html" />
+<link rel="import" href="../../../bower_components/iron-icon/iron-icon.html" />
+<link rel="import" href="../../../bower_components/iron-icons/iron-icons.html" />
+
+<link rel="import" href="../../elements/su-header/su-header.html" />
+<link rel="import" href="../../elements/media-queries/media-queries.html" />
+
+<link rel="import" href="../../behaviors/animations/care-plan-animation.html" />
+<link rel="import" href="../../behaviors/su-print-behavior.html" />
+<link rel="import" href="../../behaviors/su-resize-behavior.html" />
+
+<link rel="import" href="../../styles/common-styles.html" />
+
+
+<dom-module id="su-monthly-reports">
+
+  <template>
+
+    <media-queries
+      dimensions="{{dimensions}}">
+    </media-queries>
+
+    <firebase-document
+      id="dailyRepDB"
+      app-name="main"
+      path="homes/[[home]]/patients/[[patient]]/monthlyReports/[[selectedMonth]]"
+      data="{{monthlyRepData}}">
+    </firebase-document>
+
+    <style include="common-styles">
+      :host{
+        --app-grid-columns:2;
+        --app-grid-expandible-item-columns:2;
+        --app-grid-gutter:20px;
+      }
+
+      .sliderRow{
+        margin-top:20px;
+        display:flex;
+        flex-direction:row;
+      }
+      .sliderRow paper-slider{
+        flex-grow:50;
+      };
+      .sliderRow iron-icon{
+        flex-grow:1;
+      }
+      #iconGood{
+        color:#43A047;
+      }
+      #iconBad{
+        color:#E53935;
+      }
+      .sliderOutput{
+        text-align:left;
+        font-size:12px;
+        color:#757575;
+      }
+      #chunkSelector{
+        margin-left:20px;
+      }
+      .attrCardLabel{
+        font-size:16px;
+        text-transform:uppercase;
+        color:#757575;
+      }
+    </style>
+
+    <paper-card class="pageCard">
+
+      <su-header
+        id="suHeader"
+        page="Monthly Reports"
+        patient="[[patient]]"
+        home="[[home]]"
+        su-index-data="{{suIndexData}}"
+        setimage>
+      </su-header>
+
+      <div class="pageInnerCont padded">
+        <paper-dropdown-menu
+          id="chunkSelector"
+          label="Reports for different times of day">
+          <paper-listbox class="dropdown-content" attr-for-selected="date-string" selected="{{selectedMonth}}">
+            <template is="dom-repeat" items="[[altMonths]]" as="month">
+
+              <paper-item date-string="[[_computeLabel(month)]]" label="[[month]]">[[month]]</paper-item>
+
+            </template>
+          </paper-listbox>
+        </paper-dropdown-menu>
+
+        <div class="app-grid">
+          <paper-card elevation="3" class="padded">
+
+            <p class="attrCardLabel">
+              mood
+            </p>
+
+            <p hidden="[[!monthlyRepData.mood]]" class="sliderOutput">
+              [[suIndexData.fName]]'s overall mood was <b>[[monthlyRepData.mood]]</b> out of 100 for this shift.
+            </p>
+            <p hidden="[[monthlyRepData.mood]]" class="sliderOutput">
+              Please select a value out of 100 for [[suIndexData.fName]]'s overall mood.
+            </p>
+
+            <div class="sliderRow">
+              <iron-icon id="iconBad" icon="icons:thumb-down"></iron-icon>
+              <paper-slider class$="[[_computeProgressColor(monthlyRepData.mood)]]" pin value="{{monthlyRepData.mood}}"></paper-slider>
+              <iron-icon id="iconGood" icon="icons:thumb-up"></iron-icon>
+            </div>
+
+            <paper-textarea label="Comments on Mood" value="{{monthlyRepData.moodComments}}"></paper-textarea>
+          </paper-card>
+
+          <paper-card elevation="3" class="padded">
+
+            <p class="attrCardLabel">
+              health
+            </p>
+
+            <p hidden="[[!monthlyRepData.health]]" class="sliderOutput">
+              [[suIndexData.fName]]'s overall health was <b>[[monthlyRepData.health]]</b> out of 100 for this shift.
+            </p>
+            <p hidden="[[monthlyRepData.health]]" class="sliderOutput">
+              Please select a value out of 100 for [[suIndexData.fName]]'s overall health.
+            </p>
+
+            <div class="sliderRow">
+              <iron-icon id="iconBad" icon="icons:thumb-down"></iron-icon>
+              <paper-slider class$="[[_computeProgressColor(monthlyRepData.health)]]" pin value="{{monthlyRepData.health}}"></paper-slider>
+              <iron-icon id="iconGood" icon="icons:thumb-up"></iron-icon>
+            </div>
+
+            <paper-textarea label="Comments on Health" value="{{monthlyRepData.healthComments}}"></paper-textarea>
+          </paper-card>
+
+          <div class="divider full"></div>
+
+          <paper-textarea class="full" label="activities" value="{{monthlyRepData.activities}}"></paper-textarea>
+          <paper-textarea class="full" label="locations" value="{{monthlyRepData.locations}}"></paper-textarea>
+          <paper-textarea class="full" label="incidents" value="{{monthlyRepData.incidents}}"></paper-textarea>
+          <paper-textarea class="full" label="Summary of Month" value="{{monthlyRepData.summaryOfChunk}}"></paper-textarea>
+        </div>
+
+      </div>
+
+    </paper-card>
+
+  </template>
+
+  <script>
+
+    Polymer({
+      is:"su-monthly-reports",
+      attached:function(){
+        this.fire("pageLoaded", {page:this.page});
+        this.updateMonth();
+        var selectedMonth=this._computeLabel(this.currentMonth);
+        this.set("selectedMonth",selectedMonth);
+        setInterval(function(){
+          this.updateMonth()
+        }.bind(this),1000*60*60);
+      },
+      properties:{
+        currentMonth:{
+          type:String,
+          value:""
+        },
+        currentDate:{
+          type:String,
+          value:""
+        },
+        selectedMonth:{
+          type:Number,
+          value:0,
+          observer:"_computeReadableMonth"
+        },
+        monthList:{
+          type:Array,
+          value:[
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "june",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December"
+          ]
+        },
+        altMonths:{
+          type:Array,
+          value:[]
+        },
+        monthlyRepData:{
+          type:Object,
+          value:{
+            mood:50,
+            health:50
+          }
+        }
+      },
+      observers:[
+        "_computeReadableMonth(monthList, selectedMonth)"
+      ],
+      behaviors:[
+        Polymer.carePlanAnimation,
+        Polymer.suPrintBehavior,
+        Polymer.suResizeBehavior
+      ],
+      updateMonth:function(){
+        //function to set months
+        var date=new Date();
+        var months=date.getMonth();
+        var currentMonth=this.monthList[months];
+        var prevMonth = this.monthList[months-1] < 0 ? 12:this.monthList[months-1];
+        var nextMonth = this.monthList[months+1] > 11 ? 0:this.monthList[months+1];
+        this.altMonths=[];
+        this.push("altMonths", prevMonth, currentMonth, nextMonth);
+        //set the two calculated time values... used in db ops as well
+        this.set("currentMonth",currentMonth);
+      },
+      _computeLabel:function(month){
+        //compute db dir for the report
+        var date = new Date();
+        var years=date.getFullYear();
+        var months=this.monthList.indexOf(month);
+        var currentDate=new Date(years, months);
+        currentDate=currentDate.getTime();
+        return currentDate;
+
+      },
+      _computeReadableMonth:function(monthList, selectedMonth){
+        date=new Date(selectedMonth);
+        date=date.getMonth();
+        date=parseInt(date);
+        var readableMonth=monthList[date];
+        this.set("readableMonth",readableMonth);
+      },
+      _computeProgressColor:function(number){
+        console.log(number);
+        this.updateStyles();
+        var int = parseInt(number);
+        if(int<=33){
+          return "bad";
+        } else if(int>34 && int<=66){
+          return "ok";
+        } else if(int>66){
+          return "good";
+        } else {
+          return "ok";
+        };
+        this.updateStyles();
+      }
+
+    });
+
+  </script>
+
+</dom-module>

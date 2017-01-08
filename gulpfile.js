@@ -7,76 +7,108 @@
  * Code distributed by Google as part of the polymer project is also
  * subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
  */
-
-'use strict';
-
-const path = require('path');
-const gulp = require('gulp');
-const gulpif = require('gulp-if');
-
-// Got problems? Try logging 'em
-// const logging = require('plylog');
-// logging.setVerbose();
-
-// !!! IMPORTANT !!! //
-// Keep the global.config above any of the gulp-tasks that depend on it
-global.config = {
-  polymerJsonPath: path.join(process.cwd(), 'polymer.json'),
-  build: {
-    rootDirectory: 'build',
-    bundledDirectory: 'bundled',
-    unbundledDirectory: 'unbundled',
-    // Accepts either 'bundled', 'unbundled', or 'both'
-    // A bundled version will be vulcanized and sharded. An unbundled version
-    // will not have its files combined (this is for projects using HTTP/2
-    // server push). Using the 'both' option will create two output projects,
-    // one for bundled and one for unbundled
-    bundleType: 'both'
-  },
-  // Path to your service worker, relative to the build root directory
-  serviceWorkerPath: 'service-worker.js',
-  // Service Worker precache options based on
-  // https://github.com/GoogleChrome/sw-precache#options-parameter
-  swPrecacheConfig: {
-    navigateFallback: '/index.html'
-  }
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator.throw(value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments)).next());
+    });
 };
-
-// Add your own custom gulp tasks to the gulp-tasks directory
-// A few sample tasks are provided for you
-// A task should return either a WriteableStream or a Promise
-const clean = require('./gulp-tasks/clean.js');
-const images = require('./gulp-tasks/images.js');
-const project = require('./gulp-tasks/project.js');
-
-// The source task will split all of your source files into one
-// big ReadableStream. Source files are those in src/** as well as anything
-// added to the sourceGlobs property of polymer.json.
-// Because most HTML Imports contain inline CSS and JS, those inline resources
-// will be split out into temporary files. You can use gulpif to filter files
-// out of the stream and run them through specific tasks. An example is provided
-// which filters all images and runs them through imagemin
-function source() {
-  return project.splitSource()
-    // Add your own build tasks here!
-    .pipe(gulpif('**/*.{png,gif,jpg,svg}', images.minify()))
-    .pipe(project.rejoin()); // Call rejoin when you're finished
+const vinyl_fs_1 = require('vinyl-fs');
+const gulpif = require('gulp-if');
+const path = require('path');
+const del = require('del');
+const logging = require('plylog');
+const mergeStream = require('merge-stream');
+const polymer_build_1 = require('polymer-build');
+const optimize_streams_1 = require('../buildComponents/optimize-streams');
+const prefetch_1 = require('../buildComponents/prefetch');
+const streams_1 = require('../buildComponents/streams');
+const sw_precache_1 = require('../buildComponents/sw-precache');
+const logger = logging.getLogger('cli.build.build');
+const unbundledBuildDirectory = 'build/unbundled';
+const bundledBuildDirectory = 'build/bundled';
+function build(options, config) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let polymerProject = new polymer_build_1.PolymerProject({
+            root: config.root,
+            shell: config.shell,
+            entrypoint: config.entrypoint,
+            fragments: config.fragments,
+            sourceGlobs: config.sourceGlobs,
+            includeDependencies: config.includeDependencies,
+        });
+        if (options.insertDependencyLinks) {
+            logger.debug(`Additional dependency links will be inserted into application`);
+        }
+        // mix in optimization options from build command
+        // TODO: let this be set by the user
+        let optimizeOptions = {
+            html: Object.assign({ removeComments: true }, options.html),
+            css: Object.assign({ stripWhitespace: true }, options.css),
+            js: Object.assign({ minify: true }, options.js),
+        };
+        logger.info(`Preparing build...`);
+        yield del([unbundledBuildDirectory, bundledBuildDirectory]);
+        logger.info(`Building application...`);
+        logger.debug(`Reading source files...`);
+        let sourcesStream = polymerProject.sources()
+            .pipe(polymerProject.splitHtml())
+            .pipe(gulpif(/\.js$/, new optimize_streams_1.JSOptimizeStream(optimizeOptions.js)))
+            .pipe(gulpif(/\.css$/, new optimize_streams_1.CSSOptimizeStream(optimizeOptions.css)))
+            .pipe(gulpif(/\.html$/, new optimize_streams_1.HTMLOptimizeStream(optimizeOptions.html)))
+            .pipe(polymerProject.rejoinHtml());
+        logger.debug(`Reading dependencies...`);
+        let depsStream = polymerProject.dependencies()
+            .pipe(polymerProject.splitHtml())
+            .pipe(gulpif(/\.js$/, new optimize_streams_1.JSOptimizeStream(optimizeOptions.js)))
+            .pipe(gulpif(/\.css$/, new optimize_streams_1.CSSOptimizeStream(optimizeOptions.css)))
+            .pipe(gulpif(/\.html$/, new optimize_streams_1.HTMLOptimizeStream(optimizeOptions.html)))
+            .pipe(polymerProject.rejoinHtml());
+        let buildStream = mergeStream(sourcesStream, depsStream)
+            .once('data', () => { logger.debug('Analyzing build dependencies...'); })
+            .pipe(polymerProject.analyzer);
+        let unbundledPhase = polymer_build_1.forkStream(buildStream)
+            .once('data', () => { logger.info('Generating build/unbundled...'); })
+            .pipe(gulpif(options.insertDependencyLinks, new prefetch_1.PrefetchTransform(polymerProject.root, polymerProject.entrypoint, polymerProject.shell, polymerProject.fragments, polymerProject.analyzer)))
+            .pipe(vinyl_fs_1.dest(unbundledBuildDirectory));
+        let bundledPhase = polymer_build_1.forkStream(buildStream)
+            .once('data', () => { logger.info('Generating build/bundled...'); })
+            .pipe(polymerProject.bundler)
+            .pipe(vinyl_fs_1.dest(bundledBuildDirectory));
+        let swPrecacheConfig = path.resolve(polymerProject.root, options.swPrecacheConfig || 'sw-precache-config.js');
+        let loadSWConfig = sw_precache_1.parsePreCacheConfig(swPrecacheConfig);
+        loadSWConfig.then((swConfig) => {
+            if (swConfig) {
+                logger.debug(`Service worker config found`, swConfig);
+            }
+            else {
+                logger.debug(`No service worker configuration found at ${swPrecacheConfig}, continuing with defaults`);
+            }
+        });
+        // Once the unbundled build stream is complete, create a service worker for the build
+        let unbundledPostProcessing = Promise.all([loadSWConfig, streams_1.waitFor(unbundledPhase)]).then((results) => {
+            let swConfig = results[0];
+            return polymer_build_1.addServiceWorker({
+                buildRoot: unbundledBuildDirectory,
+                project: polymerProject,
+                swConfig: swConfig,
+            });
+        });
+        // Once the bundled build stream is complete, create a service worker for the build
+        let bundledPostProcessing = Promise.all([loadSWConfig, streams_1.waitFor(bundledPhase)]).then((results) => {
+            let swConfig = results[0];
+            return polymer_build_1.addServiceWorker({
+                buildRoot: bundledBuildDirectory,
+                project: polymerProject,
+                swConfig: swConfig,
+                bundled: true,
+            });
+        });
+        yield Promise.all([unbundledPostProcessing, bundledPostProcessing]);
+        logger.info('Build complete!');
+    });
 }
-
-// The dependencies task will split all of your bower_components files into one
-// big ReadableStream
-// You probably don't need to do anything to your dependencies but it's here in
-// case you need it :)
-function dependencies() {
-  return project.splitDependencies()
-    .pipe(project.rejoin());
-}
-
-// Clean the build directory, split all source and dependency files into streams
-// and process them, and output bundled and unbundled versions of the project
-// with their own service workers
-gulp.task('default', gulp.series([
-  clean([global.config.build.rootDirectory]),
-  project.merge(source, dependencies),
-  project.serviceWorker
-]));
+gulp.task('default', build);

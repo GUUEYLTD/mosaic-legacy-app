@@ -1,0 +1,750 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html" />
+<link rel="import" href="../../../bower_components/polymerfire/firebase-document.html" />
+<link rel="import" href="../../../bower_components/paper-card/paper-card.html" />
+<link rel="import" href="../../../bower_components/paper-input/paper-input.html" />
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html" />
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html" />
+<link rel="import" href="../../../bower_components/iron-icons/iron-icons.html" />
+<link rel="import" href="../../../bower_components/app-layout/app-grid/app-grid-style.html" />
+<link rel="import" href="../../../bower_components/paper-dialog/paper-dialog.html" />
+<link rel="import" href="../../../bower_components/paper-radio-button/paper-radio-button.html" />
+<link rel="import" href="../../../bower_components/gold-cc-cvc-input/gold-cc-cvc-input.html" />
+<link rel="import" href="../../../bower_components/gold-cc-expiration-input/gold-cc-expiration-input.html" />
+<link rel="import" href="../../../bower_components/gold-cc-input/gold-cc-input.html" />
+<link rel="import" href="../../../bower_components/gold-email-input/gold-email-input.html" />
+<link rel="import" href="../../../bower_components/gold-phone-input/gold-phone-input.html" />
+<link rel="import" href="../../../bower_components/gold-zip-input/gold-zip-input.html" />
+<link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html" />
+
+<link rel="import" href="../../elements/admin-header/admin-header.html" />
+<link rel="import" href="../../elements/media-queries/media-queries.html" />
+
+<link rel="import" href="../../behaviors/animations/admin-pages-animation.html" />
+<link rel="import" href="../../behaviors/admin-resize-behavior.html" />
+
+<link rel="import" href="../../styles/common-styles.html" />
+
+<dom-module id="ad-payment">
+  <template>
+
+    <media-queries
+      dimensions="{{dimensions}}">
+    </media-queries>
+
+    <firebase-query
+      id="suIndexDB"
+      path="/homes/[[home]]/patients/suIndex"
+      app-name="main">
+    </firebase-query>
+
+    <firebase-document
+      app-name="main"
+      id="customerDB"
+      path="/homes/[[home]]/details"
+      data="{{customer}}">
+    </firebase-document>
+
+    <iron-ajax
+      id="initSubCall"
+      handle-as="json"
+      on-response="_handleInitialSubResponse"
+      debounce-duration="300"
+      method="POST"
+      content-type="application/json">
+    </iron-ajax>
+
+    <iron-ajax
+      id="plansList"
+      handle-as="json"
+      on-response="_handlePlansList"
+      debounce-duration="300"
+      method="POST"
+      content-type="application/json">
+    </iron-ajax>
+
+    <iron-ajax
+      id="stripeCustomerCall"
+      handle-as="json"
+      on-response="_handleStripeCustomerCall"
+      debounce-duration="300"
+      method="POST"
+      content-type="application/json">
+    </iron-ajax>
+
+    <iron-ajax
+      id="addCardCall"
+      handle-as="json"
+      on-response="_handleAddCardCall"
+      debounce-duration="300"
+      method="POST"
+      content-type="application/json">
+    </iron-ajax>
+
+    <iron-ajax
+      id="deleteCardCall"
+      handle-as="json"
+      on-response="_handleDeleteCardCall"
+      debounce-duration="300"
+      method="POST"
+      content-type="application/json">
+    </iron-ajax>
+
+    <iron-ajax
+      id="stripeCustomerCall"
+      handle-as="json"
+      on-response="_handleStripeCustomerCall"
+      debounce-duration="300"
+      method="POST"
+      content-type="application/json">
+    </iron-ajax>
+
+    <iron-ajax
+      id="defaultCardCall"
+      handle-as="json"
+      on-response="_handleDefaultCardCall"
+      debounce-duration="300"
+      method="POST"
+      content-type="application/json">
+    </iron-ajax>
+
+    <iron-ajax
+      id="listPlansCall"
+      handle-as="json"
+      on-response="_handleListPlansCall"
+      debounce-duration="300"
+      method="POST"
+      content-type="application/json">
+    </iron-ajax>
+
+    <iron-ajax
+      id="addPlanCall"
+      handle-as="json"
+      on-response="_handleAddPlanCall"
+      debounce-duration="300"
+      method="POST"
+      content-type="application/json">
+    </iron-ajax>
+
+    <iron-ajax
+      id="deletePlanCall"
+      handle-as="json"
+      on-response="_handleDeletePlanCall"
+      debounce-duration="300"
+      method="POST"
+      content-type="application/json">
+    </iron-ajax>
+
+    <iron-ajax
+      id="chargesCall"
+      handle-as="json"
+      on-response="_handleChargesCall"
+      debounce-duration="300"
+      method="POST"
+      content-type="application/json">
+    </iron-ajax>
+
+    <style include="common-styles">
+      :host{
+        --app-grid-columns:2;
+      }
+      .guuey-table{
+        padding:0;
+      }
+      .guuey-table table{
+        padding:0;
+      }
+    </style>
+
+    <paper-dialog id="addCardDialog">
+
+      <gold-cc-input
+        id="cardNumber"
+        auto-validate
+        label="credit card"
+        value="{{cardNumber}}"
+        card-type="{{cardType}}"
+        error-message="please enter a valid card number.">
+      </gold-cc-input>
+
+      <gold-cc-cvc-input
+        id="cvc"
+        auto-validate
+        card-type="[[cardType]]"
+        error-message="please enter a valid cvc code (on back of your card)."
+        value="{{cvc}}">
+      </gold-cc-cvc-input>
+
+      <gold-cc-expiration-input
+        id="expDate"
+        auto-validate
+        label="expirationDate"
+        value="{{expDate}}"
+        error-message="please enter a valid expiration date.">
+      </gold-cc-expiration-input>
+
+      <paper-button
+        id="addCardButton"
+        class="guuey-button"
+        on-tap="confirmAddCard">
+        add card
+      </paper-button>
+
+    </paper-dialog>
+
+    <paper-card class="pageCard">
+      <admin-header
+        page="Care Home Profile"
+        icon="icons:payment">
+      </admin-header>
+
+      <div class="pageInnerCont padded">
+
+        <span hidden$="[[customer.customerID]]">
+
+          <p>
+            Let's start by getting payments setup. You can update your subscription and modules after.
+          </p>
+
+          <gold-cc-input
+            id="cardNumber"
+            auto-validate
+            label="credit card"
+            value="{{cardNumber}}"
+            card-type="{{cardType}}"
+            error-message="please enter a valid card number.">
+          </gold-cc-input>
+
+          <gold-cc-cvc-input
+            id="cvc"
+            auto-validate
+            card-type="[[cardType]]"
+            error-message="please enter a valid cvc code (on back of your card)."
+            value="{{cvc}}">
+          </gold-cc-cvc-input>
+
+          <gold-cc-expiration-input
+            id="expDate"
+            auto-validate
+            label="expirationDate"
+            value="{{expDate}}"
+            error-message="please enter a valid expiration date.">
+          </gold-cc-expiration-input>
+
+          <gold-email-input
+            id="email"
+            auto-validate
+            label="email"
+            value="{{email}}"
+            error-message="please enter a valid email.">
+          </gold-email-input>
+
+          <gold-phone-input
+            id="phone"
+            auto-validate
+            label="phone number"
+            value="{{phone}}"
+            country-code="44"
+            error-message="please enter a valid phone number.">
+          </gold-phone-input>
+
+          <paper-button
+            id="payButton"
+            class="guuey-button"
+            on-tap="initialSub">
+            add payment method
+          </paper-button>
+
+        </span>
+
+        <span hidden$="[[!customer.customerID]]">
+
+            <h2>Saved Cards</h2>
+            <div class="guuey-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>
+                      Card Type
+                    </th>
+                    <th>
+                      Last 4
+                    </th>
+                    <th>
+                      Remove Card
+                    </th>
+                    <th>
+                      Set As Default
+                    </th>
+                  </tr>
+                </thead>
+
+                <template is="dom-repeat" items="[[cardList]]" as="card">
+                  <tr>
+                    <td>
+                      [[card.brand]]
+                    </td>
+                    <td>
+                      [[card.last4]]
+                    </td>
+                    <td>
+                      <paper-button class="guuey-button" on-tap="deleteCard">remove card</paper-button>
+                    </td>
+                    <td>
+                      <paper-button class="guuey-button" on-tap="setDefaultCard">set as default</paper-button>
+                    </td>
+                  </tr>
+                </template>
+              </table>
+            </div>
+            <paper-button class="guuey-button" on-tap="addCard">add another card</paper-button>
+
+          <div class="divider"></div>
+
+          <h2>Active Plans</h2>
+          <div class="guuey-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>
+                    Subscription Name
+                  </th>
+                  <th>
+                    Service Users
+                  </th>
+                  <th>
+                    Monthly Price
+                  </th>
+                  <th>
+                    Next Payment
+                  </th>
+                  <th>
+                    Status
+                  </th>
+                  <th>
+                    Remove Plan
+                  </th>
+                </tr>
+              </thead>
+                <template is="dom-repeat" items="[[activePlanList]]" as="plan">
+                  <tr>
+                    <td>
+                      [[plan.plan.name]]
+                    </td>
+                    <td>
+                      [[plan.quantity]]
+                    </td>
+                    <td>
+                      [[_computeSubMonthlyPrice(plan.plan.amount, plan.plan.currency, plan.quantity)]]
+                    </td>
+                    <td>
+                      [[_computePlanStatus(plan.status)]]
+                    </td>
+                    <td>
+                      [[_computeDate(plan.current_period_end)]]
+                    </td>
+                    <td>
+                      <paper-button class="guuey-button" on-tap="deletePlan">Remove Plan</paper-button>
+                    </td>
+                  </tr>
+                </template>
+            </table>
+          </div>
+
+          <div class="divider"></div>
+
+          <h2>Available Plans</h2>
+          <div class="guuey-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>
+                    Subscription Name
+                  </th>
+                  <th>
+                    Service Users
+                  </th>
+                  <th>
+                    Monthly Price
+                  </th>
+                  <th>
+                    Add Subscription
+                  </th>
+                </tr>
+              </thead>
+              <template is="dom-repeat" items="[[plansList]]" as="availablePlan" filter="{{_alreadyOwned(activePlanList)}}">
+                <tr>
+                  <td>
+                    [[availablePlan.name]]
+                  </td>
+                  <td>
+                    [[userCount]]
+                  </td>
+                  <td>
+                    [[_computeSubMonthlyPrice(availablePlan.amount, availablePlan.currency, userCount)]]
+                  </td>
+                  <td>
+                    <paper-button class="guuey-button" on-tap="addPlan">add Subscription</paper-button>
+                  </td>
+                </tr>
+              </template>
+            </table>
+          </div>
+
+          <div class="divider"></div>
+
+          <h2>Previous Payments</h2>
+          <div class="guuey-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>
+                    Billing Descriptor
+                  </th>
+                  <th>
+                    Amount
+                  </th>
+                  <th>
+                    Date Charged
+                  </th>
+                </tr>
+              </thead>
+              <template is="dom-repeat" items="[[chargesList]]" as="charge">
+                <tr>
+                  <td>
+                    [[charge.statement_descriptor]]
+                  </td>
+                  <td>
+                    [[_computeChargeAmount(charge.amount, charge.currency)]]
+                  </td>
+                  <td>
+                    [[_computeDate(charge.created)]]
+                  </td>
+                </tr>
+              </template>
+            </table>
+          </div>
+        </span>
+
+      </div>
+
+    </paper-card>
+
+  </template>
+
+  <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
+  <script>
+
+      Polymer({
+        is: 'ad-payment',
+        ready:function(){
+          this.fire("pageLoaded", this.page);
+
+          Stripe.setPublishableKey('pk_test_HelqkF6yfrw7IvyTtgtOG7Sb');
+
+          this.$.suIndexDB.query.once("value")
+          .then(function(data){
+            this._computeUserCount(data.val());
+          }.bind(this));
+
+          this.$.customerDB.ref.once("value")
+          .then(function(data){
+            if(data.val().customerID != null){
+              this._getCustomerInfo();
+              this._getCharges();
+            };
+          }.bind(this));
+
+          this._listPlans();
+        },
+        properties:{
+          userCount:{
+            type:Number,
+            value:1
+          },
+          availablePlans:{
+            type:Array,
+            value:[]
+          },
+          params:{
+            type:Object,
+            value:{}
+          },
+          cardList:{
+            type:Array,
+            value:[]
+          },
+          activePlanList:{
+            type:Array,
+            value:[]
+          },
+          plansList:{
+            type:Array,
+            value:[]
+          },
+          chargesList:{
+            type:Array,
+            value:[]
+          }
+        },
+        behaviors:[
+          Polymer.adminPagesAnimation,
+          Polymer.adminResizeBehavior
+        ],
+        //utility functions
+        splitDate:function(date){
+          var dateArr=date.split("/");
+          var dateObj={};
+          dateObj.expMonth=dateArr[0];
+          if(dateObj.expMonth.length<2){
+            dateObj.expMonth=0+dateObj.expMonth;
+          };
+          dateObj.expYear=dateArr[1];
+          return dateObj;
+        },
+
+        clearCardInputs:function(){
+          this.cardNumber="";
+          this.cvc="";
+          this.expDate="";
+        },
+
+        //intial computes
+        _computeChargeAmount:function(amount, currency){
+          var unit = currency === "gbp" ? "£" : "€";
+          var moneyAmount = amount / 100;
+          return unit + moneyAmount;
+        },
+        _computeSubMonthlyPrice:function(amount, currency, users){
+          console.log(users, typeof users);
+          var unit = currency === "gbp" ? "£" : "€";
+          var moneyAmount = (amount / 100) * users
+          return unit + moneyAmount;
+        },
+        _computeDate:function(created){
+          var date = new Date(0);
+          date.setUTCSeconds(created);
+          return date.toLocaleDateString();
+        },
+        _computeCIDExists:function(cid){
+          if(cid){
+            return true;
+          } else {
+            return false;
+          };
+        },
+        _computeUserCount:function(users){
+          var userCount=0;
+          for(x in users){
+            if(users[x].currentStatus==="active"){
+              userCount++;
+            };
+          };
+          this.set("userCount", userCount);
+        },
+        _computePlanStatus:function(plan){
+          return plan.replace("_", " ");
+        },
+        _getCustomerInfo:function(){
+          this.$.stripeCustomerCall.body={
+            customerId:this.customer.customerID
+          };
+          this.$.stripeCustomerCall.url="http://localhost:3000/payments/customerinfo";
+          this.$.stripeCustomerCall.generateRequest();
+        },
+        _listPlans:function(){
+          this.$.listPlansCall.body={
+            request:"listPlans"
+          };
+          this.$.listPlansCall.url="http://localhost:3000/payments/listplans"
+          this.$.listPlansCall.generateRequest();
+        },
+        _alreadyOwned:function(owned){
+          return function(plan){
+            return !owned.find(function(item) {
+              item.plan.id === plan.id
+            });
+          };
+        },
+
+        //card input validation functions
+        checkValid:function(params){
+          var checkArr=[
+            this.$.cardNumber,
+            this.$.cvc,
+            this.$.expDate,
+            //this.$.phone,
+            //this.$.email
+          ];
+          var valid=true;
+          for(i=0; i<checkArr.length; i++){
+            if(checkArr[i].invalid || !checkArr[i].value){
+              valid=false;
+            };
+          };
+          return valid;
+        },
+        addCard:function(){
+          this.$.addCardDialog.open();
+        },
+        initialSub:function(){
+          if(this.checkValid() && !this.customer.customerID){
+            var params={
+              cardNumber:this.cardNumber,
+              cvc:this.cvc,
+              expDate:this.expDate,
+              home:this.home,
+              plan:this.plan,
+              users:this.userCount,
+              modules:this.moduleCount,
+              planId:this.planId
+            };
+            this.initialSubCall(params);
+          } else {
+            this.fire("openToast",{toastText:"Your payment could not be processed due to missing or bad information. Please check the information in the form and try again."});
+          };
+        },
+        confirmAddCard:function(){
+          if(this.checkValid() && this.customer.customerID){
+            var params={
+              cardNumber:this.cardNumber,
+              cvc:this.cvc,
+              expDate:this.expDate
+            };
+            var dateObj=this.splitDate(this.expDate);
+            Stripe.card.createToken({
+              number:this.cardNumber,
+              cvc:this.cvc,
+              exp_month:dateObj.expMonth,
+              exp_year:dateObj.expYear
+            }, this.addCardCall.bind(this));
+          };
+        },
+
+        //api calls
+        initialSubCall:function(params){
+          this.params=params;
+          var dateObj=this.splitDate(params.expDate);
+          Stripe.card.createToken({
+            number: params.cardNumber,
+            cvc: params.cvc,
+            exp_month: dateObj.expMonth,
+            exp_year: dateObj.expYear,
+          }, this.handleInitialSubCall.bind(this));
+        },
+        handleInitialSubCall:function(status, res){
+          if(res.error){
+            this.fire("openToast",{toastText:"Your payment could not be processed for the following reason: "+res.error.message});
+          } else {
+            this.$.initSubCall.url="http://localhost:3000/payments/initialsub";
+            this.$.initSubCall.body={
+              stripeToken:res.id,
+              home:this.params.home,
+              plan:this.params.plan,
+              users:this.params.users,
+              planId:"core1"
+            };
+            this.$.initSubCall.generateRequest();
+          };
+        },
+        addCardCall:function(status, res){
+          if(res.error){
+            this.fire("openToast", {toastText:"Your card could not be added for the following reason: "+res.error.message});
+          } else {
+            this.$.addCardCall.url="http://localhost:3000/payments/addcard";
+            this.$.addCardCall.body={
+              stripeToken:res.id,
+              customerId:this.customer.customerID
+            };
+            this.$.addCardCall.generateRequest();
+          };
+        },
+        deleteCard:function(e){
+          this.$.deleteCardCall.url="http://localhost:3000/payments/deletecard";
+          this.$.deleteCardCall.body={
+            customerId:this.customer.customerID,
+            cardId:e.model.card.id
+          };
+          this.$.deleteCardCall.generateRequest();
+        },
+        setDefaultCard:function(e){
+          this.$.defaultCardCall.url="http://localhost:3000/payments/setdefaultcard";
+          this.$.defaultCardCall.body={
+            customerId:this.customer.customerID,
+            cardId:e.model.card.id
+          };
+          this.$.defaultCardCall.generateRequest();
+        },
+        addPlan:function(e){
+          this.$.addPlanCall.body={
+            home:this.home,
+            planName:e.model.availablePlan.name,
+            customerId:this.customer.customerID,
+            planId:e.model.availablePlan.id,
+            users:this.userCount,
+          };
+          this.$.addPlanCall.url="http://localhost:3000/payments/addplan";
+          this.$.addPlanCall.generateRequest();
+        },
+        deletePlan:function(e){
+          this.$.deletePlanCall.body={
+            home:this.home,
+            planName:e.model.plan.plan.name,
+            customerId:this.customer.customerID,
+            planId:e.model.plan.plan.id,
+            subId:e.model.plan.id
+          };
+          this.$.deletePlanCall.url="http://localhost:3000/payments/deleteplan";
+          this.$.deletePlanCall.generateRequest();
+        },
+        _getCharges:function(){
+          this.$.chargesCall.body={
+            customerId:this.customer.customerID
+          };
+          this.$.chargesCall.url="http://localhost:3000/payments/getcharges";
+          this.$.chargesCall.generateRequest();
+        },
+        //handle api calls
+        _handleInitialSubResponse:function(e){
+          this.clearCardInputs();
+          this._getCustomerInfo();
+        },
+        _handleAddCardCall:function(e){
+          this.clearCardInputs();
+          this.$.addCardDialog.open();
+          this._getCustomerInfo();
+          this.fire("openToast", {toastText:"Your"+e.detail.reponse.brand+" ending in "+e.detail.response.last4+" has been added."});
+        },
+        _handleStripeCustomerCall:function(e){
+          console.log(e.detail.response);
+          this.set("activePlanList", e.detail.response.subscriptions.data);
+          this.set("cardList", e.detail.response.sources.data);
+        },
+        _handleDeleteCardCall:function(e){
+          if(e.detail.response.deleted === true){
+            this._getCustomerInfo();
+            this.fire("openToast", {toastText:"Your card has been removed."});
+          };
+        },
+        _handleDefaultCardCall:function(e){
+          this.fire("openToast", {toastText:"Your default card has been set."});
+        },
+        _handleListPlansCall:function(e){
+          console.log(e.detail.response.data);
+          this.set("plansList", e.detail.response.data);
+        },
+        _handleAddPlanCall:function(e){
+          this._getCustomerInfo();
+          this.fire("openToast", {toastText:"You have successfully added the module named "+e.detail.response.planName+" to your supscription."});
+        },
+        _handleDeletePlanCall:function(e){
+          this._getCustomerInfo();
+          this.fire("openToast", {toastText:"Plan removed"});
+        },
+        _handleChargesCall:function(e){
+          this.set("chargesList", e.detail.response.data);
+        }
+      });
+
+  </script>
+
+</dom-module>

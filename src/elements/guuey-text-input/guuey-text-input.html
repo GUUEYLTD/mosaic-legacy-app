@@ -1,16 +1,9 @@
-<!--
-a simple element for text input that is styled to guuey specs
-arguments:
-route(string)
-  location to save in database REQUIRED
-label(string)
-  the main text that will show in the heading area
-label2(string)
-  the description text to go under the main text
-fieldDisabled(boolean)
-  parameter to allow external setting to editable
--->
-<link rel="import" href="dependencies.html" />
+<link rel="import" href="../../../bower_components/polymer/polymer.html" />
+<link rel="import" href="../../../bower_components/polymerfire/firebase-document.html" />
+<link rel="import" href="../../../bower_components/paper-card/paper-card.html" />
+<link rel="import" href="../../../bower_components/paper-input/paper-textarea.html" />
+<link rel="import" href="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror.html" />
+
 <dom-module id="guuey-text-input">
   <template>
 

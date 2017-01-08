@@ -1,0 +1,616 @@
+<!--link in all elements for entire project... divide up into smaller pieces later-->
+<link rel="import" href="../../../bower_components/polymer/polymer.html" />
+<link rel="import" href="../../../bower_components/polymerfire/firebase-document.html" />
+<link rel="import" href="../../../bower_components/paper-card/paper-card.html" />
+<link rel="import" href="../../../bower_components/paper-input/paper-input.html" />
+<link rel="import" href="../../../bower_components/vaadin-combo-box/vaadin-combo-box.html" />
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html" />
+<link rel="import" href="../../../bower_components/iron-media-query/iron-media-query.html" />
+<link rel="import" href="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror.html" />
+
+<link rel="import" href="../../elements/guuey-date-input/guuey-date-input.html" />
+<link rel="import" href="../../elements/su-header/su-header.html" />
+<link rel="import" href="../../elements/media-queries/media-queries.html" />
+
+<link rel="import" href="../../behaviors/animations/care-plan-animation.html" />
+<link rel="import" href="../../behaviors/su-resize-behavior.html" />
+
+<link rel="import" href="../../styles/common-styles.html" />
+
+<dom-module id="su-create">
+
+  <template>
+    <!--might not need auth element here if i link in the info properly...-->
+    <firebase-document
+      id="newPatientDB"
+      path="/homes/{{home}}/patients/{{patient}}/personalProfile"
+      data="{{newPatientDataLive}}"
+      app-name="main">
+    </firebase-document>
+    <app-indexeddb-mirror
+      key="patientProfile|[[patient]]"
+      data="{{newPatientDataLive}}"
+      persisted-data="{{newPatientData}}"
+      worker-url="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+    <firebase-document
+      id="suIndexDB"
+      app-name="main">
+    </firebase-document>
+
+    <media-queries
+      dimensions="{{dimensions}}">
+    </media-queries>
+
+    <style include="common-styles">
+      :host{
+        --su-header-patient-name-background-color:#7e57c2;
+        --su-header-page-name-background-color:#673AB7;
+        --su-header-avatar-background-color:#B39DDB;
+        --app-grid-columns:2;
+        --app-grid-expandible-item-columns:2;
+        --app-grid-item-height:100px;
+      }
+      su-header{
+        background-color:purple;
+      }
+      .pageInnerCont *{
+        padding:20px;
+      }
+      h4{
+        text-align:center;
+        @apply(--app-grid-expandible-item);
+      }
+    </style>
+
+    <paper-card class="pageCard">
+      <su-header
+        page="Create New Service User"
+        patient="{{patient}}"
+        home="{{home}}"
+        lastname="{{newPatientData.lName}}"
+        firstname="{{newPatientData.fName}}"
+        setimage>
+      </su-header>
+      <div class="pageInnerCont app-grid">
+        <h4>
+          Fill in this Information to Start
+        </h4>
+        <!--starting input for patient profile-->
+        <paper-input
+          label="First Name"
+          value="{{newPatientData.fName}}"
+          tabindex="1"
+          required
+          auto-validate
+          pattern="[a-zA-Z]*"
+          error-message="Please enter a valid first name.">
+        </paper-input>
+
+        <paper-input
+          label="Last Name"
+          type="text"
+          value="{{newPatientData.lName}}"
+          tabindex="2"
+          required
+          auto-validate
+          pattern="[a-zA-Z]*"
+          error-message="Please enter a valid last name.">
+        </paper-input>
+
+        <guuey-date-input
+          label="Date of Birth"
+          value="{{newPatientData.dob}}"
+          tabindex="3"
+          required
+          auto-validate
+          error-message="Please enter a date by clicking on tapping/clicking on this field.">
+        </guuey-date-input>
+
+        <paper-input
+          label="Preferred Mode of Address"
+          type="text"
+          value="{{newPatientData.preferredName}}"
+          tabindex="4"
+          auto-validate
+          pattern="[a-zA-Z\.\s]*"
+          error-message="Mode of address cannot contain numbers or special characters.">
+        </paper-input>
+
+        <guuey-date-input
+          label="Date of Assessment"
+          value="{{newPatientData.dateAssessed}}"
+          tabindex="5"
+          required
+          auto-validate
+          error-message="Please enter a date by clicking on tapping/clicking on this field.">
+        </guuey-date-input>
+
+        <paper-input
+          label="Where Assessed"
+          type="text"
+          value="{{newPatientData.whereAssessed}}"
+          tabindex="6"
+          required
+          auto-validate
+          error-message="Please enter the location of service user assessment.">
+        </paper-input>
+
+        <vaadin-combo-box
+          allow-custom-value
+          label="Partership Status"
+          items="[[parterShipStatuses]]"
+          value="{{newPatientData.partnership}}"
+          tabindex="7"
+          required
+          auto-validate
+          pattern="[a-zA-Z\s]*"
+          error-message="Please enter or select a partnership status without any special characters.">
+        </vaadin-combo-box>
+
+        <vaadin-combo-box
+          allow-custom-value
+          label="Religion"
+          items="[[religions]]"
+          value="{{newPatientData.religion}}"
+          tabindex="8"
+          required
+          auto-validate
+          pattern="[a-zA-Z\s]*"
+          error-message="Please enter a religion without special characters.">
+        </vaadin-combo-box>
+
+        <vaadin-combo-box
+          allow-custom-value
+          label="Ethnicity"
+          items="[[ethnicities]]"
+          value="{{newPatientData.ethnicity}}"
+          tabindex="9"
+          required
+          auto-valdate
+          pattern="[a-zA-Z\s]*"
+          error-message="Please enter an ethnicity without special characters.">
+        </vaadin-combo-box>
+
+        <vaadin-combo-box
+          allow-custom-value
+          label="Nationality"
+          items="[[nationalities]]"
+          value="{{newPatientData.nationality}}"
+          tabindex="10"
+          required
+          auto-validate
+          pattern="[a-zA-Z\s]*"
+          error-message="Please enter a nationality without special characters.">
+        </vaadin-combo-box>
+
+      </div>
+    </paper-card>
+
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is: 'su-create',
+      ready:function(){
+        this.fire("pageLoaded", {page:this.page});
+      },
+      detached:function(){
+        console.log("detached");
+      },
+      properties:{
+        page:{
+          type:String,
+        },
+        patient:{
+          type:String,
+        },
+        home:{
+          type:String,
+        },
+        data:{
+          type:Object,
+        },
+        //list of dropdown values for vaadin boxes
+        religions:{
+          type:Array,
+          value:[
+            'Christian',
+            'Islam',
+            'Atheist',
+            'Unaffiliated',
+            'Hinduist',
+            'Buddhist',
+            'Jewish'
+          ]
+        },
+        parterShipStatuses:{
+          type:Array,
+          value:[
+            'Single',
+            'Married',
+            'Divorced',
+            'Domestic Partnership'
+          ]
+        },
+        ethnicities:{
+          type:Array,
+          value:[
+            'Albanian',
+            'Arab',
+            'Armenian',
+            'Assyrian',
+            'Azerbaijani',
+            'Balochi',
+            'Bamar',
+            'Basque',
+            'Bengali',
+            'Berber',
+            'Bihari',
+            'Bosniak',
+            'Brahui',
+            'Bulgarian',
+            'Catalan',
+            'Chuvash',
+            'Circassian',
+            'Congolese',
+            'Croat',
+            'Czech',
+            'Dane',
+            'Dutch',
+            'English',
+            'Estonian',
+            'Faroese',
+            'Finn',
+            'French',
+            'Gagauz',
+            'Galician',
+            'German',
+            'Greek',
+            'Georgian',
+            'Gujarati',
+            'Han Chinese',
+            'Hindustani',
+            'Hui',
+            'Hungarian',
+            'Icelander',
+            'Irish',
+            'Italian',
+            'Japanese',
+            'Javanese',
+            'Jew',
+            'Lebanese',
+            'Macedonian',
+            'Malayali',
+            'Kannada',
+            'Kazakh',
+            'Korean',
+            'Kurd',
+            'Kyrgyz',
+            'Malay',
+            'Marathi',
+            'Norwegian',
+            'Laz',
+            'Manchu',
+            'Moldovan',
+            'Mongol',
+            'Nepali',
+            'Pashtun',
+            'Oromo',
+            'Persian',
+            'Pole',
+            'Portuguese',
+            'Punjabi',
+            'Romanian',
+            'Romani',
+            'Russian',
+            'Scottish',
+            'Serb',
+            'Sindhi',
+            'Sinhalese',
+            'Slovak',
+            'Slovene',
+            'Spaniard',
+            'Sundanese',
+            'Swede',
+            'Tamil',
+            'Telugu',
+            'Thai',
+            'Tibetan',
+            'Tuareg',
+            'Turk',
+            'Turkmen',
+            'Ukrainian',
+            'Uyghur',
+            'Vietnamese',
+            'Volga Tatar',
+            'Welsh',
+            'Zhuang',
+          ]
+        },
+        nationalities:{
+          type:Array,
+          value:[
+            'Afghan',
+            'Albanian',
+            'Algerian',
+            'American',
+            'Andorran',
+            'Angolan',
+            'Antiguans',
+            'Argentinean',
+            'Armenian',
+            'Australian',
+            'Austrian',
+            'Azerbaijani',
+            'Bahamian',
+            'Bahraini',
+            'Bangladeshi',
+            'Barbadian',
+            'Barbudans',
+            'Batswana',
+            'Belarusian',
+            'Belgian',
+            'Belizean',
+            'Beninese',
+            'Bhutanese',
+            'Bolivian',
+            'Bosnian',
+            'Brazilian',
+            'British',
+            'Bruneian',
+            'Bulgarian',
+            'Burkinabe',
+            'Burmese',
+            'Burundian',
+            'Cambodian',
+            'Cameroonian',
+            'Canadian',
+            'Cape Verdean',
+            'Central African',
+            'Chadian',
+            'Chilean',
+            'Chinese',
+            'Colombian',
+            'Comoran',
+            'Congolese',
+            'Congolese',
+            'Costa Rican',
+            'Croatian',
+            'Cuban',
+            'Cypriot',
+            'Czech',
+            'Danish',
+            'Djibouti',
+            'Dominican',
+            'Dominican',
+            'Dutch',
+            'Dutchman',
+            'Dutchwoman',
+            'East Timorese',
+            'Ecuadorean',
+            'Egyptian',
+            'Emirian',
+            'Equatorial Guinean',
+            'Eritrean',
+            'Estonian',
+            'Ethiopian',
+            'Fijian',
+            'Filipino',
+            'Finnish',
+            'French',
+            'Gabonese',
+            'Gambian',
+            'Georgian',
+            'German',
+            'Ghanaian',
+            'Greek',
+            'Grenadian',
+            'Guatemalan',
+            'Guinea-Bissauan',
+            'Guinean',
+            'Guyanese',
+            'Haitian',
+            'Herzegovinian',
+            'Honduran',
+            'Hungarian',
+            'I-Kiribati',
+            'Icelander',
+            'Indian',
+            'Indonesian',
+            'Iranian',
+            'Iraqi',
+            'Irish',
+            'Israeli',
+            'Italian',
+            'Ivorian',
+            'Jamaican',
+            'Japanese',
+            'Jordanian',
+            'Kazakhstani',
+            'Kenyan',
+            'Kittian and Nevisian',
+            'Kuwaiti',
+            'Kyrgyz',
+            'Laotian',
+            'Latvian',
+            'Lebanese',
+            'Liberian',
+            'Libyan',
+            'Liechtensteiner',
+            'Lithuanian',
+            'Luxembourger',
+            'Macedonian',
+            'Malagasy',
+            'Malawian',
+            'Malaysian',
+            'Maldivan',
+            'Malian',
+            'Maltese',
+            'Marshallese',
+            'Mauritanian',
+            'Mauritian',
+            'Mexican',
+            'Micronesian',
+            'Moldovan',
+            'Monacan',
+            'Mongolian',
+            'Moroccan',
+            'Mosotho',
+            'Motswana',
+            'Mozambican',
+            'Namibian',
+            'Nauruan',
+            'Nepalese',
+            'Netherlander',
+            'New Zealander',
+            'Ni-Vanuatu',
+            'Nicaraguan',
+            'Nigerian',
+            'Nigerien',
+            'North Korean',
+            'Northern Irish',
+            'Norwegian',
+            'Omani',
+            'Pakistani',
+            'Palauan',
+            'Panamanian',
+            'Papua New Guinean',
+            'Paraguayan',
+            'Peruvian',
+            'Polish',
+            'Portuguese',
+            'Qatari',
+            'Romanian',
+            'Russian',
+            'Rwandan',
+            'Saint Lucian',
+            'Salvadoran',
+            'Samoan',
+            'San Marinese',
+            'Sao Tomean',
+            'Saudi',
+            'Scottish',
+            'Senegalese',
+            'Serbian',
+            'Seychellois',
+            'Sierra Leonean',
+            'Singaporean',
+            'Slovakian',
+            'Slovenian',
+            'Solomon Islander',
+            'Somali',
+            'South African',
+            'South Korean',
+            'Spanish',
+            'Sri Lankan',
+            'Sudanese',
+            'Surinamer',
+            'Swazi',
+            'Swedish',
+            'Swiss',
+            'Syrian',
+            'Taiwanese',
+            'Tajik',
+            'Tanzanian',
+            'Thai',
+            'Togolese',
+            'Tongan',
+            'Trinidadian or Tobagonian',
+            'Tunisian',
+            'Turkish',
+            'Tuvaluan',
+            'Ugandan',
+            'Ukrainian',
+            'Uruguayan',
+            'Uzbekistani',
+            'Venezuelan',
+            'Vietnamese',
+            'Welsh',
+            'Welsh',
+            'Yemenite',
+            'Zambian',
+            'Zimbabwean',
+          ]
+        },
+        relationships:{
+          type:Array,
+          value:[
+            'Father',
+            'Mother',
+            'Brother',
+            'Sister',
+            'Aunt',
+            'Uncle',
+            'Grandfather',
+            'Grandmother',
+            'Grandson',
+            'Granddaughter',
+            'Nephew',
+            'Neice',
+            'Cousin',
+            'Husband',
+            'Wife',
+          ]
+        }
+      },
+      observers:[
+        "requirementsMet(newPatientData)"
+      ],
+      behaviors:[
+        Polymer.carePlanAnimation,
+        Polymer.suResizeBehavior
+      ],
+      createNewPatient:function(){
+        var path = "/homes/"+this.home+"/patients/"+this.patient+"/currentStatus";
+        var date = new Date();
+        var now = date.getTime();
+        this.$.newPatientDB.setStoredValue(path, "active")
+          .then(function(val){
+            this.$.suIndexDB.data.fName=this.$.newPatientDB.data.fName;
+            this.$.suIndexDB.data.lName=this.$.newPatientDB.data.lName;
+            this.$.suIndexDB.data.currentStatus="active";
+            this.$.suIndexDB.data.home=this.home;
+            this.$.suIndexDB.data.created = now;
+            this.$.suIndexDB.save("/homes/"+this.home+"/patients/suIndex", this.patient);
+          }.bind(this));
+      },
+      requirementsMet:function(data){
+        if(this.page === "su-create"){
+          if(!data.fName){
+            this.fire("openToast", {toastText: "First name is required before saving the new service user."});
+            return;
+          } else if(!data.lName){
+            this.fire("openToast", {toastText: "Last name is required before saving the new service user."});
+            return;
+          } else if(!data.dob){
+            this.fire("openToast", {toastText: "Date of birth is required before saving the new service user."});
+            return;
+          } else if(!data.dateAssessed){
+            this.fire("openToast", {toastText: "Date of assessment is required before saving the new service user."});
+            return;
+          } else if(!data.partnership){
+            this.fire("openToast", {toastText: "Partnership status is required before saving the new service user."});
+            return;
+          } else if(!data.whereAssessed){
+            this.fire("openToast", {toastText: "Where assessed is required before saving the new service user."});
+          } else if(!data.religion){
+            this.fire("openToast", {toastText: "Religion is required before saving the new service user."});
+          } else if(!data.ethnicity){
+            this.fire("openToast", {toastText: "Ethnicity is required before saving the new service user."});
+          } else if(!data.nationality){
+            this.fire("openToast", {toastText: "Nationality is required before saving the new service user."});
+          } else {
+            this.createNewPatient();
+            this.fire("openToast", {toastText: "New service user has been saved. You can continue editing on this page or navigate to other pages for the service user."});
+            this.fire("openDrawer");
+          };
+        };
+      }
+    });
+
+  </script>
+
+</dom-module>

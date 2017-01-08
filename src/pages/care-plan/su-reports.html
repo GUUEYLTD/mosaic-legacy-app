@@ -1,0 +1,271 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html" />
+<link rel="import" href="../../../bower_components/polymerfire/firebase-document.html" />
+<link rel="import" href="../../../bower_components/paper-card/paper-card.html" />
+<link rel="import" href="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror.html" />
+<link rel="import" href="../../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html" />
+<link rel="import" href="../../../bower_components/paper-item/paper-item.html" />
+<link rel="import" href="../../../bower_components/paper-listbox/paper-listbox.html" />
+<link rel="import" href="../../../bower_components/paper-input/paper-textarea.html" />
+<link rel="import" href="../../../bower_components/paper-slider/paper-slider.html" />
+<link rel="import" href="../../../bower_components/iron-icon/iron-icon.html" />
+<link rel="import" href="../../../bower_components/iron-icons/iron-icons.html" />
+
+<link rel="import" href="../../elements/su-header/su-header.html" />
+<link rel="import" href="../../elements/media-queries/media-queries.html" />
+
+<link rel="import" href="../../behaviors/animations/care-plan-animation.html" />
+<link rel="import" href="../../behaviors/su-print-behavior.html" />
+<link rel="import" href="../../behaviors/su-resize-behavior.html" />
+
+<link rel="import" href="../../styles/common-styles.html" />
+
+
+<dom-module id="su-reports">
+
+  <template>
+
+    <media-queries
+      dimensions="{{dimensions}}">
+    </media-queries>
+
+    <firebase-document
+      id="dailyRepDB"
+      app-name="main"
+      path="homes/[[home]]/patients/[[patient]]/dailyReports/[[currentDate]]/[[lowerCase(selectedChunk)]]"
+      data="{{dailyRepData}}">
+    </firebase-document>
+
+    <style include="common-styles">
+      :host{
+        --app-grid-columns:2;
+        --app-grid-expandible-item-columns:2;
+        --app-grid-gutter:20px;
+      }
+
+      .sliderRow{
+        margin-top:20px;
+        display:flex;
+        flex-direction:row;
+      }
+      .sliderRow paper-slider{
+        flex-grow:50;
+      };
+      .sliderRow iron-icon{
+        flex-grow:1;
+      }
+      #iconGood{
+        color:#43A047;
+      }
+      #iconBad{
+        color:#E53935;
+      }
+      .sliderOutput{
+        text-align:left;
+        font-size:12px;
+        color:#757575;
+      }
+      #chunkSelector{
+        margin-left:20px;
+      }
+      .attrCardLabel{
+        font-size:16px;
+        text-transform:uppercase;
+        color:#757575;
+      }
+    </style>
+
+    <paper-card class="pageCard">
+
+      <su-header
+        id="suHeader"
+        page="Daily Reports"
+        patient="[[patient]]"
+        home="[[home]]"
+        su-index-data="{{suIndexData}}"
+        setimage>
+      </su-header>
+
+      <div class="pageInnerCont padded">
+        <paper-dropdown-menu
+          id="chunkSelector"
+          label="Reports for different times of day">
+          <paper-listbox class="dropdown-content" attr-for-selected="label" selected="{{selectedChunk}}">
+            <template is="dom-repeat" items="[[chunkList]]" as="chunk">
+
+              <paper-item label="[[chunk]]">[[chunk]]</paper-item>
+
+            </template>
+          </paper-listbox>
+        </paper-dropdown-menu>
+
+        <div class="app-grid">
+          <paper-card elevation="3" class="padded">
+            <p class="attrCardLabel">
+              mood
+            </p>
+
+            <p hidden="[[!dailyRepData.mood]]" class="sliderOutput">
+              [[suIndexData.fName]]'s overall mood was <b>[[dailyRepData.mood]]</b> out of 100 for this shift.
+            </p>
+            <p hidden="[[dailyRepData.mood]]" class="sliderOutput">
+              Please select a value out of 100 for [[suIndexData.fName]]'s overall mood.
+            </p>
+
+            <div class="sliderRow">
+              <iron-icon id="iconBad" icon="icons:thumb-down"></iron-icon>
+              <paper-slider class$="[[_computeProgressColor(dailyRepData.mood)]]" pin value="{{dailyRepData.mood}}"></paper-slider>
+              <iron-icon id="iconGood" icon="icons:thumb-up"></iron-icon>
+            </div>
+
+            <paper-textarea label="Comments on Mood" value="{{dailyRepData.moodComments}}"></paper-textarea>
+          </paper-card>
+
+          <paper-card elevation="3" class="padded">
+            <p class="attrCardLabel">
+              health
+            </p>
+            <p hidden="[[!dailyRepData.health]]" class="sliderOutput">
+              [[suIndexData.fName]]'s overall health was <b>[[dailyRepData.health]]</b> out of 100 for this shift.
+            </p>
+            <p hidden="[[dailyRepData.health]]" class="sliderOutput">
+              Please select a value out of 100 for [[suIndexData.fName]]'s overall health.
+            </p>
+
+            <div class="sliderRow">
+              <iron-icon id="iconBad" icon="icons:thumb-down"></iron-icon>
+              <paper-slider class$="[[_computeProgressColor(dailyRepData.health)]]" pin value="{{dailyRepData.health}}"></paper-slider>
+              <iron-icon id="iconGood" icon="icons:thumb-up"></iron-icon>
+            </div>
+
+            <paper-textarea label="Comments on Health" value="{{dailyRepData.healthComments}}"></paper-textarea>
+          </paper-card>
+
+
+
+
+          <div class="divider full"></div>
+
+          <paper-textarea class="full" label="activities" value="{{dailyRepData.activities}}"></paper-textarea>
+          <paper-textarea class="full" label="locations" value="{{dailyRepData.locations}}"></paper-textarea>
+          <paper-textarea class="full" label="incidents" value="{{dailyRepData.incidents}}"></paper-textarea>
+          <paper-textarea class="full" label="summary of shift" value="{{dailyRepData.summaryOfChunk}}"></paper-textarea>
+        </div>
+
+      </div>
+
+    </paper-card>
+
+  </template>
+
+  <script>
+
+    Polymer({
+      is:"su-reports",
+      ready:function(){
+        this.fire("pageLoaded", {page:this.page});
+        this.updateTime();
+        this.set("selectedChunk",this.currentChunk);
+        setInterval(function(){
+          this.updateTime()
+        }.bind(this),1000*60*60);
+      },
+      properties:{
+        currentChunk:{
+          type:String,
+          value:""
+        },
+        currentDate:{
+          type:String,
+          value:""
+        },
+        selectedChunk:{
+          type:String,
+          value:""
+        },
+        chunkList:{
+          type:Array,
+          value:[
+            "Morning",
+            "Afternoon",
+            "Night"
+          ]
+        },
+        dailyRepData:{
+          type:Object,
+          value:{
+            mood:50,
+            health:50
+          }
+        }
+      },
+      observers:[
+
+      ],
+      behaviors:[
+        Polymer.carePlanAnimation,
+        Polymer.suPrintBehavior,
+        Polymer.suResizeBehavior
+      ],
+      updateTime:function(){
+        //date for both data points
+        var date = new Date();
+        //days months years for date marker
+        var days=date.getDate();
+        var months=date.getMonth();
+        var years=date.getFullYear();
+        var currentDate = new Date(years, months, days);
+        currentDate=currentDate.getTime()
+        //function to set the hours to get time chunks and calculate
+        var hours=date.getHours();
+        var altChunks=[
+          "Morning",
+          "Afternoon",
+          "Night"
+        ];
+        /*
+        night
+          2000
+          till 0800
+        day
+          0800
+          till 1400
+        afternoon
+          1400
+          till 2000
+        */
+        var timeChunk;
+        if(hours>=8 && hours<14){
+          timeChunk="Morning";
+        };
+        if(hours>=14 && hours<20){
+          timeChunk="Afternoon";
+        };
+        if(hours>=20 || hours<8){
+          timeChunk="Night";
+        };
+        //set the two calculated time values... used in db ops as well
+        this.set("currentChunk",timeChunk);
+        this.set("currentDate", currentDate);
+      },
+      _computeProgressColor:function(number){
+        this.updateStyles();
+        var int = parseInt(number);
+        if(int<=33){
+          return "bad";
+        } else if(int>34 && int<=66){
+          return "ok";
+        } else if(int>66){
+          return "good";
+        } else {
+          return "ok";
+        };
+        this.updateStyles();
+      },
+      lowerCase:function(chunk){
+        return chunk.toLowerCase();
+      }
+    });
+
+  </script>
+
+</dom-module>

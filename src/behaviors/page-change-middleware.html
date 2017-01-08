@@ -4,6 +4,9 @@
 
   (function(){
     "use-strict";
+    /*
+    @polymerBehavior Polymer.pageChangeMiddleware
+    */
     Polymer.pageChangeMiddleware={
       is:"page-change-middleware",
       observers:[
@@ -121,7 +124,7 @@
       lazyLoadPage:function(page){
         // load page import on demand.
         this.importHref(
-          this.resolveUrl('pages/'+this.category+'/' + page +'/'+page+'.html'),
+          this.resolveUrl('pages/' + this.category + '/' + page + '.html'),
           function(){
             this.currentCat=this.temp_currentCat;
             this.intendedCat=this.temp_intendedCat;

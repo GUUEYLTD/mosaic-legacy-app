@@ -1,0 +1,344 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html" />
+<link rel="import" href="../../../bower_components/polymerfire/firebase-document.html" />
+<link rel="import" href="../../../bower_components/polymerfire/firebase-query.html" />
+<link rel="import" href="../../../bower_components/paper-card/paper-card.html" />
+<link rel="import" href="../../../bower_components/paper-fab/paper-fab.html" />
+<link rel="import" href="../../../bower_components/paper-dialog/paper-dialog.html" />
+<link rel="import" href="../../../bower_components/paper-input/paper-input.html" />
+<link rel="import" href="../../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html" />
+<link rel="import" href="../../../bower_components/paper-listbox/paper-listbox.html" />
+<link rel="import" href="../../../bower_components/paper-item/paper-item.html" />
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html" />
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html" />
+<link rel="import" href="../../../bower_components/iron-image/iron-image.html" />
+
+<link rel="import" href="../../elements/admin-header/admin-header.html" />
+<link rel="import" href="../../elements/media-queries/media-queries.html" />
+
+<link rel="import" href="../../behaviors/animations/admin-pages-animation.html" />
+<link rel="import" href="../../behaviors/admin-resize-behavior.html" />
+
+<link rel="import" href="../../styles/common-styles.html" />
+
+
+<dom-module id="ad-users">
+
+  <template>
+
+    <media-queries
+      dimensions="{{dimensions}}">
+    </media-queries>
+
+    <!--query to get a list of curent users-->
+  <firebase-query
+    id="usersDB"
+    path="/homes/{{home}}/users"
+    data="{{usersData}}"
+    app-name="main">
+  </firebase-query>
+  <!--user db for updating a user-->
+  <firebase-document
+    id="userDB"
+    app-name="main"
+    data="{{userData}}">
+  </firebase-document>
+  <!--query to get list of service users to attach to care workers-->
+  <firebase-query
+    id="suUsersDB"
+    path="/homes/{{home}}/patients"
+    data="{{susData}}"
+    app-name="main">
+  </firebase-query>
+
+    <style include="common-styles">
+      #userDialog{
+        margin:0;
+      }
+      .userImage{
+        width:50px;
+        height:50px;
+        background-color:lightgray;
+        border: 1px solid grey;
+        border-radius:100%;
+        margin-left:5px;
+
+      }
+      .userImage:hover{
+        cursor: pointer;
+      }
+      .imageButton{
+        height: 60px;
+        width: 60px;
+        margin:0px;
+        padding:0px;
+      }
+    </style>
+
+    <input
+      id="imageInput"
+      type="file"
+      on-change="_inputChanged"
+      hidden>
+    </input>
+
+    <paper-dialog id="addUserDialog" class="guuey-modal guuey-add-modal">
+
+        <h2>Add A Care Worker or Manager</h2>
+        <paper-input
+          label="Name"
+          value="{{newAccount.fName}}"
+          required
+          auto-validate
+          pattern="[a-zA-Z\s]*"
+          error-message="Please enter a valid name with no special characters.">
+        </paper-input>
+
+        <paper-input
+          label="Surname"
+          value="{{newAccount.lName}}"
+          required
+          auto-validate
+          pattern="[a-zA-Z\s]*"
+          error-message="Please enter a valid surname with no special characters.">
+        </paper-input>
+
+        <paper-input
+          label="Username/Email"
+          value="{{newAccount.username}}"
+          required
+          auto-validate
+          pattern="[a-zA-Z0-9_\.\+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-\.]+"
+          error-message="Please enter a valid email address as the username.">
+        </paper-input>
+
+        <paper-dropdown-menu label="Role" class="dialogHalf">
+          <paper-listbox attr-for-selected="value" selected="{{newAccount.role}}" class="dropdown-content">
+            <paper-item value="manager">Manager</paper-item>
+            <paper-item value="careWorker">Care Worker</paper-item>
+          </paper-listbox>
+        </paper-dropdown-menu>
+
+        <paper-dropdown-menu label="Service Users Supervised" class="dialogHalf">
+          <paper-listbox multi attr-for-selected="value" selected-values="{{newAccount.patients}}" class="dropdown-content">
+            <template is="dom-repeat" items="{{susData}}">
+              <paper-item value="{{item.$key}}">{{item.personalProfile.lName}}, {{item.personalProfile.fName}}</paper-item>
+            </template>
+          </paper-listbox>
+        </paper-dropdown-menu>
+        <div class="modal-button-container">
+          <paper-button dialog-dismiss>Cancel</paper-button>
+          <paper-button on-tap="createNewUser">Create</paper-button>
+        </div>
+
+    </paper-dialog>
+
+    <paper-dialog id="editUserDialog" class="guuey-modal guuey-view-modal">
+
+        <h2>User Info</h2>
+
+        <paper-input
+          label="Name"
+          value="{{userData.name}}"
+          required
+          auto-validate
+          pattern="[a-zA-Z\s]*"
+          error-message="Please enter a valid name with no special characters.">
+        </paper-input>
+        <paper-input
+          label="Surname"
+          value="{{userData.surname}}"
+          required
+          auto-validate
+          pattern="[a-zA-Z\s]*"
+          error-message="Please enter a valid surname with no special characters.">
+        </paper-input>
+        <paper-input
+          label="Username/Email"
+          value="{{userData.email}}"
+          required
+          auto-validate
+          pattern="[a-zA-Z0-9_\.\+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-\.]+"
+          error-message="Please enter a valid email address as the username.">
+        </paper-input>
+
+        <paper-dropdown-menu label="Role" class="dialogHalf">
+          <paper-listbox attr-for-selected="value" selected="{{userData.role}}" class="dropdown-content">
+            <paper-item value="manager">Manager</paper-item>
+            <paper-item value="careWorker">Care Worker</paper-item>
+          </paper-listbox>
+        </paper-dropdown-menu>
+
+        <paper-dropdown-menu label="Service Users Supervised" class="dialogHalf">
+          <paper-listbox multi attr-for-selected="value" selected-values="{{userData.patients}}" class="dropdown-content">
+            <template is="dom-repeat" items="{{susData}}" as="serviceUser">
+              <paper-item value="{{serviceUser.$key}}">{{serviceUser.personalProfile.lName}}, {{serviceUser.personalProfile.fName}}</paper-item>
+            </template>
+          </paper-listbox>
+        </paper-dropdown-menu>
+
+    </paper-dialog>
+
+    <paper-dialog id="userDialog" no-overlap horizontal-align="left" vertical-align="bottom">
+      <paper-button on-tap="editUser">edit</paper-button>
+      <br />
+      <paper-button on-tap="suspendUser">suspend</paper-button>
+      <br />
+      <paper-button on-tap="archiveUser">archive</paper-button>
+    </paper-dialog>
+
+    <paper-card class="pageCard" elevation="3">
+      <admin-header
+        page="Users"
+        icon="social:group">
+      </admin-header>
+
+      <div class="pageInnerCont padded">
+
+        <paper-fab
+          id="mainFab"
+          icon="icons:add"
+          on-tap="addUser">
+        </paper-fab>
+
+        <div class="guuey-table">
+
+          <table>
+            <thead>
+              <tr>
+                <th>
+                  Profile Picture
+                </th>
+                <th>
+                  Staff Member
+                </th>
+                <th>
+                  Name
+                </th>
+                <th>
+                  Status
+                </th>
+                <th>
+                  Contact
+                </th>
+                <th>
+                  Edit
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <template is="dom-repeat" items="{{usersData}}" as="user">
+
+                <tr>
+                  <td hidden="{{user.image}}">
+                    <paper-icon-button
+                      class="imageButton"
+                      on-tap="_onAddFilesClick"
+                      icon="icons:account-circle"
+                      hidden="[[!setimage]]">
+                    </paper-icon-button>
+                  </td>
+                  <td hidden="[[!user.image]]">
+                    <iron-image
+                      class="userImage"
+                      sizing="cover"
+                      preload
+                      fade
+                      src="[[user.image]]"
+                      on-tap="_onAddFilesClick">
+                    </iron-image>
+                  </td>
+                  <td>
+                    [[user.email]]
+                  </td>
+                  <td>
+                    [[user.displayName]]
+                  </td>
+                  <td>
+                    [[user.role]]
+                  </td>
+                  <td>
+                    <paper-icon-button icon="communication:email"></paper-icon-button>
+                  </td>
+                  <td>
+                    <paper-icon-button icon="icons:more-vert" on-tap="userOptions"></paper-icon-button>
+                  </td>
+                </tr>
+
+              </template>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+    </paper-card>
+
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is: 'ad-users',
+      ready:function(){
+        this.fire("pageLoaded", {page:this.page});
+      },
+      properties:{
+        newAccount:{
+          type:Object,
+          value:{
+            username:"",
+            password:"",
+            role:"",
+          }
+        },
+        user:{
+          type:Object,
+        },
+        home:{
+          type:Object,
+        }
+      },
+      observers:[
+
+      ],
+      behaviors:[
+        Polymer.adminPagesAnimation,
+        Polymer.adminResizeBehavior
+      ],
+      createNewUser:function(){
+        this.fire("createNewUser", this.newAccount);
+        this.newAccount={};
+      },
+      userOptions:function(e){
+        this.$.userDB.path="/homes/"+this.home+"/users/"+e.model.user.$key;
+        this.$.userDialog.positionTarget = e.target;
+        this.$.userDialog.toggle();
+      },
+      addUser:function(){
+        this.$.addUserDialog.toggle();
+      },
+      editUser:function(){
+        this.$.editUserDialog.toggle();
+        this.$.userDialog.toggle();
+      },
+      _inputChanged:function(e){
+        var reader= new FileReader();
+        var file=e.target.files[0];
+        reader.readAsDataURL(file);
+        reader.addEventListener("load", function () {
+          this.$.userDB.setStoredValue("/homes/"+this.home+"/users/"+this.userID+"/image", reader.result);
+        }.bind(this), false);
+      },
+      _onAddFilesClick: function(e) {
+        this.userID=e.model.user.$key;
+        if (document.createEvent) {
+          this.$.imageInput.value = '';
+          this.$.imageInput.click();
+        }
+      }
+    });
+
+  </script>
+
+</dom-module>

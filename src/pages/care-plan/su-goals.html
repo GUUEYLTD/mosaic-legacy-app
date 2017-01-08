@@ -1,0 +1,397 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html" />
+<link rel="import" href="../../../bower_components/polymerfire/firebase-document.html" />
+<link rel="import" href="../../../bower_components/polymerfire/firebase-query.html" />
+<link rel="import" href="../../../bower_components/paper-dialog/paper-dialog.html" />
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html" />
+<link rel="import" href="../../../bower_components/paper-fab/paper-fab.html" />
+<link rel="import" href="../../../bower_components/paper-input/paper-input.html" />
+<link rel="import" href="../../../bower_components/paper-card/paper-card.html" />
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html" />
+<link rel="import" href="../../../bower_components/vaadin-combo-box/vaadin-combo-box.html" />
+<link rel="import" href="../../../bower_components/paper-checkbox/paper-checkbox.html" />
+<link rel="import" href="../../../bower_components/iron-icon/iron-icon.html" />
+<link rel="import" href="../../../bower_components/iron-icons/iron-icons.html" />
+<link rel="import" href="../../../bower_components/iron-icons/editor-icons.html" />
+<link rel="import" href="../../../bower_components/iron-media-query/iron-media-query.html" />
+<link rel="import" href="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror.html" />
+<link rel="import" href="../../../bower_components/paper-progress/paper-progress.html" />
+<link rel="import" href="../../../bower_components/neon-animation/neon-animated-pages.html" />
+
+<link rel="import" href="../../elements/guuey-date-input/guuey-date-input.html" />
+<link rel="import" href="../../elements/guuey-notify/guuey-notify.html" />
+<link rel="import" href="../../elements/su-header/su-header.html" />
+<link rel="import" href="../../elements/guuey-new-goal-modal/guuey-new-goal-modal.html" />
+<link rel="import" href="../../elements/media-queries/media-queries.html" />
+
+<link rel="import" href="../../behaviors/fab-animation-behavior.html" />
+<link rel="import" href="../../behaviors/animations/care-plan-animation.html" />
+<link rel="import" href="../../behaviors/su-print-behavior.html" />
+<link rel="import" href="../../behaviors/su-resize-behavior.html" />
+
+<link rel="import" href="../../styles/common-styles.html" />
+
+<link rel="import" href="su-goals-edit-view.html" />
+<link rel="import" href="su-goals-multi-view.html" />
+<dom-module id="su-goals">
+
+  <template>
+
+    <media-queries
+      dimensions="{{dimensions}}">
+    </media-queries>
+
+    <!-- db query to find all goals for a patient-->
+    <firebase-query
+      id="goalsDB"
+      app-name="main"
+      path="homes/[[home]]/patients/[[patient]]/personalGoals"
+      data="{{goalsDataLive}}">
+    </firebase-query>
+
+    <app-indexeddb-mirror
+      key="goalsDB|[[patient]]"
+      data="{{goalsDataLive}}"
+      persisted-data="{{goalsData}}"
+      worker-url="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
+    <!--db to create new goal for a patient-->
+    <firebase-document
+      id="goalDB"
+      app-name="main"
+      data="{{goalData}}">
+    </firebase-document>
+
+    <firebase-query
+      id="stepsDB"
+      app-name="main"
+      data="{{stepsDataLive}}">
+    </firebase-query>
+
+    <app-indexeddb-mirror
+      key="stepsDB|[[patient]]"
+      data="{{stepsDataLive}}"
+      persisted-data="{{stepsData}}"
+      worker-url="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
+    <firebase-document
+      id="stepDB"
+      app-name="main"
+      data="{{stepData}}">
+    </firebase-document>
+
+    <firebase-query
+      id="usersDB"
+      app-name="main"
+      path="homes/[[home]]/users"
+      data="{{usersData}}">
+    </firebase-query>
+
+    <guuey-notify
+      id="dateNotify"
+      f-name="[[suBasicInfo.fName]]"
+      l-name="[[suBasicInfo.lName]]"
+      image="[[suBasicInfo.image]]"
+      home="[[home]]"
+      notify-route="homes/[[home]]/patients/[[patient]]/personalGoals/[[goalId]]/finishDate"
+      notify-target="[[goalId]]"
+      condition-type="guuey-date"
+      notify-condition="true"
+      notify-message="[[suBasicInfo.fName]] [[suBasicInfo.lName]]'s [[goalData.category]] goal completion date is soon."
+      notify-url="/[[home]]/care-plan/su-goals/[[patient]]">
+    </guuey-notify>
+
+    <style include="common-styles"></style>
+
+    <guuey-new-goal-modal
+      id="addGoalModal"
+      value="{{newGoal}}"
+      users="[[userList]]">
+    </guuey-new-goal-modal>
+
+    <paper-card class="pageCard" elevation="3">
+
+      <su-header
+        id="suHeader"
+        page="Personal Goals"
+        patient="[[patient]]"
+        home="[[home]]"
+        su-index-data="{{suBasicInfo}}">
+      </su-header>
+
+      <!--repeat each goal that currently is set-->
+      <div class="pageInnerCont">
+
+          <!--absolute positioned button to finsh adding a new goal and close the add view-->
+          <paper-fab
+            id="editFab"
+            icon="icons:check"
+            on-tap="finishGoal">
+          </paper-fab>
+
+          <!--absolute positioned button to add a new goal-->
+          <paper-fab
+            id="regFab"
+            icon="icons:add"
+            on-tap="addGoal">
+          </paper-fab>
+
+          <!--default placeholder if user has not put any goals in yet...-->
+          <!--
+          <div hidden="{{queryCount}}">
+
+
+          </div>
+          -->
+          <neon-animated-pages
+            attr-for-selected="name"
+            selected="[[pageState]]"
+            entry-animation="scale-up-animation"
+            exit-animation="scale-down-animation">
+
+            <su-goals-multi-view
+              name="multi-view"
+              goals-data="{{goalsData}}"
+              goal-id="{{goalId}}">
+            </su-goals-multi-view>
+
+            <su-goals-edit-view
+              su-basic-info="[[suBasicInfo]]"
+              name="edit-view"
+              goal-data="{{goalData}}"
+              goal-id="[[goalId]]"
+              home="[[home]]"
+              page="[[page]]"
+              patient="[[patient]]"
+              user-list="[[userList]]"
+              step-id="{{stepId}}"
+              step-modal-open="{{stepModalOpen}}"
+              steps-data="{{stepsData}}"
+              step-data="{{stepData}}">
+            </su-goals-edit-view>
+
+          </neon-animated-pages>
+
+
+      </div>
+
+    </paper-card>
+
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is: 'su-goals',
+      goEdit:function(){
+        this.pageState="edit-view";
+      },
+      goMulti:function(){
+        this.pageState="multi-view";
+      },
+      ready:function(){
+        this.fire("pageLoaded", {page:this.page});
+        //print listener
+        this.addEventListener("print", this.print);
+
+        //multi-view page listeners
+        this.addEventListener("editGoal", this.editGoal);
+        this.addEventListener("deleteGoal", this.deleteGoal);
+
+        //edit-view page listeners
+        this.addEventListener("addStep", this.addStep);
+        this.addEventListener("editStep", this.editStep);
+        this.addEventListener("saveStep", this.saveStep);
+        this.addEventListener("deleteStep", this.deleteStep);
+        this.addEventListener("checkboxChanged", this.checkboxChanged);
+
+        this.$.usersDB.query.on("value", function(snapshot){
+          this.updateUsers(snapshot);
+        }.bind(this));
+      },
+      properties:{
+        page:{
+          type:String
+        },
+        patient:{
+          type:String
+        },
+        home:{
+          type:String
+        },
+        goalSelected:{
+          type:Boolean,
+          value:false
+        },
+        pageState:{
+          type:String,
+          value:"multi-view"
+        },
+        goalId:{
+          type:String,
+          observer:"initNotify"
+        },
+        stepId:{
+          type:String
+        },
+        stepModalOpen:{
+          type:String,
+          value:"close"
+        },
+        goalTypes:{
+          type:Array,
+          value:[
+            "Accommodation",
+            "Finance And Budget",
+            "Social Skills",
+            "Medical Treatment",
+            "Mental Health",
+            "Other"
+          ]
+        },
+        userList:{
+          type:Array,
+        },
+        newGoal:{
+          type:Object,
+          value:null,
+          observer:"newGoalChanged"
+        }
+      },
+      observers:[
+        "requirementsMet(goalsData)"
+      ],
+      behaviors:[
+        Polymer.fabAnimationBehavior,
+        Polymer.carePlanAnimation,
+        Polymer.suPrintBehavior,
+        Polymer.suResizeBehavior
+      ],
+      initNotify:function(){
+        this.$.dateNotify.initialize();
+      },
+      //activated from child events
+      //multi-view event functions
+      editGoal:function(e){
+         this.$.goalDB.path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalId;
+         this.$.stepsDB.path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalId+"/steps";
+         this.animateEditViewFab();
+         this.pageState="edit-view"
+      },
+      deleteGoal:function(e){
+        var path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalId;
+        this.$.goalDB.setStoredValue(path, null);
+        this.$.dateNotify.deNotify(this.home, this.goalId);
+        this.stepModalOpen="close";
+      },
+      //edit-view functions
+      addStep:function(){
+        this.$.stepDB.path=null;
+        this.$.stepDB.data={};
+        var path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalId+"/steps";
+        this.$.stepDB.save(path, null)
+          .then(function(){
+            this.stepId=this.$.stepDB.path.slice(path.length+2);
+            this.stepModalOpen="open";
+            //reset the db path and save the path for later
+            this.$.stepDB.path=null;
+          }.bind(this));
+      },
+      editStep:function(){
+        this.$.stepDB.path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalId+"/steps/"+this.stepId;
+        this.stepModalOpen="open";
+      },
+      saveStep:function(){
+        var path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalId+"/steps";
+        this.$.stepDB.save(path, this.stepId)
+          .then(function(){
+            this.fire("openToast",{toastText:"new step saved."});
+            this.stepModalOpen="close";
+            this.$.stepDB.path=null;
+            this.$.stepDB.data={};
+          }.bind(this))
+          .catch(function(error){
+            this.fire("openToast",{toastText:"there was an error saving your new step: "+error});
+            this.stepModalOpen="close";
+            this.$.stepDB.path=null;
+            this.$.stepDB.data={};
+          });
+      },
+      //reg functions
+      updateUsers:function(snapshot){
+        var tempList=[];
+        if(snapshot.val()){
+          var data=snapshot.val();
+          for(x in data){
+            if(data[x].displayName){
+              tempList.push(data[x].displayName);
+            } else {
+              tempList.push(data[x].email);
+            };
+          };
+        };
+        this.userList=tempList;
+      },
+      addGoal:function(){
+        this.$.addGoalModal.open();
+      },
+      newGoalChanged:function(data){
+        if(data!=null){
+          var path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"
+          this.$.goalDB.data=data;
+          this.$.goalDB.save(path, null)
+            .then(function(){
+              this.fire("openToast",{toastText:"new goal saved."});
+              this.$.goalDB.path=null;
+              this.$.goalDB.data={};
+            }.bind(this))
+            .catch(function(error){
+              this.fire("openToast",{toastText:"there was an error saving your new goal: "+error});
+              this.$.goalDB.path=null;
+              this.$.goalDB.data={};
+            });
+        }
+      },
+      finishGoal:function(e){
+        this.animateMultiViewFab();
+        this.pageState="multi-view"
+      },
+      checkboxChanged:function(e){
+        var stepID=e.detail.stepID;
+        var checkBool=e.detail.checkBool;
+        var path="homes/"+this.home+"/patients/"+this.patient+"/personalGoals/"+this.goalId+"/steps/"+stepID+"/completed";
+        this.$.stepDB.setStoredValue(path, checkBool);
+      },
+      requirementsMet:function(data){
+        //change case
+        this.$.goalsDB.query.on("child_changed",function(){
+          var goalData=this.$.goalDB.data;
+          if(!goalData.category){
+            this.fire("openToast", {toastText:"Goal category is required."});
+            return false;
+          } else if(!goalData.startDate){
+            this.fire("openToast", {toastText:"Goal start date is required."});
+            return false;
+          } else if(!goalData.finishDate){
+            this.fire("openToast", {toastText:"Goal finish date is required."});
+            return false;
+          } else if(!goalData.coordinator){
+            this.fire("openToast", {toastText:"Goal cooridnator is required."});
+            return false;
+          } else if(!goalData.description){
+            this.fire("openToast", {toastText:"Goal description is required."});
+            return false;
+          } else if(!goalData.steps){
+            this.fire("openToast", {toastText:"Add steps to the goal."});
+          } else {
+            return true;
+          };
+        }.bind(this));
+      },
+    });
+
+  </script>
+
+</dom-module>

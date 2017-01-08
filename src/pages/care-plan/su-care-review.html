@@ -1,0 +1,249 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html" />
+<link rel="import" href="../../../bower_components/polymerfire/firebase-document.html" />
+<link rel="import" href="../../../bower_components/polymerfire/firebase-query.html" />
+<link rel="import" href="../../../bower_components/paper-fab/paper-fab.html" />
+<link rel="import" href="../../../bower_components/paper-dialog/paper-dialog.html" />
+<link rel="import" href="../../../bower_components/neon-animation/neon-animated-pages.html" />
+
+<link rel="import" href="../../elements/su-header/su-header.html" />
+<link rel="import" href="../../elements/guuey-date-input/guuey-date-input.html" />
+<link rel="import" href="../../elements/guuey-notify/guuey-notify.html" />
+<link rel="import" href="../../elements/media-queries/media-queries.html" />
+
+<link rel="import" href="../../behaviors/animations/care-plan-animation.html" />
+<link rel="import" href="../../behaviors/fab-animation-behavior.html" />
+<link rel="import" href="../../behaviors/su-print-behavior.html" />
+<link rel="import" href="../../behaviors/su-resize-behavior.html" />
+
+<link rel="import" href="../../styles/common-styles.html" />
+
+<link rel="import" href="su-care-review-edit-view.html" />
+<link rel="import" href="su-care-review-multi-view.html" />
+<dom-module id="su-care-review">
+
+  <template>
+
+    <media-queries
+      dimensions="{{dimensions}}">
+    </media-queries>
+    <!--db query for reviews-->
+    <firebase-query
+      id="reviewsDB"
+      app-name="main"
+      data="{{reviewsDataLive}}"
+      path="homes/[[home]]/patients/[[patient]]/carePlanReviews">
+    </firebase-query>
+
+    <app-indexeddb-mirror
+      key="reviewsDB|[[patient]]"
+      data="{{reviewsDataLive}}"
+      persisted-data="{{reviewsData}}"
+      worker-url="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
+    <!--db for agreement section-->
+    <firebase-document
+      id="reviewDB"
+      app-name="main"
+      data="{{reviewDataLive}}">
+    </firebase-document>
+
+    <app-indexeddb-mirror
+      key="reviewDB|[[patient]]"
+      data="{{reviewDataLive}}"
+      persisted-data="{{reviewData}}"
+      worker-url="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
+    <guuey-notify
+      id="dateNotify"
+      f-name="[[suBasicInfo.fName]]"
+      l-name="[[suBasicInfo.lName]]"
+      image="[[suBasicInfo.image]]"
+      home="[[home]]"
+      notify-target="[[reviewId]]"
+      notify-route="homes/[[home]]/patients/[[patient]]/carePlanReviews/[[reviewId]]/nextReviewDate"
+      notify-target="[[reviewId]]"
+      condition-type="guuey-date"
+      notify-condition="true"
+      notify-message="[[suBasicInfo.fName]] [[suBasicInfo.lName]]'s Care Plan Review Date is scheduled soon."
+      notify-url="/[[home]]/care-plan/su-care-review/[[patient]]">
+    </guuey-notify>
+
+    <style include="common-styles">
+
+    </style>
+
+        <paper-dialog id="addReviewDialog" class="guuey-modal guuey-add-modal">
+
+          <h2>Add Review</h2>
+
+          <paper-input value="{{reviewData.name}}" label="name of the review"></paper-input>
+          <paper-input value="{{reviewData.description}}" label="short description"></paper-input>
+          <guuey-date-input
+            class="modal-date-input"
+            value="{{reviewData.nextReviewDate}}"
+            label="Next Review Date">
+          </guuey-date-input>
+
+          <div class="modal-button-container">
+            <paper-button class="cancel-button" on-tap="cancelNewReview">cancel</paper-button>
+            <paper-button class="confirm-button" on-tap="saveNewReview">continue to new review</paper-button>
+          </div>
+
+        </paper-dialog>
+
+        <paper-card class="pageCard">
+
+          <su-header
+            page="Care Plan Review"
+            home="[[home]]"
+            patient="[[patient]]"
+            su-index-data="{{suBasicInfo}}">
+          </su-header>
+
+          <div class="pageInnerCont">
+
+            <!--absolute position button to add a new risk-->
+
+            <paper-fab
+              id="regFab"
+              icon="icons:add"
+              on-tap="addReview">
+            </paper-fab>
+
+            <!--fixed position button to finsh adding a new risk assessment and close the add view-->
+
+            <paper-fab
+              id="editFab"
+              icon="icons:check"
+              on-tap="finishReview">
+            </paper-fab>
+
+            <neon-animated-pages
+              entry-animation="scale-up-animation"
+              exit-animation="scale-down-animation"
+              attr-for-selected="name"
+              selected="[[pageState]]">
+
+              <su-care-review-multi-view
+                name="multi-view"
+                reviews-data="{{reviewsData}}"
+                su-basic-info="[[suBasicInfo]]">
+              </su-care-review-multi-view>
+
+              <su-care-review-edit-view
+                name="edit-view"
+                review-data="{{reviewData}}"
+                su-basic-info="[[suBasicInfo]]"
+                review-id="[[reviewId]]"
+                home="[[home]]"
+                patient="[[patient]]">
+              </su-care-review-edit-view>
+
+            </neon-animated-pages>
+
+          </div>
+
+        </paper-card>
+
+  </template>
+
+  <script>
+
+    Polymer({
+      is: 'su-care-review',
+      ready:function(){
+        this.fire("pageLoaded", {page:this.page});
+        this.addEventListener("print", this.print);
+        this.addEventListener("editReview", this.editReview);
+        this.addEventListener("deleteReview", this.deleteReview);
+      },
+      properties:{
+        page:{
+          type:String,
+        },
+        patient:{
+          type:String,
+        },
+        home:{
+          type:String,
+        },
+        pageState:{
+          type:String,
+          value:"multi-view"
+        },
+        reviewId:{
+          type:String,
+          observer:"initNotify"
+        },
+      },
+      observers:[
+
+      ],
+      behaviors:[
+        Polymer.carePlanAnimation,
+        Polymer.fabAnimationBehavior,
+        Polymer.suPrintBehavior,
+        Polymer.suResizeBehavior
+      ],
+      initNotify:function(){
+        this.$.dateNotify.initialize();
+      },
+      _checkServiceUser:function(suBasicInfo){
+        var fullName=suBasicInfo.fName+" "+suBasicInfo.lName;
+        if(!this.reviewData.suName){
+          this.reviewData.suName=fullName;
+          this.set("reviewData.suName", fullName);
+        };
+      },
+      addReview:function(){
+        this.$.reviewDB.path=null;
+        this.$.reviewData={};
+        this.$.addReviewDialog.open();
+      },
+      saveNewReview:function(){
+        var path="/homes/"+this.home+"/patients/"+this.patient+"/carePlanReviews";
+        this.$.reviewDB.save(path, null)
+          .then(function(val){
+            this.reviewId=this.$.reviewDB.path.slice(path.length+1);
+            this.$.addReviewDialog.close();
+            this.pageState="edit-view"
+            this.animateEditViewFab();
+            this.fire("openToast",{toastText:"New care plan review saved."});
+            this.$.reviewDB.transactionsComplete=this._checkServiceUser(this.suBasicInfo);
+          }.bind(this))
+          .catch(function(error){
+            this.$.addReviewDialog.close();
+            this.fire("openToast",{toastText:"There was an error saving the care plan review: "+error});
+          }.bind(this));
+      },
+      cancelNewReview:function(){
+        this.$.addReviewDialog.close();
+        this.$.reviewDB.path=null;
+        this.$.reviewData={};
+      },
+      editReview:function(e){
+        this.reviewId=e.detail.reviewId;
+        this.$.reviewDB.path="/homes/"+this.home+"/patients/"+this.patient+"/carePlanReviews/"+this.reviewId;
+        this.$.reviewDB.transactionsComplete=this._checkServiceUser(this.suBasicInfo);
+        this.pageState="edit-view";
+        this.animateEditViewFab();
+      },
+      deleteReview:function(e){
+        this.reviewId=e.detail.reviewId;
+        var path="/homes/"+this.home+"/patients/"+this.patient+"/carePlanReviews/"+this.reviewId;
+        this.$.reviewDB.setStoredValue(path, null);
+        this.$.dateNotify.deNotify(this.home, this.reviewId);
+      },
+      finishReview:function(){
+        this.pageState="multi-view";
+        this.animateMultiViewFab();
+        this.$.reviewDB.path=null;
+        this.$.reviewDB.data={};
+      }
+    });
+
+  </script>
+
+</dom-module>

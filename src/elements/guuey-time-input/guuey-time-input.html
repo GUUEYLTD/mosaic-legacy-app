@@ -1,13 +1,11 @@
-<!--
-a simple element for time input that pops up a calendar when tapped
-saves the calendar input to the text input area
-arguments:
-route(string)
-  location to save in database REQUIRED
-label(string)
-  the label on the text input to display
--->
-<link rel="import" href="dependencies.html" />
+<link rel="import" href="../../../bower_components/polymer/polymer.html" />
+<link rel="import" href="../../../bower_components/paper-time-picker/paper-time-picker.html" />
+<link rel="import" href="../../../bower_components/polymerfire/firebase-document.html" />
+<link rel="import" href="../../../bower_components/paper-card/paper-card.html" />
+<link rel="import" href="../../../bower_components/paper-dialog/paper-dialog.html" />
+<link rel="import" href="../../../bower_components/paper-input/paper-input.html" />
+<link rel="import" href="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror.html" />
+
 <dom-module id="guuey-time-input">
   <template>
 

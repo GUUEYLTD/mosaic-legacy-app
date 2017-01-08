@@ -1,0 +1,208 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html" />
+<link rel="import" href="../../../bower_components/polymerfire/firebase-document.html" />
+<link rel="import" href="../../../bower_components/paper-card/paper-card.html" />
+<link rel="import" href="../../../bower_components/polymerfire/firebase-query.html" />
+<link rel="import" href="../../../bower_components/paper-input/paper-input.html" />
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html" />
+<link rel="import" href="../../../bower_components/paper-item/paper-item.html" />
+
+<link rel="import" href="../../elements/firebase-storage/firebase-storage.html" />
+<link rel="import" href="../../elements/su-header/su-header.html" />
+<link rel="import" href="../../elements/media-queries/media-queries.html" />
+
+<link rel="import" href="../../behaviors/animations/care-plan-animation.html" />
+<link rel="import" href="../../behaviors/su-print-behavior.html" />
+<link rel="import" href="../../behaviors/su-resize-behavior.html" />
+
+<link rel="import" href="../../styles/common-styles.html" />
+
+
+
+<dom-module id="su-medical">
+
+  <template>
+
+    <media-queries
+      dimensions="{{dimensions}}">
+    </media-queries>
+
+    <firebase-storage
+      id="pdf"
+      app-name="main"
+      path="uploads/[[home]]/[[patient]]">
+    </firebase-storage>
+
+    <firebase-document
+      id="fileLocDB"
+      app-name="main">
+    </firebase-document>
+
+    <firebase-query
+      id="uploadsDB"
+      app-name="main"
+      path="homes/[[home]]/patients/[[patient]]/uploads"
+      data={{uploadsData}}>
+    </firebase-query>
+
+    <style include="common-styles">
+      :host{
+        --app-grid-columns:2;
+        --app-grid-expandible-item-columns:2;
+      }
+      .guuey-button{
+        width:100%;
+        margin:0;
+      }
+      #fileInputName{
+        align-self:center;
+        margin-top:-15px;
+      }
+      #tableInput{
+        margin:0;
+        padding:0;
+        padding-bottom:20px;
+        width:90%;
+      }
+      .topInput{
+        padding:20px;
+      }
+      .topInput *{
+        display:inline-block;
+        max-width:200px;
+        text-align:center;
+        margin:20px;
+      }
+    </style>
+
+      <paper-card class="pageCard" elevation="3">
+        <su-header
+          page="Medical Assessment"
+          home="[[home]]"
+          patient="[[patient]]">
+        </su-header>
+        <div class="topInput">
+
+          <paper-input id="fileInputName" label="Asessment Name (optional)" value="{{newFileName}}"></paper-input>
+
+          <paper-button
+            class="guuey-button"
+            on-tap="_onAddFilesClick">upload file
+          </paper-button>
+
+        </div>
+
+        <input
+          type="file"
+          id="fileInput"
+          on-change="fileChange"
+          hidden>
+        </input>
+        <div class="guuey-table">
+          <table>
+            <thead>
+              <tr>
+                <th>
+                  Document Title
+                </th>
+                <th>
+                  Location
+                </th>
+                <th>
+                  Date of Upload
+                </th>
+                <th>
+                  Notes
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <template is="dom-repeat" items="{{uploadsData}}" as="upload">
+                <tr>
+                  <td>
+                    <paper-input id="tableInput" label="file name" value="{{upload.customName}}"></paper-input>
+                  </td>
+                  <td>
+                    <paper-button class="guuey-button" on-tap="openFile">go to file</paper-button>
+                  </td>
+                  <td>
+                    [[upload.dateUploaded]]
+                  </td>
+                  <td>
+                    <paper-input id="tableInput" label="comments" value="{{upload.comments}}"></paper-input>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+
+
+        </div>
+
+      </paper-card>
+
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is: 'su-medical',
+      ready:function(){
+        this.fire("pageLoaded", {page:this.page});
+        this.addEventListener("print", this.print);
+      },
+      properties:{
+        patient:{
+          type:String
+        },
+        home:{
+          type:String
+        }
+      },
+      observers:[
+
+      ],
+      behaviors:[
+        Polymer.carePlanAnimation,
+        Polymer.suPrintBehavior,
+        Polymer.suResizeBehavior
+      ],
+      fileChange:function(e) {
+        console.log(e);
+        var file = e.target.files[0];
+        console.log(file);
+        this.uploadedFile=file;
+        this.$.pdf._uploadFile(file)
+        .then(function(fileLoc) {
+          //save the location to the firebase reg db...
+          var path="/homes/"+this.home+"/patients/"+this.patient+"/uploads";
+          var date= new Date().toDateString();
+            this.$.fileLocDB.data={
+            location:fileLoc,
+            dateUploaded:date,
+            customName:(this.newFileName || file.name)
+          };
+          this.$.fileLocDB.save(path,null)
+            .then(function(snapshot){
+              this.newFileName=null;
+              this.$.fileLocDB.path = null;
+            }.bind(this));
+        }.bind(this))
+        .catch(function(error){
+          console.log(error);
+        });
+      },
+      _onAddFilesClick: function(e) {
+        if (document.createEvent) {
+          this.$.fileInput.value = '';
+          this.$.fileInput.click();
+        }
+      },
+      openFile:function(e){
+        window.open(e.model.upload.location);
+      },
+    });
+
+  </script>
+
+</dom-module>

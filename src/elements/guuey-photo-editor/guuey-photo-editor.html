@@ -1,8 +1,12 @@
-<link rel="import" href="dependencies.html" />
-
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html" />
+<link rel="import" href="../../../bower_components/iron-icons/image-icons.html" />
+<link rel="import" href="../../../bower_components/iron-icons/av-icons.html" />
+<link rel="import" href="../../../bower_components/iron-icons/iron-icons.html" />
+<link rel="import" href="../../../bower_components/paper-dialog/paper-dialog.html" />
 <!--
-`image-editor`
-image editor
+`guuey-photo-editor`
+element that returns edited images as base64 for use in applications.
 
 @demo demo/index.html
 -->
@@ -10,31 +14,56 @@ image editor
 <dom-module id="guuey-photo-editor">
   <template>
     <style>
-      :host {
-        display: block;
+
+      .edit-button {
+        color: #7E57C2;
+      }
+      .toolbar {
+        margin:0;
+        padding:0;
       }
 
-      .resize-container {
-          position: relative;
-          display: inline-block;
-          cursor: move;
-          padding:0 0 0 0 !important;
-          border:1px solid black;
+      #editDialog {
+        z-index:998;
+        position:fixed;
+        padding:100px;
+        background:
+        linear-gradient(-90deg, rgba(0,0,0,.05) 1px, transparent 1px),
+        linear-gradient(rgba(0,0,0,.05) 1px, transparent 1px),
+        linear-gradient(-90deg, rgba(0, 0, 0, .04) 1px, transparent 1px),
+        linear-gradient(rgba(0,0,0,.04) 1px, transparent 1px),
+        linear-gradient(transparent 3px, #f2f2f2 3px, #f2f2f2 78px, transparent 78px),
+        linear-gradient(-90deg, #aaa 1px, transparent 1px),
+        linear-gradient(-90deg, transparent 3px, #f2f2f2 3px, #f2f2f2 78px, transparent 78px),
+        linear-gradient(#aaa 1px, transparent 1px),
+        #f2f2f2;
+        background-size:
+        4px 4px,
+        4px 4px,
+        80px 80px,
+        80px 80px,
+        80px 80px,
+        80px 80px,
+        80px 80px,
+        80px 80px;
+        --paper-dialog:{
+          margin:0;
+        };
+      }
+      #imageContainer {
+        margin:0;
+        padding:0;
+        position:relative;
+        display:inline-block;
+        cursor: move;
+        border:1px solid black;
       }
 
-      .resize-container img {
-          display: block
+      #imageContainer:hover img,
+      #imageContainer:hover img {
+        outline: 2px dashed #7E57C2;
       }
-
-      .resize-container:hover img,
-      .resize-container:active img {
-          outline: 2px dashed #7E57C2;
-      }
-      .resize-handle-ne,
-      .resize-handle-ne,
-      .resize-handle-se,
-      .resize-handle-nw,
-      .resize-handle-sw {
+      .resize-handle {
           position: absolute;
           display: block;
           width: 40px;
@@ -67,12 +96,15 @@ image editor
           cursor: se-resize;
       }
 
-      .resize-image {
-          min-width:50px;
-          min-height:50px;
-          max-width:800px;
-          max-height:800px;
+      #image {
+        background-color:grey;
+        display:block;
+        min-width:var(--image-min-width, 50px);
+        min-height:var(--image-min-height, 50px);
+        max-width:var(--image-max-width, 600px);
+        max-height:var(--image-max-height, 600px);
       }
+
       .overlay {
           position: absolute;
           left: 50%;
@@ -85,6 +117,10 @@ image editor
           border: solid 2px #7E57C2;
           box-sizing: content-box;
           pointer-events: none;
+
+          /*overwrites for paper-dialog styles*/
+          padding:0;
+          margin-bottom:0;
       }
 
       .overlay:after,
@@ -132,13 +168,14 @@ image editor
           margin-right: -40px;
           margin-top: -2px;
       }
-      .edit-button-container {
+
+      .toolbar {
         position:absolute;
         left:10%;
         bottom:20px;
         margin-top:20px;
         vertical-align:bottom;
-        z-index:999;
+        z-index:997;
         display:flex;
         flex-direction:row;
         width:80%;
@@ -152,105 +189,42 @@ image editor
           flex-grow:1;
           background-color:rgba(240, 240, 240, 0.8);
       }
-
-      #editDialog {
-        display:relative;
-        padding:100px;
-        background:
-        linear-gradient(-90deg, rgba(0,0,0,.05) 1px, transparent 1px),
-        linear-gradient(rgba(0,0,0,.05) 1px, transparent 1px),
-        linear-gradient(-90deg, rgba(0, 0, 0, .04) 1px, transparent 1px),
-        linear-gradient(rgba(0,0,0,.04) 1px, transparent 1px),
-        linear-gradient(transparent 3px, #f2f2f2 3px, #f2f2f2 78px, transparent 78px),
-        linear-gradient(-90deg, #aaa 1px, transparent 1px),
-        linear-gradient(-90deg, transparent 3px, #f2f2f2 3px, #f2f2f2 78px, transparent 78px),
-        linear-gradient(#aaa 1px, transparent 1px),
-        #f2f2f2;
-      background-size:
-        4px 4px,
-        4px 4px,
-        80px 80px,
-        80px 80px,
-        80px 80px,
-        80px 80px,
-        80px 80px,
-        80px 80px;
-
-        --paper-dialog:{
-          :host > ::content > * {
-            margin-top: 0;
-            padding: 0;
-          }
-
-          :host > ::content > .no-padding {
-            padding: 0;
-          }
-
-          :host > ::content > *:first-child {
-            margin-top: 0;
-          }
-
-          :host > ::content > *:last-child {
-            margin-bottom: 0;
-          }
-        }
-      }
-      #startEditButton{
-        @apply(--guuey-photo-editor-button);
-      }
-      .tips{
-        position:absolute;
-        left:10%;
-        top:20px;
-        z-index:999;
-        width:80%;
-        margin:auto;
-        background-color:#F0F0F0;
-        border: 1px solid black;
-        padding:10px;
-      }
-      .tips *{
-        text-transform:uppercase;
-        margin:0;
-        padding:0;
-        font-size:10px;
-      }
     </style>
-      <paper-icon-button id="startEditButton" icon="image:add-a-photo" on-tap="startEdit"></paper-icon-button>
+    <paper-icon-button id="startEditButton" icon="image:add-a-photo" on-tap="_startEdit"></paper-icon-button>
 
-      <paper-dialog id="editDialog">
+    <input
+      id="imageInput"
+      type="file"
+      on-change="_inputChanged"
+      hidden>
+    </input>
 
-        <div id="resizeContainer" class="resize-container">
-          <span id="nw" class="resize-handle resize-handle-nw"></span>
-          <span id="ne" class="resize-handle resize-handle-ne"></span>
-          <img id="image" class="resize-image" src="{{value}}" alt="Image" />
-          <span id="se" class="resize-handle resize-handle-se"></span>
-          <span id="sw" class="resize-handle resize-handle-sw"></span>
+    <paper-dialog id="editDialog">
+      <div id="imageContainer">
+        <span id="nw" class="resize-handle resize-handle-nw"></span>
+        <span id="ne" class="resize-handle resize-handle-ne"></span>
+        <img id="image" src="images/demo.jpg"/>
+        <span id="se" class="resize-handle resize-handle-se"></span>
+        <span id="sw" class="resize-handle resize-handle-sw"></span>
+      </div>
+
+      <div class="toolbar">
+        <paper-icon-button class="edit-button" icon="image:add-a-photo" on-tap="change"></paper-icon-button>
+        <paper-icon-button class="edit-button" icon="image:rotate-left" on-tap="rotateLeft"></paper-icon-button>
+        <paper-icon-button class="edit-button" icon="image:rotate-right" on-tap="rotateRight"></paper-icon-button>
+        <paper-icon-button class="edit-button" icon="image:crop" on-tap="crop"></paper-icon-button>
+        <paper-icon-button class="edit-button" icon="icons:save" on-tap="save"></paper-icon-button>
+        <paper-icon-button class="edit-button" icon="av:fast-rewind" on-tap="reset"></paper-icon-button>
+        <paper-icon-button class="edit-button" icon="icons:cancel" on-tap="cancel"></paper-icon-button>
+      </div>
+
+      <div id="overlay" class="overlay">
+        <div class="overlay-inner">
+          <!--overlay used for cropping positioned in css -->
         </div>
-        <div id="overlay" class="overlay">
-          <div class="overlay-inner">
+      </div>
 
-          </div>
-        </div>
-        <div class="edit-button-container">
-          <paper-icon-button class="edit-button" icon="image:add-a-photo" on-tap="change"></paper-icon-button>
-          <paper-icon-button class="edit-button" icon="image:rotate-left" on-tap="rotateLeft"></paper-icon-button>
-          <paper-icon-button class="edit-button" icon="image:rotate-right" on-tap="rotateRight"></paper-icon-button>
-          <paper-icon-button class="edit-button" icon="image:crop" on-tap="crop"></paper-icon-button>
-          <paper-icon-button class="edit-button" icon="icons:save" on-tap="save"></paper-icon-button>
-          <paper-icon-button class="edit-button" icon="av:fast-rewind" on-tap="reset"></paper-icon-button>
-          <paper-icon-button class="edit-button" icon="icons:cancel" on-tap="cancel"></paper-icon-button>
-        </div>
-
-        <input
-          id="imageInput"
-          type="file"
-          on-change="_inputChanged"
-          hidden>
-        </input>
-
-      </paper-dialog>
-
+    </paper-dialog>
 
   </template>
 
@@ -258,245 +232,321 @@ image editor
     Polymer({
 
       is: 'guuey-photo-editor',
-      ready:function(){
-        this.orig_src=new Image(),
-        this.alt_image=new Image();
-        this.image_target=this.$.image;
-        this.event_state={};
-        this.constrain=true;
-        this.min_width=20;
-        this.min_height=20;
-        this.max_width=800;
-        this.max_height=800;
-        this.resize_canvas=document.createElement("canvas");
-        this.rotate_canvas=document.createElement("canvas");
-        this.save_canvas=document.createElement("canvas");
-        //create new image with a copy of original src
-        //original copy is the base of ops
-        this.orig_src.src=this.image_target.src;
+
+      properties: {
+        //the returned result of the element after saving. can be accessed from parent elements.
+        value: {
+          type:String,
+          notify:true
+        },
+        //keeps track of whether or not the image has been rotated. used in order to decide which source to use.
+        rotated: {
+          type: Boolean,
+          value: false,
+        },
+        //keeps track of whether or not the image has been cropped. used in order to decide which source to use.
+        cropped: {
+          type: Boolean,
+          value: false,
+        },
+        //kept in order to preserve the image quality when resizing an image.
+        orig: {
+          type: Object
+        },
+        //used to track rotate and crop changes.
+        alt: {
+          type: Object
+        },
+        //canvas which image operations are run on
+        canvas: {
+          type: Object
+        },
+        //canvas.getContext("2d")
+        ctx: {
+          type: Object
+        },
+        //keeps track of events when moving the image around for cropping. Things such as mouseY and mouseX etc.
+        eventState: {
+          type: Object,
+          value: {}
+        },
+        //keeps track of events when moving the image resize container around for cropping. Things such as mouseY and mouseX etc.
+        dialogEventState: {
+          type: Object,
+          value: {}
+        },
+        //min width the canvas will go to when resizing an image.
+        minWidth: {
+          type:Number,
+          value:10
+        },
+        //min height the canvas will go to when resizing an image.
+        minHeight: {
+          type:Number,
+          value:10
+        },
+        //max width the canvas will go to when resizing an image.
+        maxWidth: {
+          type:Number,
+          value:600
+        },
+        //max height the canvas will go to when resizing an image.
+        maxHeight: {
+          type:Number,
+          value:600
+        },
+        //used to decide whether or not to constrain proportions
+        constrain: {
+          type: Boolean,
+          value: true
+        }
+      },
+
+      ready:function() {
+        //update display for images with min/max values
+        this.setMinMax();
+
+        //initialize the needed elements for photo edits
+        this.orig = new Image();
+        this.alt = new Image();
+        this.canvas = document.createElement("canvas");
+        this.ctx = this.canvas.getContext("2d");
+
+        //listener to move the dialog around
+        this.listen(this.$.editDialog, "mousedown", "_startDialogMoving");
+        this.listen(this.$.editDialog, "touchstart", "_startDialogMoving");
 
         //set listener on resize pointers for when mouse held down
-        this.listen(this.$.se, "mousedown", "startResize");
-        this.listen(this.$.se, "touchstart", "startResize");
-        this.listen(this.$.sw, "mousedown", "startResize");
-        this.listen(this.$.sw, "touchstart", "startResize");
-        this.listen(this.$.nw, "mousedown", "startResize");
-        this.listen(this.$.nw, "touchstart", "startResize");
-        this.listen(this.$.ne, "mousedown", "startResize");
-        this.listen(this.$.ne, "touchstart", "startResize");
+        this.listen(this.$.se, "mousedown", "_startResize");
+        this.listen(this.$.se, "touchstart", "_startResize");
+        this.listen(this.$.sw, "mousedown", "_startResize");
+        this.listen(this.$.sw, "touchstart", "_startResize");
+        this.listen(this.$.nw, "mousedown", "_startResize");
+        this.listen(this.$.nw, "touchstart", "_startResize");
+        this.listen(this.$.ne, "mousedown", "_startResize");
+        this.listen(this.$.ne, "touchstart", "_startResize");
+
         //set listener on image to start moving
-        this.listen(this.$.image, "mousedown", "startMoving");
-        this.listen(this.$.image, "touchstart", "startMoving");
+        this.listen(this.$.image, "mousedown", "_startImageMoving");
+        this.listen(this.$.image, "touchstart", "_startImageMoving");
       },
-      properties:{
-        editButtonHidden:{
-          //not needed i think
-          type:Boolean,
-          value:false
-        },
-        value:{
-          type:String,
-          notify:true,
-          observer:"valueChanged"
-        },
-        rectangle:{
-          type:Boolean,
-          observer:"_setRectangle"
-        }
+      //set min/max width/height for images based on properties set
+      setMinMax:function() {
+        this.customStyle["--image-min-width"] = (this.minWidth || 50) + "px";
+        this.customStyle["--image-min-height"] = (this.minHeight || 50) + "px";
+        this.customStyle["--image-max-width"] = (this.maxWidth || 600) + "px";
+        this.customStyle["--image-max-height"] = (this.maxHeight || 600) + "px";
+        this.updateStyles();
       },
-      _setRectangle:function(bool){
-        console.log(bool);
-        if(bool){
-          this.customStyle["--overlay-height"]="130px";
-        } else {
-          this.customStyle["--overlay-height"]="200px";
-        };
-      },
-      valueChanged:function(){
-        this.orig_src.src=this.image_target.src;
-      },
-      startEdit:function(){
+
+      _startEdit:function() {
         this.$.editDialog.open();
       },
-      rotate:function(config){
-        var width=this.$.resizeContainer.offsetWidth-2;
-        var height=this.$.resizeContainer.offsetHeight-2;
-        this.rotate_canvas.width = height
-        this.rotate_canvas.height = width
-        this.rotate_canvas.getContext("2d").clearRect(0, 0, width, height);
-        this.rotate_canvas.getContext("2d").translate(config.x, config.y);
-        this.rotate_canvas.getContext("2d").rotate(config.r);
-        this.rotate_canvas.getContext("2d").drawImage(this.image_target, 0, 0);
-        this.image_target.src=this.rotate_canvas.toDataURL("image/png");
-        this.alt_image.src=this.image_target.src;
-        this.rotated=true;
 
+      _inputChanged:function(e) {
+        var reader = new FileReader();
+        var file = e.target.files[0];
+        reader.readAsDataURL(file);
+        reader.addEventListener("load", function () {
+          this.$.image.src = reader.result;
+          var width = this.$.image.naturalWidth;
+          var height = this.$.image.naturalHeight;
+          //check dimensions of image. if too large then scale down to max dimension settings
+          if(width > this.maxWidth || height > this.maxHeight){
+            var scaleTarget = width > height ? width : height;
+            var scaleDimension = width > height ? "maxWidth" : "maxHeight";
+            var scaleAmount = this[scaleDimension] / scaleTarget;
+            this.canvas.width = width * scaleAmount;
+            this.canvas.height = height * scaleAmount;
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            this.ctx.drawImage(this.$.image, 0, 0, width, height, 0, 0, width * scaleAmount, height * scaleAmount);
+            this.$.image.src = this.canvas.toDataURL("image/png");
+          };
+          this.orig.src = this.$.image.src;
+          this.alt.src = "";
+          this.rotated = false;
+          this.cropped = false;
+        }.bind(this), false);
       },
-      rotateLeft:function(e){
-        var config={
-          x:0,
-          y:this.$.resizeContainer.offsetHeight-2,
-          r:-90 * Math.PI/180
+      //create rotate configs based on this.$.imageContainer x:translateX y:translateY r: rotate 90 degrees right
+      rotateRight:function() {
+        var config = {
+          x: this.$.imageContainer.offsetHeight - 2,
+          y: 0,
+          r: 90 * (Math.PI/180)
         };
-        this.rotate(config);
+        this.incrementClockPos(true);
+        this._rotate(config);
       },
-      rotateRight:function(e){
-        var config={
-          x:this.$.resizeContainer.offsetWidth-2,
-          y:0,
-          r:90 * Math.PI/180
+      //create rotate configs based on this.$.imageContainer x:translateX y:translateY r: rotate 90 degrees left then _rotate.
+      rotateLeft:function() {
+        var config = {
+          x: 0,
+          y: this.$.imageContainer.offsetWidth - 2,
+          r: -90 * (Math.PI/180)
         };
-        this.rotate(config);
+        this.incrementClockPos(false);
+        this._rotate(config);
+      },
 
+      _rotate:function(config) {
+        var width = this.$.imageContainer.offsetWidth - 2;
+        var height = this.$.imageContainer.offsetHeight - 2;
+        this.canvas.width = height;
+        this.canvas.height = width;
+        this.ctx.translate(config.x, config.y);
+        this.ctx.rotate(config.r);
+        this.ctx.drawImage(this.$.image, 0, 0);
+        this.$.image.src = this.canvas.toDataURL("image/png");
+        this.alt.src=this.$.image.src;
       },
-      save:function(){
-        var width=this.$.resizeContainer.offsetWidth-2;
-        var height=this.$.resizeContainer.offsetHeight-2;
-        this.save_canvas.width = width
-        this.save_canvas.height = height
-        var src;
-        if(this.rotated || this. cropped){
-          src=this.alt_image;
-        } else {
-          src=this.image_target;
-        };
-        this.save_canvas.getContext("2d").drawImage(src, 0, 0, width, height, 0, 0, width, height);
-        this.value=this.save_canvas.toDataURL("image/png");
-        this.$.editDialog.close();
-      },
-      change: function(e) {
-        if (document.createEvent) {
-          this.$.imageInput.value = '';
-          this.$.imageInput.click();
-        }
-      },
-      reset:function(){
-        this.image_target.src=this.orig_src.src;
-        this.alt_image.src="empty";
-        this.rotated=false;
-        this.cropped=false;
 
-      },
-      cancel:function(){
-        this.$.editDialog.close();
-      },
-      startResize:function(e){
+      //handle start of resize
+      _startResize:function(e) {
         e.preventDefault();
         e.stopPropagation();
-        this.saveEventState(e);
-        this.addEventListener("mousemove", this.resizing);
-        this.addEventListener("touchmove", this.resizing);
-        this.addEventListener("mouseup", this.endResize);
-        this.addEventListener("touchend", this.endResize);
+        this._saveEventState(e);
+        this.addEventListener("mousemove", this._resizing);
+        this.addEventListener("touchmove", this._resizing);
+        this.addEventListener("mouseup", this._endResize);
+        this.addEventListener("touchend", this._endResize);
       },
-      endResize:function(e){
+
+      //save event state for use in other functions used to save vars for reference and comparison later
+      _saveEventState:function(e) {
+        this.eventState.containerWidth = this.$.imageContainer.offsetWidth;
+        this.eventState.containerHeight = this.$.imageContainer.offsetHeight;
+        this.eventState.containerLeft = this.$.imageContainer.offsetLeft;
+        this.eventState.containerTop = this.$.imageContainer.offsetTop;
+        this.eventState.mouseX = (e.clientX || e.pageX || e.touches[0].clientX) + window.scrollX;
+        this.eventState.mouseY = (e.clientY || e.pageY || e.touches[0].clientY) + window.scrollY;
+        this.eventState.currentTarget = e.currentTarget;
+        this.eventState.evnt = e;
+      },
+
+      _endResize:function(e) {
         e.preventDefault();
-        this.removeEventListener("mouseup", this.endResize);
-        this.removeEventListener("touchend", this.endResize);
-        this.removeEventListener("mousemove", this.resizing);
-        this.removeEventListener("touchmove", this.resizing);
+        this.removeEventListener("mouseup", this._endResize);
+        this.removeEventListener("touchend", this._endResize);
+        this.removeEventListener("mousemove", this._resizing);
+        this.removeEventListener("touchmove", this._resizing);
       },
-      resizing:function(e){
-        var isSE=this.checkElementClass(this.event_state.currentTarget,"resize-handle-se");
-        var isSW=this.checkElementClass(this.event_state.currentTarget,"resize-handle-sw");
-        var isNE=this.checkElementClass(this.event_state.currentTarget,"resize-handle-ne");
-        var isNW=this.checkElementClass(this.event_state.currentTarget,"resize-handle-nw");
-        var mouse={};
-        var offset=this.getElementOffset(this.$.resizeContainer);
-        mouse.x=(e.clientX || e.pageX || e.touches[0].clientX) - this.$.editDialog.offsetLeft;
-        mouse.y=(e.clientY || e.pageY || e.touches[0].clientY) - this.$.editDialog.offsetTop;
+
+      _resizing:function(e) {
+        var target = (this.rotated || this.cropped) ? this.alt : this.orig;
+        var isSE = this.checkElementClass(this.eventState.currentTarget,"resize-handle-se");
+        var isSW = this.checkElementClass(this.eventState.currentTarget,"resize-handle-sw");
+        var isNE = this.checkElementClass(this.eventState.currentTarget,"resize-handle-ne");
+        var isNW = this.checkElementClass(this.eventState.currentTarget,"resize-handle-nw");
+        var mouse = {};
+        var offset = this.getElementOffset(this.$.imageContainer);
+        mouse.x = (e.clientX || e.pageX || e.touches[0].clientX) - this.$.editDialog.offsetLeft;
+        mouse.y = (e.clientY || e.pageY || e.touches[0].clientY) - this.$.editDialog.offsetTop;
         var width;
         var height;
         var left;
         var top;
         // Position image differently depending on the corner dragged and constraints
-        if(isSE){
-          width = mouse.x - this.event_state.container_left;
-          height = mouse.y  - this.event_state.container_top;
-          left = this.event_state.container_left-this.$.editDialog.offsetWidth;
-          top = this.event_state.container_top-this.$.editDialog.offsetHeight;
-        } else if(isSW){
-          width = this.event_state.container_width - (mouse.x - this.event_state.container_left);
-          height = mouse.y  - this.event_state.container_top;
+        if(isSE) {
+          width = mouse.x - this.eventState.containerLeft;
+          height = mouse.y - this.eventState.containerTop;
+          left = this.eventState.containerLeft - this.$.editDialog.offsetWidth;
+          top = this.eventState.containerTop - this.$.editDialog.offsetHeight;
+        } else if(isSW) {
+          width = this.eventState.containerWidth - (mouse.x - this.eventState.containerLeft);
+          height = mouse.y - this.eventState.containerTop;
           left = mouse.x;
-          top = this.event_state.container_top;
-        } else if(isNW){
-          width = this.event_state.container_width - (mouse.x - this.event_state.container_left);
-          height = this.event_state.container_height - (mouse.y - this.event_state.container_top);
+          top = this.eventState.containerTop;
+        } else if(isNW) {
+          width = this.eventState.containerWidth - (mouse.x - this.eventState.containerLeft);
+          height = this.eventState.containerHeight - (mouse.y - this.eventState.containerTop);
           left = mouse.x;
           top = mouse.y;
-          if(this.constrain || e.shiftKey){
-            top = mouse.y - ((width / this.orig_src.width * this.orig_src.height) - height);
-          }
-        } else if(isNE){
-          width = mouse.x - this.event_state.container_left;
-          height = this.event_state.container_height - (mouse.y - this.event_state.container_top);
-          left = this.event_state.container_left;
+          if(this.constrain || e.shiftKey) {
+            top = mouse.y - ((width / target.width * target.height) - height);
+          };
+        } else if(isNE) {
+          width = mouse.x - this.eventState.containerLeft;
+          height = this.eventState.containerHeight - (mouse.y - this.eventState.containerTop);
+          left = this.eventState.containerLeft;
           top = mouse.y;
-          if(this.constrain || e.shiftKey){
-            top = mouse.y - ((width / this.orig_src.width * this.orig_src.height) - height);
-          }
-        }
-        if(this.constrain || e.shiftKey){
-          height=width/this.orig_src.width*this.orig_src.height;
+          if(this.constrain || e.shiftKey) {
+            top = mouse.y - ((width / target.width * target.height) - height);
+          };
         };
-        if(width>this.min_width && height>this.min_height && width<this.max_width && height<this.max_height){
+        if(this.constrain || e.shiftKey) {
+          height = width / target.width * target.height;
+        };
+        if(width > this.minWidth && height > this.minHeight && width < this.maxWidth && height < this.maxHeight) {
           this.resizeImage(width, height);
           //needed for firefox
-          this.$.resizeContainer.offsetLeft=left;
-          this.$.resizeContainer.offsetTop=top;
-        };
-      },
-      resizeImage:function(width, height){
-        this.resize_canvas.width = width;
-        this.resize_canvas.height = height;
-        var src;
-        if(this.rotated || this.cropped){
-          src=this.alt_image;
+          this.$.imageContainer.offsetLeft = left;
+          this.$.imageContainer.offsetTop = top;
         } else {
-          src=this.orig_src;
+          console.log("image too big or small");
+          console.log(width, height);
         };
-        this.resize_canvas.getContext("2d").drawImage(src, 0, 0, width, height);
-        this.image_target.src=this.resize_canvas.toDataURL("image/png");
       },
-      startMoving:function(e){
+
+      //takes in html element as an argument and returns an object {top: x, left: y}
+      getElementOffset:function(element) {
+        var de = document.documentElement;
+        var box = element.getBoundingClientRect();
+        var top = box.top + window.pageYOffset - de.clientTop;
+        var left = box.left + window.pageXOffset - de.clientLeft;
+        return { top: top, left: left };
+      },
+
+      //takes in an html element and className as arguments and returns whether or not the element has said class
+      checkElementClass:function(element, className) {
+        var classList=element.classList.value;
+        if(classList.indexOf(className) != -1){
+          return true;
+        } else {
+          return false;
+        }
+      },
+
+      //resize image, takes in two arguments, width, and height
+      resizeImage:function(width, height) {
+        var src = (this.rotated || this.cropped) ? this.alt : this.orig;
+        this.canvas.width = width;
+        this.canvas.height = height;
+        this.ctx.drawImage(src, 0, 0, width, height);
+        this.$.image.src = this.canvas.toDataURL("image/png");
+      },
+
+      //set event listeners when image moving has started
+      _startImageMoving:function(e) {
         e.preventDefault();
         e.stopPropagation();
-        this.saveEventState(e);
-        this.addEventListener("mousemove", this.moving);
-        this.addEventListener("touchmove", this.moving);
-        this.addEventListener("mouseup", this.endMoving);
-        this.addEventListener("touchend", this.endMoving);
+        this._saveEventState(e);
+        this.addEventListener("mousemove", this._imageMoving);
+        this.addEventListener("touchmove", this._imageMoving);
+        this.addEventListener("mouseup", this._endImageMoving);
+        this.addEventListener("touchend", this._endImageMoving);
       },
-      endMoving:function(e){
-        e.preventDefault();
-        this.removeEventListener("mouseup", this.endMoving);
-        this.removeEventListener("touchend", this.endMoving);
-        this.removeEventListener("mousemove", this.moving);
-        this.removeEventListener("touchmove", this.moving);
-      },
-      moving:function(e){
-        var mouse={};
+      //process moving image
+      _imageMoving:function(e) {
+        var mouse = {};
         var touches;
         if(e.touches){
-          touches=e.touches;
+          touches = e.touches;
         };
         e.preventDefault();
         e.stopPropagation();
-        mouse.x=(e.clientX || e.pageX || e.touches[0].clientX) + window.scrollX;
-        mouse.y=(e.clientY || e.pageY || e.touches[0].clientY) + window.scrollY;
+        mouse.x = (e.clientX || e.pageX || e.touches[0].clientX) + window.scrollX;
+        mouse.y = (e.clientY || e.pageY || e.touches[0].clientY) + window.scrollY;
         //100 added in to account for padding
-        var offsetLeft=mouse.x - (this.event_state.mouse_x - this.event_state.container_left+100);
-        var offsetTop=mouse.y - (this.event_state.mouse_y - this.event_state.container_top+100);
-        Polymer.dom(this.$.resizeContainer).setAttribute("style","top: "+offsetTop+"px; left: "+offsetLeft+"px;");
-        Polymer.dom.flush();
-
+        var offsetLeft = mouse.x - (this.eventState.mouseX - this.eventState.containerLeft + 100);
+        var offsetTop = mouse.y - (this.eventState.mouseY - this.eventState.containerTop + 100);
+        Polymer.dom(this.$.imageContainer).setAttribute("style", "top: " + offsetTop + "px; left: " + offsetLeft + "px;");
         // Watch for pinch zoom gesture while moving
-        if(this.event_state.evnt.touches && this.event_state.evnt.touches.length > 1 && touches.length > 1){
-          var width = this.event_state.container_width, height = this.event_state.container_height;
-          var a = this. event_state.touches[0].clientX - this. event_state.touches[1].clientX;
+        if(this.eventState.evnt.touches && this.eventState.evnt.touches.length > 1 && touches.length > 1){
+          var width = this.eventState.containerWidth, height = this.eventState.containerHeight;
+          var a = this. eventState.touches[0].clientX - this. eventState.touches[1].clientX;
           a = a * a;
-          var b = this. event_state.touches[0].clientY - this. event_state.touches[1].clientY;
+          var b = this. eventState.touches[0].clientY - this. eventState.touches[1].clientY;
           b = b * b;
           var dist1 = Math.sqrt( a + b );
 
@@ -504,72 +554,136 @@ image editor
           a = a * a;
           b = e.touches[0].clientY - touches[1].clientY;
           b = b * b;
-          var dist2 = Math.sqrt( a + b );
 
+          var dist2 = Math.sqrt( a + b );
           var ratio = dist2 /dist1;
 
           width = width * ratio;
           height = height * ratio;
           // To improve performance you might limit how often resizeImage() is called
           this.resizeImage(width, height);
-        }
+        };
       },
-      crop:function(){
-        var left=this.$.overlay.offsetLeft-this.$.resizeContainer.offsetLeft;
-        var top=this.$.overlay.offsetTop-this.$.resizeContainer.offsetTop;
-        var width=this.$.overlay.offsetWidth;
-        var height=this.$.overlay.offsetHeight;
 
-        this.crop_canvas=document.createElement("canvas");
-        this.crop_canvas.width=width;
-        this.crop_canvas.height=height;
-        this.crop_canvas.getContext("2d").drawImage(this.image_target, left, top, width, height, 0, 0, width, height);
-        //do something else with this later
-        //window.open(this.crop_canvas.toDataURL("image/png"));
-        this.image_target.src=this.crop_canvas.toDataURL("image/png");
-        this.alt_image.src=this.image_target.src;
-        var x=(this.$.editDialog.offsetWidth/2 - this.$.resizeContainer.offsetWidth/2)-100;
-        var y=(this.$.editDialog.offsetHeight/2 - this.$.resizeContainer.offsetHeight/2)-100;
-        Polymer.dom(this.$.resizeContainer).setAttribute("style", "left: "+x+"px; top: "+y+"px;");
+      //remove event listeners for image moving
+      _endImageMoving:function(e) {
+        e.preventDefault();
+        this.removeEventListener("mouseup", this._endImageMoving);
+        this.removeEventListener("touchend", this._endImageMoving);
+        this.removeEventListener("mousemove", this._imageMoving);
+        this.removeEventListener("touchmove", this._imageMoving);
+      },
+
+      //crop the image based on overlay positions relative to the image position
+      crop:function() {
+        var left = this.$.overlay.offsetLeft - this.$.imageContainer.offsetLeft;
+        var top = this.$.overlay.offsetTop - this.$.imageContainer.offsetTop;
+        var width = this.$.overlay.offsetWidth;
+        var height = this.$.overlay.offsetHeight;
+
+        this.canvas.width = width;
+        this.canvas.height = height;
+        this.ctx.drawImage(this.$.image, left, top, width, height, 0, 0, width, height);
+        this.$.image.src = this.canvas.toDataURL("image/png");
+        this.alt.src = this.$.image.src;
+        //-100 to account for 100px padding of the dialog
+        var x = (this.$.editDialog.offsetWidth / 2 - this.$.imageContainer.offsetWidth / 2) - 100;
+        var y = (this.$.editDialog.offsetHeight / 2 - this.$.imageContainer.offsetHeight /2 ) - 100;
+        Polymer.dom(this.$.imageContainer).setAttribute("style", "left: " + x + "px; top: " + y + "px;");
         this.cropped=true;
       },
-      saveEventState:function(e){
-        this.event_state.container_width=this.$.resizeContainer.offsetWidth;
-        this.event_state.container_height=this.$.resizeContainer.offsetHeight;
-        this.event_state.container_left=this.$.resizeContainer.offsetLeft;
-        this.event_state.container_top=this.$.resizeContainer.offsetTop;
-        this.event_state.mouse_x = (e.clientX || e.pageX || e.touches[0].clientX) + window.scrollX;
-        this.event_state.mouse_y = (e.clientY || e.pageY || e.touches[0].clientY) + window.scrollY;
-        this.event_state.currentTarget=e.currentTarget;
-        this.event_state.evnt=e;
+
+      //simulate click on input type="file"
+      change:function() {
+        this.$.imageInput.value = '';
+        this.$.imageInput.click();
       },
-      getElementOffset:function(element){
-        var de = document.documentElement;
-        var box = element.getBoundingClientRect();
-        var top = box.top + window.pageYOffset - de.clientTop;
-        var left = box.left + window.pageXOffset - de.clientLeft;
-        return { top: top, left: left };
+
+      //cloes the modal without saving anything
+      cancel:function() {
+        this.$.editDialog.close();
       },
-      checkElementClass:function(element, className){
-        var classList=element.classList.value;
-        if(classList.indexOf(className)!=-1){
-          return true;
-        } else {
-          return false;
-        }
+      //reset to original source... undoes all changes
+      reset:function() {
+        this.$.image.src = this.orig.src;
+        this.alt.src = "";
+        this.rotated=false;
+        this.cropped=false;
       },
-      _inputChanged:function(e){
-        var reader= new FileReader();
-        var file=e.target.files[0];
-        reader.readAsDataURL(file);
-        reader.addEventListener("load", function () {
-          this.image_target.src=reader.result;
-          this.orig_src.src=this.image_target.src;
-          this.alt_image.src="empty";
-          this.rotated=false;
-          this.cropped=false;
-        }.bind(this), false);
+
+      //save changes from editor and return result as `value`
+      save:function(){
+        this.value = this.canvas.toDataURL("image/png");
+        this.$.editDialog.close();
       },
+
+      _startDialogMoving:function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        this._saveDialogEventState(e);
+        this.addEventListener("mousemove", this._dialogMoving);
+        this.addEventListener("touchmove", this._dialogMoving);
+        this.addEventListener("mouseup", this._endDialogMoving);
+        this.addEventListener("touchend", this._endDialogMoving);
+      },
+
+      _saveDialogEventState:function(e) {
+        this.dialogEventState.containerWidth = this.$.editDialog.offsetWidth;
+        this.dialogEventState.containerHeight = this.$.editDialog.offsetHeight;
+        this.dialogEventState.containerLeft = this.$.editDialog.offsetLeft;
+        this.dialogEventState.containerTop = this.$.editDialog.offsetTop;
+        this.dialogEventState.mouseX = (e.clientX || e.pageX || e.touches[0].clientX) + window.scrollX;
+        this.dialogEventState.mouseY = (e.clientY || e.pageY || e.touches[0].clientY) + window.scrollY;
+        this.dialogEventState.currentTarget = e.currentTarget;
+        this.dialogEventState.evnt = e;
+      },
+
+      _dialogMoving:function(e) {
+        var mouse={};
+        var touches;
+        if(e.touches){
+          touches=e.touches;
+        };
+        e.preventDefault();
+        e.stopPropagation();
+        mouse.x = (e.clientX || e.pageX || e.touches[0].clientX) + window.scrollX;
+        mouse.y = (e.clientY || e.pageY || e.touches[0].clientY) + window.scrollY;
+        var offsetLeft = mouse.x - (this.dialogEventState.mouseX - this.dialogEventState.containerLeft);
+        var offsetTop = mouse.y - (this.dialogEventState.mouseY - this.dialogEventState.containerTop);
+
+        Polymer.dom(this.$.editDialog).setAttribute("style","top: " + offsetTop + "px; left: " + offsetLeft + "px;");
+        Polymer.dom.flush();
+      },
+
+      _endDialogMoving:function(e) {
+        e.preventDefault();
+        this.removeEventListener("mouseup", this._endDialogMoving);
+        this.removeEventListener("touchend", this._endDialogMoving);
+        this.removeEventListener("mousemove", this._dialogMoving);
+        this.removeEventListener("touchmove", this._dialogMoving);
+      },
+
+      //increments clock position left or right to one of four values 12, 3, 6, or 9
+      //probably no longer needed... can keep just in case for future..
+      incrementClockPos:function(clockwise) {
+        var positions = [12, 3, 6, 9];
+        var currentPosition = this.rotated ? this.rotated : 12;
+        var arrayPosition = positions.indexOf(currentPosition);
+        var newPosition = clockwise ? arrayPosition + 1 : arrayPosition - 1;
+
+        if(newPosition > 3){
+          newPosition = 0;
+        };
+        if(newPosition < 0){
+          newPosition = 3;
+        };
+        this.rotated = positions[newPosition];
+      },
+      //checks rotated clock vars and returns true if inverted and false if not
+      //probably no longer needed... can keep just in case for future..
+      dimensionsInverted:function() {
+        return this.rotated === (3 || 9) ? true : false;
+      }
     });
   </script>
 </dom-module>

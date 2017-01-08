@@ -1,0 +1,191 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html" />
+<link rel="import" href="../../../bower_components/paper-card/paper-card.html" />
+<link rel="import" href="../../../bower_components/paper-slider/paper-slider.html" />
+<link rel="import" href="../../../bower_components/polymerfire/firebase-document.html" />
+<link rel="import" href="../../../bower_components/paper-toggle-button/paper-toggle-button.html" />
+
+<link rel="import" href="../../elements/admin-header/admin-header.html" />
+<link rel="import" href="../../elements/media-queries/media-queries.html" />
+
+<link rel="import" href="../../behaviors/animations/admin-pages-animation.html" />
+<link rel="import" href="../../behaviors/admin-resize-behavior.html" />
+
+<link rel="import" href="../../styles/common-styles.html" />
+
+<dom-module id="ad-settings">
+
+  <template>
+
+    <firebase-document
+      id="settingsDB"
+      app-name="main"
+      path="/homes/[[home]]/settings"
+      data="{{settingsData}}">
+    </firebase-document>
+
+    <media-queries
+      dimensions="{{dimensions}}">
+    </media-queries>
+
+    <style include="common-styles">
+    :host{
+      --app-grid-columns:2;
+    }
+    .pageCard{
+      min-height:800px;
+    }
+    #exampleBlurImage{
+      position:relative;
+      height:200px;
+      width:200px;
+    }
+    #exampleBlurImage:hover:after{
+      content:'\A';
+      position:absolute;
+      width:100%;
+      height:100%;
+      top:0;
+      left:0;
+      opacity:0;
+      background-color:var(--privacy-overlay-color, '#000000');
+    }
+    #exampleBlurImage:after{
+      content:'\A';
+      position:absolute;
+      width:100%;
+      height:100%;
+      top:0;
+      left:0;
+      opacity:var(--privacy-overlay-opacity, 8);
+      background-color:var(--privacy-overlay-color, '#000000');
+      transition: opacity .25s ease-in-out;
+    }
+    .example{
+      text-align:center;
+      vertical-align:middle;
+    }
+    .content *{
+      align-self:center;
+    }
+    #blurSlider{
+      width:100%;
+    }
+    .guuey-su-name{
+      color:transparent;
+      transition:color .5s;
+    }
+    .guuey-su-name:first-letter{
+      color:#000000;
+    }
+    .guuey-su-name:hover{
+      color:#000000;
+      cursor:pointer;
+    }
+    </style>
+
+    <paper-card class="pageCard">
+      <admin-header
+        page="Settings"
+        icon="icons:settings">
+      </admin-header>
+      <div class="pageInnerCont padded">
+        <div class="app-grid">
+          <div class="control">
+            <div>
+               Image Overlay Opacity Percentage: [[privacyOverlayOpacity]]%
+               <br />
+               Image Overlay Color: [[privacyOverlayColor]]
+            </div>
+            <paper-slider id="blurSlider" value="[[settingsData.privacyOverlayOpacity]]" immediate-value="{{privacyOverlayOpacity}}"></paper-slider>
+            <input type="color" value="{{privacyOverlayColor::input}}"/>
+            <paper-button on-tap="_savePrivacyOverlaySettings">save overlay settings</paper-button>
+          </div>
+
+          <div class="example">
+            <iron-image sizing="cover" id="exampleBlurImage" src="/images/people/001m.jpg"></iron-image>
+          </div>
+
+          <div class="control">
+            <paper-toggle-button checked="{{privacyNameEnabled}}">Hide Full Service User Names</paper-toggle-button>
+            <paper-button on-tap="_savePrivacyNameSettings">save name settings</paper-button>
+          </div>
+
+          <div class="example">
+            <p>
+              Non-Privacy Mode: John Doe
+            </p>
+            Privacy Mode:
+            <p class="guuey-su-name">John</p>
+            <p class="guuey-su-name">Doe</p>
+            <p>
+              Current Mode: [[filterName(privacyNameEnabled, 'John')]] [[filterName(privacyNameEnabled, 'Doe')]]
+            </p>
+          </div>
+
+
+        </div>
+      </div>
+    </paper-card>
+
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is: 'ad-settings',
+      ready:function(){
+        this.fire("pageLoaded", {page:this.page});
+        this.customStyle["--privacy-overlay-color"]="#000000";
+        this.customStyle["--privacy-overlay-opacity"]="0";
+        this.updateStyles();
+      },
+      properties:{
+        privacyOverlayOpacity:{
+          type:Number,
+          observer:"_privacyOverlayOpacityChanged"
+        },
+        privacyOverlayColor:{
+          type:String,
+          observer:"_privacyOverlayColorChanged"
+        }
+      },
+      behaviors:[
+        Polymer.adminPagesAnimation,
+        Polymer.adminResizeBehavior
+      ],
+      observers:[
+        "_settingsChanged(settingsData.*)"
+      ],
+      _settingsChanged:function(settings){
+        this.privacyNameEnabled = settings.base.privacyNameEnabled || false;
+      },
+      _privacyOverlayOpacityChanged:function(value){
+        this.customStyle["--privacy-overlay-opacity"] = String(value / 100);
+        this.updateStyles();
+      },
+      _privacyOverlayColorChanged:function(value){
+        this.customStyle["--privacy-overlay-color"] = value;
+        this.updateStyles();
+      },
+      _savePrivacyOverlaySettings:function(){
+        var path = "homes/"+this.home+"/settings/";
+        this.$.settingsDB.setStoredValue(path+"privacyOverlayOpacity", this.privacyOverlayOpacity || .8);
+        this.$.settingsDB.setStoredValue(path+"privacyOverlayColor", this.privacyOverlayColor || "#000000");
+      },
+      _savePrivacyNameSettings:function(){
+        var path = "homes/"+this.home+"/settings/";
+        this.$.settingsDB.setStoredValue(path+"privacyNameEnabled", this.privacyNameEnabled || false);
+      },
+      filterName:function(privacyNameEnabled, name){
+        if(privacyNameEnabled){
+          return name.trim().charAt(0).toUpperCase() + ".";
+        } else {
+          return name;
+        };
+      }
+    });
+
+  </script>
+
+</dom-module>

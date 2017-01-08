@@ -1,0 +1,491 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html" />
+<link rel="import" href="../../../bower_components/paper-dialog/paper-dialog.html" />
+<link rel="import" href="../../../bower_components/paper-input/paper-input.html" />
+<link rel="import" href="../../../bower_components/paper-input/paper-textarea.html" />
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html" />
+<link rel="import" href="../../../bower_components/paper-card/paper-card.html" />
+<link rel="import" href="../../../bower_components/paper-fab/paper-fab.html" />
+<link rel="import" href="../../../bower_components/polymerfire/firebase-document.html" />
+<link rel="import" href="../../../bower_components/polymerfire/firebase-query.html" />
+<link rel="import" href="../../../bower_components/vaadin-combo-box/vaadin-combo-box.html" />
+<link rel="import" href="../../../bower_components/iron-media-query/iron-media-query.html" />
+<link rel="import" href="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror.html" />
+
+<link rel="import" href="../../elements/su-header/su-header.html" />
+<link rel="import" href="../../elements/guuey-custom-text-input/guuey-custom-text-input.html" />
+<link rel="import" href="../../elements/guuey-list-input/guuey-list-input.html" />
+<link rel="import" href="../../elements/guuey-date-input/guuey-date-input.html" />
+<link rel="import" href="../../elements/guuey-text-input/guuey-text-input.html" />
+<link rel="import" href="../../elements/guuey-table/guuey-table.html" />
+<link rel="import" href="../../elements/guuey-signature/guuey-signature.html" />
+<link rel="import" href="../../elements/media-queries/media-queries.html" />
+
+<link rel="import" href="../../behaviors/animations/care-plan-animation.html" />
+<link rel="import" href="../../behaviors/su-print-behavior.html" />
+<link rel="import" href="../../behaviors/su-resize-behavior.html" />
+
+<link rel="import" href="../../styles/common-styles.html" />
+
+<dom-module id="su-care">
+
+  <template>
+    <!--db for agreement section-->
+
+    <firebase-document
+      id="careDB"
+      app-name="main"
+      data="{{careData}}"
+      path="/homes/[[home]]/patients/[[patient]]/carePlan">
+    </firebase-document>
+    <firebase-document
+      id="agreeDB"
+      app-name="main"
+      data="{{agreeDataLive}}"
+      path="/homes/[[home]]/patients/[[patient]]/carePlan/statementOfServiceUser"
+      transactions-complete="{{_checkServiceUser(suBasicInfo)}}">
+    </firebase-document>
+
+    <app-indexeddb-mirror
+      key="agreeDB|[[patient]]"
+      data="{{agreeDataLive}}"
+      persisted-data="{{agreeData}}"
+      worker-url="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
+    <!--query for custom fields-->
+    <firebase-query
+      id="assmtCustomDB"
+      path="/homes/[[home]]/patients/[[patient]]/carePlan/custom"
+      data="{{customDataQueryLive}}"
+      app-name="main">
+    </firebase-query>
+
+    <app-indexeddb-mirror
+      key="assmtCustomDB|[[page]]|[[patient]]"
+      data="{{customDataQueryLive}}"
+      persisted-data="{{customDataQuery}}"
+      worker-url="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
+    <!--connection to set new fields in custom section-->
+    <firebase-document
+      id="customInput"
+      data="{{customData}}"
+      app-name="main">
+    </firebase-document>
+
+    <firebase-document
+      id="formDB"
+      app-name="main">
+    </firebase-document>
+
+    <firebase-query
+      id="usersDB"
+      app-name="main"
+      path="homes/[[home]]/users"
+      data="{{usersData}}">
+    </firebase-query>
+
+    <!--db connection to get all care plan info for printing-->
+    <firebase-document
+      id="printDB"
+      path="/homes/[[home]]/patients/[[patient]]/carePlan"
+      app-name="main">
+    </firebase-document>
+
+    <media-queries
+      dimensions="{{dimensions}}">
+    </media-queries>
+
+    <style include="common-styles">
+      :host{
+        --app-grid-columns:5;
+        --app-grid-expandible-item-columns:2;
+        --app-grid-item-height:100px;
+      }
+      .agreement{
+        width:50%;
+        display:flex;
+        flex-direction:column;
+      }
+      .halfSizeLeft{
+        --guuey-list-width:var(--list-width-half);
+        --guuey-list-float:var(--guuey-list-float-left);
+      }
+      .halfSizeRight{
+        --guuey-list-width:var(--list-width-half);
+        --guuey-list-float:var(--guuey-list-float-right);
+      }
+      .app-grid paper-input, vaadin-combo-box, guuey-date-input{
+        padding:20px;
+        @apply(--app-grid-expandible-item);
+      }
+      .agreeButtons{
+        text-align:center;
+      }
+      .agreeButtons paper-button{
+        height:100%;
+      }
+    </style>
+
+    <!--dialogue that works to add labels for custom text input area-->
+    <paper-dialog id="customSectionModal" class="guuey-modal guuey-add-modal">
+      <h2>Add a New Section</h2>
+      <paper-textarea
+        label="Name the New Section"
+        value="{{customData.label}}"
+        maxlength="75">
+      </paper-textarea>
+      <paper-textarea
+        label="Describe the New Section"
+        value="{{customData.label2}}">
+      </paper-textarea>
+      <div class="modal-button-container">
+        <paper-button class="cancel-button" on-tap="cancelNewSection">cancel</paper-button>
+        <paper-button class="confirm-button" on-tap="saveNewSection">save</paper-button>
+      </div>
+    </paper-dialog>
+
+    <!--start of organized section-->
+    <paper-card class="pageCard">
+
+      <su-header
+        page="Care Plan"
+        home="[[home]]"
+        patient="[[patient]]"
+        su-index-data="{{suBasicInfo}}">
+      </su-header>
+
+      <div class="pageInnerCont padded">
+        <!--fab to add a custom field/input-->
+        <paper-fab
+          id="mainFab"
+          icon="icons:add"
+          on-tap="createNewSection">
+        </paper-fab>
+
+        <template is="dom-repeat" items="{{customDataQuery}}" as="custom">
+          <guuey-custom-text-input
+            value="{{custom.info}}"
+            label="{{custom.label}}"
+            label2="{{custom.label2}}">
+          </guuey-custom-text-input>
+        </template>
+
+        <!--
+        {{careData}}
+        -->
+        <guuey-list-input
+          value="{{careData.careAndSuppProp}}"
+          label="Proposed Care & Support">
+        </guuey-list-input>
+
+        <!--statement of service user section-->
+        <paper-card elevation="3" class="subCard">
+          <div class="sectionHeading">
+            <div class="padded">
+              <p class="sectionHeadingText">
+                Statement of Service User
+              </p>
+            </div>
+          </div>
+          <div class="padded">
+            <p>
+              Please read this form carefully. I am aware that I have the right to change my mind at any time including after I have signed this form.
+            </p>
+            <br />
+            <p>
+              I agree to the care and support described on this document.
+            </p>
+            <br />
+            <p style="border:solid red 1px; padding:5px;">
+              I understand that I will have the opportunity to discuss any concerns regarding my care and support or medication, unless the urgency of my situation prevents this.
+
+              I agree to Beechholme Adult Care contacting my next of kin, closest relative or friend if I fall ill, have an accident or am taken into the hospital.
+            </p>
+            <br />
+            <p>
+              Please read this form carfully. I am aware that I have the right to change my mind at any time including after I have signed this form.
+
+              I agree to the care and support described in this document.
+            </p>
+            <div class="app-grid">
+              <paper-input
+                class="agreement"
+                label="Service User's Name"
+                value="{{agreeData.suName}}"
+                disabled>
+              </paper-input>
+
+              <guuey-date-input
+                value="{{agreeData.suDate}}"
+                label="date of service user agreement">
+              </guuey-date-input>
+
+              <div class="agreeButtons">
+
+                <guuey-signature value="{{agreeData.suAgree}}" label="tap for service user agreement"></guuey-signature>
+
+              </div>
+            </div>
+
+            <div class="app-grid">
+
+              <vaadin-combo-box
+                class="dropdown"
+                label="Care Home Staff Member"
+                items="[[userList]]"
+                value="{{agreeData.swName}}"
+                required
+                auto-validate
+                pattern="[a-zA-Z\s\.]*"
+                error-message="Please enter a staff name without special characters">
+              </vaadin-combo-box>
+
+              <guuey-date-input
+                value="{{agreeData.swDate}}"
+                label="date of service worker agreement">
+              </guuey-date-input>
+
+              <div class="agreeButtons">
+
+                <guuey-signature value="{{agreeData.swAgree}}" label="tap for service worker agreement"></guuey-signature>
+
+              </div>
+            </div>
+
+          </div>
+        </paper-card>
+
+    <guuey-text-input
+      value="{{careData.aboutMeAndMyLife}}"
+      label="About me and my life"
+      label2="Fill in the information about where you were born, studied, lived etc.">
+    </guuey-text-input>
+    <guuey-text-input
+      value="{{careData.myStrengthsAndAbilities}}"
+      label="My strengths and abilities"
+      label2="Name the activities that you are good at.">
+    </guuey-text-input>
+    <guuey-text-input
+      value="{{careData.myHobbies}}"
+      label="My hobbies"
+      label2="Name the things you enjoy doing.">
+    </guuey-text-input>
+    <guuey-text-input
+      value="{{careData.wellness}}"
+      label="Wellness"
+      label2="A description of an individual when they are well">
+    </guuey-text-input>
+    <guuey-text-input
+      value="{{careData.dailyMaintenance}}"
+      label="Daily maintenance"
+      label2="List of things an individual needs to do weekly/daily to stay well. More specific than wellness box.">
+    </guuey-text-input>
+    <guuey-text-input
+      value="{{careData.triggers}}"
+      label="Triggers"
+      label2="List of things an individual needs to do weekly/daily/monthly to stay well. More specific than wellness box.">
+    </guuey-text-input>
+    <guuey-text-input
+      value="{{careData.crisisOrContingencyPlan}}"
+      label="Crisis or contigency plan">
+    </guuey-text-input>
+
+  <guuey-table
+    path="homes/[[home]]/patients/[[patient]]/carePlan/wellBeingQuestionnaire"
+    input-values="[[wellBeingQuestionnaireInputs]]"
+    table-category="Body Part"
+    label="Well being Questionnaire"
+    label2="Personal Health & Hygiene care">
+  </guuey-table>
+
+  <guuey-table
+    path="homes/[[home]]/patients/[[patient]]/carePlan/myHealthQuestionnaire"
+    input-values="[[myHealthQuestionnaireInputs]]"
+    table-category="Areas of concern"
+    label="My Health"
+    label2="Personal Health & Hygiene care">
+  </guuey-table>
+
+  <guuey-table
+    path="homes/[[home]]/patients/[[patient]]/carePlan/myRoomQuestionnaire"
+    input-values="[[myRoomQuestionnaireInputs]]"
+    table-category="Activity"
+    label="My room"
+    label2="Personal Health & Hygiene care">
+  </guuey-table>
+
+  <guuey-list-input
+    class="halfSizeLeft"
+    value="{{careData.whatWillTheServiceUserDo}}"
+    label="What service will the service user do?"
+    label2="i.e. agree to the following">
+  </guuey-list-input>
+
+  <guuey-list-input
+    class="halfSizeRight"
+    value="{{careData.interventionByStaff}}"
+    label="Intervention by staff"
+    label2="what will the staff do?">
+  </guuey-list-input>
+
+      </div>
+
+    </paper-card>
+    <!--end-->
+
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is: 'su-care',
+      ready:function(){
+        this.fire("pageLoaded", {page:this.page});
+        this.$.usersDB.query.on("value", function(snapshot){
+          this.updateUsers(snapshot);
+        }.bind(this));
+      },
+      properties:{
+        page:{
+          type:String,
+        },
+        patient:{
+          type:String,
+        },
+        home:{
+          type:String,
+        },
+        //table inputs need to be declared here
+        wellBeingQuestionnaireInputs:{
+          type:Array,
+          value:[
+            'Bathing',
+            'Body Spray',
+            'Haircut',
+            'Beard shave',
+            'Pubic shave',
+            'Fingernails',
+            'Toenails',
+            'Changing clothes',
+            'Skin care'
+          ]
+        },
+      myHealthQuestionnaireInputs:{
+        type:Array,
+        value:[
+          'Dental',
+          'Weight',
+          'Skin care',
+          'Exercise',
+          'Diet',
+          'Blood Pressure',
+          'Open bowels',
+          'Emotions & Mood Changes'
+        ]
+      },
+      myRoomQuestionnaireInputs:{
+        type:Array,
+        value:[
+          'Laundry',
+          'Change bed sheets',
+          'Dust room',
+          'Hoovering or vaccuming',
+          'Cleaning sink',
+          'Ironing clothes',
+          'Changing socks',
+          'Cleaning shoes',
+          'Air freshening room'
+        ]
+      }
+      },
+      observers:[
+        "requirementsMet(agreeData)"
+      ],
+      behaviors:[
+        Polymer.carePlanAnimation,
+        Polymer.suPrintBehavior,
+        Polymer.suResizeBehavior
+      ],
+      updateUsers:function(snapshot){
+        var tempList=[];
+        if(snapshot.val()){
+          var data=snapshot.val();
+          for(x in data){
+            if(data[x].displayName){
+              tempList.push(data[x].displayName);
+            } else {
+              tempList.push(data[x].email);
+            };
+          };
+        };
+        this.userList=tempList;
+      },
+      _checkServiceUser:function(suBasicInfo){
+        var fullName=suBasicInfo.fName+" "+suBasicInfo.lName;
+        if(!this.agreeData.suName){
+          this.agreeData.suName=fullName;
+          this.set("agreeData.suName", fullName);
+        };
+      },
+      suAgreeUpdate:function(e){
+        this.$.formDB.path=null;
+        this.$.formDB.data=true;
+        this.$.formDB.save("/homes/"+this.home+"/patients/"+this.patient+"/carePlan/statementOfServiceUser/","suAgree");
+      },
+      swAgreeUpdate:function(e){
+        this.$.formDB.path=null;
+        this.$.formDB.data=true;
+        this.$.formDB.save("/homes/"+this.home+"/patients/"+this.patient+"/carePlan/statementOfServiceUser/","swAgree");
+      },
+      createNewSection:function(){
+        this.$.customInput.path=null;
+        this.$.customInput.data={};
+        this.$.customSectionModal.open();
+      },
+      saveNewSection:function(){
+        var path="/homes/"+this.home+"/patients/"+this.patient+"/carePlan/custom"
+        this.$.customInput.save(path, null)
+          .then(function(){
+            this.$.customSectionModal.close();
+            this.fire("openToast",{toastText:"New custom section saved."});
+          }.bind(this))
+          .catch(function(error){
+            this.$.customSectionModal.close();
+            this.fire("openToast",{toastText:"There was an error saving your custom section: "+error});
+          });
+      },
+      cancelNewSection:function(){
+        this.$.customInput.path=null;
+        this.$.customInput.data={};
+        this.$.customSectionModal.close();
+      },
+      requirementsMet:function(data){
+        if(!data.suName){
+          this.fire("openToast", {toastText:"Please enter a service user for the agreement."});
+          return false;
+        } else if(!this.agreeData.suDate){
+          this.fire("openToast", {toastText:"Please enter a date for when the service user agreed."});
+          return false;
+        } else if(!data.suAgree){
+          this.fire("openToast", {toastText:"Please ensure that the service user agrees by tapping on the agree button."});
+          return false;
+        } else if(!data.swName){
+          this.fire("openToast", {toastText:"Please enter a staff worker name for the agreement."});
+          return false;
+        } else if(!this.agreeData.swDate){
+          this.fire("openToast", {toastText:"Please enter a date for when the staff worker agreed."});
+          return false;
+        } else if(!data.swAgree){
+          this.fire("openToast", {toastText:"Please ensure that the staff worker agrees by tapping on the agree button."});
+        } else {
+          return true;
+        };
+      },
+    });
+
+  </script>
+
+</dom-module>

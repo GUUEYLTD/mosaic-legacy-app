@@ -8,6 +8,9 @@
   <script>
   (function(){
     "use-strict";
+    /*
+    @polymerBehavior Polymer.fabAnimationBehavior
+    */
     Polymer.fabAnimationBehaviorImpl={
       is: 'fab-animation-behavior',
       attached:function(){
@@ -67,12 +70,11 @@
           this.$.regFab.disabled=false;
         }
         this.fabAnimated=true;
-      },
-
-      behaviors:[
-        Polymer.NeonAnimationRunnerBehavior
-      ]
+      }
     }
+    /*
+    @polymerBehavior
+    */
     Polymer.fabAnimationBehavior=[
       Polymer.fabAnimationBehaviorImpl,
       Polymer.NeonAnimationRunnerBehavior

@@ -1,0 +1,181 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html" />
+<link rel="import" href="../../../bower_components/paper-card/paper-card.html" />
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html" />
+<link rel="import" href="../../../bower_components/iron-collapse/iron-collapse.html" />
+<link rel="import" href="../../../bower_components/paper-input/paper-input.html" />
+<link rel="import" href="../../../bower_components/paper-dialog/paper-dialog.html" />
+
+<link rel="import" href="../../elements/firebase-storage/firebase-storage.html" />
+<link rel="import" href="../../elements/account-header/account-header.html" />
+
+<link rel="import" href="../../behaviors/animations/default-pages-animation.html" />
+<link rel="import" href="../../behaviors/default-resize-behavior.html" />
+
+<link rel="import" href="../../styles/common-styles.html" />
+
+
+<dom-module id="def-account">
+  <template>
+
+    <firebase-auth
+      id="auth"
+      app-name="main"
+      user="{{user}}"
+      signed-in="{{signedIn}}"
+      status-known="{{statusKnown}}"
+      on-error="handleError">
+    </firebase-auth>
+
+    <firebase-storage
+      id="storage"
+      app-name="main"
+      set-name="false"
+      path="uploads/[[home]]/[[user.uid]]"
+      use64="true"
+      url="{{homeImage}}">
+    </firebase-storage>
+
+    <style include="common-styles">
+      .main{
+        margin: 50px 10% 50px 10%;
+        width:80%;
+      }
+    </style>
+
+    <paper-dialog id="reAuthDialog">
+
+      <p>
+        Please re-authenticate before changing email or password
+      </p>
+      <paper-input label="email" value="{{reauth.email}}"></paper-input>
+      <paper-input label="password" value="{{reauth.pass}}"></paper-input>
+      <paper-button on-tap="_reAuth">re-authenticate</paper-button>
+
+    </paper-dialog>
+
+    <paper-card class="main">
+      <account-header
+        name="[[user.displayName]]"
+        email="[[user.email]]"
+        photo="[[user.photoURL]]">
+      </account-header>
+      <div class="pageInnerCont padded">
+        <h2>Secure Account Information</h2>
+        <h3>Account Email</h3>
+        <paper-input type="email" label="update email" value="{{secureEmail}}"></paper-input>
+        <paper-input type="email" label="confirm update email" value="{{secureEmailConfirm}}"></paper-input>
+        <h3>Account Password</h3>
+        <paper-input type="password" label="update password" value="{{securePass}}"></paper-input>
+        <paper-input type="password" label="confrim update password" value="{{securePassConfirm}}"></paper-input>
+        <paper-button on-tap="_saveSecureUpdate">update account</paper-button>
+      </div>
+
+    </paper-card>
+
+  </template>
+
+  <script>
+
+      Polymer({
+
+        is: 'def-account',
+        ready:function(){
+          this.fire("pageLoaded", {page:this.page});
+          this.addEventListener("AccountPhotoChanged", this._photoChanged);
+          this.addEventListener("updateDisplayName", this.updateDisplayName);
+        },
+        properties:{
+          user:{
+            type:Object
+          },
+          emailUpdate:{
+            type:String,
+            value:null
+          },
+          reauth:{
+            type:Object,
+            value:{}
+          },
+        },
+        observers:[
+          "_userChanged(user.*)"
+        ],
+        updateDisplayName:function(e){
+          var that = this;
+          this.$.auth.user.updateProfile({displayName:e.detail.name})
+            .then(function(){
+              that.fire("openToast", {toastText: "Account updated, refresh pages to see changes"});
+            }, function(err){
+              that.fire("openToast", {toastText: "There was an error updating your account: "+err});
+            });
+
+        },
+        _photoChanged:function(e){
+          var that = this;
+          this.$.storage._uploadFile(e.detail.photo)
+            .then(function(fileLoc){
+              that.$.auth.user.updateProfile({photoURL:fileLoc})
+                .then(function(){
+                  that.fire("openToast", {toastText: "Account updated."});
+                }, function(err){
+                  that.fire("openToast", {toastText: "There was an error updating your account: "+err});
+                });
+            }, function(err){
+              that.fire("openToast", {toastText: "There was an error updating your account: "+err});
+            });
+        },
+        _userChanged:function(user){
+          console.log(user.base);
+        },
+        _saveSecureUpdate:function(){
+          if(this.secureEmail){
+            if(this.secureEmail != this.secureEmailConfirm){
+              this.fire("openToast",{toastText:"Both email fields must match in order to update email."});
+            } else {
+              this.$.auth.user.updateEmail(this.secureEmail)
+                .then(function(){
+                  this.fire("openToast",{toastText:"Email Updated."});
+                  this.$.reAuthDialog.close();
+                }.bind(this), function(err){
+                  if(err.code === "auth/requires-recent-login"){
+                    this.fire("openToast", {toastText: "You must re-authenticate in order to update your email address."});
+                    this.$.reAuthDialog.open();
+                  } else {
+                    this.fire("openToast", {toastText: "There was an error updating your email: "+err});
+                  };
+                }.bind(this));
+            };
+          };
+          if(this.securePass){
+            if(this.securePass != this.securePassConfirm){
+              this.fire("openToast",{toastText:"Both password fields must match in order to update password."});
+            } else {
+              this.$.auth.user.updatePassword(this.securePass)
+                .then(function(){
+                  this.fire("openToast",{toastText:"Password Updated."});
+                  this.$.reAuthDialog.close();
+                }.bind(this), function(err){
+                  if(err.code === "auth/requires-recent-login"){
+                    this.fire("openToast", {toastText: "You must re-authenticate in order to update your password."});
+                    this.$.reAuthDialog.open();
+                  } else {
+                    this.fire("openToast", {toastText: "There was an error updating your password: "+err});
+                  };
+                }.bind(this));
+            };
+          };
+        },
+        _reAuth:function(){
+          this.$.auth.auth.signInWithEmailAndPassword(this.reauth.email, this.reauth.pass)
+            .then(function(){
+              this._saveSecureUpdate();
+            }.bind(this), function(err){
+              this.fire("openToast", {toastText: "There was an error re-authenticating: "+err+" Try again."});
+            }.bind(this));
+
+        }
+      });
+
+  </script>
+
+</dom-module>

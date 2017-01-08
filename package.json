@@ -1,0 +1,24 @@
+{
+  "name": "guuey-care-op",
+  "version": "1.0.0",
+  "description": "main guuey-care-op app",
+  "scripts": {
+    "build": "gulp"
+  },
+  "private":true,
+  "devDependencies": {
+    "del": "^2.2.1",
+    "gulp": "gulpjs/gulp#4.0",
+    "merge-stream": "^1.0.0",
+    "plylog": "^0.4.0",
+    "polymer-build": "^0.6.0-alpha.3"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TovarishFin/guuey-care-op.git"
+  },
+  "author": "TovarishFin"
+}
