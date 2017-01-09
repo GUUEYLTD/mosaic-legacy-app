@@ -4,6 +4,8 @@
 <link rel="import" href="../../../bower_components/iron-icons/av-icons.html" />
 <link rel="import" href="../../../bower_components/iron-icons/iron-icons.html" />
 <link rel="import" href="../../../bower_components/paper-dialog/paper-dialog.html" />
+
+<link rel="import" href="dialog-no-style.html" />
 <!--
 `guuey-photo-editor`
 element that returns edited images as base64 for use in applications.
@@ -46,9 +48,6 @@ element that returns edited images as base64 for use in applications.
         80px 80px,
         80px 80px,
         80px 80px;
-        --paper-dialog:{
-          margin:0;
-        };
       }
       #imageContainer {
         margin:0;
@@ -199,7 +198,7 @@ element that returns edited images as base64 for use in applications.
       hidden>
     </input>
 
-    <paper-dialog id="editDialog">
+    <dialog-no-style id="editDialog">
       <div id="imageContainer">
         <span id="nw" class="resize-handle resize-handle-nw"></span>
         <span id="ne" class="resize-handle resize-handle-ne"></span>
@@ -224,7 +223,7 @@ element that returns edited images as base64 for use in applications.
         </div>
       </div>
 
-    </paper-dialog>
+    </dialog-no-style>
 
   </template>
 
@@ -237,6 +236,7 @@ element that returns edited images as base64 for use in applications.
         //the returned result of the element after saving. can be accessed from parent elements.
         value: {
           type:String,
+          value:"",
           notify:true
         },
         //keeps track of whether or not the image has been rotated. used in order to decide which source to use.

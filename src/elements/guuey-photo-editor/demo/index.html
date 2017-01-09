@@ -6,10 +6,11 @@
 
     <title>guuey-photo-editor demo</title>
 
-    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../../../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
 
-    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
-    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+    <link rel="import" href="../../../../bower_components/iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../../../../bower_components/iron-demo-helpers/demo-snippet.html">
+    <link rel="import" href="../../../../bower_components/iron-image/iron-image.html" />
     <link rel="import" href="../guuey-photo-editor.html">
 
     <style is="custom-style" include="demo-pages-shared-styles">
@@ -20,7 +21,9 @@
       <h3>Basic guuey-photo-editor demo</h3>
       <demo-snippet>
         <template>
-          <guuey-photo-editor></guuey-photo-editor>
+          <guuey-photo-editor value="{{photo}}"></guuey-photo-editor>
+          <h2>Result</h2>
+          <iron-image src="{{photo}}"></iron-image>
         </template>
       </demo-snippet>
     </div>
