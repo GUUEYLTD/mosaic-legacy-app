@@ -12,7 +12,7 @@ module.exports = {
     '/index.html',
     '/manifest.json',
     '/bower_components/webcomponentsjs/webcomponents-lite.min.js',
-	'/images/*',
+	   '/images/*',
   ],
   navigateFallback: '/index.html'
 };

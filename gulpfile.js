@@ -1,86 +1,122 @@
-/**
- * @license
- * Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
- * This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
- * The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
- * The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
- * Code distributed by Google as part of the polymer project is also
- * subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
- */
-"use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator.throw(value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments)).next());
-    });
-};
-const vinyl_fs_1 = require('vinyl-fs');
-const gulpif = require('gulp-if');
-const path = require('path');
-const del = require('del');
+const fs = require('fs');
 const logging = require('plylog');
+const path = require('path');
+const gulp = require('gulp');
 const mergeStream = require('merge-stream');
-const polymer_build_1 = require('polymer-build');
-const optimize_streams_1 = require('../buildComponents/optimize-streams');
-const prefetch_1 = require('../buildComponents/prefetch');
-const streams_1 = require('../buildComponents/streams');
-const sw_precache_1 = require('../buildComponents/sw-precache');
-const logger = logging.getLogger('cli.build.build');
-const unbundledBuildDirectory = 'build/unbundled';
-const bundledBuildDirectory = 'build/bundled';
-function build(options, config) {
-    return __awaiter(this, void 0, void 0, function* () {
-        let polymerProject = new polymer_build_1.PolymerProject({
-            root: config.root,
-            shell: config.shell,
-            entrypoint: config.entrypoint,
-            fragments: config.fragments,
-            sourceGlobs: config.sourceGlobs,
-            includeDependencies: config.includeDependencies,
+const del = require('del');
+const gulpif = require('gulp-if');
+const uglify = require('gulp-uglify');
+const cleanCSS = require('gulp-clean-css');
+const postCSS = require('gulp-postcss');
+const sourceMaps = require('gulp-sourcemaps');
+const autoPrefixer = require('gulp-autoprefixer');
+const htmlmin = require('gulp-html-minifier');
+const polymer = require('polymer-build');
+const polymerJsonPath = path.join(process.cwd(), 'polymer.json');
+const polymerJSON = require(polymerJsonPath);
+const polymerProject = new polymer.PolymerProject(polymerJSON);
+const rootBuild = 'build';
+const unbundledDirectory = 'build/unbundled';
+const bundledDirectory = 'build/bundled';
+
+let logger = logging.getLogger('cli.build.sw-precache');
+
+function waitFor(stream) {
+  return new Promise((resolve, reject) => {
+    stream.on('end', resolve);
+    stream.on('error', reject);
+  });
+}
+
+function waitForAll(unbundledPostProcessing, bundledPostProcessing) {
+  return new Promise((resolve, reject) => {
+    var finished = 0;
+    //on end add 1 to finished if more than 1 finish as success
+    unbundledPostProcessing.then(_ => {
+      finished++;
+      if(finished > 1) {
+        resolve();
+      };
+    });
+    bundledPostProcessing.then(_ => {
+      finished++;
+      if(finished > 1) {
+        resolve();
+      };
+    });
+
+    //reject with errors
+    unbundledPostProcessing.catch(err => {
+      reject();
+    });
+    bundledPostProcessing.catch(err => {
+      reject();
+    })
+  });
+}
+
+function parsePreCacheConfig(configFile) {
+    return new Promise((resolve, _reject) => {
+        fs.stat(configFile, (statError) => {
+            let config;
+            // only log if the config file exists at all
+            if (!statError) {
+                try {
+                    config = require(configFile);
+                }
+                catch (loadError) {
+                    logger.warn(`${configFile} file was found but could not be loaded`, { loadError });
+                }
+            }
+            resolve(config);
         });
-        if (options.insertDependencyLinks) {
-            logger.debug(`Additional dependency links will be inserted into application`);
-        }
-        // mix in optimization options from build command
-        // TODO: let this be set by the user
-        let optimizeOptions = {
-            html: Object.assign({ removeComments: true }, options.html),
-            css: Object.assign({ stripWhitespace: true }, options.css),
-            js: Object.assign({ minify: true }, options.js),
-        };
-        logger.info(`Preparing build...`);
-        yield del([unbundledBuildDirectory, bundledBuildDirectory]);
-        logger.info(`Building application...`);
-        logger.debug(`Reading source files...`);
+    });
+}
+
+function build() {
+  return new Promise((resolve, reject) => {
+    // Okay, so first thing we do is clear the build
+    console.log(`Deleting build/ directory...`);
+    del([rootBuild])
+      .then(_ => {
+        // Okay, now lets get your source files
         let sourcesStream = polymerProject.sources()
-            .pipe(polymerProject.splitHtml())
-            .pipe(gulpif(/\.js$/, new optimize_streams_1.JSOptimizeStream(optimizeOptions.js)))
-            .pipe(gulpif(/\.css$/, new optimize_streams_1.CSSOptimizeStream(optimizeOptions.css)))
-            .pipe(gulpif(/\.html$/, new optimize_streams_1.HTMLOptimizeStream(optimizeOptions.html)))
-            .pipe(polymerProject.rejoinHtml());
-        logger.debug(`Reading dependencies...`);
+          // Oh, well do you want to minify stuff? Go for it!
+          // Here's how splitHtml & gulpif work
+          .pipe(polymerProject.splitHtml())
+          .pipe(gulpif(/\.js$/, uglify()))
+          .pipe(gulpif(/\.css$/, autoPrefixer()))
+          .pipe(gulpif(/\.css$/, cleanCSS()))
+          .pipe(gulpif(/\.html$/, htmlmin({collapseWhitespace: true})))
+          .pipe(polymerProject.rejoinHtml());
+
+        // Okay now lets do the same to your dependencies
         let depsStream = polymerProject.dependencies()
-            .pipe(polymerProject.splitHtml())
-            .pipe(gulpif(/\.js$/, new optimize_streams_1.JSOptimizeStream(optimizeOptions.js)))
-            .pipe(gulpif(/\.css$/, new optimize_streams_1.CSSOptimizeStream(optimizeOptions.css)))
-            .pipe(gulpif(/\.html$/, new optimize_streams_1.HTMLOptimizeStream(optimizeOptions.html)))
-            .pipe(polymerProject.rejoinHtml());
+          .pipe(polymerProject.splitHtml())
+          .pipe(gulpif(/\.js$/, uglify()))
+          .pipe(gulpif(/\.css$/, autoPrefixer()))
+          .pipe(gulpif(/\.css$/, cleanCSS()))
+          .pipe(gulpif(/\.html$/, htmlmin({collapseWhitespace: true})))
+          .pipe(polymerProject.rejoinHtml());
+
+        // Okay, now lets merge them into a single build stream.
         let buildStream = mergeStream(sourcesStream, depsStream)
-            .once('data', () => { logger.debug('Analyzing build dependencies...'); })
-            .pipe(polymerProject.analyzer);
-        let unbundledPhase = polymer_build_1.forkStream(buildStream)
-            .once('data', () => { logger.info('Generating build/unbundled...'); })
-            .pipe(gulpif(options.insertDependencyLinks, new prefetch_1.PrefetchTransform(polymerProject.root, polymerProject.entrypoint, polymerProject.shell, polymerProject.fragments, polymerProject.analyzer)))
-            .pipe(vinyl_fs_1.dest(unbundledBuildDirectory));
-        let bundledPhase = polymer_build_1.forkStream(buildStream)
-            .once('data', () => { logger.info('Generating build/bundled...'); })
-            .pipe(polymerProject.bundler)
-            .pipe(vinyl_fs_1.dest(bundledBuildDirectory));
-        let swPrecacheConfig = path.resolve(polymerProject.root, options.swPrecacheConfig || 'sw-precache-config.js');
-        let loadSWConfig = sw_precache_1.parsePreCacheConfig(swPrecacheConfig);
-        loadSWConfig.then((swConfig) => {
+          .once('data', () => {
+            console.log('Analyzing build dependencies...');
+          });
+
+        //fork to unbundled /build dir
+        let unbundledBuildStream = polymer.forkStream(buildStream)
+          .pipe(gulp.dest(unbundledDirectory));
+        //fork to bundled /build dir
+        let bundledBuildStream = polymer.forkStream(buildStream)
+          .pipe(polymerProject.bundler)
+          .pipe(gulp.dest(bundledDirectory));
+
+
+        let swPrecacheConfig = path.resolve('sw-precache-config.js');
+        let loadSWConfig = parsePreCacheConfig(swPrecacheConfig);
+          loadSWConfig.then((swConfig) => {
             if (swConfig) {
                 logger.debug(`Service worker config found`, swConfig);
             }
@@ -89,26 +125,33 @@ function build(options, config) {
             }
         });
         // Once the unbundled build stream is complete, create a service worker for the build
-        let unbundledPostProcessing = Promise.all([loadSWConfig, streams_1.waitFor(unbundledPhase)]).then((results) => {
+        let unbundledPostProcessing = Promise.all([loadSWConfig, waitFor(unbundledBuildStream)]).then((results) => {
             let swConfig = results[0];
-            return polymer_build_1.addServiceWorker({
-                buildRoot: unbundledBuildDirectory,
+            return polymer.addServiceWorker({
+                buildRoot: unbundledDirectory,
                 project: polymerProject,
                 swConfig: swConfig,
             });
         });
         // Once the bundled build stream is complete, create a service worker for the build
-        let bundledPostProcessing = Promise.all([loadSWConfig, streams_1.waitFor(bundledPhase)]).then((results) => {
+        let bundledPostProcessing = Promise.all([loadSWConfig, waitFor(bundledBuildStream)]).then((results) => {
             let swConfig = results[0];
-            return polymer_build_1.addServiceWorker({
-                buildRoot: bundledBuildDirectory,
+            return polymer.addServiceWorker({
+                buildRoot: bundledDirectory,
                 project: polymerProject,
                 swConfig: swConfig,
                 bundled: true,
             });
         });
-        yield Promise.all([unbundledPostProcessing, bundledPostProcessing]);
-        logger.info('Build complete!');
-    });
+        // waitFor the buildStream to complete
+        return waitForAll(unbundledPostProcessing, bundledPostProcessing);
+      })
+      .then(_ => {
+        // You did it!
+        console.log('Build complete!');
+        resolve();
+      });
+  });
 }
+
 gulp.task('default', build);
