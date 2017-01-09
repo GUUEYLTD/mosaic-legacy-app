@@ -1,3 +1,7 @@
+/*
+if need to run with more memory use the following command to allow up to 8 gigs of memory:
+node --max-old-space-size=8192 /usr/local/lib/node_modules/gulp-cli/bin/gulp.js
+*/
 const fs = require('fs');
 const logging = require('plylog');
 const path = require('path');
