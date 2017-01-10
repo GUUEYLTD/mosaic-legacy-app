@@ -434,6 +434,8 @@ element that returns edited images as base64 for use in applications.
 
       _resizing:function(e) {
         var target = (this.rotated || this.cropped) ? this.alt : this.orig;
+        var check = (this.rotated || this.cropped)  ? "alt" : "orig";
+        console.log(check);
         var isSE = this.checkElementClass(this.eventState.currentTarget,"resize-handle-se");
         var isSW = this.checkElementClass(this.eventState.currentTarget,"resize-handle-sw");
         var isNE = this.checkElementClass(this.eventState.currentTarget,"resize-handle-ne");
@@ -452,6 +454,11 @@ element that returns edited images as base64 for use in applications.
           height = mouse.y - this.eventState.containerTop;
           left = this.eventState.containerLeft - this.$.editDialog.offsetWidth;
           top = this.eventState.containerTop - this.$.editDialog.offsetHeight;
+          console.log(mouse.x, mouse.y, this.eventState.containerLeft);
+          console.log(mouse.y, this.eventState.containerTop);
+          console.log(this.eventState.containerLeft, this.$.editDialog.offsetWidth);
+          console.log(this.eventState.containerTop, this.$.editDialog.offsetHeight);
+
         } else if(isSW) {
           width = this.eventState.containerWidth - (mouse.x - this.eventState.containerLeft);
           height = mouse.y - this.eventState.containerTop;
@@ -476,6 +483,7 @@ element that returns edited images as base64 for use in applications.
         };
         if(this.constrain || e.shiftKey) {
           height = width / target.width * target.height;
+          console.log("constrainted height: "+height);
         };
         if(width > this.minWidth && height > this.minHeight && width < this.maxWidth && height < this.maxHeight) {
           this.resizeImage(width, height);
