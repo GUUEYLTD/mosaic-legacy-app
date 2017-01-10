@@ -32,10 +32,20 @@
         noCoreText:{
           type:String,
           value: "It looks like your main service plan has been removed. If you feel this is in error, please contact support."
+        },
+        allowedPages:{
+          type:Array,
+          value:[
+            "ad-support"
+          ]
         }
       },
+      pageAllowed: function(page){
+
+        return this.allowedPages.indexOf(page) !== -1;
+      },
       checkAdmin:function(){
-        if(this.currentUserType != "admin" && this.catData.category === "admin"){
+        if(this.currentUserType != "admin" && this.catData.category === "admin" && !this.pageAllowed(this.page)){
           this.set("catData.category", "default");
           this.set("pageData.page", "def-home");
           this.fire("openToast", {toastText: "That page is for admins only. Returned to default page."});

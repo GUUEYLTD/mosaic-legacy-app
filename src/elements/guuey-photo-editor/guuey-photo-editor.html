@@ -235,8 +235,8 @@ element that returns edited images as base64 for use in applications.
         //the returned result of the element after saving. can be accessed from parent elements.
         value: {
           type:String,
-          value:"",
-          notify:true
+          notify:true,
+          observer: "_valueChanged"
         },
         //keeps track of whether or not the image has been rotated. used in order to decide which source to use.
         rotated: {
@@ -344,6 +344,12 @@ element that returns edited images as base64 for use in applications.
         this.$.editDialog.open();
       },
 
+      _valueChanged:function(value) {
+        if((value !== null || "" || undefined || "undefined") && typeof value !== "undefined" || undefined){
+          this.$.image.src = value;
+        };
+      },
+
       _inputChanged:function(e) {
         var reader = new FileReader();
         var file = e.target.files[0];
@@ -399,7 +405,7 @@ element that returns edited images as base64 for use in applications.
         this.ctx.rotate(config.r);
         this.ctx.drawImage(this.$.image, 0, 0);
         this.$.image.src = this.canvas.toDataURL("image/png");
-        this.alt.src=this.$.image.src;
+        this.alt.src = this.$.image.src;
       },
 
       //handle start of resize

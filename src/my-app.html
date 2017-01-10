@@ -250,7 +250,15 @@
     <app-drawer-layout responsive-width="1023px" fullbleed id="appDrawerLayout">
 
       <!--admin drawer that contains admin account info and functions-->
-      <admin-drawer id="adminDrawer" home="[[home]]" admin="[[param]]" email="{{user.email}}" opened="{{opened}}"></admin-drawer>
+      <admin-drawer
+        id="adminDrawer"
+        home="[[home]]"
+        admin="[[param]]"
+        email="[[user.email]]"
+        user-type="[[currentUserType]]"
+        opened="{{opened}}"
+        allowed-pages="[[allowedPages]]">
+      </admin-drawer>
       <!--second drawer to contain target info links (company service user etc...) link up to db later-->
       <app-drawer align="end" id="suDrawer" swipe-open>
         <iron-image id="suDrawerImage"
@@ -349,7 +357,7 @@
           <app-toolbar id="desktopMenu">
 
             <div class="toolbarLeft">
-              <paper-icon-button style="[[_computeUserIsAdmin(currentUserType)]]" class="leftToolbarButton" icon="menu" on-tap="toggleDrawer"></paper-icon-button>
+              <paper-icon-button class="leftToolbarButton" icon="menu" on-tap="toggleDrawer"></paper-icon-button>
               <span class="menuText">menu</span>
 
               <div class="searchInput">
@@ -890,9 +898,6 @@
         Polymer.pageChangeMiddleware,
         Polymer.accountCreateBehavior
       ],
-      _computeUserIsAdmin:function(userType){
-        return userType === "admin" ? "" : "display:none;";
-      },
       _homeRouteChanged:function(home){
         this.home=home || 'default';
       },

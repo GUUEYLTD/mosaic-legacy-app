@@ -97,6 +97,17 @@
         color:#FAD100;
         font-weight: bold;
       }
+      .adrawer-list  a.iron-selected.disabled-link {
+        opacity:.7;
+        color:grey;
+      }
+      .disabled-link{
+        opacity:.7;
+        color:grey;
+      }
+      .disabled-link:hover{
+        cursor:not-allowed;
+      }
     </style>
 
     <app-drawer id="adminDrawer" position="start" opened="{{opened}}">
@@ -107,12 +118,12 @@
           sizing="cover">
         </iron-image>
         <p class="username" bottom-item>
-          {{email}}
+          [[user.email]]
         </p>
       </app-toolbar>
       <paper-listbox>
         <iron-selector selected="[[page]]" attr-for-selected="name" class="adrawer-list" role="navigation">
-          <a name="ad-dash" on-tap="close" href="/{{home}}/admin/ad-dash/{{admin}}" tabindex="-1">
+          <a name="ad-dash" on-tap="close" href="/[[home]]/admin/ad-dash/[[admin]]" tabindex="-1">
             <paper-item>
               <paper-icon-item>
                 <iron-icon icon="icons:dashboard" item-icon></iron-icon>
@@ -121,7 +132,7 @@
             </paper-item>
           </a>
 
-          <a name="ad-profile" on-tap="close" href="/{{home}}/admin/ad-profile/{{admin}}" tabindex="-1">
+          <a name="ad-profile" on-tap="close" href="/[[home]]/admin/ad-profile/[[admin]]" tabindex="-1">
             <paper-item>
               <paper-icon-item>
                 <iron-icon icon="social:location-city" item-icon></iron-icon>
@@ -130,7 +141,7 @@
             </paper-item>
           </a>
 
-          <a name="ad-payment" on-tap="close" href="/{{home}}/admin/ad-payment/{{admin}}" tabindex="-1">
+          <a name="ad-payment" on-tap="close" href="/[[home]]/admin/ad-payment/[[admin]]" tabindex="-1">
             <paper-item>
               <paper-icon-item>
                 <iron-icon icon="icons:payment" item-icon></iron-icon>
@@ -139,7 +150,7 @@
             </paper-item>
           </a>
 
-          <a name="ad-users" on-tap="close" href="/{{home}}/admin/ad-users/{{admin}}" tabindex="-1">
+          <a name="ad-users" on-tap="close" href="/[[home]]/admin/ad-users/[[admin]]" tabindex="-1">
             <paper-item>
               <paper-icon-item>
                 <iron-icon icon="social:group" item-icon></iron-icon>
@@ -148,7 +159,7 @@
             </paper-item>
           </a>
 
-          <a name="ad-settings" on-tap="close" href="/{{home}}/admin/ad-settings/{{admin}}" tabindex="-1">
+          <a name="ad-settings" on-tap="close" href="/[[home]]/admin/ad-settings/[[admin]]" tabindex="-1">
             <paper-item>
               <paper-icon-item>
                 <iron-icon icon="icons:settings" item-icon></iron-icon>
@@ -157,7 +168,7 @@
             </paper-item>
           </a>
 
-          <a name="ad-reports" on-tap="close" href="/{{home}}/admin/ad-reports/{{admin}}" tabindex="-1">
+          <a name="ad-reports" on-tap="close" href="/[[home]]/admin/ad-reports/[[admin]]" tabindex="-1">
             <paper-item>
               <paper-icon-item>
                 <iron-icon icon="icons:assessment" item-icon></iron-icon>
@@ -166,7 +177,7 @@
             </paper-item>
           </a>
 
-          <a name="ad-support" on-tap="close" href="/{{home}}/admin/ad-support/{{admin}}" tabindex="-1">
+          <a name="ad-support" on-tap="close" href="/[[home]]/admin/ad-support/[[admin]]" tabindex="-1">
             <paper-item>
               <paper-icon-item>
                 <iron-icon icon="communication:live-help" item-icon></iron-icon>
@@ -206,9 +217,34 @@
           type:String,
         },
         opened:{
-          type:String,
+          type:Boolean,
           value:false
+        },
+        email:{
+          type:String
+        },
+        userType: {
+          type:String,
+          observer:"_userTypeChanged"
+        },
+        allowedPages:{
+          type:Array
         }
+      },
+      _userTypeChanged:function(userType){
+        var links = Polymer.dom(this.$$(".adrawer-list")).children;
+        console.log(links);
+        if(userType === "careWorker"){
+          links.forEach(function(link){
+            if(this.allowedPages.indexOf(link.name) === -1){
+              link.classList.add("disabled-link");
+            };
+          }.bind(this));
+        } else {
+          links.forEach(function(link){
+            link.classList.remove("disabled-link");
+          }.bind(this));
+        };
       },
       close:function(){
         this.$.adminDrawer.close();
