@@ -233,7 +233,6 @@
       },
       _userTypeChanged:function(userType){
         var links = Polymer.dom(this.$$(".adrawer-list")).children;
-        console.log(links);
         if(userType === "careWorker"){
           links.forEach(function(link){
             if(this.allowedPages.indexOf(link.name) === -1){

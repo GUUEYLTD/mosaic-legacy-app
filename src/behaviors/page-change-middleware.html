@@ -136,10 +136,14 @@
         this.importHref(
           this.resolveUrl('pages/' + this.category + '/' + page + '.html'),
           function(){
-            this.currentCat=this.temp_currentCat;
-            this.intendedCat=this.temp_intendedCat;
-            this.selected=this.page;
-            this.ensureLayout(this.page);
+            if(!this.currentCat){
+              this.currentCat = this.category;
+            } else {
+              this.currentCat = this.intendedCat;
+              this.intendedCat = this.category;
+            }
+            this.selected = this.page;
+            this.ensureLayout(page);
             if(this.payments.status === "delinquent"){
               this.fire("openToast", {toastText:this.restrictToastText});
             };

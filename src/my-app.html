@@ -1,4 +1,4 @@
-<link rel="import" href="../bower_components/polymer/polymer.html" />
+cd<link rel="import" href="../bower_components/polymer/polymer.html" />
 <link rel="import" href="../bower_components/polymerfire/firebase-app.html" />
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html" />
 <link rel="import" href="../bower_components/polymerfire/firebase-document.html" />
@@ -902,9 +902,7 @@
         this.home=home || 'default';
       },
       _catRouteChanged:function(category){
-        this.temp_currentCat=this.category;
-        this.temp_intendedCat=category || 'default';
-        this.category=category || 'default';
+        this.category = category || 'default';
       },
       _pageRouteChanged:function(page) {
           this.currentPage=this.page;
