@@ -157,6 +157,8 @@
 
     <paper-dialog id="addCardDialog">
 
+      <h2>Add Card</h2>
+
       <gold-cc-input
         id="cardNumber"
         auto-validate
@@ -181,14 +183,26 @@
         value="{{expDate}}"
         error-message="please enter a valid expiration date.">
       </gold-cc-expiration-input>
+      <div class="buttons">
+        <paper-button dialog-dismiss>Cancel</paper-button>
+        <paper-button
+          on-tap="confirmAddCard"
+          dialog-confirm>
+          add card
+        </paper-button>
+      </div>
 
-      <paper-button
-        id="addCardButton"
-        class="guuey-button"
-        on-tap="confirmAddCard">
-        add card
-      </paper-button>
+    </paper-dialog>
 
+    <paper-dialog data-action$="[[confirmAction]]" id="confirmDialog">
+      <h2>[[confirmTitle]]</h2>
+      <p>
+        [[confirmText]]
+      </p>
+      <div class="buttons">
+        <paper-button dialog-dismiss>Cancel</paper-button>
+        <paper-button dialog-confirm>Confirm</paper-button>
+      </div>
     </paper-dialog>
 
     <paper-card class="pageCard">
@@ -296,6 +310,7 @@
                 </template>
               </table>
             </div>
+            <br />
             <paper-button class="guuey-button" on-tap="addCard">add another card</paper-button>
 
           <div class="divider"></div>
@@ -321,7 +336,7 @@
                     Status
                   </th>
                   <th>
-                    Remove Plan
+                    Remove Subscription
                   </th>
                 </tr>
               </thead>
@@ -453,8 +468,8 @@
               this._getCharges();
             };
           }.bind(this));
-
           this._listPlans();
+          this.addEventListener("iron-overlay-closed", this.routeConfirmActions);
         },
         properties:{
           userCount:{
@@ -515,7 +530,6 @@
           return unit + moneyAmount;
         },
         _computeSubMonthlyPrice:function(amount, currency, users){
-          console.log(users, typeof users);
           var unit = currency === "gbp" ? "£" : "€";
           var moneyAmount = (amount / 100) * users
           return unit + moneyAmount;
@@ -548,14 +562,14 @@
           this.$.stripeCustomerCall.body={
             customerId:this.customer.customerID
           };
-          this.$.stripeCustomerCall.url="http://localhost:3000/payments/customerinfo";
+          this.$.stripeCustomerCall.url="https://glacial-tor-36526.herokuapp.com/payments/customerinfo";
           this.$.stripeCustomerCall.generateRequest();
         },
         _listPlans:function(){
           this.$.listPlansCall.body={
             request:"listPlans"
           };
-          this.$.listPlansCall.url="http://localhost:3000/payments/listplans"
+          this.$.listPlansCall.url="https://glacial-tor-36526.herokuapp.com/payments/listplans"
           this.$.listPlansCall.generateRequest();
         },
         _alreadyOwned:function(owned){
@@ -635,7 +649,7 @@
           if(res.error){
             this.fire("openToast",{toastText:"Your payment could not be processed for the following reason: "+res.error.message});
           } else {
-            this.$.initSubCall.url="http://localhost:3000/payments/initialsub";
+            this.$.initSubCall.url="https://glacial-tor-36526.herokuapp.com/payments/initialsub";
             this.$.initSubCall.body={
               stripeToken:res.id,
               home:this.params.home,
@@ -650,7 +664,7 @@
           if(res.error){
             this.fire("openToast", {toastText:"Your card could not be added for the following reason: "+res.error.message});
           } else {
-            this.$.addCardCall.url="http://localhost:3000/payments/addcard";
+            this.$.addCardCall.url="https://glacial-tor-36526.herokuapp.com/payments/addcard";
             this.$.addCardCall.body={
               stripeToken:res.id,
               customerId:this.customer.customerID
@@ -658,49 +672,112 @@
             this.$.addCardCall.generateRequest();
           };
         },
+
+        routeConfirmActions:function(e){
+          if(e.detail.confirmed === true){
+            var action = this.$.confirmDialog.getAttribute("data-action");
+            switch(action){
+              case "removeCard":
+                var cardId = this.$.confirmDialog.getAttribute("data-id");
+                this.confirmDeleteCard(cardId);
+                break;
+              case "setDefaultCard":
+                var cardId = this.$.confirmDialog.getAttribute("data-id");
+                this.confirmSetDefaultCard(cardId)
+                break;
+              case "deletePlan":
+                var planId = this.$.confirmDialog.getAttribute("data-id");
+                var planName = this.$.confirmDialog.getAttribute("data-name");
+                var subId = this.$.confirmDialog.getAttribute("data-sub");
+                this.confirmDeletePlan(planId, planName, subId);
+                break;
+              case "addPlan":
+                var planId = this.$.confirmDialog.getAttribute("data-id");
+                var planName = this.$.confirmDialog.getAttribute("data-name");
+                this.confirmAddPlan(planId, planName);
+                break;
+              default:
+                this.$.confirmDialog.close();
+                this.fire("openToast", {toastText: "An error occurred. please try again."})
+                break;
+            };
+          };
+        },
+
         deleteCard:function(e){
-          this.$.deleteCardCall.url="http://localhost:3000/payments/deletecard";
+          this.confirmAction = "removeCard"
+          this.confirmTitle = "Remove Card";
+          this.confirmText = "You are about to remove a card from your payment methods. Are you sure you want to do this?";
+          Polymer.dom(this.$.confirmDialog.setAttribute("data-id", e.model.card.id));
+          this.$.confirmDialog.open();
+        },
+        confirmDeleteCard:function(cardId){
+          this.$.deleteCardCall.url="https://glacial-tor-36526.herokuapp.com/payments/deletecard";
           this.$.deleteCardCall.body={
             customerId:this.customer.customerID,
-            cardId:e.model.card.id
+            cardId:cardId
           };
           this.$.deleteCardCall.generateRequest();
         },
         setDefaultCard:function(e){
-          this.$.defaultCardCall.url="http://localhost:3000/payments/setdefaultcard";
+          this.confirmAction = "setDefaultCard"
+          this.confirmTitle = "Set Default Card";
+          this.confirmText = "You are about to set this card to default. Are you sure that you want to do this?";
+          Polymer.dom(this.$.confirmDialog.setAttribute("data-id", e.model.card.id));
+          this.$.confirmDialog.open();
+        },
+        confirmSetDefaultCard:function(cardId){
+          this.$.defaultCardCall.url="https://glacial-tor-36526.herokuapp.com/payments/setdefaultcard";
           this.$.defaultCardCall.body={
             customerId:this.customer.customerID,
-            cardId:e.model.card.id
+            cardId:cardId
           };
           this.$.defaultCardCall.generateRequest();
         },
         addPlan:function(e){
+          this.confirmAction = "addPlan"
+          this.confirmTitle = "Add Subscription";
+          this.confirmText = "You are about to add a subscription. Your card will be charged immediately. Are you sure that you want to do this?";
+          Polymer.dom(this.$.confirmDialog.setAttribute("data-id", e.model.availablePlan.id));
+          Polymer.dom(this.$.confirmDialog.setAttribute("data-name", e.model.availablePlan.name));
+          this.$.confirmDialog.open();
+        },
+        confirmAddPlan:function(planId, planName){
           this.$.addPlanCall.body={
             home:this.home,
-            planName:e.model.availablePlan.name,
+            planName:planName,
             customerId:this.customer.customerID,
-            planId:e.model.availablePlan.id,
+            planId:planId,
             users:this.userCount,
           };
-          this.$.addPlanCall.url="http://localhost:3000/payments/addplan";
+          this.$.addPlanCall.url="https://glacial-tor-36526.herokuapp.com/payments/addplan";
           this.$.addPlanCall.generateRequest();
         },
         deletePlan:function(e){
+          this.confirmAction = "deletePlan"
+          this.confirmTitle = "Remove Subscription";
+          this.confirmText = "You are about to remove a subscription. You will still be charged prorated at the end of the month for used time. Are you sure that you want to do this?";
+          Polymer.dom(this.$.confirmDialog.setAttribute("data-id", e.model.plan.plan.id));
+          Polymer.dom(this.$.confirmDialog.setAttribute("data-name", e.model.plan.plan.name));
+          Polymer.dom(this.$.confirmDialog.setAttribute("data-sub", e.model.plan.id));
+          this.$.confirmDialog.open();
+        },
+        confirmDeletePlan:function(planId, planName, subId ){
           this.$.deletePlanCall.body={
             home:this.home,
-            planName:e.model.plan.plan.name,
+            planName:planName,
             customerId:this.customer.customerID,
-            planId:e.model.plan.plan.id,
-            subId:e.model.plan.id
+            planId:planId,
+            subId:subId
           };
-          this.$.deletePlanCall.url="http://localhost:3000/payments/deleteplan";
+          this.$.deletePlanCall.url="https://glacial-tor-36526.herokuapp.com/payments/deleteplan";
           this.$.deletePlanCall.generateRequest();
         },
         _getCharges:function(){
           this.$.chargesCall.body={
             customerId:this.customer.customerID
           };
-          this.$.chargesCall.url="http://localhost:3000/payments/getcharges";
+          this.$.chargesCall.url="https://glacial-tor-36526.herokuapp.com/payments/getcharges";
           this.$.chargesCall.generateRequest();
         },
         //handle api calls
@@ -715,7 +792,6 @@
           this.fire("openToast", {toastText:"Your"+e.detail.reponse.brand+" ending in "+e.detail.response.last4+" has been added."});
         },
         _handleStripeCustomerCall:function(e){
-          console.log(e.detail.response);
           this.set("activePlanList", e.detail.response.subscriptions.data);
           this.set("cardList", e.detail.response.sources.data);
         },
@@ -729,7 +805,6 @@
           this.fire("openToast", {toastText:"Your default card has been set."});
         },
         _handleListPlansCall:function(e){
-          console.log(e.detail.response.data);
           this.set("plansList", e.detail.response.data);
         },
         _handleAddPlanCall:function(e){
