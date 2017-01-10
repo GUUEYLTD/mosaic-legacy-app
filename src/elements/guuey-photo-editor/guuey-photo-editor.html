@@ -226,7 +226,6 @@ element that returns edited images as base64 for use in applications.
     </dialog-no-style>
 
   </template>
-
   <script>
     Polymer({
 
@@ -308,6 +307,7 @@ element that returns edited images as base64 for use in applications.
 
         //initialize the needed elements for photo edits
         this.orig = new Image();
+        this.orig.src = this.$.image.src;
         this.alt = new Image();
         this.canvas = document.createElement("canvas");
         this.ctx = this.canvas.getContext("2d");
@@ -330,6 +330,7 @@ element that returns edited images as base64 for use in applications.
         this.listen(this.$.image, "mousedown", "_startImageMoving");
         this.listen(this.$.image, "touchstart", "_startImageMoving");
       },
+
       //set min/max width/height for images based on properties set
       setMinMax:function() {
         this.customStyle["--image-min-width"] = (this.minWidth || 50) + "px";
@@ -435,7 +436,6 @@ element that returns edited images as base64 for use in applications.
       _resizing:function(e) {
         var target = (this.rotated || this.cropped) ? this.alt : this.orig;
         var check = (this.rotated || this.cropped)  ? "alt" : "orig";
-        console.log(check);
         var isSE = this.checkElementClass(this.eventState.currentTarget,"resize-handle-se");
         var isSW = this.checkElementClass(this.eventState.currentTarget,"resize-handle-sw");
         var isNE = this.checkElementClass(this.eventState.currentTarget,"resize-handle-ne");
@@ -454,10 +454,6 @@ element that returns edited images as base64 for use in applications.
           height = mouse.y - this.eventState.containerTop;
           left = this.eventState.containerLeft - this.$.editDialog.offsetWidth;
           top = this.eventState.containerTop - this.$.editDialog.offsetHeight;
-          console.log(mouse.x, mouse.y, this.eventState.containerLeft);
-          console.log(mouse.y, this.eventState.containerTop);
-          console.log(this.eventState.containerLeft, this.$.editDialog.offsetWidth);
-          console.log(this.eventState.containerTop, this.$.editDialog.offsetHeight);
 
         } else if(isSW) {
           width = this.eventState.containerWidth - (mouse.x - this.eventState.containerLeft);
@@ -483,7 +479,6 @@ element that returns edited images as base64 for use in applications.
         };
         if(this.constrain || e.shiftKey) {
           height = width / target.width * target.height;
-          console.log("constrainted height: "+height);
         };
         if(width > this.minWidth && height > this.minHeight && width < this.maxWidth && height < this.maxHeight) {
           this.resizeImage(width, height);
@@ -550,11 +545,12 @@ element that returns edited images as base64 for use in applications.
         var offsetTop = mouse.y - (this.eventState.mouseY - this.eventState.containerTop + 100);
         Polymer.dom(this.$.imageContainer).setAttribute("style", "top: " + offsetTop + "px; left: " + offsetLeft + "px;");
         // Watch for pinch zoom gesture while moving
-        if(this.eventState.evnt.touches && this.eventState.evnt.touches.length > 1 && touches.length > 1){
-          var width = this.eventState.containerWidth, height = this.eventState.containerHeight;
-          var a = this. eventState.touches[0].clientX - this. eventState.touches[1].clientX;
+        if(this.eventState.evnt.touches && this.eventState.evnt.touches.length > 1){
+          var width = this.eventState.containerWidth
+          var height = this.eventState.containerHeight;
+          var a = this.eventState.evnt.touches[0].clientX - this.eventState.evnt.touches[1].clientX;
           a = a * a;
-          var b = this. eventState.touches[0].clientY - this. eventState.touches[1].clientY;
+          var b = this.eventState.evnt.touches[0].clientY - this.eventState.evnt.touches[1].clientY;
           b = b * b;
           var dist1 = Math.sqrt( a + b );
 
