@@ -318,7 +318,7 @@ cd<link rel="import" href="../bower_components/polymer/polymer.html" />
                 </span>
 
               </paper-tab>
-              <paper-tab class="mobileTab" name="logout"><iron-icon on-tap="logout" icon="icons:account-circle"></iron-icon></paper-tab>
+              <paper-tab class="mobileTab" name="logout"><iron-icon on-tap="openLogout" icon="icons:account-circle"></iron-icon></paper-tab>
             </paper-tabs>
           </app-toolbar>
 
@@ -1061,10 +1061,7 @@ cd<link rel="import" href="../bower_components/polymer/polymer.html" />
             this.$.notifiableDB.path="/homes/"+this.home+"/notifications/notify/"+key;
             this.$.notifiableDB.destroy()
               .then(function(){
-                var test = this.notifiesData.indexOf(key);
-                this.splice("notifiesData", test, 1);
                 this.notifyPath("notifiesData");
-                this.$.notifiableDB.path="/homes/"+this.home+"/notifications/notify/"+key;
               }.bind(this));
           }.bind(this));
       },
@@ -1121,21 +1118,53 @@ cd<link rel="import" href="../bower_components/polymer/polymer.html" />
         this.$.mobileSearch.toggle();
       },
       openApps:function(e){
-        this.$.appsDialog.positionTarget = e.currentTarget;
-        this.$.appsDialog.verticalAlign = "top";
-        this.$.appsDialog.horizontalAlign = "right";
-        this.$.appsDialog.noOverlap = true;
-        this.$.appsDialog.horizontalOffset = 20;
+        // hypotenuse of 45 degree rotated square that is before the dialog... meaning the width in relative terms
+        var isMobile = e.currentTarget.classList.contains("mobileTab");
+        var isDesktop = e.currentTarget.classList.contains("desktopTab");
+        var beforeWidth = Math.sqrt(Math.pow(20, 2) + Math.pow(20, 2));
+        var containedIcon = Polymer.dom(e.currentTarget).children[0];
+        console.log(e.currentTarget);
+        if(isMobile) {
+          this.$.appsDialog.positionTarget = containedIcon;
+          this.$.appsDialog.verticalAlign = "top";
+          this.$.appsDialog.horizontalAlign = "right";
+          this.$.appsDialog.noOverlap = true;
+          this.$.appsDialog.horizontalOffset = (containedIcon.offsetWidth / 2) - beforeWidth;
+        };
+
+        if(isDesktop) {
+          this.$.appsDialog.positionTarget = e.currentTarget;
+          this.$.appsDialog.verticalAlign = "top";
+          this.$.appsDialog.horizontalAlign = "right";
+          this.$.appsDialog.noOverlap = true;
+          this.$.appsDialog.horizontalOffset = (e.currentTarget.offsetWidth / 2) - beforeWidth;
+        };
         this.$.logoutDialog.close();
         this.$.notifyDialog.close();
         this.$.appsDialog.toggle();
       },
       openNotifications:function(e){
-        this.$.notifyDialog.positionTarget = e.currentTarget;
-        this.$.notifyDialog.verticalAlign = "top";
-        this.$.notifyDialog.horizontalAlign = "right";
-        this.$.notifyDialog.noOverlap = true;
-        this.$.notifyDialog.horizontalOffset = 20;
+        // hypotenuse of 45 degree rotated square that is before the dialog... meaning the width in relative terms
+        var isMobile = e.currentTarget.classList.contains("mobileTab");
+        var isDesktop = e.currentTarget.classList.contains("desktopTab");
+        var beforeWidth = Math.sqrt(Math.pow(20, 2) + Math.pow(20, 2));
+        var containedIcon = Polymer.dom(e.currentTarget).children[0];
+        if(isMobile) {
+          this.$.notifyDialog.positionTarget = containedIcon;
+          this.$.notifyDialog.verticalAlign = "top";
+          this.$.notifyDialog.horizontalAlign = "right";
+          this.$.notifyDialog.noOverlap = true;
+          this.$.notifyDialog.horizontalOffset = (containedIcon.offsetWidth / 2) - beforeWidth;
+        };
+
+        if(isDesktop) {
+          this.$.notifyDialog.positionTarget = e.currentTarget;
+          this.$.notifyDialog.verticalAlign = "top";
+          this.$.notifyDialog.horizontalAlign = "right";
+          this.$.notifyDialog.noOverlap = true;
+          this.$.notifyDialog.horizontalOffset = (e.currentTarget.offsetWidth / 2) - beforeWidth;
+        };
+
         this.$.notifyDialogScroll.dialogElement = this.$.notifyDialog;
         if(this.notifiesData.length<1){
           return;
@@ -1148,11 +1177,25 @@ cd<link rel="import" href="../bower_components/polymer/polymer.html" />
         this.$.notifyDialog.close();
       },
       openLogout:function(e){
-        this.$.logoutDialog.positionTarget = e.currentTarget;
-        this.$.logoutDialog.verticalAlign = "top";
-        this.$.logoutDialog.horizontalAlign = "right";
-        this.$.logoutDialog.noOverlap = true;
-        this.$.logoutDialog.horizontalOffset = 20;
+        var isMobile = Polymer.dom(e.currentTarget).parentNode.classList.contains("mobileTab");
+        var isDesktop = e.currentTarget.classList.contains("desktopTab");
+        // hypotenuse of 45 degree rotated square that is before the dialog... meaning the width in relative terms
+        var beforeWidth = Math.sqrt(Math.pow(20, 2) + Math.pow(20, 2));
+        if(isMobile){
+          this.$.logoutDialog.positionTarget = e.currentTarget;
+          this.$.logoutDialog.verticalAlign = "top";
+          this.$.logoutDialog.horizontalAlign = "right";
+          this.$.logoutDialog.noOverlap = true;
+          this.$.logoutDialog.horizontalOffset = (e.currentTarget.offsetWidth / 2) - beforeWidth;
+        }
+        if(isDesktop){
+          this.$.logoutDialog.positionTarget = e.currentTarget;
+          this.$.logoutDialog.verticalAlign = "top";
+          this.$.logoutDialog.horizontalAlign = "right";
+          this.$.logoutDialog.noOverlap = true;
+          this.$.logoutDialog.horizontalOffset = e.currentTarget.offsetWidth / 2 -beforeWidth;
+        };
+
         this.$.notifyDialog.close();
         this.$.appsDialog.close();
         this.$.logoutDialog.toggle();
