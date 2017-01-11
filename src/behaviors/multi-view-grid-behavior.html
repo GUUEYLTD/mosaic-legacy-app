@@ -7,42 +7,60 @@
     /*
     @polymerBehavior Polymer.multiViewGridBehavior
     */
-    Polymer.multiViewGridBehavior={
+    Polymer.multiViewGridBehavior = {
       is:"multi-view-grid-behavior",
-      ready:function(){
-        this.async(function(){
-          this._observer = Polymer.dom(this.$$(".multiViewCard")).observeNodes(function(info){
-            this.addedNodes = info.addedNodes;
-            this.removedNodes = info.removedNodes;
-          }.bind(this));
+      ready:function() {
+        var that = this;
+        this.async(function() {
+          that._observer = Polymer.dom(that.$$(".multiViewCard")).observeNodes(function(info) {
+            that._getItemCount();
+          });
         });
       },
       observers:[
-        "_checkMultiItemCount(appGridColumns, addedNodes, removedNodes)"
+        "_checkMultiItemCount(appGridColumns, itemCount)"
       ],
-      _checkMultiItemCount:function(columns, added, removed){
-        console.log(columns, added, removed);
-        var items=0;
-        added.forEach(function(el){
-          if(el.classList){
-            if(el.classList.contains("multiItem")){
-              items++;
-            }
-          };
-        });
-        var remainders = items <= columns ? columns - items : columns - (items % columns);
-        if(items > 1 && remainders != 0){
+      properties: {
+        itemCount: {
+          type:Number,
+          value:0
+        }
+      },
+      _checkMultiItemCount:function(columns, itemCount) {
+        columns = parseInt(columns);
+        this._removeFillers();
+        var items = this._getItemCount();
+        var remainders = itemCount <= columns ? columns - itemCount : columns - (itemCount % columns);
+        remainders === 4 ? 0 : remainders;
+        if(itemCount > 1 && remainders != 0) {
           this._fillInColumns(remainders);
         };
       },
-      _fillInColumns:function(fillerCount){
-        for(i=0; i<fillerCount; i++){
+      _getItemCount:function() {
+        var count = 0;
+        var items = Polymer.dom(this.$$(".multiViewCard")).children;
+        items.forEach(function(el) {
+          if(el.classList && el.classList.contains("multiItem")) {
+            count++;
+          };
+        });
+        this.itemCount = count;
+      },
+      _fillInColumns:function(fillerCount) {
+        for(i = 0; i < fillerCount; i++) {
           var filler = document.createElement("div");
           filler.className = "fillerItem";
           Polymer.dom(this.$$(".multiViewCard")).appendChild(filler);
-          Polymer.dom.flush();
         };
       },
+      _removeFillers:function() {
+        var candidates = Polymer.dom(this.$$(".multiViewCard")).children;
+        candidates.forEach(function(el) {
+          if(el.classList && el.classList.contains("fillerItem")) {
+            Polymer.dom(el).parentNode.removeChild(el);
+          };
+        });
+      }
     };
 
   })();

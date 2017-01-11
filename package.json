@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "main guuey-care-op app",
   "scripts": {
-    "build": "node --max-old-space-size=8192 /usr/local/lib/node_modules/gulp-cli/bin/gulp.js",
+    "build": "node --max-old-space-size=8192 /usr/lib/node_modules/gulp-cli/bin/gulp.js",
     "test": "polymer test",
     "start": "browser-sync start --proxy localhost:8080 --files 'src/*.html, src/*.js, images/*' "
   },
