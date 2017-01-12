@@ -347,6 +347,8 @@ element that returns edited images as base64 for use in applications.
       _valueChanged:function(value) {
         if((value !== null || "" || undefined || "undefined") && typeof value !== "undefined" || undefined){
           this.$.image.src = value;
+          this.orig.src = value;
+          this.alt.src = value;
         };
       },
 

@@ -45,7 +45,7 @@
         return this.allowedPages.indexOf(page) !== -1;
       },
       checkAdmin:function(){
-        if(this.currentUserType != "admin" && this.catData.category === "admin" && !this.pageAllowed(this.page)){
+        if(this.currentUserType != "admin" && this.currentUserType != "manager" && this.catData.category === "admin" && !this.pageAllowed(this.page)){
           this.set("catData.category", "default");
           this.set("pageData.page", "def-home");
           this.fire("openToast", {toastText: "That page is for admins only. Returned to default page."});
@@ -73,27 +73,46 @@
               core1 = payments[x];
             };
           };
-          if(payments && payments.trial){
-            if(payements.trial.status === "canceled"){
-              this.restrictToastText = this.adTrialOver;
-              this.restrictDialogText = this.swTrialOver;
+          if(this.currentUserType){
+            //set restriction text for admins, managers, and others
+            if(payments && payments.trial){
+              if(payements.trial.status === "canceled"){
+                this.restrictToastText = this.adTrialOver;
+                this.restrictDialogText = this.swTrialOver;
+                console.log("trial canceled");
+              };
+            } else if(core1){
+              if(core1.status === "canceled"){
+                this.restrictToastText = this.adNoPayment;
+                this.restrictDialogText = this.swNoPayment;
+                console.log("main core cancled");
+              }
+            } else {
+              this.restrictDialogText = this.noCoreText;
+              this.restrictToastText = this.noCoreText;
+              console.log("no core no trial");
             };
-          } else if(core1){
-            if(core1.status === "canceled"){
-              this.restrictToastText = this.adNoPayment;
-              this.restrictDialogText = this.swNoPayment;
-            }
-          } else {
-            this.restrictDialogText = this.noCoreText;
-          };
-
-          if(payments && payments.trial && payments.trial.status === "canceled" && this.currentUserType === "admin"){
-            this.set("catData.category", "admin");
-            this.set("pageData.page", "ad-payment");
-          }else if(core1 && core1.status === "canceled" && this.currentUserType != "admin"){
-            this.$.lockedDialog.open();
-          } else if(!core1){
-            //this.$.lockedDialog.open();
+            //handle restrictions for admins, managers, and others
+            console.log(this.currentUserType);
+            if(payments && payments.trial && payments.trial.status === "canceled" && (this.currentUserType === "admin" || this.currentUserType === "manager")){
+              this.set("catData.category", "admin");
+              this.set("pageData.page", "ad-payment");
+              this.fire("openToast", {toastText: this.restrictToastText});
+            } else if(payments && payments.trial && payments.trial.status === "canceled"){
+              this.$.lockedDialog.open();
+            } else if(core1 && core1.status === "canceled" && (this.currentUserType === "admin" || this.currentUserType === "manager")){
+              this.set("catData.category", "admin");
+              this.set("pageData.page", "ad-payment");
+              this.fire("openToast", {toastText: this.restrictToastText});
+            } else if(core1 && core1.status === "canceled"){
+              this.$.lockedDialog.open();
+            } else if(!core1 && (this.currentUserType === "admin" || this.currentUserType === "manager")){
+              this.set("catData.category", "admin");
+              this.set("pageData.page", "ad-payment");
+              this.fire("openToast", {toastText: this.restrictToastText});
+            } else if(!core1){
+              this.$.lockedDialog.open();
+            };
           };
         }.bind(this));
       },
