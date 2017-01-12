@@ -336,17 +336,42 @@
           this.updateStyles();
 
         };
-        if(this.page==="su-view-reports"){
-
-          if(dimensions.base.query767){
-            this.$.healthGraph.redraw();
-          } else if(dimensions.base.query1023){
-            this.$.healthGraph.redraw();
-          } else if(dimensions.base.query1365){
-            this.$.healthGraph.redraw();
-          } else if(dimensions.base.query1919){
+        if(["su-view-reports", "su-reports", "su-monthly-reports"].indexOf(this.page) != -1) {
+          console.log("hitting "+this.page);
+          if(this.$.healthGraph) {
             this.$.healthGraph.redraw();
           };
+          var reportDateSelectorWidth = "50%";
+          var reportTabsFontSize = "14px";
+          var expandibleItem = "2";
+          var appGridColumns = "2";
+          if(dimensions.base.query767) {
+            reportDateSelectorWidth = "90%";
+            reportTabsFontSize = "10px";
+            appGridColumns = "1";
+            expandibleItem = "1";
+          } else if(dimensions.base.query1023) {
+            reportDateSelectorWidth = "80%";
+            reportTabsFontSize = "11px";
+            appGridColumns = "1";
+            expandibleItem = "1";
+          } else if(dimensions.base.query1365) {
+            reportDateSelectorWidth = "70%";
+            reportTabsFontSize = "12px";
+            appGridColumns = "2";
+            expandibleItem = "2";
+          } else if(dimensions.base.query1919) {
+            reportDateSelectorWidth = "60%";
+            reportTabsFontSize = "14px";
+            appGridColumns = "2";
+            expandibleItem = "2";
+          };
+
+          this.customStyle["--report-date-selector-width"] = reportDateSelectorWidth;
+          this.customStyle["--app-grid-columns"] = appGridColumns;
+          this.customStyle["--app-grid-expandible-item-columns"] = expandibleItem;
+          this.customStyle["--report-tabs-font-size"] = reportTabsFontSize;
+          this.updateStyles();
         };
       },
       attached:function(){
