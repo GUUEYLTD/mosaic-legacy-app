@@ -17,7 +17,7 @@
     screenChange:function(dimensions){
       //available queries= <=767, <=1023, <=1365, <=1919
       //general changes
-      var pageCardHorizontalMargin="176px";
+      var pageCardHorizontalMargin="150px";
       if(dimensions.base.query767){
         pageCardHorizontalMargin="0px";
       } else if(dimensions.base.query1023){
@@ -25,7 +25,7 @@
       } else if(dimensions.base.query1365){
         pageCardHorizontalMargin="50px";
       } else if(dimensions.base.query1919){
-        pageCardHorizontalMargin="164px";
+        pageCardHorizontalMargin="100px";
       };
       this.customStyle["--page-card-horizontal-margin"]=pageCardHorizontalMargin;
       this.updateStyles();
@@ -35,7 +35,7 @@
       };
       if(this.page==="def-home"){
 
-        var appGridColumns="5";
+        var appGridColumns="6";
         var mainFabPosition="absolute";
         var mainFabTop="72px";
         var mainFabBottom="unset";
@@ -59,7 +59,7 @@
           mainFabBottom="unset";
           suBoxMargin="20px";
         } else if(dimensions.base.query1919){
-          appGridColumns="4";
+          appGridColumns="5";
           mainFabPosition="absolute";
           mainFabTop="72px";
           mainFabBottom="unset";

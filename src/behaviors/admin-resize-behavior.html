@@ -16,7 +16,7 @@
     ],
     screenChange:function(dimensions){
       //general changes
-      var pageCardHorizontalMargin="176px";
+      var pageCardHorizontalMargin="150px";
       if(dimensions.base.query767){
         pageCardHorizontalMargin="0px";
       } else if(dimensions.base.query1023){
@@ -24,7 +24,7 @@
       } else if(dimensions.base.query1365){
         pageCardHorizontalMargin="50px";
       } else if(dimensions.base.query1919){
-        pageCardHorizontalMargin="164px";
+        pageCardHorizontalMargin="100px";
       };
       this.customStyle["--page-card-horizontal-margin"]=pageCardHorizontalMargin;
       this.updateStyles();
