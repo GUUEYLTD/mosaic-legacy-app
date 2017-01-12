@@ -7,6 +7,7 @@
 
 <link rel="import" href="../../elements/firebase-storage/firebase-storage.html" />
 <link rel="import" href="../../elements/account-header/account-header.html" />
+<link rel="import" href="../../elements/media-queries/media-queries.html" />
 
 <link rel="import" href="../../behaviors/animations/default-pages-animation.html" />
 <link rel="import" href="../../behaviors/default-resize-behavior.html" />
@@ -16,6 +17,10 @@
 
 <dom-module id="def-account">
   <template>
+
+    <media-queries
+      dimensions="{{dimensions}}">
+    </media-queries>
 
     <firebase-auth
       id="auth"
@@ -36,10 +41,7 @@
     </firebase-storage>
 
     <style include="common-styles">
-      .main{
-        margin: 50px 10% 50px 10%;
-        width:80%;
-      }
+
     </style>
 
     <paper-dialog id="reAuthDialog">
@@ -53,7 +55,7 @@
 
     </paper-dialog>
 
-    <paper-card class="main">
+    <paper-card class="pageCard">
       <account-header
         name="[[user.displayName]]"
         email="[[user.email]]"
@@ -84,6 +86,10 @@
           this.addEventListener("AccountPhotoChanged", this._photoChanged);
           this.addEventListener("updateDisplayName", this.updateDisplayName);
         },
+        behaviors:[
+          Polymer.defPagesAnimation,
+          Polymer.defaultResizeBehavior
+        ],
         properties:{
           user:{
             type:Object
@@ -97,9 +103,6 @@
             value:{}
           },
         },
-        observers:[
-          "_userChanged(user.*)"
-        ],
         updateDisplayName:function(e){
           var that = this;
           this.$.auth.user.updateProfile({displayName:e.detail.name})
@@ -123,9 +126,6 @@
             }, function(err){
               that.fire("openToast", {toastText: "There was an error updating your account: "+err});
             });
-        },
-        _userChanged:function(user){
-          console.log(user.base);
         },
         _saveSecureUpdate:function(){
           if(this.secureEmail){

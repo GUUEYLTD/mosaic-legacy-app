@@ -161,16 +161,16 @@
         <div class="patientName">
 
           <span class="patientNameText">
-            <iron-collapse id="currentName" horizontal opened>
+            <div id="currentName">
               [[_returnName(name)]]
               <iron-icon
                 class="accountButton"
                 on-tap="editDisplayName"
                 icon="icons:create">
               </iron-icon>
-            </iron-collapse>
+            </div>
 
-            <iron-collapse id="newName" horizontal>
+            <div id="newName" hidden>
               <paper-input
                 style="display:inline-block;"
                 value="{{newName}}">
@@ -180,7 +180,7 @@
                 on-tap="confirmEditDisplayName"
                 icon="icons:check">
               </iron-icon>
-            </iron-collapse>
+            </div>
           </span>
 
         </div>
@@ -221,24 +221,13 @@
         return name ==="No Display Name" ? this.email : this.name;
       },
       editDisplayName:function(e){
-        this.addEventListener("transitionend", this.collapseTransitioned);
-        this.$.currentName.hide();
+        this.$.currentName.hidden = true;
+        this.$.newName.hidden = false;
       },
       confirmEditDisplayName:function(e){
         this.fire("updateDisplayName", {name:this.newName});
-        this.addEventListener("transitionend", this.collapseTransitioned);
-        this.$.newName.hide();
-      },
-      collapseTransitioned:function(e){
-        if(e.path[0].id === "newName"){
-          this.removeEventListener("transitionend", this.collapseTransitioned);
-          this.$.currentName.toggle();
-        };
-        if(e.path[0].id === "currentName"){
-          this.removeEventListener("transitionend", this.collapseTransitioned);
-          this.$.newName.toggle();
-
-        };
+        this.$.currentName.hidden = false;
+        this.$.newName.hidden = true;
       },
       photoChanged:function(photo){
         var isBase64 = photo.includes("data:image/png;base64");
