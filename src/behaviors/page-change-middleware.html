@@ -163,9 +163,6 @@
             }
             this.selected = this.page;
             this.ensureLayout(page);
-            if(this.payments.status === "delinquent"){
-              this.fire("openToast", {toastText:this.restrictToastText});
-            };
           },
           function(){
             this.errorRedirect();
