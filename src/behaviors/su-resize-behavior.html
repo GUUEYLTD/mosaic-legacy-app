@@ -209,38 +209,77 @@
           var mainFabTop="-30px";
           var mainFabBottom="unset";
           var mainFabRight="5%";
+          //timeChunkBar styles
+          var timeChunkBarBackgroundPosition;
+          // --time-chunk-bar-background-position
+          var timeChunkBarBackgroundSize;
+          // --time-chunk-bar-background-size
+          var timeChunkLabelMarginLeft;
+          // --time-chunk-label-margin-left
+          var timeChunkLabelFontSize;
+          // --time-chunk-label-font-size
+          var timeChunkTimeFontSize;
+          // --time-chunk-time-font-size
           if(dimensions.base.query767){
-
             //fab styles
             mainFabPosition="fixed";
             mainFabTop="unset";
             mainFabBottom="5%";
             mainFabRight="5%";
+            //timeChunkBar styles
+            timeChunkBarBackgroundPosition = "30px";
+            timeChunkBarBackgroundSize = "20px 20px";
+            timeChunkLabelMarginLeft = "80px";
+            timeChunkLabelFontSize = "16px";
+            timeChunkTimeFontSize = "12px";
           } else if(dimensions.base.query1023){
             //fab styles
             mainFabPosition="fixed";
             mainFabTop="unset";
             mainFabBottom="5%";
             mainFabRight="5%";
+            //timeChunkBar styles
+            timeChunkBarBackgroundPosition = "35px";
+            timeChunkBarBackgroundSize = "25px 25px";
+            timeChunkLabelMarginLeft = "95px";
+            timeChunkLabelFontSize = "18px";
+            timeChunkTimeFontSize = "14px";
           } else if(dimensions.base.query1365){
             //fab styles
             mainFabPosition="absolute";
             mainFabTop="-30px";
             mainFabBottom="unset";
             mainFabRight="5%";
+            //timeChunkBar styles
+            timeChunkBarBackgroundPosition = "40px";
+            timeChunkBarBackgroundSize = "30px 30px";
+            timeChunkLabelMarginLeft = "110px";
+            timeChunkLabelFontSize = "20px";
+            timeChunkTimeFontSize = "16px";
           } else if(dimensions.base.query1919){
-
             //fab styles
             mainFabPosition="absolute";
             mainFabTop="-30px";
             mainFabBottom="unset";
             mainFabRight="5%";
+            //timeChunkBar styles
+            timeChunkBarBackgroundPosition = "45px";
+            timeChunkBarBackgroundSize = "35px 35px";
+            timeChunkLabelMarginLeft = "125px";
+            timeChunkLabelFontSize = "22px";
+            timeChunkTimeFontSize = "18px";
           };
 
           this.customStyle["--main-fab-position"]=mainFabPosition;
           this.customStyle["--main-fab-top"]=mainFabTop;
           this.customStyle["--main-fab-bottom"]=mainFabBottom;
           this.customStyle["--main-fab-right"]=mainFabRight;
+          this.customStyle["--time-chunk-bar-background-position"]=timeChunkBarBackgroundPosition;
+          this.customStyle["--time-chunk-bar-background-size"]=timeChunkBarBackgroundSize;
+          this.customStyle["--time-chunk-label-margin-left"]=timeChunkLabelMarginLeft;
+          this.customStyle["--time-chunk-label-font-size"]=timeChunkLabelFontSize;
+          this.customStyle["--time-chunk-time-font-size"]=timeChunkTimeFontSize;
+
           this.updateStyles();
         };
         if(this.page==="su-pre"){
