@@ -1130,6 +1130,7 @@ cd<link rel="import" href="../bower_components/polymer/polymer.html" />
           this.$.appsDialog.noOverlap = true;
           this.$.appsDialog.horizontalOffset = -e.currentTarget.offsetLeft - 12;
           this.$.appsDialog.classList.remove("dialogPointer");
+          this.$.appsDialog.style = "width:100%;";
         };
 
         if(isDesktop) {
@@ -1139,9 +1140,8 @@ cd<link rel="import" href="../bower_components/polymer/polymer.html" />
           this.$.appsDialog.noOverlap = true;
           this.$.appsDialog.horizontalOffset = (e.currentTarget.offsetWidth / 2) - beforeWidth;
           this.$.appsDialog.classList.add("dialogPointer");
+          this.$.appsDialog.style = "";
         };
-        console.log(e.currentTarget);
-        console.log(window.innerWidth, e.currentTarget.offsetLeft);
         this.$.logoutDialog.close();
         this.$.notifyDialog.close();
         this.$.appsDialog.toggle();
