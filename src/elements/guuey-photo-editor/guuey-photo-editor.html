@@ -9,7 +9,7 @@
 <!--
 `guuey-photo-editor`
 element that returns edited images as base64 for use in applications.
-
+optional cropHeight and cropWidth properties to set the crop dimensions
 @demo demo/index.html
 -->
 
@@ -28,7 +28,7 @@ element that returns edited images as base64 for use in applications.
       #editDialog {
         z-index:998;
         position:fixed;
-        padding:100px;
+        padding:var(--edit-dialog-padding, 100px);
         background:
         linear-gradient(-90deg, rgba(0,0,0,.05) 1px, transparent 1px),
         linear-gradient(rgba(0,0,0,.05) 1px, transparent 1px),
@@ -68,7 +68,7 @@ element that returns edited images as base64 for use in applications.
           width: 40px;
           height: 40px;
           background: #7E57C2;
-          z-index: 999;
+          z-index: 998;
       }
 
       .resize-handle-nw {
@@ -108,11 +108,11 @@ element that returns edited images as base64 for use in applications.
           position: absolute;
           left: 50%;
           top: 50%;
-          margin-left: -100px;
-          margin-top: -100px;
+          margin-top: calc(var(--editor-overlay-height, 200px) * -0.5);
+          margin-left: calc(var(--editor-overlay-width, 200px) * -0.5);
           z-index: 999;
-          width: 200px;
-          height:var(--overlay-height, 200px);
+          height:var(--editor-overlay-height, 200px);
+          width:var(--editor-overlay-width, 200px);
           border: solid 2px #7E57C2;
           box-sizing: content-box;
           pointer-events: none;
@@ -127,7 +127,7 @@ element that returns edited images as base64 for use in applications.
           content: '';
           position: absolute;
           display: block;
-          width: 200px;
+          width:var(--editor-overlay-width, 200px);
           height: 40px;
           border-left: dashed 2px #7E57C2;
           border-right: dashed 2px #7E57C2;
@@ -151,7 +151,7 @@ element that returns edited images as base64 for use in applications.
           position: absolute;
           display: block;
           width: 40px;
-          height:var(--overlay-height, 200px);
+          height:var(--editor-overlay-height, 200px);
           border-top: dashed 2px #7E57C2;
           border-bottom: dashed 2px #7E57C2;
       }
@@ -174,12 +174,13 @@ element that returns edited images as base64 for use in applications.
         bottom:20px;
         margin-top:20px;
         vertical-align:bottom;
-        z-index:997;
+        z-index:999;
         display:flex;
         flex-direction:row;
         width:80%;
         margin:auto;
         background-color:#F0F0F0;
+        opacity:.8;
         border: 1px solid black;
       }
 
@@ -238,6 +239,16 @@ element that returns edited images as base64 for use in applications.
           notify:true,
           observer: "_valueChanged"
         },
+        //the height of the crop rectangle
+        cropHeight: {
+          type:Number,
+          value:200
+        },
+        //the width of the crop rectangle
+        cropWidth: {
+          type:Number,
+          value:200
+        },
         //keeps track of whether or not the image has been rotated. used in order to decide which source to use.
         rotated: {
           type: Boolean,
@@ -284,16 +295,6 @@ element that returns edited images as base64 for use in applications.
           type:Number,
           value:10
         },
-        //max width the canvas will go to when resizing an image.
-        maxWidth: {
-          type:Number,
-          value:600
-        },
-        //max height the canvas will go to when resizing an image.
-        maxHeight: {
-          type:Number,
-          value:600
-        },
         //used to decide whether or not to constrain proportions
         constrain: {
           type: Boolean,
@@ -333,14 +334,31 @@ element that returns edited images as base64 for use in applications.
 
       //set min/max width/height for images based on properties set
       setMinMax:function() {
-        this.customStyle["--image-min-width"] = (this.minWidth || 50) + "px";
-        this.customStyle["--image-min-height"] = (this.minHeight || 50) + "px";
-        this.customStyle["--image-max-width"] = (this.maxWidth || 600) + "px";
-        this.customStyle["--image-max-height"] = (this.maxHeight || 600) + "px";
+        var cropWidth = this.cropWidth;
+        var cropHeight = this.cropHeight;
+        var minDimension = Math.min(window.innerWidth, window.innerHeight);
+        var desiredCropScale = .7;
+        this.dialogPadding = minDimension * .10;
+        if(this.cropWidth > minDimension * desiredCropScale || this.cropHeight > minDimension * desiredCropScale){
+          var scale = Math.min((minDimension * desiredCropScale - (this.dialogPadding * 2) - 40) / this.cropWidth, (minDimension * desiredCropScale - (this.dialogPadding * 2) - 40) / this.cropHeight);
+          cropWidth = (this.cropWidth * scale);
+          cropHeight = (this.cropHeight * scale);
+          console.log(cropWidth, cropHeight);
+        };
+        this.maxWidth = window.innerWidth - minDimension * .10 * 2;
+        this.maxHeight = window.innerHeight - minDimension * .10 * 2;
+        this.customStyle["--edit-dialog-padding"] = minDimension * .10 + "px";
+        this.customStyle["--image-min-width"] = this.minWidth + "px";
+        this.customStyle["--image-min-height"] = this.minHeight + "px";
+        this.customStyle["--image-max-width"] = this.maxWidth + "px";
+        this.customStyle["--image-max-height"] = this.maxHeight + "px";
+        this.customStyle["--editor-overlay-width"] = cropWidth + "px";
+        this.customStyle["--editor-overlay-height"] = cropHeight + "px";
         this.updateStyles();
       },
 
-      _startEdit:function() {
+      _startEdit:function(e) {
+        console.log(e);
         this.$.editDialog.open();
       },
 
@@ -548,9 +566,8 @@ element that returns edited images as base64 for use in applications.
         e.stopPropagation();
         mouse.x = (e.clientX || e.pageX || e.touches[0].clientX) + window.scrollX;
         mouse.y = (e.clientY || e.pageY || e.touches[0].clientY) + window.scrollY;
-        //100 added in to account for padding
-        var offsetLeft = mouse.x - (this.eventState.mouseX - this.eventState.containerLeft + 100);
-        var offsetTop = mouse.y - (this.eventState.mouseY - this.eventState.containerTop + 100);
+        var offsetLeft = mouse.x - (this.eventState.mouseX - this.eventState.containerLeft + this.dialogPadding);
+        var offsetTop = mouse.y - (this.eventState.mouseY - this.eventState.containerTop + this.dialogPadding);
         Polymer.dom(this.$.imageContainer).setAttribute("style", "top: " + offsetTop + "px; left: " + offsetLeft + "px;");
         // Watch for pinch zoom gesture while moving
         if(this.eventState.evnt.touches && this.eventState.evnt.touches.length > 1){
@@ -598,9 +615,8 @@ element that returns edited images as base64 for use in applications.
         this.ctx.drawImage(this.$.image, left, top, width, height, 0, 0, width, height);
         this.$.image.src = this.canvas.toDataURL("image/png");
         this.alt.src = this.$.image.src;
-        //-100 to account for 100px padding of the dialog
-        var x = (this.$.editDialog.offsetWidth / 2 - this.$.imageContainer.offsetWidth / 2) - 100;
-        var y = (this.$.editDialog.offsetHeight / 2 - this.$.imageContainer.offsetHeight /2 ) - 100;
+        var x = (this.$.editDialog.offsetWidth / 2 - this.$.imageContainer.offsetWidth / 2) - this.dialogPadding;
+        var y = (this.$.editDialog.offsetHeight / 2 - this.$.imageContainer.offsetHeight /2 ) - this.dialogPadding;
         Polymer.dom(this.$.imageContainer).setAttribute("style", "left: " + x + "px; top: " + y + "px;");
         this.cropped=true;
       },
