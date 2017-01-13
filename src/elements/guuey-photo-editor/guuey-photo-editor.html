@@ -343,7 +343,6 @@ optional cropHeight and cropWidth properties to set the crop dimensions
           var scale = Math.min((minDimension * desiredCropScale - (this.dialogPadding * 2) - 40) / this.cropWidth, (minDimension * desiredCropScale - (this.dialogPadding * 2) - 40) / this.cropHeight);
           cropWidth = (this.cropWidth * scale);
           cropHeight = (this.cropHeight * scale);
-          console.log(cropWidth, cropHeight);
         };
         this.maxWidth = window.innerWidth - minDimension * .10 * 2;
         this.maxHeight = window.innerHeight - minDimension * .10 * 2;
@@ -358,7 +357,6 @@ optional cropHeight and cropWidth properties to set the crop dimensions
       },
 
       _startEdit:function(e) {
-        console.log(e);
         this.$.editDialog.open();
       },
 

@@ -392,11 +392,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       };
     }
 
-    #appsDialog{
-      max-height:80%;
-    }
-
-    #appsDialog::before{
+    .dialogPointer::before{
       height:20px;
       width:20px;
       background-color:#FFFFFF;
@@ -406,43 +402,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       right:20px;
       content:" ";
     }
-
-
+    #appsDialog{
+      max-height:80%;
+    }
     #notifyDialog{
+      max-width:100%;
       max-height:80%;
       margin-top:20px;
     }
     #notifyDialogScroll{
-      --paper-dialog-scrollable:{
-        max-height:calc(300px);
-        padding:0;
-        margin:0;
-      };
+      margin:0;
+      padding:0;
+      max-height:calc(100% - 300px);
     }
-
-    #notifyDialog::before{
-      height:20px;
-      width:20px;
-      background-color:#FFFFFF;
-      transform: rotate(45deg);
-      position:absolute;
-      top:-10px;
-      right:20px;
-      content:" ";
-    }
-
     #logoutDialog{
       max-height:80%;
-    }
-    #logoutDialog::before{
-      height:20px;
-      width:20px;
-      background-color:#FFFFFF;
-      transform: rotate(45deg);
-      position:absolute;
-      top:-10px;
-      right:20px;
-      content:" ";
     }
     #lockedDialog{
       width:300px;

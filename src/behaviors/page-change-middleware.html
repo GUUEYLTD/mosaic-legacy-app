@@ -79,21 +79,17 @@
               if(payements.trial.status === "canceled"){
                 this.restrictToastText = this.adTrialOver;
                 this.restrictDialogText = this.swTrialOver;
-                console.log("trial canceled");
               };
             } else if(core1){
               if(core1.status === "canceled"){
                 this.restrictToastText = this.adNoPayment;
                 this.restrictDialogText = this.swNoPayment;
-                console.log("main core cancled");
               }
             } else {
               this.restrictDialogText = this.noCoreText;
               this.restrictToastText = this.noCoreText;
-              console.log("no core no trial");
             };
             //handle restrictions for admins, managers, and others
-            console.log(this.currentUserType);
             if(payments && payments.trial && payments.trial.status === "canceled" && (this.currentUserType === "admin" || this.currentUserType === "manager")){
               this.set("catData.category", "admin");
               this.set("pageData.page", "ad-payment");

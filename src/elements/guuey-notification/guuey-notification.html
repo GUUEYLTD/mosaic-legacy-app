@@ -17,6 +17,7 @@
         box-sizing: border-box;
         border-bottom:1px solid grey;
         padding:20px;
+        width:100%;
       }
       .flexNotify{
         display:flex;
@@ -59,6 +60,9 @@
         border-radius:50%;
         clip:auto;
       }
+      .buttons{
+        text-align:right;
+      }
       paper-button{
         color:#009282;
         display:inline;
@@ -87,12 +91,14 @@
             [[message]]
           </span>
           <div class="divider"></div>
-          <a style="text-decoration:none;" class="inherit" href="[[url]]">
-            <paper-button on-tap="checkNotification"><iron-icon icon="icons:icons:reply"></iron-icon>check</paper-button>
-          </a>
-          <paper-button on-tap="dismissNotification"><iron-icon icon="icons:delete-forever"></iron-icon>dismiss</paper-button>
-
         </div>
+      </div>
+
+      <div class="buttons">
+        <a style="text-decoration:none;" class="inherit" href="[[url]]">
+          <paper-button on-tap="checkNotification"><iron-icon icon="icons:icons:reply"></iron-icon>check</paper-button>
+        </a>
+        <paper-button on-tap="dismissNotification"><iron-icon icon="icons:delete-forever"></iron-icon>dismiss</paper-button>
       </div>
 
 
@@ -123,7 +129,6 @@
       },
       dismissNotification:function(){
         this.fire("dismissNotification",{data:this.info, index:this.index});
-        console.log("dismiss");
       },
       checkNotification:function(){
         this.fire("checkNotification");

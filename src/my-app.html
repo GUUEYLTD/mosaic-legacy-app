@@ -1123,13 +1123,13 @@ cd<link rel="import" href="../bower_components/polymer/polymer.html" />
         var isDesktop = e.currentTarget.classList.contains("desktopTab");
         var beforeWidth = Math.sqrt(Math.pow(20, 2) + Math.pow(20, 2));
         var containedIcon = Polymer.dom(e.currentTarget).children[0];
-        console.log(e.currentTarget);
         if(isMobile) {
           this.$.appsDialog.positionTarget = containedIcon;
           this.$.appsDialog.verticalAlign = "top";
-          this.$.appsDialog.horizontalAlign = "right";
+          this.$.appsDialog.horizontalAlign = "left";
           this.$.appsDialog.noOverlap = true;
-          this.$.appsDialog.horizontalOffset = (containedIcon.offsetWidth / 2) - beforeWidth;
+          this.$.appsDialog.horizontalOffset = -e.currentTarget.offsetLeft - 12;
+          this.$.appsDialog.classList.remove("dialogPointer");
         };
 
         if(isDesktop) {
@@ -1138,7 +1138,10 @@ cd<link rel="import" href="../bower_components/polymer/polymer.html" />
           this.$.appsDialog.horizontalAlign = "right";
           this.$.appsDialog.noOverlap = true;
           this.$.appsDialog.horizontalOffset = (e.currentTarget.offsetWidth / 2) - beforeWidth;
+          this.$.appsDialog.classList.add("dialogPointer");
         };
+        console.log(e.currentTarget);
+        console.log(window.innerWidth, e.currentTarget.offsetLeft);
         this.$.logoutDialog.close();
         this.$.notifyDialog.close();
         this.$.appsDialog.toggle();
@@ -1152,9 +1155,11 @@ cd<link rel="import" href="../bower_components/polymer/polymer.html" />
         if(isMobile) {
           this.$.notifyDialog.positionTarget = containedIcon;
           this.$.notifyDialog.verticalAlign = "top";
-          this.$.notifyDialog.horizontalAlign = "right";
+          this.$.notifyDialog.horizontalAlign = "left";
           this.$.notifyDialog.noOverlap = true;
-          this.$.notifyDialog.horizontalOffset = (containedIcon.offsetWidth / 2) - beforeWidth;
+          this.$.notifyDialog.classList.remove("dialogPointer");
+          //where is this extra 12 coming from??? should fix this later...
+          this.$.notifyDialog.horizontalOffset = -e.currentTarget.offsetLeft - 12;
         };
 
         if(isDesktop) {
@@ -1162,6 +1167,7 @@ cd<link rel="import" href="../bower_components/polymer/polymer.html" />
           this.$.notifyDialog.verticalAlign = "top";
           this.$.notifyDialog.horizontalAlign = "right";
           this.$.notifyDialog.noOverlap = true;
+          this.$.notifyDialog.classList.add("dialogPointer");
           this.$.notifyDialog.horizontalOffset = (e.currentTarget.offsetWidth / 2) - beforeWidth;
         };
 
@@ -1186,14 +1192,18 @@ cd<link rel="import" href="../bower_components/polymer/polymer.html" />
           this.$.logoutDialog.verticalAlign = "top";
           this.$.logoutDialog.horizontalAlign = "right";
           this.$.logoutDialog.noOverlap = true;
-          this.$.logoutDialog.horizontalOffset = (e.currentTarget.offsetWidth / 2) - beforeWidth;
+          this.$.logoutDialog.classList.remove("dialogPointer");
+          this.$.logoutDialog.horizontalOffset = -e.currentTarget.offsetLeft -12;
+          this.$.logoutDialog.style="width:100%;";
         }
         if(isDesktop){
           this.$.logoutDialog.positionTarget = e.currentTarget;
           this.$.logoutDialog.verticalAlign = "top";
           this.$.logoutDialog.horizontalAlign = "right";
           this.$.logoutDialog.noOverlap = true;
+          this.$.logoutDialog.classList.add("dialogPointer");
           this.$.logoutDialog.horizontalOffset = e.currentTarget.offsetWidth / 2 -beforeWidth;
+          this.$.logoutDialog.style="";
         };
 
         this.$.notifyDialog.close();
