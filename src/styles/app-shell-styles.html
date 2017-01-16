@@ -375,23 +375,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       --iron-icon-height:30px;
       --iron-icon-width:30px;
     }
-    #appsDialog{
-      width:300px;
-      min-height:100px;
-      position:relative;
-    }
     .flexRow{
       display:flex;
       flex-direction:row;
     }
-    .flexRow paper-icon-button{
+    .flexRow iron-icon{
       flex-grow:1;
-      --paper-icon-button:{
-        height:100%;
-        width:100%;
-      };
+      padding:0;
+      height:75%;
+      width:75%;
     }
-
+    .flexRow p {
+      margin:0;
+      padding:0;
+    }
+    .flexRow * {
+      text-align:center;
+    }
+    .appBox:hover {
+      cursor:pointer;
+    }
     .dialogPointer::before{
       height:20px;
       width:20px;
@@ -403,8 +406,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       content:" ";
     }
     #appsDialog{
+      width:300px;
+      min-height:100px;
+      position:relative;
       max-height:80%;
-      overflow:hidden;
     }
     #notifyDialog{
       max-width:100%;

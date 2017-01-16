@@ -188,25 +188,72 @@ cd<link rel="import" href="../bower_components/polymer/polymer.html" />
 
     <paper-dialog id="appsDialog">
       <div class="flexRow">
-        <paper-icon-button icon="modules:care-plan"></paper-icon-button>
-        <paper-icon-button icon="modules:adv-care"></paper-icon-button>
-        <paper-icon-button icon="modules:medication"></paper-icon-button>
+        <div on-tap="openApp" data-name="carePlan" class="appBox">
+          <iron-icon icon="modules:care-plan"></iron-icon>
+          <p>
+            Care Plan
+          </p>
+        </div>
+        <div on-tap="openApp" data-name="medication" class="appBox">
+          <iron-icon icon="modules:medication"></iron-icon>
+          <p>
+            Medication
+          </p>
+        </div>
+        <div on-tap="openApp" data-name="training" class="appBox">
+          <iron-icon icon="modules:training"></iron-icon>
+          <p>
+            Training
+          </p>
+        </div>
       </div>
       <div class="flexRow">
-        <paper-icon-button icon="modules:training"></paper-icon-button>
-        <paper-icon-button icon="modules:health-safety"></paper-icon-button>
-        <paper-icon-button icon="modules:policies-procedures"></paper-icon-button>
+        <div on-tap="openApp" data-name="healthSafety" class="appBox">
+          <iron-icon icon="modules:health-safety"></iron-icon>
+          <p>
+            Health & Safety
+          </p>
+        </div>
+        <div on-tap="openApp" data-name="policiesProcedures" class="appBox">
+          <iron-icon icon="modules:policies-procedures"></iron-icon>
+          <p>
+            Policies & Procedures
+          </p>
+        </div>
+        <div on-tap="openApp" data-name="analytics" class="appBox">
+          <iron-icon icon="modules:analytics"></iron-icon>
+          <p>
+            Analytics
+          </p>
+        </div>
       </div>
       <div class="flexRow">
-        <paper-icon-button icon="modules:analytics"></paper-icon-button>
-        <paper-icon-button icon="modules:communication"></paper-icon-button>
-        <paper-icon-button icon="modules:reporting"></paper-icon-button>
+        <div on-tap="openApp" data-name="communication" class="appBox">
+          <iron-icon icon="modules:communication"></iron-icon>
+          <p>
+            Communication
+          </p>
+        </div>
+        <div on-tap="openApp" data-name="staffManager" class="appBox">
+          <iron-icon icon="modules:staff-manager"></iron-icon>
+          <p>
+            Staff Manager
+          </p>
+        </div>
+        <div on-tap="openApp" data-name="mealPlanning" class="appBox">
+          <iron-icon icon="modules:meals"></iron-icon>
+          <p>
+            Meal Planning
+          </p>
+        </div>
       </div>
-      <div class="flexRow">
-        <paper-icon-button icon="modules:staff-manager"></paper-icon-button>
-        <paper-icon-button icon="modules:administration"></paper-icon-button>
-        <paper-icon-button icon="modules:meals"></paper-icon-button>
-      </div>
+    </paper-dialog>
+
+    <paper-dialog id="appPromoDialog">
+      <h2>[[appModuleName]]</h2>
+      <p>
+        [[appModuleText]]
+      </p>
     </paper-dialog>
 
     <paper-dialog id="notifyDialog">
@@ -863,6 +910,47 @@ cd<link rel="import" href="../bower_components/polymer/polymer.html" />
             "/default/default/def-verify",
             "/default/default/def-login"
             ]
+        },
+        appModules:{
+          type:Object,
+          value:{
+            carePlan:{
+              active:true,
+              description:"The Main Module that does all the main stuff. Available now."
+            },
+            medication:{
+              active:false,
+              description:"Medication module takes care of medication stuff."
+            },
+            training:{
+              active:false,
+              description:"Trainging module takes care of training stuff."
+            },
+            healthSafety:{
+              active:false,
+              description:"Health and safety module that takes care of health and safety stuff."
+            },
+            policiesProcedures:{
+              active:false,
+              description:"Policies and Procedures module that takes care of health and safety stuff."
+            },
+            analytics:{
+              active:false,
+              description:"Analytics module that takes care of health and safety stuff."
+            },
+            communication:{
+              active:false,
+              description:"Communication module that takes care of communication stuff"
+            },
+            staffManager:{
+              active:false,
+              description:"Staff manager module that takes care of staff management stuff."
+            },
+            mealPlanning:{
+              active:false,
+              description:"Meal planning module that takes care of meal planning stuff."
+            }
+          }
         }
       },
       //routing config
@@ -1138,13 +1226,48 @@ cd<link rel="import" href="../bower_components/polymer/polymer.html" />
           this.$.appsDialog.verticalAlign = "top";
           this.$.appsDialog.horizontalAlign = "right";
           this.$.appsDialog.noOverlap = true;
-          this.$.appsDialog.horizontalOffset = (e.currentTarget.offsetWidth / 2) - beforeWidth;
           this.$.appsDialog.classList.add("dialogPointer");
+          this.$.appsDialog.horizontalOffset = (e.currentTarget.offsetWidth / 2) - beforeWidth;
           this.$.appsDialog.style = "";
         };
         this.$.logoutDialog.close();
         this.$.notifyDialog.close();
         this.$.appsDialog.toggle();
+      },
+      openApp:function(e){
+        console.log(e);
+        console.log(e.currentTarget.getAttribute("data-name"));
+        var appModule = e.currentTarget.getAttribute("data-name");
+        if(this.appModules[appModule].active){
+          //implement module changes later on when we have another module to show...
+          console.log("go to the other module");
+        } else {
+          this.appModuleName = this.convertCamel(appModule);
+          this.appModuleText = this.appModules[appModule].description;
+          this.$.appPromoDialog.open();
+        };
+      },
+      convertCamel:function(camelCase){
+        if (camelCase == null || camelCase == "") {
+          return camelCase;
+        }
+
+        camelCase = camelCase.trim();
+        var newText = "";
+        for (var i = 0; i < camelCase.length; i++) {
+          if (/[A-Z]/.test(camelCase[i])
+              && i != 0
+              && /[a-z]/.test(camelCase[i-1])) {
+            newText += " ";
+          }
+          if (i == 0 && /[a-z]/.test(camelCase[i]))
+          {
+            newText += camelCase[i].toUpperCase();
+          } else {
+            newText += camelCase[i];
+          }
+        }
+        return newText;
       },
       openNotifications:function(e){
         // hypotenuse of 45 degree rotated square that is before the dialog... meaning the width in relative terms
