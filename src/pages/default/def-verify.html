@@ -114,7 +114,6 @@
           <paper-card class="pageCard">
             <div class="pageInnerCont padded">
               <h1>Recover Password</h1>
-
               <paper-input label="New Email"></paper-input>
               <paper-button>change email</paper-button>
             </div>
@@ -216,11 +215,11 @@
               return decodeURIComponent(results[2].replace(/\+/g, " "));
             },
             actionRouter:function(){
-              var mode=this.getParameterByName("mode");
-              var actionCode=this.getParameterByName("oobCode");
+              var mode = this.getParameterByName("mode");
+              var actionCode = this.getParameterByName("oobCode");
               //save for other functions
-              this.actionCode=actionCode;
-              var apiKey=this.getParameterByName("apiKey");
+              this.actionCode = actionCode;
+              var apiKey = this.getParameterByName("apiKey");
 
               switch(mode){
                 case "resetPassword":
@@ -239,50 +238,50 @@
 
                 default:
                   //display the regular page with resend verify button and info
-                  this.verifyReminderDisplay=true;
+                  this.verifyReminderDisplay = true;
                   break;
               }
             },
             handleResetPassword:function(actionCode){
-              this.showResetPassForm=true;
+              this.showResetPassForm = true;
               var accountEmail;
               console.log("handling password reset");
               //verify password reset code
               this.$.auth.auth.verifyPasswordResetCode(actionCode)
                 .then(function(email){
                   console.log("password reset code verified");
-                  this.passwordSet=true;
-                  this.accountEmail=email;
+                  this.passwordSet = true;
+                  this.accountEmail = email;
                 }.bind(this))
                 .catch(function(error){
                   console.log("password reset code verify error :"+error);
-                  this.resetVerifyError=true;
-                  this.resetVerifyErrorMessage=error;
+                  this.resetVerifyError = true;
+                  this.resetVerifyErrorMessage = error;
                 }.bind(this));
             },
             changePassword:function(){
               this.$.auth.auth.confirmPasswordReset(this.actionCode, this.newPassword)
                 .then(function(resp){
-                  console.log("password change successful :"+resp);
-                  this.passwordSet=false;
-                  this.resetVerifySuccess=true;
-                  this.resetVerifyMessage=resp;
+                  console.log("password change successful :" + resp);
+                  this.passwordSet = false;
+                  this.resetVerifySuccess = true;
+                  this.resetVerifyMessage = resp;
                 }.bind(this))
                 .catch(function(error){
                   console.log("password change not successful :"+error);
-                  this.passwordSet=false;
-                  this.resetVerifyError=true;
-                  this.resetVerifyMessage=error;
+                  this.passwordSet = false;
+                  this.resetVerifyError = true;
+                  this.resetVerifyMessage = error;
                 }.bind(this));
             },
             handleRecoverEmail:function(actionCode){
-              this.showRecoverEmailForm=true;
-              var restoredEmail=null;
+              this.showRecoverEmailForm = true;
+              var restoredEmail = null;
               //confirm action code is valid
               this.$.auth.auth.checkActionCode(actionCode)
                 .then(function(info){
                   //get restored email address
-                  restoredEmail=info['data']['email'];
+                  restoredEmail = info['data']['email'];
                   //this function doesnt seem right... check on this later and implement properly
                   console.log(restoredEmail);
                 }.bind(this))
@@ -291,28 +290,28 @@
                 }.bind(this));
             },
             handleVerifyEmail:function(actionCode){
-              this.showVerifyEmailForm=true;
+              this.showVerifyEmailForm = true;
               this.$.auth.auth.applyActionCode(actionCode)
                 .then(function(resp){
                   //email address verified
-                  this.verifyResponse=resp;
-                  this.verifySuccess=true;
+                  this.verifyResponse = resp;
+                  this.verifySuccess = true;
                   this.startTrial();
                 }.bind(this))
                 .catch(function(error){
-                  this.verifyErrorMessage=error;
-                  this.verifyError=true;
+                  this.verifyErrorMessage = error;
+                  this.verifyError = true;
                 }.bind(this));
             },
             startTrial:function(){
               this.$.userIndexDB.getStoredValue("/userIndex/"+this.user.uid+"/home")
                 .then(function(home){
-                  this.$.trialSetCall.body={
+                  this.$.trialSetCall.body = {
                     home:home
                   };
-                  this.$.trialSetCall.url="https://glacial-tor-36526.herokuapp.com/trial/starttrial";
+                  this.$.trialSetCall.url = "https://glacial-tor-36526.herokuapp.com/trial/starttrial";
                   this.$.trialSetCall.generateRequest();
-                }.bind(this))
+                }.bind(this));
             }
         });
     </script>

@@ -14,6 +14,13 @@
 
 <link rel="import" href="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror.html" />
 
+<!--
+`account-header`
+header element that contains an editable user photo and name.
+
+@demo demo/index.html
+-->
+
 <dom-module id="account-header">
 
   <template>
@@ -146,7 +153,7 @@
         <iron-image
           class="headerProfileImage"
           sizing="cover"
-          placeholder="../../../images/defaultAvatar.png"
+          placeholder="../../../../images/defaultAvatar.png"
           preload
           fade
           src="[[photo]]">
@@ -199,105 +206,148 @@
 
     Polymer({
       is: 'account-header',
-      ready:function(){
+      ready:function() {
         this.addEventListener("transitionend", this.collapseTransitioned)
       },
-      properties:{
-        name:{
+
+      properties: {
+        //the current name of the user to be displayed
+        name: {
           type:String
         },
-        email:{
+        //the new display name to be set
+        newName: {
           type:String
         },
-        photo:{
+        //the user's email to be returned if no display name is set
+        email: {
+          type:String
+        },
+        //the current user profile photo used can be edited through `guuey-photo-editor`
+        photo: {
           type:String,
-          observer:"photoChanged"
+          observer:"_photoChanged"
         },
+        //screen is at least 600 pixels wide
+        query600: {
+          type:Boolean,
+          value:false
+        },
+        //screen is at least 800 pixels wide
+        query800: {
+          type:Boolean,
+          value:false
+        },
+        //screen is at least 1000 pixels wide
+        query1000: {
+          type:Boolean,
+          value:false
+        },
+        //screen is at least 1200 pixels wide
+        query1200: {
+          type:Boolean,
+          value:false
+        },
+        //screen is at least 1400 pixels wide
+        query1400: {
+          type:Boolean,
+          value:false
+        },
+        //screen is at least 1600 pixels wide
+        query1600: {
+          type:Boolean,
+          value:false
+        }
       },
-      observers:[
-        "editQuery(query1600, query1400, query1200, query1000, query800, query600)"
+
+      observers: [
+        "_editQuery(query1600, query1400, query1200, query1000, query800, query600)"
       ],
-      _returnName:function(name){
-        return name ==="No Display Name" ? this.email : this.name;
+      //return display name from account or email if no display name is present
+      _returnName:function(name) {
+        return name === "No Display Name" ? this.email : this.name;
       },
-      editDisplayName:function(e){
+      //open up the editor ui in order to set new display name
+      editDisplayName:function() {
         this.$.currentName.hidden = true;
         this.$.newName.hidden = false;
       },
-      confirmEditDisplayName:function(e){
-        this.fire("updateDisplayName", {name:this.newName});
+      //close editor ui and send event "updateDisplayName" along with `newName` property
+      confirmEditDisplayName:function() {
+        this.fire("updateDisplayName", {name: this.newName});
         this.$.currentName.hidden = false;
         this.$.newName.hidden = true;
       },
-      photoChanged:function(photo){
+
+      _photoChanged:function(photo) {
         var isBase64 = photo.includes("data:image/png;base64");
-        if(isBase64){
+        if(isBase64) {
           this.fire("AccountPhotoChanged", {photo:photo});
         };
       },
-      editQuery:function(query1600, query1400, query1200, query1000, query800, query600){
-        if(query600){
-          this.customStyle["--patient-name-font-size"]="12px";
-          this.customStyle["--page-name-font-size"]="12px";
-          this.customStyle["--header-image-height"]="75px";
-          this.customStyle["--header-image-width"]="75px";
-          this.customStyle["--header-info-height"]="75px";
-          this.customStyle["--patient-name-height"]="50px";
-          this.customStyle["--page-name-height"]="25px";
+      _editQuery:function(query1600, query1400, query1200, query1000, query800, query600) {
+        if(query600) {
+          this.customStyle["--patient-name-font-size"] = "12px";
+          this.customStyle["--page-name-font-size"] = "12px";
+          this.customStyle["--header-image-height"] = "75px";
+          this.customStyle["--header-image-width"] = "75px";
+          this.customStyle["--header-info-height"] = "75px";
+          this.customStyle["--patient-name-height"] = "50px";
+          this.customStyle["--page-name-height"] = "25px";
           this.updateStyles();
-        } else if(query800){
-          this.customStyle["--page-name-font-size"]="16px";
-          this.customStyle["--patient-name-font-size"]="16px";
-          this.customStyle["--header-image-height"]="100px";
-          this.customStyle["--header-image-width"]="100px";
-          this.customStyle["--header-info-height"]="100px";
-          this.customStyle["--patient-name-height"]="66px";
-          this.customStyle["--page-name-height"]="34px";
+        } else if(query800) {
+          this.customStyle["--page-name-font-size"] = "16px";
+          this.customStyle["--patient-name-font-size"] = "16px";
+          this.customStyle["--header-image-height"] = "100px";
+          this.customStyle["--header-image-width"] = "100px";
+          this.customStyle["--header-info-height"] = "100px";
+          this.customStyle["--patient-name-height"] = "66px";
+          this.customStyle["--page-name-height"] = "34px";
           this.updateStyles();
-        } else if(query1000){
-          this.customStyle["--page-name-font-size"]="16px";
-          this.customStyle["--patient-name-font-size"]="20px";
-          this.customStyle["--header-image-height"]="125px";
-          this.customStyle["--header-image-width"]="125px";
-          this.customStyle["--header-info-height"]="125px";
-          this.customStyle["--patient-name-height"]="82px";
-          this.customStyle["--page-name-height"]="43px";
+        } else if(query1000) {
+          this.customStyle["--page-name-font-size"] = "16px";
+          this.customStyle["--patient-name-font-size"] = "20px";
+          this.customStyle["--header-image-height"] = "125px";
+          this.customStyle["--header-image-width"] = "125px";
+          this.customStyle["--header-info-height"] = "125px";
+          this.customStyle["--patient-name-height"] = "82px";
+          this.customStyle["--page-name-height"] = "43px";
           this.updateStyles();
-        } else if(query1200){
-          this.customStyle["--page-name-font-size"]="16px";
-          this.customStyle["--patient-name-font-size"]="24px";
-          this.customStyle["--header-image-height"]="150px";
-          this.customStyle["--header-image-width"]="150px";
-          this.customStyle["--header-info-height"]="150px";
-          this.customStyle["--patient-name-height"]="100px";
-          this.customStyle["--page-name-height"]="50px";
+        } else if(query1200) {
+          this.customStyle["--page-name-font-size"] = "16px";
+          this.customStyle["--patient-name-font-size"] = "24px";
+          this.customStyle["--header-image-height"] = "150px";
+          this.customStyle["--header-image-width"] = "150px";
+          this.customStyle["--header-info-height"] = "150px";
+          this.customStyle["--patient-name-height"] = "100px";
+          this.customStyle["--page-name-height"] = "50px";
           this.updateStyles();
-        } else if(query1400){
-          this.customStyle["--page-name-font-size"]="16px";
-          this.customStyle["--patient-name-font-size"]="28px";
-          this.customStyle["--header-image-height"]="150px";
-          this.customStyle["--header-image-width"]="150px";
-          this.customStyle["--header-info-height"]="150px";
-          this.customStyle["--patient-name-height"]="100px";
-          this.customStyle["--page-name-height"]="50px";
+        } else if(query1400) {
+          this.customStyle["--page-name-font-size"] = "16px";
+          this.customStyle["--patient-name-font-size"] = "28px";
+          this.customStyle["--header-image-height"] = "150px";
+          this.customStyle["--header-image-width"] = "150px";
+          this.customStyle["--header-info-height"] = "150px";
+          this.customStyle["--patient-name-height"] = "100px";
+          this.customStyle["--page-name-height"] = "50px";
           this.updateStyles();
-        } else if(query1600){
-          this.customStyle["--page-name-font-size"]="16px";
-          this.customStyle["--patient-name-font-size"]="32px";
-          this.customStyle["--header-image-height"]="150px";
-          this.customStyle["--header-image-width"]="150px";
-          this.customStyle["--header-info-height"]="150px";
-          this.customStyle["--patient-name-height"]="100px";
-          this.customStyle["--page-name-height"]="50px";
+        } else if(query1600) {
+          this.customStyle["--page-name-font-size"] = "16px";
+          this.customStyle["--patient-name-font-size"] = "32px";
+          this.customStyle["--header-image-height"] = "150px";
+          this.customStyle["--header-image-width"] = "150px";
+          this.customStyle["--header-info-height"] = "150px";
+          this.customStyle["--patient-name-height"] = "100px";
+          this.customStyle["--page-name-height"] = "50px";
           this.updateStyles();
         } else {
-          this.customStyle["--page-name-font-size"]="16px";
-          this.customStyle["--patient-name-font-size"]="36px";
-          this.customStyle["--header-image-height"]="150px";
-          this.customStyle["--header-image-width"]="150px";
-          this.customStyle["--header-info-height"]="150px";
-          this.customStyle["--patient-name-height"]="100px";
-          this.customStyle["--page-name-height"]="50px";
+          this.customStyle["--page-name-font-size"] = "16px";
+          this.customStyle["--patient-name-font-size"] = "36px";
+          this.customStyle["--header-image-height"] = "150px";
+          this.customStyle["--header-image-width"] = "150px";
+          this.customStyle["--header-info-height"] = "150px";
+          this.customStyle["--patient-name-height"] = "100px";
+          this.customStyle["--page-name-height"] = "50px";
           this.updateStyles();
         }
       }

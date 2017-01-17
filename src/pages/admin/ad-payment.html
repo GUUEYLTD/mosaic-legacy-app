@@ -446,16 +446,15 @@
 
   </template>
 
-  <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
   <script>
 
       Polymer({
         is: 'ad-payment',
+        created:function(){
+          this._loadStripe();
+        },
         ready:function(){
           this.fire("pageLoaded", this.page);
-
-          Stripe.setPublishableKey('pk_test_HelqkF6yfrw7IvyTtgtOG7Sb');
-
           this.$.suIndexDB.query.once("value")
           .then(function(data){
             this._computeUserCount(data.val());
@@ -505,6 +504,25 @@
           Polymer.adminPagesAnimation,
           Polymer.adminResizeBehavior
         ],
+        _initStripe: function() {
+          if (!!!this.Stripe)
+            this.Stripe = Stripe;
+          if (!!!this.Stripe.key)
+            this.Stripe.setPublishableKey('pk_live_Q0t9Ejfm4UAlToELWvZRlJGK');
+        },
+        _stripeExists: function() {
+          return typeof Stripe != 'undefined';
+        },
+        _loadStripe: function() {
+          if(this._stripeExists()) {
+            this._initStripe();
+            return;
+          };
+          var script = document.createElement('script');
+          script.src = 'https://js.stripe.com/v2/';
+          document.body.appendChild(script);
+          script.onload = this._initStripe.bind(this);
+        },
         //utility functions
         splitDate:function(date){
           var dateArr=date.split("/");
@@ -625,7 +643,7 @@
               expDate:this.expDate
             };
             var dateObj=this.splitDate(this.expDate);
-            Stripe.card.createToken({
+            this.Stripe.card.createToken({
               number:this.cardNumber,
               cvc:this.cvc,
               exp_month:dateObj.expMonth,
@@ -638,7 +656,7 @@
         initialSubCall:function(params){
           this.params=params;
           var dateObj=this.splitDate(params.expDate);
-          Stripe.card.createToken({
+          this.Stripe.card.createToken({
             number: params.cardNumber,
             cvc: params.cvc,
             exp_month: dateObj.expMonth,
@@ -782,14 +800,19 @@
         },
         //handle api calls
         _handleInitialSubResponse:function(e){
+
           this.clearCardInputs();
           this._getCustomerInfo();
         },
         _handleAddCardCall:function(e){
-          this.clearCardInputs();
-          this.$.addCardDialog.open();
-          this._getCustomerInfo();
-          this.fire("openToast", {toastText:"Your"+e.detail.reponse.brand+" ending in "+e.detail.response.last4+" has been added."});
+          if(e.detail.response.statusCode === 402){
+            this.fire("openToast", {toastText:e.detail.response.message});
+          } else {
+            this.clearCardInputs();
+            this.$.addCardDialog.open();
+            this._getCustomerInfo();
+            this.fire("openToast", {toastText:"Your"+e.detail.reponse.brand+" ending in "+e.detail.response.last4+" has been added."});
+          };
         },
         _handleStripeCustomerCall:function(e){
           this.set("activePlanList", e.detail.response.subscriptions.data);

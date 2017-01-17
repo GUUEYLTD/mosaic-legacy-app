@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>account-header test</title>
+
+    <script src="../../../../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../../../bower_components/web-component-tester/browser.js"></script>
+
+    <link rel="import" href="../account-header.html">
+  </head>
+  <body>
+    <test-fixture id="basic">
+      <template>
+        <account-header></account-header>
+      </template>
+    </test-fixture>
+
+    <script>
+      suite('account-header', function() {
+        var element = fixture('basic');
+        var origTest64 = "data:image/png;base64," + window.btoa("whatever original base64 encoded string");
+        element.name = "John Smith";
+        element.email = "test@mailinator.com";
+        element.photo = origTest64;
+        test('instantiating the element works', function() {
+          assert.equal(element.is, 'account-header');
+        });
+
+        test('confirm edit name returns new name', function(done) {
+          element.addEventListener("updateDisplayName", function(e){
+            assert.equal(e.detail.name, element.newName);
+            done();
+          });
+          element.confirmEditDisplayName();
+        });
+
+        test('confirm photo change fires event', function(done) {
+          var test64 = "data:image/png;base64," + window.btoa("whatever in here it doesnt matter");
+          element.addEventListener("AccountPhotoChanged", function(e){
+            assert.equal(e.detail.photo, test64);
+            done();
+          });
+          element.photo = test64;
+        });
+
+        test('confirm no name returns email instead', function(){
+          element.name = "No Display Name";
+          var nameEmail = element._returnName(element.name);
+          assert.equal(nameEmail, element.email);
+        });
+
+      });
+    </script>
+  </body>
+</html>
