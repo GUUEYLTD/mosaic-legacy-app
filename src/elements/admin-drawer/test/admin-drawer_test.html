@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>admin-drawer test</title>
+
+    <script src="../../../../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../../../bower_components/web-component-tester/browser.js"></script>
+
+    <link rel="import" href="../admin-drawer.html">
+  </head>
+  <body>
+    <test-fixture id="basic">
+      <template>
+        <admin-drawer></admin-drawer>
+      </template>
+    </test-fixture>
+
+    <script>
+      suite('admin-drawer', function() {
+        var element = fixture('basic');
+        test('instantiating the element works', function() {
+          assert.equal(element.is, 'admin-drawer');
+        });
+        test('pages that are not allowed are greyed when not admin/manager', function() {
+          element.allowedPages = ["ad-support"];
+          element._userTypeChanged("careWorker");
+          var links = Polymer.dom(element.root).querySelectorAll("a");
+
+          links.forEach(function(link){
+            var classList = Array.from(link.classList);
+            if(element.allowedPages.indexOf(link.name) === -1){
+              expect(classList).to.include("disabled-link");
+            } else {
+              expect(classList).to.not.include("disabled-link");
+            };
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -8,9 +8,18 @@
 <link rel="import" href="../../../bower_components/iron-icon/iron-icon.html" />
 <link rel="import" href="../../../bower_components/iron-icons/iron-icons.html" />
 <link rel="import" href="../../../bower_components/iron-icons/communication-icons.html" />
+<link rel="import" href="../../../bower_components/iron-icons/social-icons.html" />
 <link rel="import" href="../../../bower_components/paper-toggle-button/paper-toggle-button.html" />
 <link rel="import" href="../../../bower_components/iron-image/iron-image.html" />
 <link rel="import" href="../../../bower_components/iron-selector/iron-selector.html" />
+
+<!--
+`admin-drawer`
+drawer for admin functions
+
+@demo demo/index.html
+-->
+
 <dom-module id="admin-drawer">
 
   <template>
@@ -20,94 +29,115 @@
         background-color: var(--app-primary-color);
         color: #FFFFFF;
       }
+
       app-header paper-icon-button {
         --paper-icon-button-ink-color: white;
       }
-      app-drawer{
+
+      app-drawer {
         z-index:50;
         color:#FFFFFF;
-        --app-drawer-content-container:{
-          background-color:#37474F;
+        --app-drawer-content-container: {
+          background-color: #37474F;
         }
       }
-      app-toolbar{
-        --app-toolbar-font-size:14px;
+
+      app-toolbar {
+        --app-toolbar-font-size: 14px;
       }
-      paper-listbox{
-        background-color:#37474F;
-        color:#FFFFFF;
+
+      paper-listbox {
+        background-color: #37474F;
+        color: #FFFFFF;
       }
+
       .drawer-list {
         margin: 0 20px;
       }
+
       .drawer-list a {
         display: block;
         padding: 0 16px;
         line-height: 40px;
         text-decoration: none;
         color: var(--app-secondary-color);
-        text-decoration:none;
+        text-decoration: none;
       }
+
       .drawer-list a .iron-selected {
         color: pink;
         font-weight: bold;
       }
+
       .drawer-list a .subroute {
         padding-left: 32px;
       }
-      app-toolbar{
-        background-color:#263238;
-        min-height:150px;
+
+      app-toolbar {
+        background-color: #263238;
+        min-height: 150px;
       }
-      paper-listbox a{
-        text-decoration:none;
-        color:inherit;
+
+      paper-listbox a {
+        text-decoration: none;
+        color: inherit;
       }
-      .username{
-        margin:20px 0 20px 20px;
+
+      .username {
+        margin: 20px 0 20px 20px;
       }
-      .divider{
-        height:1px;
-        width:100%;
-        background-color:grey;
+
+      .divider {
+        height: 1px;
+        width: 100%;
+        background-color: grey;
       }
-      paper-toggle-button{
-        display:inline-block;
-        --paper-toggle-button-checked-bar-color:  var(--paper-green-500);
-        --paper-toggle-button-checked-button-color:  var(--paper-green-500);
+
+      paper-toggle-button {
+        display: inline-block;
+        --paper-toggle-button-checked-bar-color: var(--paper-green-500);
+        --paper-toggle-button-checked-button-color: var(--paper-green-500);
         --paper-toggle-button-checked-ink-color: var(--paper-green-500);
-        --paper-toggle-button-unchecked-bar-color:  var(--paper-red-900);
-        --paper-toggle-button-unchecked-button-color:  var(--paper-red-900);
+        --paper-toggle-button-unchecked-bar-color: var(--paper-red-900);
+        --paper-toggle-button-unchecked-button-color: var(--paper-red-900);
         --paper-toggle-button-unchecked-ink-color: var(--paper-red-900);
       }
-      .toggleLabel{
+
+      .toggleLabel {
         flex-grow: 1;
       }
-      iron-image{
-        height:50px;
-        width:50px;
-        border-radius:50%;
-        margin-left:20px;
-        margin-top:20px;
+
+      iron-image {
+        height: 50px;
+        width: 50px;
+        border-radius: 50%;
+        margin-left: 20px;
+        margin-top: 20px;
       }
-      .adrawer-list:{
-        color:#FFFFFF;
+
+      .adrawer-list: {
+        color: #FFFFFF;
       }
+
       .adrawer-list a.iron-selected {
-        color:#FAD100;
+        color: #FAD100;
         font-weight: bold;
       }
+
       .adrawer-list  a.iron-selected.disabled-link {
-        opacity:.7;
-        color:grey;
+        opacity: 0.7;
+        color: grey;
       }
-      .disabled-link{
-        opacity:.7;
-        color:grey;
+
+      .disabled-link {
+        opacity: 0.7;
+        color: grey;
       }
-      .disabled-link:hover{
-        cursor:not-allowed;
+
+      .disabled-link:hover {
+        cursor: not-allowed;
       }
+
     </style>
 
     <app-drawer id="adminDrawer" position="start" opened="{{opened}}">
@@ -123,7 +153,7 @@
       </app-toolbar>
       <paper-listbox>
         <iron-selector selected="[[page]]" attr-for-selected="name" class="adrawer-list" role="navigation">
-          <a name="ad-dash" on-tap="close" href="/[[home]]/admin/ad-dash/[[admin]]" tabindex="-1">
+          <a name="ad-dash" on-tap="close" href$="/[[home]]/admin/ad-dash/[[admin]]" tabindex="-1">
             <paper-item>
               <paper-icon-item>
                 <iron-icon icon="icons:dashboard" item-icon></iron-icon>
@@ -132,7 +162,7 @@
             </paper-item>
           </a>
 
-          <a name="ad-profile" on-tap="close" href="/[[home]]/admin/ad-profile/[[admin]]" tabindex="-1">
+          <a name="ad-profile" on-tap="close" href$="/[[home]]/admin/ad-profile/[[admin]]" tabindex="-1">
             <paper-item>
               <paper-icon-item>
                 <iron-icon icon="social:location-city" item-icon></iron-icon>
@@ -141,7 +171,7 @@
             </paper-item>
           </a>
 
-          <a name="ad-payment" on-tap="close" href="/[[home]]/admin/ad-payment/[[admin]]" tabindex="-1">
+          <a name="ad-payment" on-tap="close" href$="/[[home]]/admin/ad-payment/[[admin]]" tabindex="-1">
             <paper-item>
               <paper-icon-item>
                 <iron-icon icon="icons:payment" item-icon></iron-icon>
@@ -150,7 +180,7 @@
             </paper-item>
           </a>
 
-          <a name="ad-users" on-tap="close" href="/[[home]]/admin/ad-users/[[admin]]" tabindex="-1">
+          <a name="ad-users" on-tap="close" href$="/[[home]]/admin/ad-users/[[admin]]" tabindex="-1">
             <paper-item>
               <paper-icon-item>
                 <iron-icon icon="social:group" item-icon></iron-icon>
@@ -159,7 +189,7 @@
             </paper-item>
           </a>
 
-          <a name="ad-settings" on-tap="close" href="/[[home]]/admin/ad-settings/[[admin]]" tabindex="-1">
+          <a name="ad-settings" on-tap="close" href$="/[[home]]/admin/ad-settings/[[admin]]" tabindex="-1">
             <paper-item>
               <paper-icon-item>
                 <iron-icon icon="icons:settings" item-icon></iron-icon>
@@ -168,7 +198,7 @@
             </paper-item>
           </a>
 
-          <a name="ad-reports" on-tap="close" href="/[[home]]/admin/ad-reports/[[admin]]" tabindex="-1">
+          <a name="ad-reports" on-tap="close" href$="/[[home]]/admin/ad-reports/[[admin]]" tabindex="-1">
             <paper-item>
               <paper-icon-item>
                 <iron-icon icon="icons:assessment" item-icon></iron-icon>
@@ -177,7 +207,7 @@
             </paper-item>
           </a>
 
-          <a name="ad-support" on-tap="close" href="/[[home]]/admin/ad-support/[[admin]]" tabindex="-1">
+          <a name="ad-support" on-tap="close" href$="/[[home]]/admin/ad-support/[[admin]]" tabindex="-1">
             <paper-item>
               <paper-icon-item>
                 <iron-icon icon="communication:live-help" item-icon></iron-icon>
@@ -210,42 +240,61 @@
     Polymer({
       is:'admin-drawer',
       properties:{
-        admin:{
-          type:String,
+        //user from auth object used to get current email
+        user:{
+          type: Object
         },
-        home:{
+        //admin string... may be redundant at this point...
+        admin: {
           type:String,
+          value:"default"
         },
-        opened:{
+        //the current home for the account in use... calculated on main app page
+        home: {
+          type:String,
+          value:"default"
+        },
+        //the current page selected
+        page: {
+          type:String
+        },
+        //whether or not drawer is open
+        opened: {
           type:Boolean,
           value:false
         },
-        email:{
-          type:String
-        },
+        //passed in from main app. depending on type different styles are applied to the menu links
         userType: {
           type:String,
           observer:"_userTypeChanged"
         },
-        allowedPages:{
+        //pages that are allowed for non admin/manager usertypes passed in from main app file.
+        allowedPages: {
           type:Array
+        },
+        //will be used in the future to dictate whether or not version control is active... will need to be linked to firebase.
+        vcActive: {
+          type:Boolean,
+          value:false
         }
       },
-      _userTypeChanged:function(userType){
+      //depending on user type certain links are greyed out actual route prevention happens on page-change-middleware
+      _userTypeChanged:function(userType) {
         var links = Polymer.dom(this.$$(".adrawer-list")).children;
-        if(userType === "careWorker"){
-          links.forEach(function(link){
-            if(this.allowedPages.indexOf(link.name) === -1){
+        if(userType === "careWorker") {
+          links.forEach(function(link) {
+            if(this.allowedPages.indexOf(link.name) === -1) {
               link.classList.add("disabled-link");
             };
           }.bind(this));
         } else {
-          links.forEach(function(link){
+          links.forEach(function(link) {
             link.classList.remove("disabled-link");
           }.bind(this));
         };
       },
-      close:function(){
+      //lose the admin drawer
+      close:function() {
         this.$.adminDrawer.close();
       }
     });
