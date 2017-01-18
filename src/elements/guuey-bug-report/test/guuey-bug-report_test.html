@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>guuey-bug-report test</title>
+
+    <script src="../../../../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../../../bower_components/web-component-tester/browser.js"></script>
+
+    <link rel="import" href="../guuey-bug-report.html">
+  </head>
+  <body>
+
+    <test-fixture id="basic">
+      <template>
+        <guuey-bug-report></guuey-bug-report>
+      </template>
+    </test-fixture>
+
+    <script>
+      suite('guuey-bug-report', function() {
+        test('instantiating the element works', function() {
+          var element = fixture('basic');
+          assert.equal(element.is, 'guuey-bug-report');
+        });
+
+        test('bug report sends bug', function(done) {
+          var element = fixture('basic');
+          element.user.email = "test@mailinator.com";
+          element.userDisplayName = "Test Testerson";
+          element.home = "testHome";
+          element.page = "test-page";
+          element.patient = "xyzpatienthash";
+          element.issueCat = element.issueTypes[Math.floor(Math.random() * element.issueTypes.length)];
+          element.issueText = "testing the bug report";
+          element.addEventListener("guueyBugSaved", function(e) {
+            console.log(e);
+            done();
+          });
+          element.addEventListener("guueyBugError", function(e) {
+            console.log(e);
+            done();
+          });
+          element.reportIssue();
+        });
+
+      });
+    </script>
+  </body>
+</html>

@@ -2,15 +2,22 @@
 <link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html" />
 <link rel="import" href="../../../bower_components/iron-icons/iron-icons.html" />
 <link rel="import" href="../../../bower_components/paper-dialog/paper-dialog.html" />
-<link rel="import" href="../../../bower_components/vaadin-combo-box/vaadin-combo-box.html" />
 <link rel="import" href="../../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html" />
 <link rel="import" href="../../../bower_components/paper-listbox/paper-listbox.html" />
 <link rel="import" href="../../../bower_components/paper-item/paper-item.html" />
 <link rel="import" href="../../../bower_components/paper-input/paper-textarea.html" />
 <link rel="import" href="../../../bower_components/polymerfire/firebase-document.html" />
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html" />
 
 <link rel="import" href="../../styles/common-styles.html" />
 
+<!--
+`guuey-bug report` is a bug reporting element for users to report any issues that surface.
+<br />
+the element is set as a fixed display appearing at the bottom(1%) right(1%) of the screen
+
+@demo demo/index.html
+-->
 
 <dom-module id="guuey-bug-report">
 
@@ -18,12 +25,12 @@
 
   <firebase-document
     id="issueDB"
-    app-name="main">
+    app-name="test">
   </firebase-document>
 
   <style include="common-styles">
 
-    :host{
+    :host {
       height:50px;
       width:50px;
       position:fixed;
@@ -31,12 +38,14 @@
       right:1%;
       z-index:999;
     }
-    .reportButton{
+
+    .reportButton {
       height:50px;
       width:50px;
       color:red;
     }
-    #bugDialog{
+
+    #bugDialog {
       height:75%;
       width:75%;
       overflow:auto;
@@ -73,12 +82,12 @@
 
     <div class="modal-button-container">
       <paper-button dialog-dismiss>cancel</paper-button>
-      <paper-button id="dangerCancel" on-tap="_reportIssue">send</paper-button>
+      <paper-button id="dangerCancel" on-tap="reportIssue">send</paper-button>
     </div>
 
   </paper-dialog>
 
-  <paper-icon-button class="reportButton" icon="icons:bug-report" on-tap="_openBugDialog"></paper-icon-button>
+  <paper-icon-button class="reportButton" icon="icons:bug-report" on-tap="openBugDialog"></paper-icon-button>
 
 </template>
 
@@ -90,22 +99,55 @@
 
     },
     properties:{
+      //the type of issue that is being reporting selectable from issueTypes
+      issueCat: {
+        type:String,
+        value:null
+      },
+
+      //the input text from the user that will be sent along with the bug report.
+      issueText: {
+        type:String,
+        value:null
+      },
+
+      /*
+      the object that will be sent as the bug report. will look like:
+      {
+        userEmail:this.user.email,
+        userDisplayName:this.user.displayName,
+        page:this.page,
+        patient:this.patient,
+        issueType:this.issueCat,
+        issueText:this.issueText,
+      }
+      */
       issueData:{
         type:Object,
         value:{}
       },
+
+      //the current page that the user is on. is set automatically from outside the element
       page:{
         type:String
       },
+
+      //the home that the user is assigned to. is set automatically from outside the element
       home:{
         type:String
       },
+
+      //the current patient that the user is viewing. is set automatically from outside the element
       patient:{
         type:String
       },
-      user:{
 
+      //the current user taken from the auth object. is set autiomatically from outside the element
+      user:{
+        type:Object,
+        value:{}
       },
+
       issueTypes:{
         type:Array,
         value:[
@@ -115,16 +157,19 @@
         ]
       }
     },
-    _openBugDialog:function(){
+
+    //opens the dialog for user input and bug send confirmation
+    openBugDialog:function(){
       this.$.bugDialog.toggle();
     },
-    _reportIssue:function(){
+
+    //send the issue to the firebase location for developer viewing at a later time
+    reportIssue:function(){
       if(this.issueCat && this.issueText){
         var path = "/homes/" + this.home + "/issues/pending";
 
         var date = new Date();
         date = date.getTime();
-        console.log(path, date);
         var issueData = {
           userEmail:this.user.email,
           userDisplayName:this.user.displayName,
@@ -133,19 +178,23 @@
           issueType:this.issueCat,
           issueText:this.issueText,
         };
-        this.$.issueDB.data=issueData;
+        this.$.issueDB.data = issueData;
         this.$.issueDB.save(path, date)
-          .then(function(snapshot){
+          .then(function(snapshot) {
+            this.fire("guueyBugSaved", {response:snapshot.val()});
             this.fire("openToast", {toastText:"Your issue has been sent to the development team. Thank you for your feedback."});
             this.$.bugDialog.close();
           }.bind(this))
-          .catch(function(err){
+          .catch(function(err) {
+            console.log(err);
+            this.fire("guueyBugError", {response:err});
             this.fire("openToast", {toastText:"There was an error reporting your error... SORRY! Please email me at TovarishFin@gmail.com"});
-          }.bind(this))
+          }.bind(this));
       } else {
         this.fire("openToast", {toastText:"Please select a category and make sure that you have filled out the issue box."});
       }
     }
+
   });
 
 </script>
