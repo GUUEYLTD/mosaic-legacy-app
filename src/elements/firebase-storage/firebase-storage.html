@@ -1,15 +1,13 @@
-
-<!--
-@license
-Copyright 2016 Google Inc. All Rights Reserved.
-Use of this source code is governed by a BSD-style
-license that can be found in the LICENSE file or at
-https://github.com/firebase/polymerfire/blob/master/LICENSE
--->
-
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
 <link rel="import" href="firebase-storage-behavior.html">
 <link rel="import" href="../../../bower_components/polymerfire/firebase.html">
+
+<!--
+`firebase-storage`
+element that extends basic polymerfire functionality to storage applications
+
+@demo demo/index.html
+-->
 
 <dom-module id="firebase-storage">
 
@@ -17,14 +15,12 @@ https://github.com/firebase/polymerfire/blob/master/LICENSE
 
   </template>
   <script>
-    (function() {
-      'use strict';
       Polymer({
         is: 'firebase-storage',
+        
         behaviors: [
           Polymer.FirebaseStorageBehavior
         ],
       });
-    })();
   </script>
 </dom-module>

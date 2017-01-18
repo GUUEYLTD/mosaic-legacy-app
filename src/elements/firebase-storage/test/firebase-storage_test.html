@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>firebase-storage test</title>
+
+    <script src="../../../../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../../../bower_components/web-component-tester/browser.js"></script>
+
+    <link rel="import" href="../firebase-storage.html">
+    <link rel="import" href="../../../../bower_components/polymerfire/firebase-app.html" />
+
+  </head>
+  <body>
+
+    <firebase-app
+        id="app"
+        name="test"
+        api-key="AIzaSyBZ9j7gn_y2indjqcakaoka2TApwL9YS1c"
+        auth-domain="testproject-e8229.firebaseapp.com"
+        database-url="https://testproject-e8229.firebaseio.com"
+        storage-bucket="testproject-e8229.appspot.com">
+    </firebase-app>
+
+    <img id="image" />
+
+    <test-fixture id="basic">
+      <template>
+        <firebase-storage
+          id="storage"
+          set-name="false"
+          path="test/test.png">
+        </firebase-storage>
+      </template>
+    </test-fixture>
+
+    <script>
+      suite('firebase-storage', function() {
+        test('app exists', function(done) {
+          var app = document.querySelector("#app");
+          var storage = fixture('basic');
+          storage.__computeStorage(app);
+          console.log(storage.storage);
+          //expect(storage).to.own.property("app");
+        });
+        test('download works', function(done) {
+          var image = document.querySelector("#image");
+          var storage = fixture("basic");
+          //storage._downloadFile("test/001m.jpg");
+          done();
+        });
+      });
+    </script>
+  </body>
+</html>
