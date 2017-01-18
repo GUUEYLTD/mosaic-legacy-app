@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>guuey-account-display test</title>
+
+    <script src="../../../../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../../../bower_components/web-component-tester/browser.js"></script>
+
+    <link rel="import" href="../guuey-account-display.html">
+  </head>
+  <body>
+    <test-fixture id="basic">
+      <template>
+        <guuey-account-display
+          display-name="Test Testerson"
+          user-email="test@mailinator.com"
+          user-image="http://lorempixel.com/100/100/people"
+          home="default">
+        </guuey-account-display>
+      </template>
+    </test-fixture>
+
+    <script>
+      suite('guuey-account-display', function() {
+        element = fixture('basic');
+        test('instantiating the element works', function() {
+          assert.equal(element.is, 'guuey-account-display');
+        });
+        test('close event fires', function(done) {
+          element.addEventListener("cancelLogout", function(e) {
+            expect(e.type).to.equal("cancelLogout");
+            done();
+          });
+          element.cancel();
+        });
+        test('logout event fires', function(done) {
+          element.addEventListener("logout", function(e) {
+            expect(e.type).to.equal("logout");
+            done();
+          });
+          element.logout();
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -2,6 +2,13 @@
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html" />
 <link rel="import" href="../../../bower_components/paper-button/paper-button.html" />
 
+<!--
+`guuey-account-display`
+account display element that links to account page. displays email and userImage
+main display area is an href to account page which is predefined as "/[[home]]/default/def-account"
+
+@demo demo/index.html
+-->
 
 <dom-module is="guuey-account-display">
 
@@ -9,53 +16,63 @@
 
     <style>
 
-      :host{
+      :host {
         display:inline-block;
         padding:10px;
       }
-      .accountCard{
+
+      .accountCard {
         padding:10px;
       }
-      .mainRow{
+
+      .mainRow {
         display:flex;
         flex-direction:row;
         align-items:center;
       }
-      .roundedImage{
+
+      .roundedImage {
         width:50px;
         height:50px;
         border-radius:50%;
         clip:auto;
       }
-      .textCol{
+
+      .textCol {
         flex-grow:1;
         margin:10px;
         display:flex;
         flex-direction:column;
       }
-      .mainText{
+
+      .mainText {
         margin:0;
         color:#555555;
         font-weight:bold;
         font-size:13px;
       }
-      .secondaryText{
+
+      .secondaryText {
         margin:0;
         color:#555555;
         font-weight:lighter;
         font-size:11px;
       }
-      .secondRow{
+
+      .secondRow {
         display:flex;
         flex-direction:row;
         align-items:center;
       }
-      .secondRow *{
+
+      .secondRow * {
         flex-grow:1;
       }
-      .ref-wrap{
+
+      .ref-wrap {
         text-decoration:none;
       }
+
     </style>
 
     <a class="ref-wrap" href="/[[home]]/default/def-account">
@@ -75,10 +92,10 @@
 
     </a>
 
-      <div class="secondRow">
-        <paper-button on-tap="cancel">cancel</paper-button>
-        <paper-button on-tap="logout">logout</paper-button>
-      </div>
+    <div class="secondRow">
+      <paper-button on-tap="cancel">cancel</paper-button>
+      <paper-button on-tap="logout">logout</paper-button>
+    </div>
 
 
   </template>
@@ -87,21 +104,33 @@
 
     Polymer({
       is:"guuey-account-display",
-      properties:{
-        userImage:{
+
+      properties: {
+        //image to be displayed for the user. set from outside. typically taken from the auth user property
+        userImage: {
           type:String
         },
-        displayName:{
+        //the display name for the user. set from outside. typically taken from the auth user property
+        displayName: {
           type:String
         },
-        userEmail:{
+        //the email for the user. set from outside. typically taken from the auth user property
+        userEmail: {
+          type:String
+        },
+        //the home account where the user lives. used for href on account display area required for href to account page.
+        home: {
           type:String
         }
       },
-      cancel:function(){
+
+      //fire close even which can be handled from outside the element to close the dialog containing this element
+      cancel:function() {
         this.fire("cancelLogout");
       },
-      logout:function(){
+
+      //fiore logout event which can be handled from outside to perform logout function
+      logout:function() {
         this.fire("logout");
       }
     });
