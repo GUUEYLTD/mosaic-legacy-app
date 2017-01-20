@@ -1,6 +1,11 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html" />
 <link rel="import" href="../../../bower_components/paper-button/paper-button.html" />
 
+<!--
+`guuey-truncate` shortens text within a container until it fits within the containing element. element must have a specified height. blurs content before truncating
+doesnt work in demo mode.. need to address this later...
+@demo demo/index.html
+-->
 
 <dom-module id="guuey-truncate">
 
@@ -8,17 +13,19 @@
 
     <style>
 
-    :host{
+    :host {
       height:300px;
     }
-    #container{
+
+    #container {
       display:block;
       max-height:100%;
       max-height:var(--container-max-height, 100%);
       overflow:hidden;
       filter:var(--container-blur, blur(5px));
     }
-    #moreButton{
+
+    #moreButton {
       color:#118675;
       height:50px;
       display:none;
@@ -27,63 +34,68 @@
       padding-left:0;
       text-align:left;
     }
+
     </style>
+
     <div id="container">
       <content id="mainText"></content>
     </div>
 
     <paper-button on-tap="_readMore" id="moreButton">read more</paper-button>
 
-
   </template>
 
   <script>
 
     Polymer({
-      is:"guuey-truncate",
-      ready:function(){
 
-      },
-      attached:function(){
+      is:"guuey-truncate",
+
+      //once when the element is attached to dom runs truncating functions and then sets to ready. needs to be run when attached to get proper dimensions
+      attached: function(){
         this.$.mainText.getDistributedNodes()[0].textContent.trim();
         this.textContent = this.$.mainText.getDistributedNodes()[0].nodeValue.trim();
-        setTimeout(function(){
+        setTimeout(function() {
           this._truncateContent();
           this._displayReady();
         }.bind(this), 500);
       },
-      properties:{
-        textContent:{
-          type:String
+
+      properties: {
+        //the text content to be truncated the shortening functions act on this rather than the actual value
+        textContent: {
+          type: String
         },
-        textContent:{
-          type:String
-        },
-        tooLong:{
-          type:Boolean,
+
+        //is set by _checkContent()
+        tooLong: {
+          type: Boolean,
           value: false
         },
-        heightVal:{
+
+        //the height of the element to be compared to the scroll height. used to check if too long
+        heightVal: {
           type:Number
         },
-        scrollVal:{
+
+        //the scroll height of the element to be compared to the scroll height. used to check if too long
+        scrollVal: {
           type:Number
         },
       },
-      observers:[
 
-      ],
-      _truncateContent:function(){
-        this.async(function(){
+      //run when element is attached to dom. sets heightVal, scrolVal, checks if too long and runs truncating functions if needed.
+      _truncateContent: function() {
+        this.async(function() {
           this.heightVal = this.$.container.clientHeight;
           this.scrollVal = this.$.container.scrollHeight;
           this._checkContent();
-          if(this.tooLong){
-            this.customStyle["--container-max-height"]="calc(100% - 50px)";
-            this.customStyle["--more-button-display"]="block";
+          if(this.tooLong) {
+            this.customStyle["--container-max-height"] = "calc(100% - 50px)";
+            this.customStyle["--more-button-display"] = "block";
             this.updateStyles();
           };
-          while(this.tooLong){
+          while(this.tooLong) {
             this._popContent();
             this._checkContent(true);
             this._finish();
@@ -91,31 +103,42 @@
         });
         Polymer.dom.flush();
       },
-      _checkContent:function(moreButton){
+
+      //compares heightVal and scrollVal
+      _checkContent: function(moreButton) {
         this.heightVal = this.$.container.clientHeight;
         this.scrollVal = this.$.container.scrollHeight;
-        if(this.scrollVal > this.heightVal){
+        if(this.scrollVal > this.heightVal) {
           this.tooLong = true;
         } else {
           this.tooLong = false;
         };
       },
-      _popContent:function(){
+
+      //reduces the text content by 1
+      _popContent: function() {
         this.textContent = this.textContent.substring(0, this.textContent.length - 1);
         this.$.mainText.getDistributedNodes()[0].nodeValue = this.textContent;
       },
-      _finish:function(){
+
+      //reduces by 4 and then adds "..."
+      _finish: function() {
         this.textContent = this.textContent.substring(0, this.textContent.length - 4);
         this.textContent += "..."
         this.$.mainText.getDistributedNodes()[0].nodeValue = this.textContent;
       },
-      _readMore:function(){
-        this.fire("truncate-read-more", {parent:this.parentNode});
+
+      //fires event when read more button is clicked. allowing parent elements to handle the click event.
+      _readMore: function() {
+        this.fire("truncate-read-more", {parent: this.parentNode});
       },
-      _displayReady:function(){
-        this.customStyle["--container-blur"]="blur(0)";
+
+      //removes initial blur that is set when truncating
+      _displayReady: function() {
+        this.customStyle["--container-blur"] = "blur(0)";
         this.updateStyles();
       }
+
     });
 
   </script>

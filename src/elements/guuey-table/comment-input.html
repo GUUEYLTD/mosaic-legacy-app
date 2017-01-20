@@ -1,6 +1,11 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html" />
 <link rel="import" href="../../../bower_components/paper-input/paper-textarea.html" />
 
+<!--
+`comment-input` is a text input element for use exclusively with guuey-table
+@demo demo/index.html
+-->
+
 <dom-module id="comment-input">
 
   <style>
@@ -17,42 +22,59 @@
 
   <script>
     Polymer({
-      is:"comment-input",
-      properties:{
-        input:{
+
+      is: "comment-input",
+
+      properties: {
+
+        //name of field element is acting on. used in combination with field to create a unique key
+        input: {
           type:String
         },
-        rowInputs:{
-          notify:true,
-          type:Object
+
+        //name of field element is acting on. used in combination with field to create a unique key
+        field: {
+          type: String
         },
-        value:{
-          type:String,
-          observer:"_valueChanged"
+
+        //the data object from firebase containing table data. is updated to sync with firebase when an input changes
+        rowInputs: {
+          notify: true,
+          type: Object
+        },
+
+        //compares value to already synced firebase value in order to see if changes are needed.
+        value: {
+          type: String,
+          observer: "_valueChanged"
         }
+
       },
-      observers:[
+
+      observers: [
         "_dataChanged(rowInputs, input, field)"
       ],
-      field:{
-        type:String
-      },
-      _dataChanged:function(rowInputs, input, field){
-        if(rowInputs[input+field]){
-          var value=rowInputs[input+field];
-          if(this.value !==value){
-            this.value=value;
+
+      //checks for changes to inputs and saves as value
+      _dataChanged: function(rowInputs, input, field) {
+        if(rowInputs[input + field]) {
+          var value = rowInputs[input + field];
+          if(this.value !== value){
+            this.value = value;
           };
         };
       },
-      _valueChanged:function(value){
-        var rowInputs=this.rowInputs;
-        var input=this.input;
-        var field=this.field;
-        if(rowInputs && rowInputs && rowInputs[input+field]!==value){
-          this.set("rowInputs."+input+field, value);
-        }
+      
+      //compares value to already synced firebase value in order to see if changes are needed.
+      _valueChanged: function(value) {
+        var rowInputs = this.rowInputs;
+        var input = this.input;
+        var field = this.field;
+        if(rowInputs && rowInputs && rowInputs[input + field] !== value){
+          this.set("rowInputs." + input + field, value);
+        };
       }
+
     });
   </script>
 

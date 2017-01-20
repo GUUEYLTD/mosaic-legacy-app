@@ -1,6 +1,11 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html" />
 <link rel="import" href="../../../bower_components/polymerfire/firebase-document.html" />
 
+<!--
+`guuey-notify` is an element that manages setting notification in firebase for nodeJS to pickup and act on at a later point on the server.
+@demo demo/index.html
+-->
+
 <dom-module id="guuey-notify">
   <template>
     <firebase-document
@@ -24,194 +29,242 @@
       app-name="main"
       data="{{timesData}}">
     </firebase-document>
+
     <firebase-document
       id="suDB"
       app-name="main">
     </firebase-document>
+
   </template>
 </dom-module>
 <script>
   Polymer({
+
     is:"guuey-notify",
-    ready:function(){
+
+    properties: {
+      //data from notify target compares this data to newTarget for changes and creates notification
+      notifyTargetData: {
+        type: Object,
+        observer: "_notifyTargetChanged"
+      },
+
+      //data from daily med  notification that gets med time
+      timesData: {
+        type: Object
+      },
+
+      //the place to watch in firebase to check for changes against changes. set from outside element
+      notifyRoute: {
+        type: String,
+      },
+
+      //the type of notification used to set correct notification activation conditions on server side later on. set from outside element
+      conditionType: {
+        type: String
+      },
+
+      //the notification message content. set from outside element
+      notifyMessage: {
+        type: String
+      },
+
+      //the location to go to in order to check on notification required action in app. set from outside element
+      notifyUrl: {
+        type: String
+      },
+
+      //used for setting the firebase uid of the info that is being notified on
+      notifyTarget: {
+        type: String
+      },
+
+      //the notification options wraped up into an object to be saved to firebase
+      notifyData: {
+        type: Object
+      },
+      //last name to display in the notification. set from outside element
+      lName: {
+        type: String
+      },
+      //first name to display in the notification. set from outside element
+      fName: {
+        type: String
+      },
+      //image to display in the notification. set from outside element
+      image: {
+        type: String
+      },
+
+      //used for daily med notifcations only. the location to find the medication times. set from outside element
+      timesRoute: {
+        type: String
+      },
+
+      //the original state of the data being watched to notify on changes
+      originalTarget: {
+        type: String
+      },
+
+      //the new stae of the data being watched to notify on changes
+      newTarget: {
+        type: String,
+        observer: "_compareTargets"
+      },
+
+      //dictates whether or not to wait for changes on the data to notify. if true simply issues a notification immediately.
+      immediate: {
+        type: Boolean,
+        value: false
+      },
+
+      //dictates whether or not the originalTarget and newTarget are ready to compare.
+      readyToCompare: {
+        type: Boolean,
+        value: false
+      },
+      home: {
+        type: String,
+        vlaue: "default"
+      }
 
     },
-    properties:{
-      notifyRoute:{
-        type:String,
-        observer:"ready"
-      },
-      conditionType:{
-        type:String
-      },
-      notifyMessage:{
-        type:String
-      },
-      notifyUrl:{
-        type:String
-      },
-      //used for setting the id of the info that is being notified on
-      notifyTarget:{
-        type:String
-      },
-      notifyData:{
-        type:Object
-      },
-      lName:{
-        type:String
-      },
-      fName:{
-        type:String
-      },
-      image:{
-        type:String
-      },
-      //used for daily med notifcations only
-      timesRoute:{
-        type:String
-      },
-      originalTarget:{
-        type:String
-      },
-      newTarget:{
-        type:String,
-        observer:"compareTargets"
-      },
-      notifyData:{
-        type:Object
-      },
-      immediate:{
-        type:Boolean,
-        value:false
-      },
-      readyToCompare:{
-        type:Boolean,
-        value:false
-      }
-    },
-    initialize:function(){
-      this.$.notifyTargetDB.path=this.notifyRoute;
-      this.$.timesDB.path=this.timesRoute;
+
+    //used to initialize the element to notification target. must be called from outside the element before doing anything
+    initialize: function() {
+      this.$.notifyTargetDB.path = this.notifyRoute;
+      this.$.timesDB.path = this.timesRoute;
       this.$.notifyTargetDB.getStoredValue(this.notifyRoute)
-        .then(function(snapshot){
-          this.originalTarget=snapshot;
-          if(this.immediate){
+        .then(function(snapshot) {
+          this.originalTarget = snapshot;
+          if(this.immediate) {
             this.routeNotification();
           } else {
-            this.readyToCompare=true;
+            this.readyToCompare = true;
           };
         }.bind(this));
     },
-    observers:[
-      "notifyTargetChanged(notifyTargetData)"
-    ],
-    notifyTargetChanged:function(data){
-      if(this.$.notifyTargetDB.ref){
-        this.$.notifyTargetDB.ref.once("value",function(snapshot){
-          this.newTarget=snapshot.val();
+
+    //runs when notify target changes in order to set new target and then compare
+    _notifyTargetChanged: function(data) {
+      if(this.$.notifyTargetDB.ref) {
+        this.$.notifyTargetDB.ref.once("value", function(snapshot) {
+          this.newTarget = snapshot.val();
         }.bind(this));
-      }
+      };
     },
-    _computeTime:function(timeData, timeChunk){
+
+    //computes the newest timechunk to include in the notification
+    _computeTime: function(timeData, timeChunk) {
       var newestCandidate;
-      var currentChunk=timeData[timeChunk];
-      for(x in currentChunk){
-        var candidate=currentChunk[x];
-        if(newestCandidate!=null){
-          if(newestCandidate.log.time<candidate.log.time){
-            newestCandidate=candidate;
-          }
+      var currentChunk = timeData[timeChunk];
+      for(x in currentChunk) {
+        var candidate = currentChunk[x];
+        if(newestCandidate != null) {
+          if(newestCandidate.log.time < candidate.log.time) {
+            newestCandidate = candidate;
+          };
         } else {
-          newestCandidate=candidate;
+          newestCandidate = candidate;
         };
       };
-      if(newestCandidate){
+      if(newestCandidate) {
         return newestCandidate.time;
       } else {
         return;
-      }
+      };
     },
-    setDailyMedNotify:function(){
-      var path="homes/"+this.home+"/notifications/notifiable/"+this.notifyTarget;
-        this.originalTarget.med.timeChunk.forEach(function(chunk){
-          var time=this._computeTime(this.timesData, chunk);
-          this.notifyData={
-            message:this.notifyMessage,
 
-            url:this.notifyUrl,
-            location:this.$.notifyTargetDB.path,
-            conditions:{
-              type:this.conditionType,
-              weekdays:this.originalTarget.med.weekdays,
-              repeatTime:time
+    //sets daily notification for medication using notifyMessage, notifyUrl, this.$.notifyTargetDB.path, conditionType, originalTarget.med.weekdays, and  computed time from _computeTime()
+    setDailyMedNotify: function() {
+      var path = "homes/" + this.home + "/notifications/notifiable/" + this.notifyTarget;
+        this.originalTarget.med.timeChunk.forEach(function(chunk) {
+          var time = this._computeTime(this.timesData, chunk);
+          this.notifyData = {
+            message: this.notifyMessage,
+
+            url: this.notifyUrl,
+            location: this.$.notifyTargetDB.path,
+            conditions: {
+              type: this.conditionType,
+              weekdays: this.originalTarget.med.weekdays,
+              repeatTime: time
             },
-            history:{
+            history: {
               notifiable:Date.now()
             },
           };
           this.setPersonInfo(this.notifyData);
-          this.$.notifiableDB.setStoredValue(path+"-"+chunk, this.notifyData)
-          this.$.notifiableDB.path=null;
-          this.notifyData=null;
-
+          this.$.notifiableDB.setStoredValue(path + "-" + chunk, this.notifyData)
+          this.$.notifiableDB.path = null;
+          this.notifyData = null;
         }.bind(this));
     },
-    setDefaultNotify:function(){
-      var path="homes/"+this.home+"/notifications/notifiable/"+this.notifyTarget;
-      this.notifyData={
-        message:this.notifyMessage,
-        url:this.notifyUrl,
-        location:this.$.notifyTargetDB.path,
-        conditions:{
-          type:this.conditionType,
-          condition:Date.parse(this.newTarget)
+
+    //sets default, more simple notification using: home, notifyMessage, notifyUrl, this.$.notifyTargetDB.path, conditionType, computed dates, and setPersonInfo()
+    setDefaultNotify: function() {
+      var path = "homes/" + this.home + "/notifications/notifiable/" + this.notifyTarget;
+      this.notifyData= {
+        message: this.notifyMessage,
+        url: this.notifyUrl,
+        location: this.$.notifyTargetDB.path,
+        conditions: {
+          type: this.conditionType,
+          condition: Date.parse(this.newTarget)
         },
-        history:{
-          notifiable:Date.now()
+        history: {
+          notifiable: Date.now()
         },
       };
       this.setPersonInfo(this.notifyData);
       this.$.notifiableDB.setStoredValue(path, this.notifyData)
-      this.$.notifiableDB.path=null;
-      this.notifyData=null;
+      this.$.notifiableDB.path = null;
+      this.notifyData = null;
     },
-    compareTargets:function(){
-      if(this.readyToCompare){
-        if(this.newTarget!=this.originalTarget){
+
+    //compare originalTarget and newTarget to see if notification is necessary
+    _compareTargets: function() {
+      if(this.readyToCompare) {
+        if(this.newTarget != this.originalTarget){
           this.routeNotification();
         };
       };
     },
-    routeNotification:function(){
-      if(this.conditionType==="dailyMeds"){
+
+    //decide on which type of notification to set based on condition type
+    routeNotification: function() {
+      if(this.conditionType === "dailyMeds") {
         this.setDailyMedNotify();
       } else {
         this.setDefaultNotify();
       };
     },
-    setPersonInfo:function(obj){
+
+    //set person info for later notification display based on fName, lName, and image
+    setPersonInfo: function(obj) {
       var date = new Date();
       obj.date = date.getTime();
       obj.fName = this.fName ? this.fName : "No";
       obj.lName = this.lName ? this.lName : "Name";
       obj.image = this.image ? this.image : null;
     },
-    //use when deleting an object that potentially has notifications on it
-    //operates off of the original path and home
-    deNotify:function(home, notifyTarId, suffixes){
-      var notifiableRoute="homes/"+home+"/notifications/notifiable/"+notifyTarId;
-      var notifyRoute="homes/"+home+"/notifications/notify/"+notifyTarId;
+
+    //use when deleting an object that potentially has notifications on it operates off of the original path and home
+    deNotify: function(home, notifyTarId, suffixes){
+      var notifiableRoute = "homes/" + home + "/notifications/notifiable/" + notifyTarId;
+      var notifyRoute = "homes/" + home + "/notifications/notify/" + notifyTarId;
       if(suffixes){
-        for(i=0; i<suffixes.length; i++){
-          var notifiableRoute="homes/"+home+"/notifications/notifiable/"+notifyTarId+"-"+suffixes[i];
-          var notifyRoute="homes/"+home+"/notifications/notify/"+notifyTarId+"-"+suffixes[i];
+        for(i = 0; i < suffixes.length; i++) {
+          var notifiableRoute = "homes/" + home + "/notifications/notifiable/" + notifyTarId + "-" + suffixes[i];
+          var notifyRoute = "homes/" + home + "/notifications/notify/" + notifyTarId + "-" + suffixes[i];
           this.$.deNotifiableDB.setStoredValue(notifiableRoute, null);
           this.$.deNotifiableDB.setStoredValue(notifyRoute, null);
-        }
+        };
       } else {
         this.$.deNotifiableDB.setStoredValue(notifiableRoute, null);
         this.$.deNotifiableDB.setStoredValue(notifyRoute, null);
       };
     }
+
   });
 </script>

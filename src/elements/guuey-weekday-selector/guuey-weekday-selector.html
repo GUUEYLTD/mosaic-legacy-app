@@ -2,43 +2,55 @@
 <link rel="import" href="../../../bower_components/iron-selector/iron-selector.html" />
 <link rel="import" href="../../../bower_components/paper-checkbox/paper-checkbox.html" />
 
+<!--
+`guuey-weekday-selector` returns selected weekdays as an array value
+@demo demo/index.html
+-->
+
 <dom-module id="guuey-weekday-selector">
 
   <template>
 
     <style>
-      #weekdays{
+      #weekdays {
         display:flex;
         flex-direction:row;
       }
-      #weekdays paper-item{
+
+      #weekdays paper-item {
         display:inline-block;
         flex-grow:1;
         text-transform:uppercase;
         text-align: center;
-        --paper-item-selected:{
+        --paper-item-selected: {
           border:2px solid #009688;
           color:#009688;
         }
-        --paper-item:{
+
+        --paper-item: {
           border:1px solid grey;
           color:grey;
         }
+
       }
-      .checkBoxContainer{
+
+      .checkBoxContainer {
         flex-grow:1;
         text-align:center;
       }
-      .checkBoxContainer p{
+
+      .checkBoxContainer p {
         display:block;
         text-transform:uppercase;
         text-align:center;
       }
-      paper-checkbox{
+
+      paper-checkbox {
         display:block;
         margin-left:8px
         --paper-checkbox-checked-color:#009688;
       }
+
     </style>
 
       <iron-selector id="weekdays"
@@ -60,10 +72,13 @@
     Polymer({
 
       is: 'guuey-weekday-selector',
-      properties:{
-        weekdays:{
-          type:Array,
-          value:[
+
+      properties: {
+
+        //the selectable weekdays
+        weekdays: {
+          type: Array,
+          value: [
             "mo",
             "tu",
             "we",
@@ -73,10 +88,12 @@
             "so"
           ]
         },
-        value:{
-          notify:true,
-          observer:"valueChanged",
-          value:[
+        //the current value of weekdays selected
+        value: {
+          notify: true,
+          type:Array,
+          observer: "_valueChanged",
+          value: [
             "mo",
             "tu",
             "we",
@@ -86,19 +103,24 @@
             "so"
           ]
         }
+
       },
-      _computechecked:function(weekdays, weekday){
-        if(weekdays.indexOf(weekday)!=-1){
+      //cehck if weekday is selected in the checkbox based on value
+      _computechecked: function(weekdays, weekday) {
+        if(weekdays.indexOf(weekday) != -1) {
           return true;
         } else {
           return false;
         };
       },
-      valueChanged:function(value){
-        if(value===undefined || null){
+
+      //initialize the value to all weekdays selected if no value.
+      _valueChanged: function(value) {
+        if(value === undefined || null) {
           this.value=this.weekdays;
         };
       }
+
     });
 
   </script>

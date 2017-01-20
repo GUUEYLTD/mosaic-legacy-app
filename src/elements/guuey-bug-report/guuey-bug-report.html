@@ -25,7 +25,7 @@ the element is set as a fixed display appearing at the bottom(1%) right(1%) of t
 
   <firebase-document
     id="issueDB"
-    app-name="test">
+    app-name="main">
   </firebase-document>
 
   <style include="common-styles">
@@ -181,7 +181,7 @@ the element is set as a fixed display appearing at the bottom(1%) right(1%) of t
         this.$.issueDB.data = issueData;
         this.$.issueDB.save(path, date)
           .then(function(snapshot) {
-            this.fire("guueyBugSaved", {response:snapshot.val()});
+            this.fire("guueyBugSaved", {response:issueData});
             this.fire("openToast", {toastText:"Your issue has been sent to the development team. Thank you for your feedback."});
             this.$.bugDialog.close();
           }.bind(this))

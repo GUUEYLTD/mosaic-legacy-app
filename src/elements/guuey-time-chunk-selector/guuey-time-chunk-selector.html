@@ -1,56 +1,71 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html" />
 <link rel="import" href="../../../bower_components/iron-selector/iron-selector.html" />
 <link rel="import" href="../../../bower_components/paper-item/paper-item.html" />
+
+<!--
+`guuey-time-chunk-selector` selects a "timeChunk"(morning, afternoon, evening, night) and returns it as a value
+@demo demo/index.html
+-->
+
 <dom-module id="guuey-time-chunk-selector">
 
   <template>
 
     <style>
-      :host{
+      :host {
         display:block;
         box-sizing: border-box;
       }
-      #timeChunks{
+
+      #timeChunks {
         display:flex;
         flex-direction:row;
       }
-      paper-item:first-child{
+
+      paper-item:first-child {
         margin-left:0px;
       }
-      paper-item:last-child{
+
+      paper-item:last-child {
         margin-right:0px;
       }
-      paper-item{
+
+      paper-item {
         display:inline-block;
         flex-grow:1;
         text-transform:uppercase;
         text-align: center;
         margin:5px;
-        --paper-item-selected:{
+        --paper-item-selected: {
           border:2px solid #009688;
           color:#FFFFFF;
           background-color:#009688;
         }
-        --paper-item:{
+
+        --paper-item: {
           border:1px solid grey;
           color:grey;
         }
-      }
-      paper-item:hover{
-        cursor:pointer;
-          border:2px solid #009688;
-          color:grey;
 
       }
-      .paperItemText{
+
+      paper-item:hover {
+        cursor:pointer;
+        border:2px solid #009688;
+        color:grey;
+      }
+
+      .paperItemText {
         padding:10px;
         margin:0;
       }
-      .select-label{
+
+      .select-label {
         color:#757575;
         display:block;
         font-size:13px;
       }
+
     </style>
 
     <p class="select-label">
@@ -91,12 +106,15 @@
     Polymer({
 
       is: 'guuey-time-chunk-selector',
-      properties:{
-        value:{
-          type:String,
-          value:"",
-          notify:true
+
+      properties: {
+        //the value to be returned
+        value: {
+          type: String,
+          value: "",
+          notify: true
         }
+
       }
 
     });

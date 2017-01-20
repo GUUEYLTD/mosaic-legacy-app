@@ -1,19 +1,14 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html" />
 <link rel="import" href="../../../bower_components/iron-media-query/iron-media-query.html" />
 
+<!--
+`media-queries` groups up multiple iron-media-queries in order to accomodate certain breakpoints. this is done because media queries in css does not work with polymer.
+@demo demo/index.html
+-->
+
 <dom-module id="media-queries">
 
   <template>
-
-    <!--
-    dimensions:
-    320
-    768
-    1024
-    1366
-    1920
-    -->
-
 
     <iron-media-query
       query="max-width:767px"
@@ -45,12 +40,17 @@
 
     Polymer({
       is:"media-queries",
-      properties:{
-        dimensions:{
-          type:Object,
-          notify:true,
-          value:{}
+
+      properties: {
+
+        //the dimensions object to return as a value. is populated by iron-media-query elements
+        dimensions: {
+          type: Object,
+          notify: true,
+          value: {}
         }
+
       }
+
     });
   </script>

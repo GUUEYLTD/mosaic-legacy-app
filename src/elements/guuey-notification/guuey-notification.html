@@ -6,64 +6,83 @@
 <link rel="import" href="../../../bower_components/iron-icon/iron-icon.html" />
 <link rel="import" href="../../../bower_components/iron-icons/iron-icons.html" />
 
+<!--
+`guuey-notification` is an element which displays notification information
+<br />
+it displays such things as: name, message, displayImage, and time of notification.
+<br />
+it allows you to either dismiss the notification or go to the location that the notification is refering to
+@demo demo/index.html
+-->
 
 <dom-module id="guuey-notification">
 
   <template>
 
     <style>
-      :host{
+      :host {
         display:block;
         box-sizing: border-box;
         border-bottom:1px solid grey;
         padding:20px;
         width:100%;
       }
-      .flexNotify{
+
+      .flexNotify {
         display:flex;
         flex-direction:row;
       }
-      .left{
+
+      .left {
         width:50px;
         padding-right:10px;
       }
-      .right{
+
+      .right {
         flex-grow:1;
         display:block;
       }
-      .time{
+
+      .time {
         color:#9b9b9b;
         flex-grow:1;
         text-align:right;
       }
-      .topSpacer{
+
+      .topSpacer {
         min-width:20px;
       }
-      .name{
+
+      .name {
         color:#686868;
         flex-grow:1;
         text-align:left;
       }
-      .message{
+
+      .message {
         display:block;
         color:#9b9b9b;
       }
-      .divider{
+
+      .divider {
         width:calc(100% - 20px);
         height:1px;
         background-color:#9b9b9b;
         margin:10px 0 10px 0;
       }
-      .profileImage{
+
+      .profileImage {
         width:50px;
         height:50px;
         border-radius:50%;
         clip:auto;
       }
-      .buttons{
+
+      .buttons {
         text-align:right;
       }
-      paper-button{
+
+      paper-button {
         color:#009282;
         display:inline;
       }
@@ -79,7 +98,7 @@
         <div class="right">
           <div class="flexNotify">
             <span class="name">
-              [[fName]] [[lName]]
+              [[_computeName(fName, lName)]]
             </span>
             <div class="topSpacer"></div>
             <span class="time">
@@ -95,8 +114,8 @@
       </div>
 
       <div class="buttons">
-        <a style="text-decoration:none;" class="inherit" href="[[url]]">
-          <paper-button on-tap="checkNotification"><iron-icon icon="icons:icons:reply"></iron-icon>check</paper-button>
+        <a style="text-decoration:none;" class="inherit" href$="[[url]]">
+          <paper-button><iron-icon icon="icons:icons:reply"></iron-icon>check</paper-button>
         </a>
         <paper-button on-tap="dismissNotification"><iron-icon icon="icons:delete-forever"></iron-icon>dismiss</paper-button>
       </div>
@@ -108,18 +127,75 @@
   <script>
 
     Polymer({
+
       is:"guuey-notification",
-      properties:{
-        info:{
-          type:Object,
-          notify:true,
-          observer:"_infoChanged"
+
+      properties: {
+
+        //the notification data that is passed into the element observer distributes info to properties
+        info: {
+          type: Object,
+          notify: true,
+          observer: "_infoChanged"
         },
-        index:{
-          type:Number
+
+        //the index at which this element exists in the list of notifications. used for notification dismissal
+        index: {
+          type: Number,
+          value: 0
+        },
+
+        //the first name of the notify display. created from info property
+        fName: {
+          type: String,
+          value: "First"
+        },
+
+        //last name of the notify display. created from info property
+        lName: {
+          type:String,
+          value: "Last"
+        },
+
+        // time in ms that is converted to human readable date/time. created from info property
+        time: {
+          type:String,
+          value:"Time Not Set"
+        },
+
+        //the notification message to be displayed. created from info property
+        message: {
+          type: String,
+          value: "Message Not Set"
+        },
+
+        //the location to visit where action might be required. created from info property
+        url: {
+          type: String,
+          value: "#"
+        },
+
+        //the display image for the element. created from info property
+        image: {
+          type:String,
+          value:"/images/defaultAvatar.png"
         }
+
       },
-      _infoChanged:function(info){
+
+      //return first name and last name combined with a space
+      _computeName: function(fName, lName) {
+        return fName + " " + lName;
+      },
+
+      /*
+      turns info object, fed in from outside, into various properties for the element to use
+
+      properties created: fName, lName, time, message, url, image
+
+      info property names must match
+      */
+      _infoChanged: function(info) {
         this.fName = info.fName ? info.fName : "First";
         this.lName = info.lName ? info.lName : "Last";
         this.time = info.date ? this._computeDate(info.date) : "Time Not Set";
@@ -127,41 +203,18 @@
         this.url = info.url ? info.url : "#";
         this.image = info.image ? info.image : "/images/defaultAvatar.png"
       },
-      dismissNotification:function(){
-        this.fire("dismissNotification",{data:this.info, index:this.index});
+
+      //fires event signalling to dismiss the event. includes info object and index for use outside the element
+      dismissNotification: function() {
+        this.fire("dismissNotification",{data: this.info, index: this.index});
       },
-      checkNotification:function(){
-        this.fire("checkNotification");
-      },
-      _computeDate:function(data){
+
+      //compute time in ms to human readable format
+      _computeDate: function(data) {
         var date = new Date(data);
         return date.toLocaleString();
-      },
-      _computeName:function(fName, lName){
-        console.log(fName, lName);
-        var first;
-        var last;
-        if(!fName){
-          first = "First";
-        } else {
-          first = fName;
-        };
-        if(!lName){
-          last = "Last";
-        } else {
-          last = lName;
-        };
-        console.log(first, last);
-        return first + " " + last;
-      },
-      _computeTime:function(time){
-        var returnTime;
-        if(!time){
-          returnTime = "Time Not Set";
-        } else {
-          returnTime = time;
-        };
       }
+
     });
 
   </script>

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>guuey-time-chunk-selector test</title>
+
+    <script src="../../../../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../../../bower_components/web-component-tester/browser.js"></script>
+
+    <link rel="import" href="../guuey-time-chunk-selector.html">
+  </head>
+  <body>
+    <test-fixture id="basic">
+      <template>
+        <guuey-time-chunk-selector></guuey-time-chunk-selector>
+      </template>
+    </test-fixture>
+
+    <script>
+      suite('guuey-time-chunk-selector', function() {
+        test('instantiating the element works', function() {
+          var element = fixture('basic');
+          assert.equal(element.is, 'guuey-time-chunk-selector');
+        });
+      });
+    </script>
+  </body>
+</html>

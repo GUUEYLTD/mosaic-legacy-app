@@ -1,54 +1,49 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html" />
-<link rel="import" href="../../../bower_components/polymerfire/firebase-document.html" />
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html" />
 <link rel="import" href="../../../bower_components/paper-input/paper-textarea.html" />
-<link rel="import" href="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror.html" />
+
+<!--
+`guuey-text-input` is a simple styled version of paper-input that returns a text value to be used outside of the element
+@demo demo/index.html
+-->
 
 <dom-module id="guuey-text-input">
   <template>
 
-    <firebase-document
-      id="guueyInputDB"
-      app-name="main"
-      data="{{inputDataLive}}"
-      path="{{route}}">
-    </firebase-document>
-
-    <app-indexeddb-mirror
-      key="guueyTextInputDB|[[route]]"
-      data="{{inputDataLive}}"
-      persisted-data="{{inputData}}"
-      worker-url="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
-    </app-indexeddb-mirror>
-
     <style>
-      .sectionHeading{
+      .sectionHeading {
         background-color:#42c6ff;
         width:100%;
         margin:0px !important;
         padding:0px;
       }
-      .sectionHeadingText{
+
+      .sectionHeadingText {
         font-size: 24px;
         color:#FFFFFF;
         margin:0px;
         padding:20px 20px 0px 20px;
       }
-      .subHeadingText{
+
+      .subHeadingText {
         color:#FFFFFF;
         margin:0px;
         padding:0px 20px 20px 20px;
       }
-      .inputWrapper{
+
+      .inputWrapper {
         padding:16px;
       }
-      paper-card{
+
+      paper-card {
         width:90%;
         margin:20px 5% 20px 5%;
       }
-      .toggleButton{
+
+      .toggleButton {
         padding-top:50px;
       }
+
     </style>
     <paper-card elevation="3">
       <div class="sectionHeading">
@@ -75,22 +70,29 @@
   <script>
 
     Polymer({
+
       is:'guuey-text-input',
-      properties:{
-        route:{
-          type:String,
+
+      properties: {
+
+        //the main label for the element
+        label: {
+          type: String,
         },
-        label:{
-          type:String,
+
+        //the seconday, explanatory label for the element
+        label2: {
+          type: String,
         },
-        label2:{
-          type:String,
-        },
-        value:{
-          type:String,
-          notify:true
+
+        //the returned value for use outside of the element
+        value: {
+          type: String,
+          notify: true
         }
+
       }
+
     });
 
   </script>

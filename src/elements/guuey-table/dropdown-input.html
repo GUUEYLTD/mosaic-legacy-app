@@ -1,11 +1,16 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html" />
 <link rel="import" href="../../../bower_components/vaadin-combo-box/vaadin-combo-box.html" />
 
+<!--
+`dropdown-input` is a dropdown input specifically for use with guuey-table
+@demo index.html
+-->
+
 <dom-module id="dropdown-input">
 
   <style>
 
-  vaadin-combo-box{
+  vaadin-combo-box {
     overflow:hidden;
   }
 
@@ -25,11 +30,14 @@
   <script>
 
     Polymer({
-      is:"dropdown-input",
-      properties:{
-        frequencies:{
-          type:Array,
-          value:[
+
+      is: "dropdown-input",
+
+      properties: {
+        //options for the dropdown input
+        frequencies: {
+          type: Array,
+          value: [
             "daily",
             "weekly",
             "bi-weekly",
@@ -37,40 +45,55 @@
             "bi-annually"
           ]
         },
-        input:{
+
+        //the name of the input field. used in combination with field property in order to create a unique key for the entry in the table.
+        input: {
           type:String
         },
-        rowInputs:{
-          notify:true,
-          type:Object
+
+        //the field type. set from outise the element in guuey-table. used to uniquely identify each entry in each row. used in combination with input property.
+        field: {
+          type: String
         },
-        value:{
-          type:String,
-          observer:"_valueChanged"
+
+        //the data object from firebase containing table data. is updated to sync with firebase when an input changes
+        rowInputs: {
+          notify: true,
+          type: Object
+        },
+
+        //initial place to save changes. used to compare value to synced firebase value: rowInputs
+        value: {
+          type: String,
+          observer: "_valueChanged"
         }
+
       },
-      observers:[
+
+      observers: [
         "_dataChanged(rowInputs, input, field)"
       ],
-      field:{
-        type:String
-      },
-      _dataChanged:function(rowInputs, input, field){
-        if(rowInputs[input+field]){
-          var value=rowInputs[input+field];
-          if(this.value !==value){
-            this.value=value;
+
+      //checks for changes to inputs and saves as value
+      _dataChanged: function(rowInputs, input, field) {
+        if(rowInputs[input + field]) {
+          var value = rowInputs[input + field];
+          if(this.value !== value) {
+            this.value = value;
           };
         };
       },
-      _valueChanged:function(value){
-        var rowInputs=this.rowInputs;
-        var input=this.input;
-        var field=this.field;
-        if(rowInputs && rowInputs && rowInputs[input+field]!==value){
-          this.set("rowInputs."+input+field, value);
-        }
+
+      //compares value to already synced firebase value in order to see if changes are needed.
+      _valueChanged: function(value) {
+        var rowInputs = this.rowInputs;
+        var input = this.input;
+        var field = this.field;
+        if(rowInputs && rowInputs && rowInputs[input + field] !== value){
+          this.set("rowInputs." + input + field, value);
+        };
       }
+
     });
 
   </script>

@@ -5,6 +5,11 @@
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html" />
 <link rel="import" href="../../../bower_components/iron-media-query/iron-media-query.html" />
 
+<!--
+`guuey-list-input` is an editable list element where the user can add or remove list items. this list is saved to firebase
+@demo demo/index.html
+-->
+
 <dom-module id="guuey-list-input">
 
   <iron-media-query
@@ -138,108 +143,191 @@
 
     Polymer({
       is:"guuey-list-input",
-      properties:{
-        value:{
-          type:Object,
-          notify:true
+
+      properties: {
+
+        //the value to be returned to firebase includes all list items
+        value: {
+          type: Object,
+          notify: true
         },
-        arrayCount:{
-          type:Number,
-          value:0
+
+        //the label for the input area set from outside the element
+        label: {
+          type: String,
+          value: ""
         },
-        editing:{
-          type:Boolean,
-          value:false
+
+        //the secondary explanatory label for the input area set from outside the element
+        label2: {
+          type: String,
+          value: ""
+        },
+
+        //the new text to be added to the list
+        newEntry: {
+          type: String,
+          value: ""
+        },
+
+        //the length of the list items
+        arrayCount: {
+          type: Number,
+          value: 0
+        },
+
+        //property that dictates whether or not the editing functions are shown and regular display hidden
+        editing: {
+          type: Boolean,
+          value: false
+        },
+
+        //media query for resizing
+        query600: {
+          type: Boolean,
+          value: false
+        },
+
+        //media query for resizing
+        query800: {
+          type: Boolean,
+          value: false
+        },
+
+        //media query for resizing
+        query1000: {
+          type: Boolean,
+          value: false
+        },
+
+        //media query for resizing
+        query1200: {
+          type: Boolean,
+          value: false
+        },
+
+        //media query for resizing
+        query1400: {
+          type: Boolean,
+          value: false
+        },
+
+        //media query for resizing
+        query1600: {
+          type: Boolean,
+          value: false
         }
+
       },
+
       observers:[
         "editQuery(query1600, query1400, query1200, query1000, query800, query600)"
       ],
-      _computeArray:function(value){
-        var computedArray=[];
-        var arrayCount=0;
-        for(x in value){
-          var entryObj={
-            entry:value[x].entry,
-            order:value[x].order
+
+      //convert the value which is an object into an array
+      _computeArray: function(value) {
+        var computedArray = [];
+        var arrayCount = 0;
+        for(x in value) {
+          var entryObj = {
+            entry: value[x].entry,
+            order: value[x].order
           };
           computedArray.push(value[x]);
           arrayCount++;
         };
-        this.arrayCount=arrayCount;
+        this.arrayCount = arrayCount;
         return computedArray;
       },
-      saveNewEntry:function(){
+
+      //save new entry by date string in object and return to firebase
+      saveNewEntry: function() {
         if(!this.value){
-          var initVal={};
-          this.set("value",initVal);
+          var initVal = {};
+          this.set("value", initVal);
         };
-        var uid=new Date().valueOf();
-        var entryCount=this.arrayCount+1;
-        var newEntryObj={
-          entry:this.newEntry,
-          order:this.arrayCount+1,
-          uid:uid
+        var uid = new Date().valueOf();
+        var entryCount = this.arrayCount + 1;
+        var newEntryObj = {
+          entry: this.newEntry,
+          order: this.arrayCount + 1,
+          uid: uid
         };
-        this.set("value."+"entry"+uid, newEntryObj);
-        this.newEntry=null;
+        this.set("value." + "entry" + uid, newEntryObj);
+        this.newEntry = null;
       },
-      entryChanged:function(e){
-        if(e.model.item){
-          this.set("value."+"entry"+e.model.item.uid+".entry", e.model.item.entry);
-        };
-      },
-      orderChanged:function(e){
-        if(e.model.item){
-          this.set("value."+"entry"+e.model.item.uid+".order", e.model.item.order);
+
+      //update the value object for specific item by key which should be "entry" + uid as date in ms
+      entryChanged: function(e) {
+        if(e.model.item) {
+          this.set("value." + "entry" + e.model.item.uid + ".entry", e.model.item.entry);
         };
       },
-      edit:function(){
-        this.editing=true;
+
+      //if order changed set order in value object
+      orderChanged: function(e) {
+        if(e.model.item) {
+          this.set("value." + "entry" + e.model.item.uid + ".order", e.model.item.order);
+        };
       },
-      stopEdit:function(){
-        this.editing=false;
+
+      //set element to editing mode
+      edit: function() {
+        this.editing = true;
       },
-      delete:function(e){
-        var key="entry"+e.model.item.uid;
-        this.set("value."+key, null);
+
+      //return to regular mode from editing mode
+      stopEdit: function() {
+        this.editing = false;
       },
-      _computeOrderRange:function(count){
-        var orderArray=[];
-        for(i=1; i<=count+1; i++){
-          var order=i.toString();
+
+      //remove a specific list item
+      delete: function(e) {
+        var key = "entry" + e.model.item.uid;
+        this.set("value." + key, null);
+      },
+
+      //compute the length of items array and return the possible values for order.
+      _computeOrderRange: function(count) {
+        var orderArray = [];
+        for(i = 1; i <= count + 1; i++) {
+          var order = i.toString();
           orderArray.push(order);
         };
         return orderArray;
       },
-      sortByOrder:function(a,b){
-        return a.order>b.order;
+
+      //sorting function by date
+      sortByOrder: function(a, b) {
+        return a.order > b.order;
       },
-      editQuery:function(query1600, query1400, query1200, query1000, query800, query600){
-        if(query600){
-          this.customStyle["--heading-font-size"]="12px";
+
+      //set styles according to returned media query booleans
+      editQuery: function(query1600, query1400, query1200, query1000, query800, query600) {
+        if(query600) {
+          this.customStyle["--heading-font-size"] = "12px";
           this.updateStyles();
-        } else if(query800){
-          this.customStyle["--heading-font-size"]="14px";
+        } else if(query800) {
+          this.customStyle["--heading-font-size"] = "14px";
           this.updateStyles();
-        } else if(query1000){
-          this.customStyle["--heading-font-size"]="16px";
+        } else if(query1000) {
+          this.customStyle["--heading-font-size"] = "16px";
           this.updateStyles();
-        } else if(query1200){
-          this.customStyle["--heading-font-size"]="18px";
+        } else if(query1200) {
+          this.customStyle["--heading-font-size"] = "18px";
           this.updateStyles();
-        } else if(query1400){
-          this.customStyle["--heading-font-size"]="20px";
+        } else if(query1400) {
+          this.customStyle["--heading-font-size"] = "20px";
           this.updateStyles();
-        } else if(query1600){
-          this.customStyle["--heading-font-size"]="22px";
+        } else if(query1600) {
+          this.customStyle["--heading-font-size"] = "22px";
           this.updateStyles();
         } else {
-          this.customStyle["--heading-font-size"]="24px";
-
+          this.customStyle["--heading-font-size"] = "24px";
           this.updateStyles();
-        }
+        };
       }
+
     });
 
   </script>

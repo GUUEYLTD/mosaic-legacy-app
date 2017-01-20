@@ -3,53 +3,61 @@
 <link rel="import" href="../../../bower_components/paper-dialog/paper-dialog.html" />
 <link rel="import" href="../../../bower_components/iron-image/iron-image.html" />
 
+<!--
+`guuey-signature` uses signaturePad.js in order to create a signature image that is created within the element's dialog and saved as an image in firebase
+@demo demo/index.html
+-->
 
 <dom-module id="guuey-signature">
 
   <template>
 
     <style>
-      canvas{
+      canvas {
         background-color:#F0F0F0;
         height:100px;
         width:300px;
         display:block;
       }
-      canvas:hover{
+
+      canvas:hover {
         cursor:crosshair;
       }
-      paper-dialog{
 
-      }
-      #signButton{
+      #signButton {
         margin:20px;
         background-color:#009888;
         color:#FFFFFF;
       }
-      #signDialog h2{
+
+      #signDialog h2 {
         background-color:#7E57C2;
         color:#FFFFFF;
         margin:0;
         padding:15px;
       }
-      .buttonRow{
+
+      .buttonRow {
         display:flex;
         flex-direction:row;
       }
-      .buttonRow paper-button{
+
+      .buttonRow paper-button {
         display:inline-block;
         background-color:#009888;
         color:#FFFFFF;
         flex-grow:1;
         text-align:center;
       }
-      #signature{
+
+      #signature {
         height:50px;
         width:150px;
         background-color:#f6f6f6;
         border:solid #000000 1px;
         margin:20px;
       }
+
     </style>
 
     <paper-dialog on-iron-overlay-opened="resizeCanvas" id="signDialog">
@@ -85,61 +93,85 @@
     Polymer({
 
       is: 'guuey-signature',
-      properties:{
-        canvas:{
-          type:Object
+
+      properties: {
+        //the canvas for signaturePad to use
+        canvas: {
+          type: Object
         },
-        signaturePad:{
-          type:Object
+
+        //signaturePad instance
+        signaturePad: {
+          type: Object
         },
-        value:{
-          type:String,
-          notify:true,
-          value:null
+
+        //the image value of the signature
+        value: {
+          type: String,
+          notify: true,
+          value: null
         },
-        label:{
-          type:String,
-          value:"sign"
+
+        //the label for the signature area
+        label: {
+          type: String,
+          value: "tap to sign"
         }
+
       },
-      ready:function(){
-        this.canvas=this.$.sig;
-        this.signaturePad = new SignaturePad(this.canvas,{
-            minWidth:.5,
-            maxWidth:1,
+
+      //creates new instance of signaturePad on the canvas
+      ready: function() {
+        this.canvas = this.$.sig;
+        this.signaturePad = new SignaturePad(this.canvas, {
+            minWidth: 0.5,
+            maxWidth: 1,
             penColor: "rgb(66, 133, 244)"
         });
-        this.addEventListener("resize", this.resizeCanvas());
+        window.addEventListener("resize", this.resizeCanvas());
+
       },
-      resizeCanvas:function() {
+      //resizes the canvas when resize event is fired
+      resizeCanvas: function() {
+        console.log("resizing")
         var ratio =  Math.max(window.devicePixelRatio || 1, 1);
         this.canvas.width = this.canvas.offsetWidth * ratio;
         this.canvas.height = this.canvas.offsetHeight * ratio;
         this.canvas.getContext("2d").scale(ratio, ratio);
         this.signaturePad.clear();
       },
-      sign:function(){
+
+      //open the dialog to capture signature
+      sign: function() {
         this.$.signDialog.open();
       },
-      cancel:function(){
+
+      //close the dialog and clear the signature without saving
+      cancel: function() {
         this.signaturePad.clear();
         this.$.signDialog.close();
       },
-      reset:function(){
+
+      //clear the signature pad
+      reset: function() {
         this.signaturePad.clear();
-        this.value=null;
+        this.value = null;
       },
-      confirm:function(){
-        this.value=this.signaturePad.toDataURL();
+      //save the signature as an element and return the signature image as value
+      confirm: function() {
+        this.value = this.signaturePad.toDataURL();
         this.$.signDialog.close();
       },
-      _computeHidden:function(value){
-        if(value){
+
+      //hides sign button if signature already exists
+      _computeHidden: function(value) {
+        if(value) {
           return true;
         } else {
           return false;
         };
       }
+
     });
 
   </script>

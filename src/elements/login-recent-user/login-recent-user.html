@@ -1,6 +1,10 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html" />
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html" />
 
+<!--
+`login-recent-user` is a simple display element that takes in userImage, userEmail, and displayName as properties to display a recent user on login page.
+@demo demo/index.html
+-->
 
 <dom-module is="login-recent-user">
 
@@ -8,53 +12,62 @@
 
     <style>
 
-      :host{
+      :host {
         display:inline-block;
         box-sizing:border-box;
         padding:10px;
         width:100%;
       }
-      .accountCard{
+
+      .accountCard {
         padding:10px;
       }
-      .mainRow{
+
+      .mainRow {
         width:100%;
         display:flex;
         flex-direction:row;
         align-items:center;
         padding:10px;
       }
-      .mainRow:hover{
+
+      .mainRow:hover {
         opacity:.7;
         cursor:pointer;
       }
-      .roundedImage{
+
+      .roundedImage {
         width:50px;
         height:50px;
         border-radius:50%;
         clip:auto;
       }
-      .textCol{
+
+      .textCol {
         flex-grow:1;
         margin:10px;
         display:flex;
         flex-direction:column;
       }
-      .mainText{
+
+      .mainText {
         margin:0;
         color:#555555;
         font-weight:bold;
         font-size:13px;
       }
-      .secondaryText{
+
+      .secondaryText {
         margin:0;
         color:#555555;
         font-weight:lighter;
         font-size:11px;
       }
-      .ref-wrap{
+
+      .ref-wrap {
         text-decoration:none;
       }
+
     </style>
 
       <paper-card elevation="3" class="mainRow">
@@ -76,18 +89,28 @@
   <script>
 
     Polymer({
+
       is:"login-recent-user",
-      properties:{
-        userImage:{
-          type:String
+
+      properties: {
+
+        //the image to display for the element. set from outside the element
+        userImage: {
+          type: String
         },
-        displayName:{
-          type:String
+
+        //the display name for the element. set from outside the element
+        displayName: {
+          type: String
         },
-        userEmail:{
-          type:String
+
+        //the user emeail to display for the element. set from outside the element
+        userEmail: {
+          type: String
         }
+
       }
+
     });
 
   </script>

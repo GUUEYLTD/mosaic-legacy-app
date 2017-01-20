@@ -2,9 +2,14 @@
 <link rel="import" href="../../../bower_components/polymerfire/firebase-document.html" />
 <link rel="import" href="../../../bower_components/paper-input/paper-input.html" />
 <link rel="import" href="../../../bower_components/iron-media-query/iron-media-query.html" />
+<link rel="import" href="../../../bower_components/paper-card/paper-card.html" />
 <link rel="import" href="dropdown-input.html" />
 <link rel="import" href="comment-input.html" />
 
+<!--
+`guuey-table` is a dynamically created table that can be updated in real time with firebase.
+@demo demo/index.html
+-->
 
 <dom-module id="guuey-table">
 
@@ -23,38 +28,44 @@
     </iron-media-query>
 
     <style>
-    :host{
-        --paper-input-container-disabled:{
+    :host {
+        --paper-input-container-disabled: {
           opacity:.9;
         }
     }
-    table{
+
+    table {
       width:100%;
       padding:20px;
     }
 
-    th,td{
+    th,td {
       min-width:100px;
       text-align:left;
       padding:10px;
       vertical-align: center;
       overflow:auto;
     }
-    .sectionHeading{
+
+    .sectionHeading {
       background-color:#42c6ff;
       width:100%;
     }
-    .sectionHeadingText{
+
+    .sectionHeadingText {
       font-size: 24px;
       color:#FFFFFF;
     }
-    .subHeadingText{
+
+    .subHeadingText {
       color:#FFFFFF;
     }
-    .container{
+
+    .container {
       padding:16px;
     }
-    .tableScrollLabel{
+
+    .tableScrollLabel {
       font-weight:bold;
       text-transform:uppercase;
       margin-bottom:0px;
@@ -63,37 +74,46 @@
       padding-left:20px;
       color:var(--table-scroll-lable-color);
     }
-    .tableContainer{
+
+    .tableContainer {
       height:auto;
       overflow:var(--table-overflow);
     }
-    paper-card{
+
+    paper-card {
       width:90%;
       margin:20px 5% 20px 5%;
     }
-    table{
+
+    table {
       background-color:var(--table-background-color);
       width:100%;
     }
-    tbody{
+
+    tbody {
       display:var(--tbody-display);
     }
-    thead tr{
+
+    thead tr {
       width:100%;
       position:var(--thead-tr-position);
       display:var(--thead-tr-display);
     }
-    td{
+
+    td {
       width:var(--thead-tr-td-width);
     }
-    td,th{
+
+    td,th {
       width:var(--thead-tr-td-width);
       min-width:var(--td-th-min-width);
       text-align:left;
     }
-    td,th:last-of-type{
+
+    td,th:last-of-type {
       width:var(--td-th-last-width);
     }
+
     </style>
 
     <paper-card>
@@ -156,50 +176,77 @@
 
     Polymer({
       is:"guuey-table",
-      properties:{
-        frequencies:{
-          type:Array,
-          value:[
-            "Daily",
-            "Weekly",
-            "Yearly"
-          ]
+      properties: {
+
+        //main label for the element. set from outside the element
+        label: {
+          type: String
         },
-        rowInputs:{
-          type:Object,
-          value:{},
+
+        //secondary, explanatory label for the element. set from outside the element
+        label2: {
+          type: String
         },
-        inputValues:{
-          type:Array,
-          value:{}
+
+        //category of the table. used as the header of the first column
+        tableCategory: {
+          type: String
         },
+
+        //the rows of the table synced to firebase
+        rowInputs: {
+          type: Object,
+          value: {},
+        },
+
+        //the label for each row to be created/edited
+        inputValues: {
+          type: Array,
+          value: {}
+        },
+
+        //the location where table data will be saved
+        path: {
+          type: String
+        },
+
+        //media query checking whether max width is 1300. used to change styles when too small
+        query1300: {
+          type: Boolean,
+          value: false
+        },
+
       },
-      observers:[
-        "editQuery(query1300)"
+
+      observers: [
+        "_editQuery(query1300)"
       ],
-      editQuery:function(query1300){
-        if(query1300){
-          this.customStyle["--table-scroll-lable-color"]="inherit";
-          this.customStyle["--table-overflow"]="scroll";
-          this.customStyle["--tbody-display"]="block";
-          this.customStyle["--thead-tr-position"]="relative";
-          this.customStyle["--thead-tr-display"]="block";
-          this.customStyle["--thead-tr-td-width"]="150px";
-          this.customStyle["--td-th-min-width"]="150px";
-          this.customStyle["--td-th-last-width"]="150px";
+
+      //checks if smaller than 1300. if so update stylesd
+      _editQuery: function(query1300) {
+        if(query1300) {
+          this.customStyle["--table-scroll-lable-color"] = "inherit";
+          this.customStyle["--table-overflow"] = "scroll";
+          this.customStyle["--tbody-display"] = "block";
+          this.customStyle["--thead-tr-position"] = "relative";
+          this.customStyle["--thead-tr-display"] = "block";
+          this.customStyle["--thead-tr-td-width"] = "150px";
+          this.customStyle["--td-th-min-width"] = "150px";
+          this.customStyle["--td-th-last-width"] = "150px";
           this.updateStyles();
         } else {
-          this.customStyle["--table-scroll-lable-color"]="transparent";
-          this.customStyle["--table-overflow"]="hidden";
-          this.customStyle["--tbody-display"]="table-body";
-          this.customStyle["--thead-tr-position"]="unset";
-          this.customStyle["--thead-tr-display"]="table-row";
-          this.customStyle["--thead-tr-td-width"]="unset";
-          this.customStyle["--td-th-min-width"]="unset";
-          this.customStyle["--td-th-last-width"]="unset";
+          this.customStyle["--table-scroll-lable-color"] = "transparent";
+          this.customStyle["--table-overflow"] = "hidden";
+          this.customStyle["--tbody-display"] = "table-body";
+          this.customStyle["--thead-tr-position"] = "unset";
+          this.customStyle["--thead-tr-display"] = "table-row";
+          this.customStyle["--thead-tr-td-width"] = "unset";
+          this.customStyle["--td-th-min-width"] = "unset";
+          this.customStyle["--td-th-last-width"] = "unset";
           this.updateStyles();
-        }
-      },
+        };
+      }
+
     });
 
   </script>

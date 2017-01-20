@@ -6,6 +6,15 @@
 <link rel="import" href="../../../bower_components/app-layout/app-grid/app-grid-style.html" />
 <link rel="import" href="../../../bower_components/iron-media-query/iron-media-query.html" />
 
+<!--
+`guuey-custom-text-input` is a custom input text field that allows the user to add something extra on documents on certain pages where this element exists.
+<br />
+this element displays already existing data in the custom data area. it allows the user to edit and update the labels as well as the main text content.
+<br />
+elements contents can also be deleted through the delete button
+@demo  demo/index.html
+-->
+
 <dom-module id="guuey-custom-text-input">
   <template>
 
@@ -15,53 +24,63 @@
     </iron-media-query>
 
     <style include="app-grid-style">
-      :host{
+      :host {
         --app-grid-columns:10;
         --app-grid-expandible-item-columns:9;
         --app-grid-item-height:20%;
       }
-      .sectionHeading{
+
+      .sectionHeading {
         background-color:#7e57c2;
         width:100%;
       }
-      .sectionHeadingText{
+
+      .sectionHeadingText {
         font-size: 24px;
         color:#FFFFFF;
         margin:0px;
         padding:20px 20px 0px 20px;
       }
-      .subHeadingText{
+
+      .subHeadingText {
         color:#FFFFFF;
         margin:0px;
         padding:0px 20px 20px 20px;
       }
-      .inputWrapper{
+
+      .inputWrapper {
         padding:16px;
       }
-      paper-card{
+
+      paper-card {
         width:90%;
         margin:20px 5% 20px 5%;
       }
-      .toggleButton{
+
+      .toggleButton {
         padding-top:50px;
       }
-      .labelEdit{
+
+      .labelEdit {
         --paper-input-container-color:#FFFFFF;
         --paper-input-container-input-color:#FFFFFF;
         --paper-input-container-focus-color:#FFFFFF;
         padding:20px;
       }
-      .contentColumn{
+
+      .contentColumn {
         width:100%;
         @apply(--app-grid-expandible-item);
       }
-      .editColumn{
+
+      .editColumn {
         width:100%;
       }
+
     </style>
     <paper-card elevation="3">
       <div class="sectionHeading">
-        <span hidden="[[!editDisabled]]">
+        <span hidden$="[[!editDisabled]]">
           <p class="sectionHeadingText">
             [[label]]
           </p>
@@ -69,7 +88,7 @@
             [[label2]]
           </p>
         </span>
-        <span hidden="[[editDisabled]]">
+        <span hidden$="[[editDisabled]]">
           <paper-input class="labelEdit" label="name" value="{{label}}"></paper-input>
           <paper-input class="labelEdit" label="description" value="{{label2}}"></paper-input>
         </span>
@@ -84,11 +103,11 @@
           </div>
         </div>
         <div class="editColumn">
-          <span hidden="[[!editDisabled]]">
+          <span hidden$="[[!editDisabled]]">
             <paper-button on-tap="toggleEdit">edit</paper-button>
             <paper-button on-tap="deleteCustom">delete</paper-button>
           </span>
-          <span hidden="[[editDisabled]]">
+          <span hidden$="[[editDisabled]]">
             <paper-button on-tap="toggleEdit">save</paper-button>
           </span>
         </div>
@@ -101,45 +120,60 @@
     Polymer({
       is:'guuey-custom-text-input',
       properties:{
-        label:{
+        //the main label for the input
+        label: {
           type:String,
           notify:true
         },
-        label2:{
+        //seccondary label for the input
+        label2: {
           type:String,
           notify:true
         },
-        value:{
+        //the main text content of the element
+        value: {
           type:String,
           notify:true
         },
-        editDisabled:{
+        //the property that dictates whether or not the label editing fields are shown and the regular label displays are hidden
+        editDisabled: {
           type:Boolean,
           value:true
+        },
+        //media query to check and update app grid columns and column padding
+        query1400: {
+          type:Boolean,
+          value:false
         }
+
       },
+
       observers:[
-        "editQuery(query1400)"
+        "_editQuery(query1400)"
       ],
-      toggleEdit:function(){
-        this.editDisabled=!this.editDisabled;
+      //toggles hiding and revealing of input elements for labels
+      toggleEdit:function() {
+        this.editDisabled = !this.editDisabled;
       },
-      deleteCustom:function(e){
-        this.value=null;
-        this.label=null;
-        this.label2=null;
+      //sets the label, label2 and value to null which in turn will set the firebase entry to null, deleting it
+      deleteCustom:function() {
+        this.value = null;
+        this.label = null;
+        this.label2 = null;
       },
-      editQuery:function(query1400){
-        if(query1400){
-          this.customStyle["--app-grid-columns"]="1";
-          this.customStyle["--edit-column--padding-top"]="20px";
+      //runs when query1400 changes. changes styles.
+      _editQuery:function(query1400) {
+        if(query1400) {
+          this.customStyle["--app-grid-columns"] = "1";
+          this.customStyle["--edit-column--padding-top"] = "20px";
           this.updateStyles();
         } else {
-          this.customStyle["--app-grid-columns"]="10";
-          this.customStyle["--edit-column--padding-top"]="unset";
+          this.customStyle["--app-grid-columns"] = "10";
+          this.customStyle["--edit-column--padding-top"] = "unset";
           this.updateStyles();
-        }
+        };
       }
+
     });
 
   </script>

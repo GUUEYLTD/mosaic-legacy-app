@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>guuey-text-input test</title>
+
+    <script src="../../../../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../../../bower_components/web-component-tester/browser.js"></script>
+
+    <link rel="import" href="../guuey-text-input.html">
+  </head>
+  <body>
+    <test-fixture id="basic">
+      <template>
+        <guuey-text-input></guuey-text-input>
+      </template>
+    </test-fixture>
+
+    <script>
+      suite('guuey-text-input', function() {
+        test('instantiating the element works', function() {
+          var element = fixture('basic');
+          assert.equal(element.is, 'guuey-text-input');
+        });
+      });
+    </script>
+  </body>
+</html>

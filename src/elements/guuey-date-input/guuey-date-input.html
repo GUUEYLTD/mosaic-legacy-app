@@ -4,23 +4,29 @@
 <link rel="import" href="../../../bower_components/paper-input/paper-input.html" />
 <link rel="import" href="../../../bower_components/paper-date-picker/paper-date-picker.html" />
 
+<!--
+  `guuey-date-input` takes user input in the form of date selection from a dialog. this selected date is returned as a value once when the date has been saved.
+  @demo demo/index.html
+-->
+
 <dom-module id="guuey-date-input">
 
   <template>
 
     <style include="paper-date-picker-dialog-style">
 
-      :host{
+      :host {
         display:block;
       }
 
-      paper-button{
+      paper-button {
         background-color:#41847d;
         color:#FFFFFF;
         font-weight:bold;
         margin:0;
       }
-      .label{
+
+      .label {
         text-transform:uppercase;
         opacity:.7;
         font-size:12px;
@@ -28,28 +34,35 @@
         margin:0;
         padding:5px;
       }
-      .container{
+
+      .container {
         display:flex;
         flex-direction:column;
         padding:5px;
       }
-      paper-input{
-        --paper-input-container-disabled:{
+
+      paper-input {
+        --paper-input-container-disabled: {
           opacity:1;
           z-index:1;
         };
-        --paper-input-container-underline-disabled:{
+
+        --paper-input-container-underline-disabled: {
           border-bottom: 1px solid #6A49B2;
         };
-        --paper-input-container-label:{
+
+        --paper-input-container-label: {
           color:#6A49B2;
         };
-        --paper-input-container-input:{
+
+        --paper-input-container-input: {
           color:#6A49B2;
         };
+
         @apply(--date-paper-input-style);
       }
-      .buttonWrapper{
+
+      .buttonWrapper {
         z-index:2;
       }
 
@@ -75,33 +88,50 @@
     Polymer({
 
       is: 'guuey-date-input',
-      properties:{
-        value:{
+
+      properties: {
+        
+        //the value to be returned from this element once when saveDate() is called.
+        value: {
           type:String,
           notify:true
         },
-        lable:{
+        // the label to place in the paper input before the date has been selected
+        label: {
           type:String,
-          value:""
+          value:"Please select a date"
+        },
+        //the date returned from the contained paper-date-picker element
+        date: {
+          type:Object
         }
+
       },
-      openDialog:function(){
+
+      //open the dialog to select a date
+      openDialog:function() {
         this.$.dateDialog.open();
       },
-      _computeDate:function(value){
-        if(value){
+
+      //compute date into human readable date
+      _computeDate:function(value) {
+        if(value) {
           return value.slice(3,15);
         } else {
           return "Date not set";
         };
       },
-      saveDate:function(){
-        this.value=this.date.toString();
+
+      //save the date by returning the date as `value` from the element to be used elsewhere
+      saveDate:function() {
+        this.value = this.date.toString();
         this.$.dateDialog.close();
       },
-      cancelDate:function(){
+      //close the dialog without saving
+      cancelDate:function() {
         this.$.dateDialog.close();
       }
+
     });
 
   </script>
