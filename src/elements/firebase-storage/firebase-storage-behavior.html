@@ -75,7 +75,7 @@ https://github.com/firebase/polymerfire/blob/master/LICENSE
         var path=this.path+"/home-image.png";
         if(this.use64){
           if(this.setName){
-            file=file.replace(/^data:image\/(png|jpg);base64,/, "");
+            file=file.replace(/^data:image\/(png|jpg|jpeg);base64,/, "");
             var uploadTask = this.storage.ref(this.path).putString(file, "base64");
           } else {
             file=file.replace(/^data:image\/(png|jpg);base64,/, "");
