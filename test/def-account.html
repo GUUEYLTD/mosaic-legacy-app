@@ -1,0 +1,172 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>def-account</title>
+
+    <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../bower_components/web-component-tester/browser.js"></script>
+
+    <!-- Import the element to test -->
+    <link rel="import" href="../src/pages/default/def-account.html">
+    <link rel="import" href="../bower_components/polymerfire/firebase-app.html" />
+    <link rel="import" href="../bower_components/polymerfire/firebase-auth.html" />
+  </head>
+  <body>
+    <test-fixture id="app">
+      <template>
+        <firebase-app
+          name="main"
+          auth-domain="careplan-c2677.firebaseapp.com"
+          database-url="https://careplan-c2677.firebaseio.com"
+          api-key="AIzaSyBdtmHIV_7epC0OBiXkTNoqrGRspA58Epc"
+          storage-bucket="careplan-c2677.appspot.com">
+        </firebase-app>
+      </template>
+    </test-fixture>
+    <test-fixture id="auth">
+      <template>
+        <firebase-auth
+          app-name="main"
+          user="{{user}}"
+          signed-in="{{signedIn}}"
+          status-known="{{statusKnown}}"
+          on-error="handleError">
+        </firebase-auth>
+      </template>
+    </test-fixture>
+    <test-fixture id="page">
+      <template>
+        <def-account
+          page="def-account"
+          home="-KTBXzZw3-qoZz4c7nY7"
+          name="def-account">
+        </def-account>
+      </template>
+    </test-fixture>
+
+    <script>
+      suite('check page functions', function() {
+        this.timeout(10000);
+        var page;
+        var auth
+        var app = fixture('app');
+        setup(function(done) {
+          auth = fixture('auth');
+          page = fixture('page');
+          page.addEventListener("userStatusKnown", function(e) {
+            setTimeout(function() {
+              done();
+            },1000);
+          });
+          auth.signOut()
+            .then(function() {
+              console.log("signed out");
+            });
+          auth.signInWithEmailAndPassword("123@mailinator.com", "123123")
+            .then(function() {
+              console.log("signed into test account");
+            })
+            .catch(function(err) {
+              console.log(err);
+            });
+        });
+
+        test('check that photo changed event handles correctly', function(done) {
+          page.addEventListener("openToast", function(e) {
+            expect(e.detail.toastText).to.equal("Account updated.");
+            done();
+          });
+
+          fetch("https://unsplash.it/200/200")
+            .then(function(result){
+              return result.blob();
+            })
+            .then(function(blob) {
+              var reader = new FileReader();
+              reader.readAsDataURL(blob);
+              reader.onloadend = function() {
+                page.fire('accountPhotoChanged', {photo: reader.result});
+              };
+            });
+        });
+
+        test('check that display name event handles correctly', function(done) {
+          var names = ["Emperor Trump", "Darth Vader", "George Bush", "Bob Dole"];
+          var name = names[Math.floor(Math.random() * names.length)];
+          page.addEventListener("openToast", function(e) {
+            expect(e.detail.toastText).to.equal("Account updated, refresh pages to see changes");
+            expect(e.detail.displayName).to.equal(name);
+            done();
+          });
+
+          page.fire("updateDisplayName", {name:name});
+        });
+
+      });
+
+      suite('check page animations', function() {
+        var page;
+
+        setup(function() {
+          page = fixture('page');
+        });
+
+        test('default to default animations are correct', function() {
+          page.currentPage = "def-error";
+          page.currentCat = "default";
+          page.intendedCat = "default";
+
+          expect(page.animationConfig.entry[0].name).to.equal("slide-down-entry-animation");
+          expect(page.animationConfig.exit[0].name).to.equal("slide-down-exit-animation");
+        });
+
+        test('default to care-plan animations are correct', function() {
+          page.currentPage = "def-error";
+          page.currentCat = "default";
+          page.intendedCat = "care-plan";
+
+          expect(page.animationConfig.exit[0].name).to.equal("slide-left-animation");
+        });
+
+        test('default to admin animations are correct', function() {
+          page.currentPage = "def-error";
+          page.currentCat = "default";
+          page.intendedCat = "admin";
+
+          expect(page.animationConfig.exit[0].name).to.equal("slide-right-animation");
+        });
+
+        test('default to admin animations are correct', function() {
+          page.currentPage = "ad-profile";
+          page.currentCat = "admin";
+          page.intendedCat = "default";
+
+          expect(page.animationConfig.entry[0].name).to.equal("slide-from-right-animation");
+        });
+
+        test('default to admin animations are correct', function() {
+          page.currentPage = "ad-profile";
+          page.currentCat = "care-plan";
+          page.intendedCat = "default";
+
+          expect(page.animationConfig.entry[0].name).to.equal("slide-from-left-animation");
+        });
+
+      });
+
+    </script>
+  </body>
+</html>

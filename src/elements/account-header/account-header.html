@@ -280,9 +280,11 @@ header element that contains an editable user photo and name.
       },
 
       _photoChanged:function(photo) {
-        var isBase64 = photo.includes("data:image/png;base64");
-        if(isBase64) {
-          this.fire("AccountPhotoChanged", {photo:photo});
+        if(photo) {
+          var isBase64 = photo.includes("data:image/png;base64");
+          if(isBase64) {
+            this.fire("accountPhotoChanged", {photo:photo});
+          };
         };
       },
       _editQuery:function(query1600, query1400, query1200, query1000, query800, query600) {

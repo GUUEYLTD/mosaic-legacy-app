@@ -4,7 +4,7 @@
 <link rel="import" href="../../../bower_components/iron-collapse/iron-collapse.html" />
 <link rel="import" href="../../../bower_components/paper-input/paper-input.html" />
 <link rel="import" href="../../../bower_components/paper-dialog/paper-dialog.html" />
-
+<link rel="import" href="../../../bower_components/polymerfire/firebase-auth.html" />
 <link rel="import" href="../../elements/firebase-storage/firebase-storage.html" />
 <link rel="import" href="../../elements/account-header/account-header.html" />
 <link rel="import" href="../../elements/media-queries/media-queries.html" />
@@ -36,8 +36,7 @@
       app-name="main"
       set-name="false"
       path="uploads/[[home]]/[[user.uid]]"
-      use64="true"
-      url="{{homeImage}}">
+      use64="true">
     </firebase-storage>
 
     <style include="common-styles">
@@ -83,43 +82,81 @@
         is: 'def-account',
         ready:function(){
           this.fire("pageLoaded", {page:this.page});
-          this.addEventListener("AccountPhotoChanged", this._photoChanged);
+          this.addEventListener("accountPhotoChanged", this._photoChanged);
           this.addEventListener("updateDisplayName", this.updateDisplayName);
         },
         behaviors:[
           Polymer.defPagesAnimation,
           Polymer.defaultResizeBehavior
         ],
-        properties:{
-          user:{
-            type:Object
+        properties: {
+
+          //the user object from auth
+          user: {
+            type: Object
           },
-          emailUpdate:{
-            type:String,
-            value:null
+
+          //boolean from firebase auth indicating if signed in or not
+          signedIn: {
+            type: Boolean,
+            value: false
           },
-          reauth:{
-            type:Object,
-            value:{}
+
+          //media query dimensions for use in resizing
+          dimensions: {
+            type: Object,
+            value: {}
           },
+          
+          reauth: {
+            type: Object,
+            value: {}
+          },
+
+          statusKnown: {
+            type: Boolean,
+            observer: "_statusKnown"
+          },
+
+          secureEmail: {
+            type: String
+          },
+
+          secureEmailConfirm: {
+            type: String
+          },
+
+          securePass: {
+            type: String
+          },
+
+          securePassConfirm: {
+            type: String
+          }
+
         },
+
+        _statusKnown: function(status) {
+          this.fire("userStatusKnown", {status: status});
+        },
+
         updateDisplayName:function(e){
           var that = this;
           this.$.auth.user.updateProfile({displayName:e.detail.name})
             .then(function(){
-              that.fire("openToast", {toastText: "Account updated, refresh pages to see changes"});
+              that.fire("openToast", {toastText: "Account updated, refresh pages to see changes", displayName: e.detail.name});
             }, function(err){
               that.fire("openToast", {toastText: "There was an error updating your account: "+err});
             });
-
         },
+
         _photoChanged:function(e){
           var that = this;
           this.$.storage._uploadFile(e.detail.photo)
             .then(function(fileLoc){
               that.$.auth.user.updateProfile({photoURL:fileLoc})
                 .then(function(){
-                  that.fire("openToast", {toastText: "Account updated."});
+                  that.fire("openToast", {toastText: "Account updated.", photoURL: fileLoc});
                 }, function(err){
                   that.fire("openToast", {toastText: "There was an error updating your account: "+err});
                 });
@@ -127,6 +164,7 @@
               that.fire("openToast", {toastText: "There was an error updating your account: "+err});
             });
         },
+
         _saveSecureUpdate:function(){
           if(this.secureEmail){
             if(this.secureEmail != this.secureEmailConfirm){
@@ -165,6 +203,7 @@
             };
           };
         },
+
         _reAuth:function(){
           this.$.auth.auth.signInWithEmailAndPassword(this.reauth.email, this.reauth.pass)
             .then(function(){
@@ -172,8 +211,8 @@
             }.bind(this), function(err){
               this.fire("openToast", {toastText: "There was an error re-authenticating: "+err+" Try again."});
             }.bind(this));
-
         }
+
       });
 
   </script>
