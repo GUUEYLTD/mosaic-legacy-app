@@ -68,7 +68,7 @@
         <h3>Account Password</h3>
         <paper-input type="password" label="update password" value="{{securePass}}"></paper-input>
         <paper-input type="password" label="confrim update password" value="{{securePassConfirm}}"></paper-input>
-        <paper-button on-tap="_saveSecureUpdate">update account</paper-button>
+        <paper-button on-tap="saveSecureUpdate">update account</paper-button>
       </div>
 
     </paper-card>
@@ -107,49 +107,58 @@
             type: Object,
             value: {}
           },
-          
+
+          //the reauth object to use for reauthing to change email or password populated by a modal
           reauth: {
             type: Object,
             value: {}
           },
 
+          //from firebase auth set to true when user object ready
           statusKnown: {
             type: Boolean,
             observer: "_statusKnown"
           },
 
+          //from email change field
           secureEmail: {
             type: String
           },
 
+          //from email confirm field... used to compare both email entries match
           secureEmailConfirm: {
             type: String
           },
 
+          //from password change field
           securePass: {
             type: String
           },
 
+          //from password confirm field. used to compare both password entries match
           securePassConfirm: {
             type: String
           }
 
         },
 
+        //fire event when user object ready
         _statusKnown: function(status) {
           this.fire("userStatusKnown", {status: status});
         },
 
+        //event handler to update display name of user from firebase-auth
         updateDisplayName:function(e){
           var that = this;
           this.$.auth.user.updateProfile({displayName:e.detail.name})
             .then(function(){
               that.fire("openToast", {toastText: "Account updated, refresh pages to see changes", displayName: e.detail.name});
             }, function(err){
-              that.fire("openToast", {toastText: "There was an error updating your account: "+err});
+              that.fire("openToast", {toastText: "There was an error updating your account: " + err});
             });
         },
 
+        //event handler to update photo for user from firebase-auth
         _photoChanged:function(e){
           var that = this;
           this.$.storage._uploadFile(e.detail.photo)
@@ -158,14 +167,22 @@
                 .then(function(){
                   that.fire("openToast", {toastText: "Account updated.", photoURL: fileLoc});
                 }, function(err){
-                  that.fire("openToast", {toastText: "There was an error updating your account: "+err});
+                  that.fire("openToast", {toastText: "There was an error updating your account: " + err});
                 });
             }, function(err){
-              that.fire("openToast", {toastText: "There was an error updating your account: "+err});
+              that.fire("openToast", {toastText: "There was an error updating your account: " + err});
             });
         },
 
-        _saveSecureUpdate:function(){
+        _savePassword: function() {
+
+        },
+
+        _saveEmail: function () {
+
+        },
+
+        saveSecureUpdate: function() {
           if(this.secureEmail){
             if(this.secureEmail != this.secureEmailConfirm){
               this.fire("openToast",{toastText:"Both email fields must match in order to update email."});
@@ -179,37 +196,37 @@
                     this.fire("openToast", {toastText: "You must re-authenticate in order to update your email address."});
                     this.$.reAuthDialog.open();
                   } else {
-                    this.fire("openToast", {toastText: "There was an error updating your email: "+err});
+                    this.fire("openToast", {toastText: "There was an error updating your email: " + err});
                   };
                 }.bind(this));
             };
           };
           if(this.securePass){
             if(this.securePass != this.securePassConfirm){
-              this.fire("openToast",{toastText:"Both password fields must match in order to update password."});
+              this.fire("openToast",{toastText: "Both password fields must match in order to update password."});
             } else {
               this.$.auth.user.updatePassword(this.securePass)
                 .then(function(){
-                  this.fire("openToast",{toastText:"Password Updated."});
+                  this.fire("openToast",{toastText: "Password Updated."});
                   this.$.reAuthDialog.close();
                 }.bind(this), function(err){
                   if(err.code === "auth/requires-recent-login"){
                     this.fire("openToast", {toastText: "You must re-authenticate in order to update your password."});
                     this.$.reAuthDialog.open();
                   } else {
-                    this.fire("openToast", {toastText: "There was an error updating your password: "+err});
+                    this.fire("openToast", {toastText: "There was an error updating your password: " + err});
                   };
                 }.bind(this));
             };
           };
         },
 
-        _reAuth:function(){
+        _reAuth: function() {
           this.$.auth.auth.signInWithEmailAndPassword(this.reauth.email, this.reauth.pass)
             .then(function(){
-              this._saveSecureUpdate();
+              this.saveSecureUpdate();
             }.bind(this), function(err){
-              this.fire("openToast", {toastText: "There was an error re-authenticating: "+err+" Try again."});
+              this.fire("openToast", {toastText: "There was an error re-authenticating: " + err + " Try again."});
             }.bind(this));
         }
 

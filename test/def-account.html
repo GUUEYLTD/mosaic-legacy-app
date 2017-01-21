@@ -115,6 +115,48 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           page.fire("updateDisplayName", {name:name});
         });
 
+        test('check that the password changes and reverts correctly', function(done) {
+          page.addEventListener("openToast", function(e) {
+            expect(e.detail.toastText).to.equal("Password Updated.");
+            if(page.securePass === pass1 && e.detail.toastText === "Password Updated.") {
+              done();
+            } else if(page.securePass === pass2 && e.detail.toastText === "Password Updated.") {
+              revertChanges();
+            };
+          });
+          var pass1 = "123123";
+          var pass2 = "321321";
+          page.securePass = pass2;
+          page.securePassConfirm = pass2;
+          page.saveSecureUpdate();
+          revertChanges = function() {
+            page.securePass = pass1;
+            page.securePassConfirm = pass1;
+            page.saveSecureUpdate();
+          };
+        });
+
+        test('check that the email changes correctly', function(done) {
+          page.addEventListener("openToast", function(e) {
+            expect(e.detail.toastText).to.equal("Email Updated.");
+            if(page.secureEmail === email1 && e.detail.toastText === "Email Updated.") {
+              done();
+            } else if(page.secureEmail === email2 && e.detail.toastText === "Email Updated.") {
+              revertChanges();
+            };
+          });
+          var email1 = "123@mailinator.com";
+          var email2 = "321@mailinator.com";
+          page.secureEmail = email2;
+          page.secureEmailConfirm = email2;
+          page.saveSecureUpdate();
+          revertChanges = function() {
+            page.secureEmail = email1;
+            page.secureEmailConfirm = email1;
+            page.saveSecureUpdate();
+          };
+        });
+
       });
 
       suite('check page animations', function() {
