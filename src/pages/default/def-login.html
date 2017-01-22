@@ -5,6 +5,7 @@
 <link rel="import" href="../../../bower_components/polymerfire/firebase-auth.html" />
 <link rel="import" href="../../../bower_components/iron-localstorage/iron-localstorage.html" />
 <link rel="import" href="../../../bower_components/paper-item/paper-item.html" />
+<link rel="import" href="../../../bower_components/paper-input/paper-input.html" />
 
 <link rel="import" href="../../elements/login-recent-user/login-recent-user.html" />
 
@@ -425,145 +426,192 @@
     Polymer({
 
       is: 'def-login',
-      ready:function(){
+
+      ready: function() {
         this.fire("pageLoaded", {page:this.page});
       },
-      attached:function(){
+
+      attached: function() {
         this.$.registerWrapper.addEventListener('mouseover', this._applyHovered);
         this.$.registerWrapper.addEventListener('mouseout', this._removeHovered);
       },
-      properties:{
-        page:{
+
+      properties: {
+
+        page: {
           type:String,
         },
-        home:{
-          type:String,
+
+        home: {
+          type: String,
         },
-        signedIn:{
+
+        users: {
+          type: Array,
+          value:[]
+        },
+
+        forgotEmail: {
+          type: String
+        },
+
+        username: {
+          type: String
+        },
+
+        password: {
+          type:String
+        },
+
+        signedIn: {
           type:Boolean,
         },
-        newAccount:{
-          type:Object,
-          value:{
-            username:"",
-            password:"",
-            home:""
+
+        error: {
+
+        },
+
+        newAccount: {
+          type: Object,
+          value: {
+            username: "",
+            password: "",
+            home: ""
           },
         },
-        loginDisplay:{
-          type:Boolean,
-          value:false
+
+        loginDisplay: {
+          type: Boolean,
+          value: false
         },
-        showReset:{
-          type:Boolean,
-          value:true
+
+        showReset: {
+          type: Boolean,
+          value: true
         },
-        showTryAgain:{
-          type:Boolean,
-          value:false
+
+        showTryAgain: {
+          type: Boolean,
+          value: false
         },
-        recentUsersOpen:{
-          type:Boolean,
-          value:false
+
+        recentUsersOpen: {
+          type: Boolean,
+          value: false
         },
       },
-      observers:[
 
-      ],
-      behaviors:[
+      behaviors: [
         Polymer.defPagesAnimation,
         Polymer.defaultResizeBehavior
       ],
-      validateInputs:function(){
-        var validArray=[];
-        var result=false;
+
+      validateInputs: function() {
+        var validArray = [];
+        var result = false;
         validArray.push(this.$.registerUsername.validate());
         validArray.push(this.$.registerPassword.validate());
         validArray.push(this.$.registerPasswordConfirm.validate());
-        for(i=0; i<validArray.length; i++){
-          if(validArray[i]===true){
-            result=true;
+        for(i = 0; i < validArray.length; i++) {
+          if(validArray[i] === true){
+            result = true;
           } else {
-            result=false;
+            result = false;
             break;
           };
         };
         return result;
       },
-      createNewAccount:function(){
-        if(this.validateInputs()){
-          this.fire('createNewAccount',this.newAccount);
+
+      createNewAccount: function() {
+        if(this.validateInputs()) {
+          this.fire('createNewAccount', this.newAccount);
         } else {
-          this.fire("openToast", {toastText:"Your entered details are invalid, or you have not entered a username or password."})
+          this.fire("openToast", {toastText: "Your entered details are invalid, or you have not entered a username or password."})
         };
       },
-      emailSignIn:function(){
-        var details={
-          username:this.username,
-          password:this.password
+
+      emailSignIn: function() {
+        var details = {
+          username: this.username,
+          password: this.password
         };
-        this.fire('emailSignIn',details);
+        this.fire('emailSignIn', details);
       },
-      resetPass:function(){
+
+      resetPass: function() {
         this.$.forgotUser.auth.sendPasswordResetEmail(this.forgotEmail)
-          .then(function(){
+          .then(function() {
             this.$.forgotSuccess.show();
             this.$.forgotError.hide();
             this.$.forgotSection.hide();
             this.showReset = false;
             this.showTryAgain = false;
+            this.fire("openToast", {toastText: "Password Reset Email Sent"});
           }.bind(this),
-          function(error){
+          function(error) {
             this.$.forgotSection.hide();
             this.$.forgotSuccess.hide();
             this.$.forgotError.show();
-            this.error=error;
+            this.error = error;
             this.showReset = false;
             this.showTryAgain = true;
+            this.fire("openToast", {toastText: JSON.parse(error.message).error.errors[0].message});
           }.bind(this));
       },
-      _toggleTab:function(){
+
+      _toggleTab: function() {
         this.loginDisplay = !this.loginDisplay;
       },
-      _applyHovered:function(e){
+
+      _applyHovered: function() {
         this.querySelector("paper-button").classList.add("white");
       },
-      _removeHovered:function(e){
+
+      _removeHovered: function() {
         this.querySelector("paper-button").classList.remove("white");
       },
-      _openForgotPass:function(){
+
+      _openForgotPass: function() {
         this.$.forgotPass.show();
         this.$.forgotSection.show();
       },
-      _cancelForgotPass:function(){
+
+      _cancelForgotPass: function() {
         this.$.forgotPass.hide();
       },
-      goTostartReset:function(){
+
+      goTostartReset: function() {
         this.$.forgotSuccess.hide();
         this.$.forgotError.hide();
         this.$.forgotSection.show();
         this.showReset = true;
         this.showTryAgain = false;
       },
-      _toggleRecentUsers:function(){
+
+      _toggleRecentUsers: function() {
         this.$.forgotPass.hide();
         this.$.recentUsers.classList.toggle("recent-users-visible");
-        this.recentUsersOpen= !this.recentUsersOpen;
+        this.recentUsersOpen = !this.recentUsersOpen;
       },
-      _setUser:function(e){
+
+      _setUser:function(e) {
         this.username = e.model.user.email;
         this._toggleRecentUsers();
       },
-      _computeUserPhoto:function(photo){
+
+      _computeUserPhoto: function(photo) {
         return photo || "/images/defaultAvatar.png";
       },
-      _computeDisplayName:function(name){
-        if(name === "undefined undefined"){
+
+      _computeDisplayName: function(name) {
+        if(name === "undefined undefined") {
           return "no display name";
         } else {
           return name;
         };
       }
+
     });
 
   </script>

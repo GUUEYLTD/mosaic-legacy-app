@@ -21,25 +21,170 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <!-- Import the element to test -->
     <link rel="import" href="../src/pages/default/def-home.html">
+    <link rel="import" href="../bower_components/polymerfire/firebase-app.html" />
+    <link rel="import" href="../bower_components/polymerfire/firebase-auth.html" />
   </head>
   <body>
+    <test-fixture id="firebaseApp">
+      <template>
+        <firebase-app
+          name="main"
+          auth-domain="careplan-c2677.firebaseapp.com"
+          database-url="https://careplan-c2677.firebaseio.com"
+          api-key="AIzaSyBdtmHIV_7epC0OBiXkTNoqrGRspA58Epc"
+          storage-bucket="careplan-c2677.appspot.com">
+        </firebase-app>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="auth">
+      <template>
+        <firebase-auth
+          app-name="main"
+          user="{{user}}"
+          signed-in="{{signedIn}}"
+          status-known="{{statusKnown}}"
+          on-error="handleError">
+        </firebase-auth>
+      </template>
+    </test-fixture>
+
     <test-fixture id="basic">
       <template>
-        <def-home></def-home>
+        <def-home
+          current-page="def-home"
+          current-cat="default"
+          intended-cat="default"
+          page="def-home"
+          home="-KTBXzZw3-qoZz4c7nY7"
+          name="def-home"
+          signed-in>
+        </def-home>
       </template>
     </test-fixture>
 
     <script>
       suite('def-home tests', function() {
         var page;
+        var auth;
+        var firebaseApp = fixture('firebaseApp');
 
-        setup(function() {
+        setup(function(done) {
           page = fixture('basic');
+          auth = fixture('auth');
+          auth.signOut()
+            .then(function() {
+              console.log("signed out");
+              auth.signInWithEmailAndPassword("123@mailinator.com", "123123")
+                .then(function() {
+                  console.log("signed into test account");
+                  checkQuery();
+                })
+                .catch(function(err) {
+                  console.log(err);
+                });
+            });
+
+          function checkQuery() {
+            page.$.suIndexDB.query.on("value", checkReady);
+          };
+
+          function checkReady(snap) {
+            if(snap.val()["-KTnlyii8oO0_LemXONz"]) {
+              page.$.suIndexDB.query.off("value", checkReady);
+              done();
+            };
+          };
         });
 
         test('instantiating the element works', function() {
           assert.equal(page.is, 'def-home');
         });
+
+        test('openDialog() creates a modal key and opens dialog', function() {
+          dummyEvent = {
+            model: {
+              su: {
+                $key: "test123"
+              }
+            }
+          };
+          page.openDialog(dummyEvent);
+
+          expect(page.$.activeDialog.opened).to.equal(true);
+          expect(page.modalKey).to.equal(dummyEvent.model.su.$key);
+
+        });
+
+        test('openSuspendedDialog() creates a modal key and opens dialog', function() {
+          dummyEvent = {
+            model: {
+              su: {
+                $key: "test123"
+              }
+            }
+          };
+          page.openSuspendedDialog(dummyEvent);
+
+          expect(page.$.suspendedDialog.opened).to.equal(true);
+          expect(page.modalKey).to.equal(dummyEvent.model.su.$key);
+
+        });
+
+        test('suspendServiceUser() sets service user as suspended', function(done) {
+          page.addEventListener("openToast", function(e) {
+            var target = page.patientList.filter(function(patient) {
+              return patient.$key === "-KTnlyii8oO0_LemXONz";
+            });
+            target = target[0];
+            if(e.detail.toastText === "Service User Suspended") {
+              expect(target.currentStatus).to.equal("suspended");
+              done();
+            };
+          });
+
+          page.modalKey = "-KTnlyii8oO0_LemXONz";
+          page.suspendServiceUser();
+        });
+
+        test('unSuspendServiceUser() sets service user as active', function(done) {
+          page.addEventListener("openToast", function(e) {
+            var target = page.patientList.filter(function(patient) {
+              return patient.$key === "-KTnlyii8oO0_LemXONz";
+            });
+            target = target[0];
+            if(e.detail.toastText === "Service User Active") {
+              expect(target.currentStatus).to.equal("active");
+              done();
+            };
+          });
+
+          page.modalKey = "-KTnlyii8oO0_LemXONz";
+          page.unSuspendServiceUser();
+        });
+
+        test('settings apply correctly', function() {
+          var origSettings = page.settingsData;
+          var newSettings = {
+            privacyNameEnabled: false,
+            privacyOverlayOpacity: 0,
+            privacyOverlayColor: 'pink'
+          };
+          page.settingsData = newSettings;
+          expect(page.customStyle["--privacy-overlay-opacity"]).to.equal(newSettings.privacyOverlayOpacity.toString());
+          expect(page.customStyle["--privacy-overlay-color"]).to.equal(newSettings.privacyOverlayColor);
+          expect(page.customStyle["--privacy-name-transparency"]).to.equal(newSettings.privacyNameEnabled ? "transparent" : "#000000");
+          page.settingsData = origSettings;
+        });
+
+        test('creating a creates a patient with a uid returns event with uid', function(done) {
+          page.addEventListener("newPatientCreated", function(e) {
+            expect(e.detail.uid).to.exist;
+            done();
+          });
+          page.createNewPatient();
+        });
+
       });
     </script>
   </body>

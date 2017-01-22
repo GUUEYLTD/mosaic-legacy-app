@@ -21,25 +21,117 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <!-- Import the element to test -->
     <link rel="import" href="../src/pages/default/def-login.html">
+    <link rel="import" href="../bower_components/polymerfire/firebase-app.html" />
+
   </head>
   <body>
-    <test-fixture id="basic">
+
+    <test-fixture id="firebaseApp">
       <template>
-        <def-login></def-login>
+        <firebase-app
+          name="main"
+          auth-domain="careplan-c2677.firebaseapp.com"
+          database-url="https://careplan-c2677.firebaseio.com"
+          api-key="AIzaSyBdtmHIV_7epC0OBiXkTNoqrGRspA58Epc"
+          storage-bucket="careplan-c2677.appspot.com">
+        </firebase-app>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="page">
+      <template>
+        <def-login
+        current-page="def-login"
+        current-cat="default"
+        intended-cat="default"
+        page="def-login"
+        name="def-login">
+        </def-login>
       </template>
     </test-fixture>
 
     <script>
       suite('def-login tests', function() {
         var page;
+        var firebaseApp = fixture('firebaseApp');
 
         setup(function() {
-          page = fixture('basic');
+          page = fixture('page');
         });
 
         test('instantiating the element works', function() {
           assert.equal(page.is, 'def-login');
         });
+
+        test('validating input works', function() {
+          page.newAccount = {
+            username: "123@mailinator.com",
+            password: "123123123",
+            passwordConfirm: "123123123"
+          };
+          var validation = page.validateInputs();
+          expect(validation).to.equal(true);
+
+          page.newAccount = {
+            username: "123@mailinator",
+            password: "123123123",
+            passwordConfirm: "123123123"
+          };
+          var validation = page.validateInputs();
+          expect(validation).to.equal(false);
+
+          page.newAccount = {
+            username: "123@mailinator.com",
+            password: "123",
+            passwordConfirm: "123"
+          };
+          var validation = page.validateInputs();
+          expect(validation).to.equal(false);
+        });
+
+        test('reset email works', function(done) {
+          page.addEventListener("openToast", function(e) {
+            if(e.detail.toastText === "Password Reset Email Sent") {
+              done();
+            };
+            if(e.detail.toastText === "RESET_PASSWORD_EXCEED_LIMIT") {
+              done();
+            }
+          });
+          page.forgotEmail = '123@mailinator.com';
+          page.resetPass();
+        });
+
+        test('_toggleTab toggles loginDisplay', function() {
+          var prev = page.loginDisplay;
+          page._toggleTab();
+          expect(page.loginDisplay != prev);
+        });
+
+        test('_applyHovered addes white class', function(done) {
+          flush(function() {
+            page._applyHovered();
+            var paperButton = Polymer.dom(page.root).querySelector("paper-button");
+            console.log(paperButton);
+            var classList = paperButton.classList;
+            var classArray = Array.from(classList);
+            expect(classArray).to.include("white");
+            done();
+          });
+        });
+
+        test('_removeHovered removes white class', function(done) {
+          flush(function() {
+            page._removeHovered();
+            var paperButton = Polymer.dom(page.root).querySelector("paper-button");
+            console.log(paperButton);
+            var classList = paperButton.classList;
+            var classArray = Array.from(classList);
+            expect(classArray).to.not.include("white");
+            done();
+          });
+        });
+
       });
     </script>
   </body>

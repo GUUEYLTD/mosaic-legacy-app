@@ -51,106 +51,124 @@
     </firebase-document>
 
     <style include="app-grid-style">
-    :host{
-      --app-grid-columns:5;
-      --app-grid-item-height:110%;
-      --app-grid-gutter:20px;
-    }
-    .multiBoxContainer{
-      margin-top:25px;
-      margin-right:10%;
-      margin-left:10%;
-    }
-    .suBox{
-      position:relative;
-    }
-    .suBoxImage{
-      position:relative;
-      width:100%;
-      height:70%;
-    }
-    .suBoxImage:after{
-      content:'\A';
-      position:absolute;
-      width:100%;
-      height:100%;
-      top:0;
-      left:0;
-      opacity:var(--privacy-overlay-opacity, .8);
-      background-color:var(--privacy-overlay-color, #000000);
-      transition: opacity .25s ease-in-out;
-    }
-    .suBoxImage:hover:after{
-      content:'\A';
-      position:absolute;
-      width:100%;
-      height:100%;
-      top:0;
-      left:0;
-      opacity:0;
-      background-color:var(--privacy-overlay-color, #000000);
-    }
-    .suBoxImage:hover{
-      cursor:pointer;
-    }
-    .suspendedText{
-      text-transform:uppercase;
-      width:80%;
-      color:red;
-      font-size:24px;
-      font-weight:bold;
-      position:absolute;
-      text-align:center;
-      z-index:2;
-      top:25%;
-      left:10%;
-    }
-    .activeImage{
-      height:auto;
-      width:auto;
-      background-color: lightgray;
-    }
-    .suLower{
-      padding: 10px 10px 10px 10px;
-      position:absolute;
-      bottom:0;
-    }
-    .guuey-su-name{
-      color:var(--privacy-name-transparency, transparent);
-      transition:color .25s ease-in-out;
-      margin:0;
-      padding:0;
-      text-transform:capitalize;
-    }
-    .guuey-su-name:first-letter{
-      color:#000000;
-    }
-    .guuey-su-name:hover{
-      color:#000000;
-      cursor:pointer;
-    }
-    .suEdit{
-      position:absolute;
-      bottom:0;
-      right:0;
-    }
-    paper-fab{
-      position:absolute;
-      right:5%;
-      top:140px;
-      z-index:1;
-      /*polymer overrides*/
-      position:var(--main-fab-position);
-      bottom:var(--main-fab-bottom);
-      top:var(--main-fab-top);
-      right:var(--main-fab-right);
-    }
-    #activeDialog{
-      margin:0;
-    }
-    #suspendedDialog{
-      margin:0;
-    }
+
+      :host {
+        --app-grid-columns:5;
+        --app-grid-item-height:110%;
+        --app-grid-gutter:20px;
+      }
+
+      .multiBoxContainer {
+        margin-top:25px;
+        margin-right:10%;
+        margin-left:10%;
+      }
+
+      .suBox {
+        position:relative;
+      }
+
+      .suBoxImage {
+        position:relative;
+        width:100%;
+        height:70%;
+      }
+
+      .suBoxImage:after {
+        content:'\A';
+        position:absolute;
+        width:100%;
+        height:100%;
+        top:0;
+        left:0;
+        opacity:var(--privacy-overlay-opacity, .8);
+        background-color:var(--privacy-overlay-color, #000000);
+        transition: opacity .25s ease-in-out;
+      }
+
+      .suBoxImage:hover:after {
+        content:'\A';
+        position:absolute;
+        width:100%;
+        height:100%;
+        top:0;
+        left:0;
+        opacity:0;
+        background-color:var(--privacy-overlay-color, #000000);
+      }
+
+      .suBoxImage:hover {
+        cursor:pointer;
+      }
+
+      .suspendedText {
+        text-transform:uppercase;
+        width:80%;
+        color:red;
+        font-size:24px;
+        font-weight:bold;
+        position:absolute;
+        text-align:center;
+        z-index:2;
+        top:25%;
+        left:10%;
+      }
+
+      .activeImage {
+        height:auto;
+        width:auto;
+        background-color: lightgray;
+      }
+
+      .suLower {
+        padding: 10px 10px 10px 10px;
+        position:absolute;
+        bottom:0;
+      }
+
+      .guuey-su-name {
+        color:var(--privacy-name-transparency, transparent);
+        transition:color .25s ease-in-out;
+        margin:0;
+        padding:0;
+        text-transform:capitalize;
+      }
+
+      .guuey-su-name:first-letter {
+        color:#000000;
+      }
+
+      .guuey-su-name:hover {
+        color:#000000;
+        cursor:pointer;
+      }
+
+      .suEdit {
+        position:absolute;
+        bottom:0;
+        right:0;
+      }
+
+      paper-fab {
+        position:absolute;
+        right:5%;
+        top:140px;
+        z-index:1;
+        /*polymer overrides*/
+        position:var(--main-fab-position);
+        bottom:var(--main-fab-bottom);
+        top:var(--main-fab-top);
+        right:var(--main-fab-right);
+      }
+
+      #activeDialog {
+        margin:0;
+      }
+
+      #suspendedDialog {
+        margin:0;
+      }
+
     </style>
 
     <paper-dialog id="activeDialog" no-overlap horizontal-align="left" vertical-align="top">
@@ -255,124 +273,181 @@
     Polymer({
 
       is: 'def-home',
-      ready:function(){
-        this.fire("dbLoaded", {page:"def-home"});
+
+      ready: function() {
+        this.fire("dbLoaded", {page: "def-home"});
       },
-      properties:{
-        patient:{
-          type:String,
+
+      properties: {
+
+        //the current patient that is in use
+        patient: {
+          type: String,
         },
-        page:{
-          type:String,
+
+        //the current page
+        page: {
+          type: String,
         },
-        home:{
-          type:String,
+
+        //the current account home
+        home: {
+          type: String,
         },
-        signedIn:{
-          type:Boolean,
+
+        //media queries dimensions for style updates
+        dimensions: {
+          type: Object,
+          value: {}
         },
-        newAccount:{
-          type:Object,
-          value:{},
+
+        //settings data from firebase for updating settings such as privacy mode
+        settingsData: {
+          type: Object,
+          value: {}
         },
+
+        //list of patients from firebase suIndex
+        patientList: {
+          type:Object
+        },
+
       },
-      observers:[
-        "dbLoaded(patientList)",
+
+      observers: [
+        //"dbLoaded(patientList)",
         "_suSettingsChanged(settingsData.*)"
       ],
-      behaviors:[
+
+      behaviors: [
         Polymer.defPagesAnimation,
         Polymer.defaultResizeBehavior
       ],
-      createNewPatient:function(){
-        this.$.fireDoc.path=null;
-        this.$.fireDoc.data={
-          home:this.home,
-          currentStatus:"archived"
+
+      //create new patient set as archived. changed to active when all fields are filled out on following su-create page
+      createNewPatient: function() {
+        this.$.fireDoc.path = null;
+        this.$.fireDoc.data = {
+          home: this.home,
+          currentStatus: "archived"
         };
+
         this.$.fireDoc.save('/homes/'+this.home+'/patients', null)
-          .then(function(){
-            var patientPath='/homes/'+this.home+'/patients';
-            this.patient = this.$.fireDoc.path.slice(patientPath.length+1);
-            window.location.href="/"+this.home+"/care-plan/su-create/"+this.patient;
+          .then(function() {
+            var patientPath = '/homes/' + this.home + '/patients';
+            this.patient = this.$.fireDoc.path.slice(patientPath.length + 1);
+            this.fire("newPatientCreated", {uid: this.patient});
+            window.location.href = "/" + this.home + "/care-plan/su-create/" + this.patient;
           }.bind(this));
       },
-      createNewAccount:function(){
-        this.fire('createNewAccount',this.newAccount);
-      },
-      openDialog:function(e) {
+
+      //open menu for editing an active service user
+      openDialog: function(e) {
         this.$.activeDialog.positionTarget = e.target;
-        if(e.model.su && e.model.su){
+        if(e.model.su){
           if(e.model.su.fName && e.model.su.lName){
-            this.modalFirstName=e.model.su.fName;
-            this.modalLastName=e.model.su.lName;
-          }
-        }
-        this.modalKey=e.model.su.$key;
+            this.modalFirstName = e.model.su.fName;
+            this.modalLastName = e.model.su.lName;
+          };
+        };
+        this.modalKey = e.model.su.$key;
         this.$.activeDialog.toggle();
       },
-      openSuspendedDialog:function(e) {
+
+      //open menu for suspended service user
+      openSuspendedDialog: function(e) {
         this.$.suspendedDialog.positionTarget = e.target;
         if(e.model.su && e.model.su){
           if(e.model.su.fName && e.model.su.lName){
-            this.modalFirstName=e.model.su.fName;
-            this.modalLastName=e.model.su.lName;
-          }
-        }
-        this.modalKey=e.model.su.$key;
+            this.modalFirstName = e.model.su.fName;
+            this.modalLastName = e.model.su.lName;
+          };
+        };
+        this.modalKey = e.model.su.$key;
         this.$.suspendedDialog.toggle();
       },
-      editServiceUser:function(e){
-        if(e.model){
-          window.open("/"+this.home+"/care-plan/su-profile/"+e.model.su.$key, '_self');
+
+      //take user to service users su-profile page, opened from openDialog/openSuspendedDialog
+      editServiceUser: function(e) {
+        if(e.model) {
+          window.open("/" + this.home + "/care-plan/su-profile/" + e.model.su.$key, '_self');
         } else {
-          window.open("/"+this.home+"/care-plan/su-profile/"+this.modalKey, '_self');
+          window.open("/" + this.home + "/care-plan/su-profile/" + this.modalKey, '_self');
         };
       },
-      suspendServiceUser:function(e){
-        var path=this.$.suIndexDB.path+"/"+this.modalKey+"/currentStatus";
-        this.$.suIndexDB.setStoredValue(path, "suspended");
-        this.$.activeDialog.toggle();
+
+      // save suspended status for a particular service user
+      suspendServiceUser: function(e) {
+        var path = this.$.suIndexDB.path + "/" + this.modalKey + "/currentStatus";
+        this.$.suIndexDB.setStoredValue(path, "suspended")
+          .then(function() {
+            this.fire("openToast", {toastText: "Service User Suspended"});
+          }.bind(this))
+          .catch(function(err) {
+            this.fire("openToast", {toastText: err});
+          }.bind(this));
+        this.$.activeDialog.close();
       },
-      unSuspendServiceUser:function(e){
-        var path=this.$.suIndexDB.path+"/"+this.modalKey+"/currentStatus";
-        this.$.suIndexDB.setStoredValue(path, "active");
-        this.$.suspendedDialog.toggle();
+
+      // set service user status to active from suspended
+      unSuspendServiceUser: function(e) {
+        var path = this.$.suIndexDB.path + "/" + this.modalKey + "/currentStatus";
+        this.$.suIndexDB.setStoredValue(path, "active")
+          .then(function() {
+            this.fire("openToast", {toastText: "Service User Active"});
+          }.bind(this))
+          .catch(function(err) {
+            this.fire("openToast", {toastText: err});
+          }.bind(this));
+        this.$.suspendedDialog.close();
       },
-      archiveUser:function(e){
-        var path=this.$.suIndexDB.path+"/"+this.modalKey+"/currentStatus";
+
+      //save service user as archived in firebase. will not show on def-home
+      archiveUser: function(e) {
+        var path = this.$.suIndexDB.path + "/" + this.modalKey + "/currentStatus";
         this.$.suIndexDB.setStoredValue(path, "archived");
         this.$.activeDialog.toggle();
       },
-      filterArchived:function(su){
-        return su.currentStatus!=="archived";
+
+      //filter out archived service users in dom-repeat
+      filterArchived: function(su) {
+        return su.currentStatus !== "archived";
       },
+
       //check to see if the remaining non archived service users are suspended or not
-      _computeSuspended:function(status){
-        return status=="suspended";
+      _computeSuspended: function(status) {
+        return status === "suspended";
       },
-      _computeQueryCount:function(su){
-        if(su.currentStatus!="archived"){
-          if(!this.queryCount){
-            this.queryCount=0;
+
+      //set queryCount based on number of active or suspended service users
+      _computeQueryCount: function(su) {
+        if(su.currentStatus != "archived") {
+          if(!this.queryCount) {
+            this.queryCount = 0;
           };
           this.queryCount++;
-        }
+        };
       },
-      _computeImage:function(image){
-        if(image){
+
+      //use service user for display or the defaultAvatar.png image
+      _computeImage: function(image) {
+        if(image) {
           return image;
         } else {
           return "../../../../images/defaultAvatar.png";
         };
       },
+      /*
       dbLoaded:function(data){
         this.$.suIndexDB.query.on("value", function(){
             this.fire("dbLoaded");
         }.bind(this));
       },
-      _suSettingsChanged:function(value){
-        if(value.base.privacyNameEnabled){
+      */
+
+      //observer to watch settings changes on firebase. when changed execute display settings accordingly
+      _suSettingsChanged: function(value) {
+        if(value.base.privacyNameEnabled) {
           this.customStyle["--privacy-name-transparency"] = "transparent";
         } else {
           this.customStyle["--privacy-name-transparency"] = "#000000";
@@ -382,6 +457,7 @@
         this.customStyle["--privacy-overlay-color"] = String(value.base.privacyOverlayColor);
         this.updateStyles();
       }
+
     });
 
   </script>
