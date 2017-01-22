@@ -71,9 +71,8 @@
       }
     },
     "homeIndex":{
-      ".write": "auth !=null",
+      ".write": "auth != null",
       ".read":"false",
-      ".validate": "data.val() === null && newData.val() != null",
         "$home":{
           ".validate":"data.val() === null && newData.val() != null"
         }
