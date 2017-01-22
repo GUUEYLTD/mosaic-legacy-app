@@ -76,7 +76,7 @@
           if(this.currentUserType){
             //set restriction text for admins, managers, and others
             if(payments && payments.trial){
-              if(payements.trial.status === "canceled"){
+              if(payments.trial.status === "canceled"){
                 this.restrictToastText = this.adTrialOver;
                 this.restrictDialogText = this.swTrialOver;
               };
@@ -179,11 +179,13 @@
         this.set("pageData.page", "def-error");
       },
       _middleware:function(page) {
-        this.checkAdmin();
+        if(this.user) {
+          this.checkAdmin();
+          this.paymentReroute();
+          this.verifyReroute();
+        };
         this.setRightMenuSelect();
         this.toggleLoadingDisplay(this.page);
-        this.paymentReroute();
-        this.verifyReroute();
         this.lazyLoadPage(this.page);
       },
     };
