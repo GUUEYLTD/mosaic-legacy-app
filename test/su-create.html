@@ -1,0 +1,252 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>su-create</title>
+
+    <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../bower_components/web-component-tester/browser.js"></script>
+
+    <!-- Import the element to test -->
+    <link rel="import" href="../src/pages/care-plan/su-create.html">
+    <link rel="import" href="../bower_components/polymerfire/firebase-app.html" />
+    <link rel="import" href="../bower_components/polymerfire/firebase-auth.html" />
+  </head>
+  <body>
+    <test-fixture id="firebaseApp">
+      <template>
+        <firebase-app
+          name="main"
+          auth-domain="careplan-c2677.firebaseapp.com"
+          database-url="https://careplan-c2677.firebaseio.com"
+          api-key="AIzaSyBdtmHIV_7epC0OBiXkTNoqrGRspA58Epc"
+          storage-bucket="careplan-c2677.appspot.com">
+        </firebase-app>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="auth">
+      <template>
+        <firebase-auth
+          app-name="main"
+          user="{{user}}"
+          signed-in="{{signedIn}}"
+          status-known="{{statusKnown}}"
+          on-error="handleError">
+        </firebase-auth>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="basic">
+      <template>
+        <su-create
+          current-page="su-create"
+          current-cat="care-plan"
+          intended-cat="care-plan"
+          page="su-create"
+          patient="-TESTTESTTESTTEST123"
+          home="-KTBXzZw3-qoZz4c7nY7"
+          name="su-create">
+        </su-create>
+      </template>
+    </test-fixture>
+
+    <script>
+      suite('su-create tests', function() {
+        var page;
+        var auth;
+        var firebaseApp = fixture('firebaseApp');
+
+        setup(function(done) {
+          this.timeout = 10000;
+          page = fixture('basic');
+          auth = fixture('auth');
+          auth.signInWithEmailAndPassword("123@mailinator.com", "123123")
+            .then(function() {
+              checkNewPatientDB();
+            })
+            .catch(function(err) {
+              console.log(err);
+            });
+
+          var suIndex = false;
+          var contactsQuery = false;
+          var profileDB = false;
+
+          function checkAllReady() {
+            if(newPatientData) {
+              setTimeout(function() {
+                done();
+              }, 500);
+            };
+          };
+
+          function checkNewPatientDB() {
+            page.$.newPatientDB.ref.once("value", function() {
+              newPatientData = true;
+              checkAllReady();
+            });
+          };
+
+        });
+
+        test('instantiating the element works', function() {
+          assert.equal(page.is, 'su-create');
+        });
+
+        test('setting data in newPatientData works', function(done) {
+          names = ["sir","sirry-bob", "m'lady", "m'lord", "miss", "dood"];
+          var name = names[Math.floor(Math.random() * names.length)];
+
+          page.$.newPatientDB.ref.once("child_changed", function(snap) {
+            expect(snap.val()).to.equal(name);
+            done();
+          });
+
+          page.set("newPatientData.preferredName", name);
+        });
+
+        test('check that requirements met sends toasts correctly', function(done) {
+          page.addEventListener("openToast", function(e) {
+            expect(e.detail.toastText).to.contain("require");
+            page.set("profileData.fName", names[Math.floor(Math.random() * names.length)]);
+            done();
+          }, {once:true});
+
+          var names = ["bob", "jill", "sarah", "jennifer", "james", "jackie"];
+          var lNames = ["jefferson", "mckinley", "everheart", "henderson"];
+          var places = ["england", "france", "russia", "finland"];
+
+          var data = {
+            fName: names[Math.floor(Math.random() * names.length)],
+            lName: lNames[Math.floor(Math.random() * lNames.length)],
+            dob: "Sat Oct 22 2016 00:00:00 GMT+0200 (CEST)",
+            dateAssessed: "Sat Oct 22 2016 00:00:00 GMT+0200 (CEST)",
+            partnership: page.parterShipStatuses[Math.floor(Math.random() * page.parterShipStatuses.length)],
+            whereAssessed: null,
+            religion: null,
+            ethnicity: null,
+            nationality: null
+          };
+
+          page.set("newPatientData", data);
+        });
+
+        test('check that creating a patient works', function(done) {
+          var suIndexDone = false;
+          var newPatientDone = false;
+
+          function checkDone() {
+              if(suIndexDone && newPatientDone) {
+                done();
+              };
+          };
+
+          page.addEventListener("openToast", function(e) {
+            if(e.detail.toastText.includes("New service user has been saved")) {
+              page.$.suIndexDB.ref.once("value", function(snap) {
+                expect(snap.val().fName).to.equal(data.fName);
+                expect(snap.val().lName).to.equal(data.lName);
+                expect(snap.val().currentStatus).to.equal("active");
+                expect(snap.val().home).to.equal(page.home);
+                suIndexDone = true;
+                checkDone();
+              });
+            };
+          }, {once:true});
+
+          page.$.newPatientDB.ref.once("value", function(snap) {
+            for(x in data) {
+              console.log(data[x], snap.val()[x]);
+              expect(data[x]).to.equal(snap.val()[x]);
+            };
+            newPatientDone = true;
+          });
+
+          var names = ["bob", "jill", "sarah", "jennifer", "james", "jackie"];
+          var lNames = ["jefferson", "mckinley", "everheart", "henderson"];
+          var places = ["england", "france", "russia", "finland"];
+
+          var data = {
+            fName: names[Math.floor(Math.random() * names.length)],
+            lName: lNames[Math.floor(Math.random() * lNames.length)],
+            dob: "Sat Oct 22 2016 00:00:00 GMT+0200 (CEST)",
+            dateAssessed: "Sat Oct 22 2016 00:00:00 GMT+0200 (CEST)",
+            partnership: page.parterShipStatuses[Math.floor(Math.random() * page.parterShipStatuses.length)],
+            whereAssessed: places[Math.floor(Math.random() * places.length)],
+            religion: page.religions[Math.floor(Math.random() * page.religions.length)],
+            ethnicity: page.ethnicities[Math.floor(Math.random() * page.ethnicities.length)],
+            nationality: page.nationalities[Math.floor(Math.random() * page.nationalities.length)]
+          };
+
+          for(x in data) {
+            page.set("newPatientData." + x, data[x]);
+          };
+
+        });
+
+        test('care-plan to care-plan animations are correct', function() {
+          page.currentPage = "su-create";
+          page.currentCat = "care-plan";
+          page.intendedCat = "care-plan";
+
+          expect(page.animationConfig.entry[0].name).to.equal("slide-down-entry-animation");
+          expect(page.animationConfig.exit[0].name).to.equal("slide-down-exit-animation");
+        });
+
+        test('care-plan to default animations are correct', function() {
+          page.currentPage = "su-create";
+          page.currentCat = "care-plan";
+          page.intendedCat = "default";
+
+          expect(page.animationConfig.exit[0].name).to.equal("slide-right-animation");
+        });
+
+        test('care-plan to admin animations are correct', function() {
+          page.currentPage = "su-create";
+          page.currentCat = "care-plan";
+          page.intendedCat = "admin";
+
+          expect(page.animationConfig.exit[0].name).to.equal("slide-right-animation");
+        });
+
+        test('admin to care-plan animations are correct', function() {
+          page.currentPage = "ad-profile";
+          page.currentCat = "admin";
+          page.intendedCat = "care-plan";
+
+          expect(page.animationConfig.entry[0].name).to.equal("slide-from-right-animation");
+        });
+
+        test('default to care-plan animations are correct', function() {
+          page.currentPage = "def-account";
+          page.currentCat = "default";
+          page.intendedCat = "care-plan";
+
+          expect(page.animationConfig.entry[0].name).to.equal("slide-from-right-animation");
+        });
+
+        test('def-home to care-plan animations are correct', function() {
+          page.currentPage = "def-home";
+          page.currentCat = "default";
+          page.intendedCat = "care-plan";
+
+          expect(page.animationConfig.entry[0].name).to.equal("hero-animation");
+        });
+
+      });
+    </script>
+  </body>
+</html>
