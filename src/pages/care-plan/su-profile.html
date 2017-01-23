@@ -519,29 +519,45 @@
     Polymer({
 
       is: 'su-profile',
-      ready:function(){
+
+      ready: function() {
         this.addEventListener("print", this.print);
-        this.fire("pageLoaded",{page:this.page});
+        this.fire("pageLoaded",{page: this.page});
       },
-      properties:{
-        page:{
-          type:String,
+
+      properties: {
+
+        page: {
+          type: String,
         },
-        patient:{
-          type:String,
+
+        patient: {
+          type: String,
         },
-        home:{
-          type:String,
+
+        home: {
+          type: String,
         },
-        date:{
-          observer:"_dateChanged"
+
+        dimensions: {
+          type: Object,
+          value: {}
         },
-        guueyDOA:"loading",
-        guueyDOB:"loading",
+
+        guueyDOA: {
+          type: String,
+          value: "loading"
+        },
+
+        guueyDOB: {
+          type: String,
+          value: "loading"
+        },
+
         //list of dropdown values for vaadin boxes... put in db???
-        religions:{
-          type:Array,
-          value:[
+        religions: {
+          type: Array,
+          value: [
             'Christian',
             'Islam',
             'Atheist',
@@ -551,18 +567,20 @@
             'Jewish'
           ]
         },
-        parterShipStatuses:{
-          type:Array,
-          value:[
+
+        parterShipStatuses: {
+          type: Array,
+          value: [
             'Single',
             'Married',
             'Divorced',
             'Complicated'
           ]
         },
-        ethnicities:{
-          type:Array,
-          value:[
+
+        ethnicities: {
+          type: Array,
+          value: [
             'Albanian',
             'Arab',
             'Armenian',
@@ -655,9 +673,10 @@
             'Zhuang',
           ]
         },
-        nationalities:{
-          type:Array,
-          value:[
+
+        nationalities: {
+          type: Array,
+          value: [
             'Afghan',
             'Albanian',
             'Algerian',
@@ -858,12 +877,12 @@
             'Yemenite',
             'Zambian',
             'Zimbabwean',
-
           ]
         },
-        relationships:{
-          type:Array,
-          value:[
+
+        relationships: {
+          type: Array,
+          value: [
             'Father',
             'Mother',
             'Brother',
@@ -882,69 +901,49 @@
           ]
         }
       },
-      observers:[
-        "requirementsMet(profileData)",
-        "secondaryRequirementsMet(nextOfKinData)",
+
+      observers: [
+        "_requirementsMet(profileData)"
       ],
-      behaviors:[
+
+      behaviors: [
         Polymer.carePlanAnimation,
         Polymer.suPrintBehavior,
         Polymer.suResizeBehavior
       ],
-      requirementsMet:function(data){
-        if(Object.keys(data).length === 0 && data.constructor === Object && this.guueyDOB!="loading" && this.guueyDOA!="loading"){
+
+      _requirementsMet: function(data) {
+        if(Object.keys(data).length === 0 && data.constructor === Object && this.guueyDOB != "loading" && this.guueyDOA != "loading") {
         } else {
-          if(!data.fName){
+          if(!data.fName) {
             this.fire("openToast", {toastText: "First name is required before saving the new service user."});
             return;
-          } else if(!data.lName){
+          } else if(!data.lName) {
             this.fire("openToast", {toastText: "Last name is required before saving the new service user."});
             return;
-          } else if(!data.dob){
+          } else if(!data.dob) {
             this.fire("openToast", {toastText: "Date of birth is required before saving the new service user."});
             return;
-          } else if(!data.dateAssessed){
+          } else if(!data.dateAssessed) {
             this.fire("openToast", {toastText: "Date of assessment is required before saving the new service user."});
             return;
-          } else if(!data.partnership){
+          } else if(!data.partnership) {
             this.fire("openToast", {toastText: "Partnership status is required before saving the new service user."});
             return;
-          } else if(!data.whereAssessed){
+          } else if(!data.whereAssessed) {
             this.fire("openToast", {toastText: "Where assessed is required before saving the new service user."});
-          } else if(!data.religion){
+          } else if(!data.religion) {
             this.fire("openToast", {toastText: "Religion is required before saving the new service user."});
-          } else if(!data.ethnicity){
+          } else if(!data.ethnicity) {
             this.fire("openToast", {toastText: "Ethnicity is required before saving the new service user."});
-          } else if(!data.nationality){
+          } else if(!data.nationality) {
             this.fire("openToast", {toastText: "Nationality is required before saving the new service user."});
           } else {
             return true;
           };
         };
-      },
-      secondaryRequirementsMet:function(data){
-        if(Object.keys(data).length === 0 && data.constructor === Object){
-
-        } else {
-          if(this.requirementsMet){
-            if(!data.name){
-              this.fire("openToast", {toastText: "Next of kin name is required."});
-              return;
-            } else if(!data.relationship){
-              this.fire("openToast", {toastText: "Relationship to the service user is required."});
-              return;
-            } else if(!data.address){
-              this.fire("openToast", {toastText: "Next of kin address is required."});
-              return;
-            } else if(!data.phone){
-              this.fire("openToast", {toastText: "Next of kin phone number is required."});
-              return;
-            } else {
-              return true;
-            };
-          };
-        };
       }
+
     });
 
   </script>
