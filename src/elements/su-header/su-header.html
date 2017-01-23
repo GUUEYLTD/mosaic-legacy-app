@@ -265,6 +265,12 @@
     Polymer({
       is: 'su-header',
 
+      ready: function() {
+        this.$.suIndexDB.ref.once("value", function() {
+          this.fire("suIndexLoaded");
+        }.bind(this));
+      },
+
       properties: {
 
         //the current page in use. needed for firebase db path
@@ -304,7 +310,7 @@
           type: String,
           value:""
         },
-        
+
         //media query indicating if max size is 600. used for setting styles
         query600: {
           type: Boolean,
