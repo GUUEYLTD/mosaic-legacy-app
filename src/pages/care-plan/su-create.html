@@ -23,16 +23,18 @@
     <!--might not need auth element here if i link in the info properly...-->
     <firebase-document
       id="newPatientDB"
-      path="/homes/{{home}}/patients/{{patient}}/personalProfile"
+      path="/homes/[[home]]/patients/[[patient]]/personalProfile"
       data="{{newPatientDataLive}}"
       app-name="main">
     </firebase-document>
+
     <app-indexeddb-mirror
       key="patientProfile|[[patient]]"
       data="{{newPatientDataLive}}"
       persisted-data="{{newPatientData}}"
       worker-url="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
     </app-indexeddb-mirror>
+
     <firebase-document
       id="suIndexDB"
       app-name="main">
@@ -43,7 +45,8 @@
     </media-queries>
 
     <style include="common-styles">
-      :host{
+
+      :host {
         --su-header-patient-name-background-color:#7e57c2;
         --su-header-page-name-background-color:#673AB7;
         --su-header-avatar-background-color:#B39DDB;
@@ -51,16 +54,20 @@
         --app-grid-expandible-item-columns:2;
         --app-grid-item-height:100px;
       }
-      su-header{
+
+      su-header {
         background-color:purple;
       }
-      .pageInnerCont *{
+
+      .pageInnerCont * {
         padding:20px;
       }
-      h4{
+
+      h4 {
         text-align:center;
         @apply(--app-grid-expandible-item);
       }
+
     </style>
 
     <paper-card class="pageCard">
@@ -194,29 +201,37 @@
     Polymer({
 
       is: 'su-create',
-      ready:function(){
-        this.fire("pageLoaded", {page:this.page});
+
+      ready: function() {
+        this.fire("pageLoaded", {page: this.page});
       },
-      detached:function(){
-        console.log("detached");
-      },
-      properties:{
-        page:{
-          type:String,
+
+      properties: {
+
+        page: {
+          type: String,
         },
-        patient:{
-          type:String,
+
+        patient: {
+          type: String,
         },
-        home:{
-          type:String,
+
+        home: {
+          type: String,
         },
-        data:{
-          type:Object,
+
+        dimensions: {
+          type: Object
         },
+
+        data: {
+          type: Object,
+        },
+
         //list of dropdown values for vaadin boxes
-        religions:{
-          type:Array,
-          value:[
+        religions: {
+          type: Array,
+          value: [
             'Christian',
             'Islam',
             'Atheist',
@@ -226,18 +241,20 @@
             'Jewish'
           ]
         },
-        parterShipStatuses:{
-          type:Array,
-          value:[
+
+        parterShipStatuses: {
+          type: Array,
+          value: [
             'Single',
             'Married',
             'Divorced',
             'Domestic Partnership'
           ]
         },
-        ethnicities:{
-          type:Array,
-          value:[
+
+        ethnicities: {
+          type: Array,
+          value: [
             'Albanian',
             'Arab',
             'Armenian',
@@ -330,9 +347,10 @@
             'Zhuang',
           ]
         },
-        nationalities:{
-          type:Array,
-          value:[
+
+        nationalities: {
+          type: Array,
+          value: [
             'Afghan',
             'Albanian',
             'Algerian',
@@ -535,9 +553,10 @@
             'Zimbabwean',
           ]
         },
-        relationships:{
-          type:Array,
-          value:[
+
+        relationships: {
+          type: Array,
+          value: [
             'Father',
             'Mother',
             'Brother',
@@ -556,59 +575,66 @@
           ]
         }
       },
-      observers:[
-        "requirementsMet(newPatientData)"
+
+      observers: [
+        "_requirementsMet(newPatientData)"
       ],
-      behaviors:[
+
+      behaviors: [
         Polymer.carePlanAnimation,
         Polymer.suResizeBehavior
       ],
-      createNewPatient:function(){
-        var path = "/homes/"+this.home+"/patients/"+this.patient+"/currentStatus";
+
+      _createNewPatient: function() {
+        var path = "/homes/" + this.home + "/patients/" + this.patient + "/currentStatus";
         var date = new Date();
         var now = date.getTime();
         this.$.newPatientDB.setStoredValue(path, "active")
-          .then(function(val){
-            this.$.suIndexDB.data.fName=this.$.newPatientDB.data.fName;
-            this.$.suIndexDB.data.lName=this.$.newPatientDB.data.lName;
-            this.$.suIndexDB.data.currentStatus="active";
-            this.$.suIndexDB.data.home=this.home;
+          .then(function(val) {
+            this.$.suIndexDB.data.fName = this.newPatientData.fName;
+            this.$.suIndexDB.data.lName = this.newPatientData.lName;
+            this.$.suIndexDB.data.currentStatus = "active";
+            this.$.suIndexDB.data.home = this.home;
             this.$.suIndexDB.data.created = now;
-            this.$.suIndexDB.save("/homes/"+this.home+"/patients/suIndex", this.patient);
+            this.$.suIndexDB.save("/homes/" + this.home + "/patients/suIndex", this.patient)
+              .then(function() {
+                this.fire("openToast", {toastText: "New service user has been saved. You can continue editing on this page or navigate to other pages for the service user."});
+                this.fire("openDrawer");
+              }.bind(this));
           }.bind(this));
       },
-      requirementsMet:function(data){
-        if(this.page === "su-create"){
-          if(!data.fName){
+
+      _requirementsMet: function(data) {
+        if(this.page === "su-create") {
+          if(!data.fName) {
             this.fire("openToast", {toastText: "First name is required before saving the new service user."});
             return;
-          } else if(!data.lName){
+          } else if(!data.lName) {
             this.fire("openToast", {toastText: "Last name is required before saving the new service user."});
             return;
-          } else if(!data.dob){
+          } else if(!data.dob) {
             this.fire("openToast", {toastText: "Date of birth is required before saving the new service user."});
             return;
-          } else if(!data.dateAssessed){
+          } else if(!data.dateAssessed) {
             this.fire("openToast", {toastText: "Date of assessment is required before saving the new service user."});
             return;
-          } else if(!data.partnership){
+          } else if(!data.partnership) {
             this.fire("openToast", {toastText: "Partnership status is required before saving the new service user."});
             return;
-          } else if(!data.whereAssessed){
+          } else if(!data.whereAssessed) {
             this.fire("openToast", {toastText: "Where assessed is required before saving the new service user."});
-          } else if(!data.religion){
+          } else if(!data.religion) {
             this.fire("openToast", {toastText: "Religion is required before saving the new service user."});
-          } else if(!data.ethnicity){
+          } else if(!data.ethnicity) {
             this.fire("openToast", {toastText: "Ethnicity is required before saving the new service user."});
-          } else if(!data.nationality){
+          } else if(!data.nationality) {
             this.fire("openToast", {toastText: "Nationality is required before saving the new service user."});
           } else {
-            this.createNewPatient();
-            this.fire("openToast", {toastText: "New service user has been saved. You can continue editing on this page or navigate to other pages for the service user."});
-            this.fire("openDrawer");
+            this._createNewPatient();
           };
         };
       }
+
     });
 
   </script>
