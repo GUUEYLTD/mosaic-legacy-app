@@ -1,0 +1,201 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>su-view-reports</title>
+
+    <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../bower_components/web-component-tester/browser.js"></script>
+
+    <!-- Import the element to test -->
+    <link rel="import" href="../src/pages/care-plan/su-view-reports.html">
+    <link rel="import" href="../bower_components/polymerfire/firebase-app.html" />
+    <link rel="import" href="../bower_components/polymerfire/firebase-auth.html" />
+    <link rel="import" href="../bower_components/polymerfire/firebase-document.html" />
+
+  </head>
+  <body>
+    <test-fixture id="firebaseApp">
+      <template>
+        <firebase-app
+          name="main"
+          auth-domain="careplan-c2677.firebaseapp.com"
+          database-url="https://careplan-c2677.firebaseio.com"
+          api-key="AIzaSyBdtmHIV_7epC0OBiXkTNoqrGRspA58Epc"
+          storage-bucket="careplan-c2677.appspot.com">
+        </firebase-app>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="auth">
+      <template>
+        <firebase-auth
+          app-name="main"
+          user="{{user}}"
+          signed-in="{{signedIn}}"
+          status-known="{{statusKnown}}"
+          on-error="handleError">
+        </firebase-auth>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="testDoc">
+      <template>
+        <firebase-document
+          app-name="main"
+          path="homes/-KTBXzZw3-qoZz4c7nY7/patients/-TESTTESTTESTTEST123/dailyReports">
+        </firebase-document>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="basic">
+      <template>
+        <su-view-reports
+          current-page="su-view-reports"
+          current-cat="care-plan"
+          intended-cat="care-plan"
+          page="su-view-reports"
+          patient="-TESTTESTTESTTEST123"
+          home="-KTBXzZw3-qoZz4c7nY7"
+          name="su-view-reports">
+        </su-view-reports>
+      </template>
+    </test-fixture>
+
+    <script>
+      suite('su-view-reports tests', function() {
+        var page;
+        var auth;
+        var testDoc;
+        var firebaseApp = fixture('firebaseApp');
+
+        setup(function(done) {
+          this.timeout(50000);
+          page = fixture('basic');
+          auth = fixture('auth');
+          testDoc = fixture('testDoc');
+          auth.signInWithEmailAndPassword("123@mailinator.com", "123123")
+            .then(function() {
+              page.addEventListener('viewReportsReady', function() {
+                testDoc.setStoredValue(testDoc.path, {});
+                createData();
+              });
+            })
+            .catch(function(err) {
+              console.log(err);
+            });
+
+            function createData() {
+              var testData = {};
+              var date = new Date();
+              for(i = 0; i < 60; i++) {
+                var entry = date.setDate(date.getDate() - i);
+                testData[entry] = {
+                  morning: {
+                    activities: Math.random().toString(36).substr(2, 5),
+                    health: Math.floor(Math.random() * 100 + 1),
+                    healthComments: Math.random().toString(36).substr(2, 5),
+                    incidents: Math.random().toString(36).substr(2, 5),
+                    locations: Math.random().toString(36).substr(2, 5),
+                    mood: Math.floor(Math.random() * 100 + 1),
+                    moodComments: Math.random().toString(36).substr(2, 5),
+                    summaryOfChunk: Math.random().toString(36).substr(2, 5),
+                  },
+                  afternoon: {
+                    activities: Math.random().toString(36).substr(2, 5),
+                    health: Math.floor(Math.random() * 100 + 1),
+                    healthComments: Math.random().toString(36).substr(2, 5),
+                    incidents: Math.random().toString(36).substr(2, 5),
+                    locations: Math.random().toString(36).substr(2, 5),
+                    mood: Math.floor(Math.random() * 100 + 1),
+                    moodComments: Math.random().toString(36).substr(2, 5),
+                    summaryOfChunk: Math.random().toString(36).substr(2, 5),
+                  },
+                  night: {
+                    activities: Math.random().toString(36).substr(2, 5),
+                    health: Math.floor(Math.random() * 100 + 1),
+                    healthComments: Math.random().toString(36).substr(2, 5),
+                    incidents: Math.random().toString(36).substr(2, 5),
+                    locations: Math.random().toString(36).substr(2, 5),
+                    mood: Math.floor(Math.random() * 100 + 1),
+                    moodComments: Math.random().toString(36).substr(2, 5),
+                    summaryOfChunk: Math.random().toString(36).substr(2, 5),
+                  }
+                };
+              };
+              listenForValue();
+              testDoc.setStoredValue(testDoc.path, testData);
+            };
+
+            function listenForValue() {
+              page.$.reportsDB.query.once('value', function() {
+                done();
+              });
+            };
+        });
+
+        test('care-plan to care-plan animations are correct', function() {
+          page.currentPage = "su-view-reports";
+          page.currentCat = "care-plan";
+          page.intendedCat = "care-plan";
+
+          expect(page.animationConfig.entry[0].name).to.equal("slide-down-entry-animation");
+          expect(page.animationConfig.exit[0].name).to.equal("slide-down-exit-animation");
+        });
+
+        test('care-plan to default animations are correct', function() {
+          page.currentPage = "su-view-reports";
+          page.currentCat = "care-plan";
+          page.intendedCat = "default";
+
+          expect(page.animationConfig.exit[0].name).to.equal("slide-right-animation");
+        });
+
+        test('care-plan to admin animations are correct', function() {
+          page.currentPage = "su-view-reports";
+          page.currentCat = "care-plan";
+          page.intendedCat = "admin";
+
+          expect(page.animationConfig.exit[0].name).to.equal("slide-right-animation");
+        });
+
+        test('admin to care-plan animations are correct', function() {
+          page.currentPage = "ad-profile";
+          page.currentCat = "admin";
+          page.intendedCat = "care-plan";
+
+          expect(page.animationConfig.entry[0].name).to.equal("slide-from-right-animation");
+        });
+
+        test('default to care-plan animations are correct', function() {
+          page.currentPage = "def-account";
+          page.currentCat = "default";
+          page.intendedCat = "care-plan";
+
+          expect(page.animationConfig.entry[0].name).to.equal("slide-from-right-animation");
+        });
+
+        test('def-home to care-plan animations are correct', function() {
+          page.currentPage = "def-home";
+          page.currentCat = "default";
+          page.intendedCat = "care-plan";
+
+          expect(page.animationConfig.entry[0].name).to.equal("hero-animation");
+        });
+
+      });
+    </script>
+  </body>
+</html>

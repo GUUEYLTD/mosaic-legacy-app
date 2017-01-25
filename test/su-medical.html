@@ -1,0 +1,158 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>su-medical</title>
+
+    <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../bower_components/web-component-tester/browser.js"></script>
+
+    <!-- Import the element to test -->
+    <link rel="import" href="../src/pages/care-plan/su-medical.html">
+    <link rel="import" href="../bower_components/polymerfire/firebase-app.html" />
+    <link rel="import" href="../bower_components/polymerfire/firebase-auth.html" />
+
+  </head>
+  <body>
+    <test-fixture id="firebaseApp">
+      <template>
+        <firebase-app
+          name="main"
+          auth-domain="careplan-c2677.firebaseapp.com"
+          database-url="https://careplan-c2677.firebaseio.com"
+          api-key="AIzaSyBdtmHIV_7epC0OBiXkTNoqrGRspA58Epc"
+          storage-bucket="careplan-c2677.appspot.com">
+        </firebase-app>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="auth">
+      <template>
+        <firebase-auth
+          app-name="main"
+          user="{{user}}"
+          signed-in="{{signedIn}}"
+          status-known="{{statusKnown}}"
+          on-error="handleError">
+        </firebase-auth>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="basic">
+      <template>
+        <su-medical
+          current-page="su-medical"
+          current-cat="care-plan"
+          intended-cat="care-plan"
+          page="su-medical"
+          patient="-TESTTESTTESTTEST123"
+          home="-KTBXzZw3-qoZz4c7nY7"
+          name="su-medical">
+        </su-medical>
+      </template>
+    </test-fixture>
+
+    <script>
+      suite('su-medical tests', function() {
+        var page;
+        var auth;
+        var firebaseApp = fixture('firebaseApp');
+
+        setup(function(done) {
+          this.timeout = 10000;
+          page = fixture('basic');
+          auth = fixture('auth');
+          auth.signInWithEmailAndPassword("123@mailinator.com", "123123")
+            .then(function() {
+              checkUploadsDB();
+            })
+            .catch(function(err) {
+              console.log(err);
+            });
+
+          var uploadsDB = false;
+
+          function checkAllReady() {
+            if(uploadsDB) {
+              done();
+            };
+          };
+
+          function checkUploadsDB() {
+            page.$.uploadsDB.query.once('value', function() {
+              uploadsDB = true;
+              checkAllReady();
+            });
+          };
+
+        });
+
+        test('instantiating the element works', function() {
+          assert.equal(page.is, 'su-medical');
+        });
+
+        test('care-plan to care-plan animations are correct', function() {
+          page.currentPage = "su-medical";
+          page.currentCat = "care-plan";
+          page.intendedCat = "care-plan";
+
+          expect(page.animationConfig.entry[0].name).to.equal("slide-down-entry-animation");
+          expect(page.animationConfig.exit[0].name).to.equal("slide-down-exit-animation");
+        });
+
+        test('care-plan to default animations are correct', function() {
+          page.currentPage = "su-medical";
+          page.currentCat = "care-plan";
+          page.intendedCat = "default";
+
+          expect(page.animationConfig.exit[0].name).to.equal("slide-right-animation");
+        });
+
+        test('care-plan to admin animations are correct', function() {
+          page.currentPage = "su-medical";
+          page.currentCat = "care-plan";
+          page.intendedCat = "admin";
+
+          expect(page.animationConfig.exit[0].name).to.equal("slide-right-animation");
+        });
+
+        test('admin to care-plan animations are correct', function() {
+          page.currentPage = "ad-profile";
+          page.currentCat = "admin";
+          page.intendedCat = "care-plan";
+
+          expect(page.animationConfig.entry[0].name).to.equal("slide-from-right-animation");
+        });
+
+        test('default to care-plan animations are correct', function() {
+          page.currentPage = "def-account";
+          page.currentCat = "default";
+          page.intendedCat = "care-plan";
+
+          expect(page.animationConfig.entry[0].name).to.equal("slide-from-right-animation");
+        });
+
+        test('def-home to care-plan animations are correct', function() {
+          page.currentPage = "def-home";
+          page.currentCat = "default";
+          page.intendedCat = "care-plan";
+
+          expect(page.animationConfig.entry[0].name).to.equal("hero-animation");
+        });
+
+      });
+    </script>
+  </body>
+</html>

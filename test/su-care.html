@@ -23,6 +23,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <link rel="import" href="../src/pages/care-plan/su-care.html">
     <link rel="import" href="../bower_components/polymerfire/firebase-app.html" />
     <link rel="import" href="../bower_components/polymerfire/firebase-auth.html" />
+
   </head>
   <body>
     <test-fixture id="firebaseApp">
@@ -75,34 +76,50 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           auth = fixture('auth');
           auth.signInWithEmailAndPassword("123@mailinator.com", "123123")
             .then(function() {
-              checkAssmtDB();
+              checkCareDB();
+              checkAgreeDB();
               checkAssmtCustomDB();
+              checkUsersDB();
             })
             .catch(function(err) {
               console.log(err);
             });
 
-          var assmtDB = false;
+          var careDB = false;
+          var agreeDB = false;
           var assmtCustomDB = false;
+          var usersDB = false;
 
           function checkAllReady() {
-            if(assmtDB && assmtCustomDB) {
-              setTimeout(function() {
-                done();
-              }, 500);
+            if(careDB && agreeDB && usersDB && assmtCustomDB) {
+              done();
             };
           };
 
-          function checkAssmtDB() {
-            page.$.assmtDB.ref.once("value", function() {
-              assmtDB = true;
+          function checkCareDB() {
+            page.$.careDB.ref.once('value', function() {
+              careDB = true;
+              checkAllReady();
+            });
+          };
+
+          function checkAgreeDB() {
+            page.$.agreeDB.ref.once('value', function() {
+              agreeDB = true;
               checkAllReady();
             });
           };
 
           function checkAssmtCustomDB() {
-            page.$.assmtCustomDB.ref.once('value', function() {
+            page.$.assmtCustomDB.query.once('value', function() {
               assmtCustomDB = true;
+              checkAllReady();
+            });
+          };
+
+          function checkUsersDB() {
+            page.$.usersDB.ref.once('value', function() {
+              usersDB = true;
               checkAllReady();
             });
           };
@@ -114,7 +131,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         });
 
         test('createNewSection() empties customData and opens customSectionModal dialog', function() {
-          page.$.customInput.path="/homes/"+page.home+"/patients/"+page.patient+"/preAdmissionAssessment/custom";
+          //page.$.customInput.path="/homes/"+page.home+"/patients/"+page.patient+"/preAdmissionAssessment/custom";
           page.customData.label = "Test Main Label";
           page.customData.label2 = "Test Second Label";
           page.createNewSection();
@@ -128,6 +145,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         test('saveNewSection() saves data in correct place', function(done) {
           var chars = Math.random().toString(36).substr(2, 5);
           var chars2 = Math.random().toString(36).substr(2, 5);
+
           page.$.assmtCustomDB.query.on("child_added", function(snap) {
             var label1 = "Test Main Label" + chars;
             var label2 = "Test Second Label" + chars2;
@@ -145,8 +163,54 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           page.saveNewSection();
         });
 
-        test('updating custom section text succeeds', function() {
+        test('suAgreeUpdate() updates the agreement field', function(done) {
+          page.addEventListener("suAgreeUpdated", function(e) {
+            done();
+            page.set("agreeData.suAgree", null);
+          });
+          page.suAgreeUpdate();
+        });
 
+        test('swAgreeUpdate() updates the agreement field', function(done) {
+          page.addEventListener("swAgreeUpdated", function(e) {
+            done();
+            page.set("agreeData.swAgree", null);
+          });
+          page.swAgreeUpdate();
+        });
+
+
+        test('check that setting care data saves in db', function(done) {
+          var value = "stuff and things";
+          page.$.careDB.ref.once("child_added", function(snap) {
+            expect(snap.val()).to.equal(value)
+            done();
+            page.set("careData.aboutMeAndMyLife", null);
+          });
+          page.set("careData.aboutMeAndMyLife", value);
+        });
+
+        test('check that requirements met sends toasts correctly', function(done) {
+          var names = ["bob jefferson", "jill mckinley", "sarah everheart", "jennifer henderson", "james dunn", "jackie lohilahti"];
+
+          var data = {
+            suName: names[Math.floor(Math.random() * names.length)],
+            suDate: "Wed Jan 25 2017 02:21:10 GMT+0100 (CET)",
+            suAgree: true,
+            swName: "Ayumi Maxwell",
+            swDate: "Wed Jan 25 2017 02:21:10 GMT+0100 (CET)",
+            swAgree: null
+          };
+
+          page.addEventListener("openToast", function(e) {
+            if(e.detail.missing) {
+              expect(e.detail.missing).to.equal("swAgree");
+              page.set("agreeData", {suName: data.suName});
+              done();
+            };
+          }, {once:true});
+
+          page.set("agreeData", data);
         });
 
         test('care-plan to care-plan animations are correct', function() {
