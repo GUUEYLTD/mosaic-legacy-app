@@ -29,49 +29,57 @@
     </media-queries>
 
     <firebase-document
-      id="dailyRepDB"
+      id="monthlyRepDB"
       app-name="main"
       path="homes/[[home]]/patients/[[patient]]/monthlyReports/[[selectedMonth]]"
       data="{{monthlyRepData}}">
     </firebase-document>
 
     <style include="common-styles">
-      :host{
+      :host {
         --app-grid-columns:2;
         --app-grid-expandible-item-columns:2;
         --app-grid-gutter:20px;
       }
 
-      .sliderRow{
+      .sliderRow {
         margin-top:20px;
         display:flex;
         flex-direction:row;
       }
-      .sliderRow paper-slider{
+
+      .sliderRow paper-slider {
         flex-grow:50;
-      };
-      .sliderRow iron-icon{
+      }
+
+      .sliderRow iron-icon {
         flex-grow:1;
       }
-      #iconGood{
+
+      #iconGood {
         color:#43A047;
       }
-      #iconBad{
+
+      #iconBad {
         color:#E53935;
       }
-      .sliderOutput{
+
+      .sliderOutput {
         text-align:left;
         font-size:12px;
         color:#757575;
       }
-      #chunkSelector{
+
+      #chunkSelector {
         margin-left:20px;
       }
-      .attrCardLabel{
+
+      .attrCardLabel {
         font-size:16px;
         text-transform:uppercase;
         color:#757575;
       }
+
     </style>
 
     <paper-card class="pageCard">
@@ -114,7 +122,7 @@
 
             <div class="sliderRow">
               <iron-icon id="iconBad" icon="icons:thumb-down"></iron-icon>
-              <paper-slider class$="[[_computeProgressColor(monthlyRepData.mood)]]" pin value="{{monthlyRepData.mood}}"></paper-slider>
+              <paper-slider id="moodSlider" class$="[[_computeProgressColor(monthlyRepData.mood)]]" pin value="{{monthlyRepData.mood}}"></paper-slider>
               <iron-icon id="iconGood" icon="icons:thumb-up"></iron-icon>
             </div>
 
@@ -136,7 +144,7 @@
 
             <div class="sliderRow">
               <iron-icon id="iconBad" icon="icons:thumb-down"></iron-icon>
-              <paper-slider class$="[[_computeProgressColor(monthlyRepData.health)]]" pin value="{{monthlyRepData.health}}"></paper-slider>
+              <paper-slider id="healthSlider" class$="[[_computeProgressColor(monthlyRepData.health)]]" pin value="{{monthlyRepData.health}}"></paper-slider>
               <iron-icon id="iconGood" icon="icons:thumb-up"></iron-icon>
             </div>
 
@@ -160,33 +168,38 @@
   <script>
 
     Polymer({
-      is:"su-monthly-reports",
-      attached:function(){
-        this.fire("pageLoaded", {page:this.page});
+
+      is: "su-monthly-reports",
+
+      //send page loaded event get current month and set selected month to current month. start checking every hour for a new month to set
+      attached: function() {
+        this.fire("pageLoaded", {page: this.page});
         this.updateMonth();
-        var selectedMonth=this._computeLabel(this.currentMonth);
-        this.set("selectedMonth",selectedMonth);
-        setInterval(function(){
+        this.set("selectedMonth", this._computeLabel(this.currentMonth));
+        setInterval(function() {
           this.updateMonth()
         }.bind(this),1000*60*60);
       },
-      properties:{
-        currentMonth:{
-          type:String,
-          value:""
+
+      properties: {
+
+        //the current month selcted from monthList array based on date value human readable
+        currentMonth: {
+          type: String,
+          value: ""
         },
-        currentDate:{
-          type:String,
-          value:""
+
+        //timestring month. used to save to db as part of db path
+        selectedMonth: {
+          type: Number,
+          value: 0,
+          observer: "_computeReadableMonth"
         },
-        selectedMonth:{
-          type:Number,
-          value:0,
-          observer:"_computeReadableMonth"
-        },
-        monthList:{
-          type:Array,
-          value:[
+
+        //array of months in human readable format. used to compute human readable dates from date object
+        monthList: {
+          type: Array,
+          value: [
             "January",
             "February",
             "March",
@@ -201,64 +214,78 @@
             "December"
           ]
         },
-        altMonths:{
-          type:Array,
-          value:[]
+
+        //list of months including current previous and next months
+        altMonths: {
+          type: Array,
+          value: []
         },
-        monthlyRepData:{
-          type:Object,
-          value:{
-            mood:50,
-            health:50
+
+        //the deault monthly report data. updated by firebase and user
+        monthlyRepData: {
+          type: Object,
+          value: {
+            mood: 50,
+            health: 50
           }
         }
+
       },
-      observers:[
+
+      //create human readable month based on selected month changes
+      observers: [
         "_computeReadableMonth(monthList, selectedMonth)"
       ],
-      behaviors:[
+
+      behaviors: [
         Polymer.carePlanAnimation,
         Polymer.suPrintBehavior,
         Polymer.suResizeBehavior
       ],
-      updateMonth:function(){
+
+      //get date and compute altMonths array as well as set current month. all in human readable format
+      updateMonth: function() {
         //function to set months
-        var date=new Date();
-        var months=date.getMonth();
-        var currentMonth=this.monthList[months];
+        var date = new Date();
+        var months = date.getMonth();
+        var currentMonth = this.monthList[months];
         var prevMonth = this.monthList[months-1] < 0 ? 12:this.monthList[months-1];
         var nextMonth = this.monthList[months+1] > 11 ? 0:this.monthList[months+1];
-        this.altMonths=[];
+        this.altMonths = [];
         this.push("altMonths", prevMonth, currentMonth, nextMonth);
         //set the two calculated time values... used in db ops as well
-        this.set("currentMonth",currentMonth);
+        this.set("currentMonth", currentMonth);
       },
-      _computeLabel:function(month){
+
+      //compute date in ms for db path location
+      _computeLabel: function(month) {
         //compute db dir for the report
         var date = new Date();
-        var years=date.getFullYear();
-        var months=this.monthList.indexOf(month);
-        var currentDate=new Date(years, months);
-        currentDate=currentDate.getTime();
+        var years = date.getFullYear();
+        var months = this.monthList.indexOf(month);
+        var currentDate = new Date(years, months);
+        currentDate = currentDate.getTime();
         return currentDate;
+      },
 
+      //compute human readable month from date in ms
+      _computeReadableMonth: function(monthList, selectedMonth) {
+        date = new Date(selectedMonth);
+        date = date.getMonth();
+        date = parseInt(date);
+        var readableMonth = monthList[date];
+        this.set("readableMonth", readableMonth);
       },
-      _computeReadableMonth:function(monthList, selectedMonth){
-        date=new Date(selectedMonth);
-        date=date.getMonth();
-        date=parseInt(date);
-        var readableMonth=monthList[date];
-        this.set("readableMonth",readableMonth);
-      },
-      _computeProgressColor:function(number){
-        console.log(number);
+
+      //compute class based on number values for health and mood.
+      _computeProgressColor: function(number) {
         this.updateStyles();
         var int = parseInt(number);
-        if(int<=33){
+        if(int <= 33) {
           return "bad";
-        } else if(int>34 && int<=66){
+        } else if(int > 34 && int <= 66) {
           return "ok";
-        } else if(int>66){
+        } else if(int > 66) {
           return "good";
         } else {
           return "ok";

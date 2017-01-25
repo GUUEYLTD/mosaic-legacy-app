@@ -233,8 +233,8 @@
         this.$.customInput.save(path, null)
           .then(function() {
             this.$.customSectionModal.close();
+            this.fire("openToast", {toastText: "New custom section saved."});
             var key = this.$.customInput.path.split("/").pop();
-
             this.fire("customSectionCreated", {key: key});
           }.bind(this));
       },

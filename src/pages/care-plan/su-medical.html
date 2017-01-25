@@ -45,33 +45,39 @@
     </firebase-query>
 
     <style include="common-styles">
-      :host{
+      :host {
         --app-grid-columns:2;
         --app-grid-expandible-item-columns:2;
       }
-      .guuey-button{
+
+      .guuey-button {
         width:100%;
         margin:0;
       }
-      #fileInputName{
+
+      #fileInputName {
         align-self:center;
         margin-top:-15px;
       }
-      #tableInput{
+
+      #tableInput {
         margin:0;
         padding:0;
         padding-bottom:20px;
         width:90%;
       }
-      .topInput{
+
+      .topInput {
         padding:20px;
       }
-      .topInput *{
+
+      .topInput * {
         display:inline-block;
         max-width:200px;
         text-align:center;
         margin:20px;
       }
+
     </style>
 
       <paper-card class="pageCard" elevation="3">
@@ -147,60 +153,68 @@
     Polymer({
 
       is: 'su-medical',
-      ready:function(){
-        this.fire("pageLoaded", {page:this.page});
+
+      ready:  function() {
+        this.fire("pageLoaded", {page: this.page});
         this.addEventListener("print", this.print);
       },
-      properties:{
-        patient:{
-          type:String
-        },
-        home:{
-          type:String
-        }
-      },
-      observers:[
 
-      ],
-      behaviors:[
+      properties: {
+
+        patient: {
+          type: String
+        },
+
+        home: {
+          type: String
+        }
+
+      },
+
+      behaviors: [
         Polymer.carePlanAnimation,
         Polymer.suPrintBehavior,
         Polymer.suResizeBehavior
       ],
-      fileChange:function(e) {
+
+      fileChange: function(e) {
         console.log(e);
         var file = e.target.files[0];
         console.log(file);
-        this.uploadedFile=file;
+        this.uploadedFile = file;
         this.$.pdf._uploadFile(file)
         .then(function(fileLoc) {
           //save the location to the firebase reg db...
-          var path="/homes/"+this.home+"/patients/"+this.patient+"/uploads";
+          var path = "/homes/" + this.home + "/patients/" + this.patient + "/uploads";
           var date= new Date().toDateString();
-            this.$.fileLocDB.data={
-            location:fileLoc,
-            dateUploaded:date,
-            customName:(this.newFileName || file.name)
+            this.$.fileLocDB.data = {
+            location: fileLoc,
+            dateUploaded: date,
+            customName: (this.newFileName || file.name)
           };
-          this.$.fileLocDB.save(path,null)
-            .then(function(snapshot){
-              this.newFileName=null;
+
+          this.$.fileLocDB.save(path, null)
+            .then(function(snapshot) {
+              this.newFileName = null;
               this.$.fileLocDB.path = null;
             }.bind(this));
         }.bind(this))
-        .catch(function(error){
+        .catch(function(error) {
           console.log(error);
         });
       },
+
       _onAddFilesClick: function(e) {
         if (document.createEvent) {
           this.$.fileInput.value = '';
           this.$.fileInput.click();
         }
       },
-      openFile:function(e){
+
+      openFile:function(e) {
         window.open(e.model.upload.location);
-      },
+      }
+      
     });
 
   </script>

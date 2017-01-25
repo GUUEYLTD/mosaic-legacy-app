@@ -36,42 +36,50 @@
     </firebase-document>
 
     <style include="common-styles">
-      :host{
+      :host {
         --app-grid-columns:2;
         --app-grid-expandible-item-columns:2;
         --app-grid-gutter:20px;
       }
 
-      .sliderRow{
+      .sliderRow {
         margin-top:20px;
         display:flex;
         flex-direction:row;
       }
-      .sliderRow paper-slider{
+
+      .sliderRow paper-slider {
         flex-grow:50;
-      };
-      .sliderRow iron-icon{
+      }
+
+      .sliderRow iron-icon {
         flex-grow:1;
       }
-      #iconGood{
+
+      #iconGood {
         color:#43A047;
       }
-      #iconBad{
+
+      #iconBad {
         color:#E53935;
       }
-      .sliderOutput{
+
+      .sliderOutput {
         text-align:left;
         font-size:12px;
         color:#757575;
       }
-      #chunkSelector{
+
+      #chunkSelector {
         margin-left:20px;
       }
-      .attrCardLabel{
+
+      .attrCardLabel {
         font-size:16px;
         text-transform:uppercase;
         color:#757575;
       }
+
     </style>
 
     <paper-card class="pageCard">
@@ -104,16 +112,16 @@
               mood
             </p>
 
-            <p hidden="[[!dailyRepData.mood]]" class="sliderOutput">
+            <p hidden$="[[!dailyRepData.mood]]" class="sliderOutput">
               [[suIndexData.fName]]'s overall mood was <b>[[dailyRepData.mood]]</b> out of 100 for this shift.
             </p>
-            <p hidden="[[dailyRepData.mood]]" class="sliderOutput">
+            <p hidden$="[[dailyRepData.mood]]" class="sliderOutput">
               Please select a value out of 100 for [[suIndexData.fName]]'s overall mood.
             </p>
 
             <div class="sliderRow">
               <iron-icon id="iconBad" icon="icons:thumb-down"></iron-icon>
-              <paper-slider class$="[[_computeProgressColor(dailyRepData.mood)]]" pin value="{{dailyRepData.mood}}"></paper-slider>
+              <paper-slider id="moodSlider" class$="[[_computeProgressColor(dailyRepData.mood)]]" pin value="{{dailyRepData.mood}}"></paper-slider>
               <iron-icon id="iconGood" icon="icons:thumb-up"></iron-icon>
             </div>
 
@@ -124,24 +132,21 @@
             <p class="attrCardLabel">
               health
             </p>
-            <p hidden="[[!dailyRepData.health]]" class="sliderOutput">
+            <p hidden$="[[!dailyRepData.health]]" class="sliderOutput">
               [[suIndexData.fName]]'s overall health was <b>[[dailyRepData.health]]</b> out of 100 for this shift.
             </p>
-            <p hidden="[[dailyRepData.health]]" class="sliderOutput">
+            <p hidden$="[[dailyRepData.health]]" class="sliderOutput">
               Please select a value out of 100 for [[suIndexData.fName]]'s overall health.
             </p>
 
             <div class="sliderRow">
               <iron-icon id="iconBad" icon="icons:thumb-down"></iron-icon>
-              <paper-slider class$="[[_computeProgressColor(dailyRepData.health)]]" pin value="{{dailyRepData.health}}"></paper-slider>
+              <paper-slider id="healthSlider" class$="[[_computeProgressColor(dailyRepData.health)]]" pin value="{{dailyRepData.health}}"></paper-slider>
               <iron-icon id="iconGood" icon="icons:thumb-up"></iron-icon>
             </div>
 
             <paper-textarea label="Comments on Health" value="{{dailyRepData.healthComments}}"></paper-textarea>
           </paper-card>
-
-
-
 
           <div class="divider full"></div>
 
@@ -161,6 +166,7 @@
 
     Polymer({
       is:"su-reports",
+
       ready:function(){
         this.fire("pageLoaded", {page:this.page});
         this.updateTime();
@@ -169,55 +175,80 @@
           this.updateTime()
         }.bind(this),1000*60*60);
       },
-      properties:{
-        currentChunk:{
-          type:String,
-          value:""
+      properties: {
+
+        page: {
+          type: String
         },
-        currentDate:{
-          type:String,
-          value:""
+
+        patient: {
+          type: String
         },
-        selectedChunk:{
-          type:String,
-          value:""
+
+        home: {
+          type: String
         },
-        chunkList:{
-          type:Array,
-          value:[
+
+        dimensions: {
+          type: Object
+        },
+
+        suIndexData: {
+          type: Object
+        },
+
+        currentChunk: {
+          type: String,
+          value: ""
+        },
+
+        currentDate: {
+          type: String,
+          value: ""
+        },
+
+        selectedChunk: {
+          type: String,
+          value: ""
+        },
+
+        chunkList: {
+          type: Array,
+          value: [
             "Morning",
             "Afternoon",
             "Night"
           ]
         },
-        dailyRepData:{
-          type:Object,
-          value:{
-            mood:50,
-            health:50
+
+        dailyRepData: {
+          type: Object,
+          value: {
+            mood: 50,
+            health: 50
           }
         }
-      },
-      observers:[
 
-      ],
-      behaviors:[
+      },
+
+      behaviors: [
         Polymer.carePlanAnimation,
         Polymer.suPrintBehavior,
         Polymer.suResizeBehavior
       ],
-      updateTime:function(){
+
+      updateTime: function() {
         //date for both data points
         var date = new Date();
         //days months years for date marker
-        var days=date.getDate();
-        var months=date.getMonth();
-        var years=date.getFullYear();
+        var days = date.getDate();
+        var months = date.getMonth();
+        var years = date.getFullYear();
         var currentDate = new Date(years, months, days);
-        currentDate=currentDate.getTime()
+        currentDate = currentDate.getTime()
         //function to set the hours to get time chunks and calculate
-        var hours=date.getHours();
-        var altChunks=[
+        var hours = date.getHours();
+        var altChunks = [
           "Morning",
           "Afternoon",
           "Night"
@@ -234,36 +265,38 @@
           till 2000
         */
         var timeChunk;
-        if(hours>=8 && hours<14){
-          timeChunk="Morning";
+        if(hours >= 8 && hours < 14) {
+          timeChunk = "Morning";
         };
-        if(hours>=14 && hours<20){
+        if(hours >= 14 && hours < 20){
           timeChunk="Afternoon";
         };
-        if(hours>=20 || hours<8){
-          timeChunk="Night";
+        if(hours >= 20 || hours < 8) {
+          timeChunk = "Night";
         };
         //set the two calculated time values... used in db ops as well
-        this.set("currentChunk",timeChunk);
+        this.set("currentChunk", timeChunk);
         this.set("currentDate", currentDate);
       },
-      _computeProgressColor:function(number){
+      _computeProgressColor: function(number) {
         this.updateStyles();
         var int = parseInt(number);
-        if(int<=33){
+        if(int <= 33){
           return "bad";
-        } else if(int>34 && int<=66){
+        } else if(int > 34 && int <= 66){
           return "ok";
-        } else if(int>66){
+        } else if(int > 66) {
           return "good";
         } else {
           return "ok";
         };
         this.updateStyles();
       },
-      lowerCase:function(chunk){
+
+      lowerCase: function(chunk) {
         return chunk.toLowerCase();
       }
+
     });
 
   </script>

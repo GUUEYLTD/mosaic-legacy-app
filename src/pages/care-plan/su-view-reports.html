@@ -1,5 +1,5 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html" />
-<link rel="import" href="../../../bower_components/polymerfire/firebase-document.html" />
+<link rel="import" href="../../../bower_components/polymerfire/firebase-query.html" />
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html" />
 <link rel="import" href="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror.html" />
 <link rel="import" href="../../../bower_components/vaadin-combo-box/vaadin-combo-box.html" />
@@ -40,28 +40,32 @@
 
     <style include="common-styles">
 
-      :host{
+      :host {
         --app-grid-columns:2;
         --app-grid-expandible-item-columns:2;
       }
-      .reportExpand{
+
+      .reportExpand {
         background-color:#F5F2F2;
         margin:20px 0 20px 0;
         padding:20px;
         text-align:center;
       }
-      .reportExpand :hover{
-        cursor:pointer;
 
+      .reportExpand :hover {
+        cursor:pointer;
       }
-      .reportExpand h2{
+
+      .reportExpand h2 {
         width:100%;
         text-align:center;
       }
-      .reportSection{
+
+      .reportSection {
         padding:20px;
       }
-      .reportSection .reportText{
+
+      .reportSection .reportText {
         --paper-input-container-disabled:{
           opacity:.9;
         };
@@ -69,25 +73,31 @@
           display:none;
         }
       }
-      .reportSection paper-progress{
+
+      .reportSection paper-progress {
         width:100%;
       }
-      #healthGraph{
+
+      #healthGraph {
         width:100%;
       }
-      #moodGraph{
+
+      #moodGraph {
         margin-top:20px;
         width:100%;
       }
-      .innerMenu{
+
+      .innerMenu {
         display:flex;
         flex-direction:row;
       }
-      .innerMenu *{
+
+      .innerMenu * {
         flex-grow:1;
         margin:20px 20px 20px 30px;
       }
-      #reportSelector{
+
+      #reportSelector {
         width:75%;
         --paper-tabs:{
           font-size:var(--report-tabs-font-size);
@@ -97,59 +107,72 @@
           border-bottom:2px solid #979797;
         };
       }
-      paper-tab{
+
+      paper-tab {
         --paper-tab-ink:#009688;
         --paper-tab-content-unselected:{
         color:#cecece;
         }
       }
-      paper-tab.iron-selected{
+
+      paper-tab.iron-selected {
         color:#009688;
       }
-      .morning{
+
+      .morning {
         border-left:#FFC200 5px solid;
         padding:20px;
       }
-      .morning h3{
+
+      .morning h3 {
         color:#FFC200;
         text-transform:uppercase;
         display:inline-block;
         margin-right:20px;
       }
-      .afternoon{
+
+      .afternoon {
         border-left:#FF5607 5px solid;
         padding:20px;
       }
-      .afternoon h3{
+
+      .afternoon h3 {
         color:#FF5607;
         text-transform:uppercase;
       }
-      .night{
+
+      .night {
         border-left:#6735BA 5px solid;
         padding:20px;
       }
-      .night h3{
+
+      .night h3 {
         color:#6735BA;
         text-transform:uppercase;
       }
-      .dateSub{
+
+      .dateSub {
         display:inline-block;
         color:#7d7d7d
       }
-      .attrText{
+
+      .attrText {
         display:inline-block;
         text-transform:uppercase;
         opacity:.8;
         margin-right:20px;
       }
-      .percentage{
+
+      .percentage {
         display:inline-block;
         font-size:24px;
         font-weight:bold;
       }
-      #dateSelector{
+
+      #dateSelector {
         width:var(--report-date-selector-width, 50%);
       }
+
     </style>
 
     <paper-card class="pageCard">
@@ -418,27 +441,63 @@
       ready:function(){
         this.fire("pageLoaded",{page:this.page});
         this._computeYearList();
-        this.$.selectYear.value=this._computeCurrentYear();
+        this.$.selectYear.value = this._computeCurrentYear();
         this.viewThisDay();
         this.setDateRangeDisplay();
       },
-      properties:{
-        reportSelect:{
-          type:String,
-          value:"today"
+      properties: {
+
+        dimensions: {
+          type: Object
         },
-        selectDate:{
-          type:Object,
-          value:{},
+
+        page: {
+          type: String
+        },
+
+        patient: {
+          type: String
+        },
+
+        home: {
+          type: String
+        },
+
+        reportsData: {
+          type: Object
+        },
+
+        suIndexData: {
+          type: Object
+        },
+
+        graphDate: {
+          type: String
+        },
+
+        graphRows: {
+          type: Array
+        },
+
+        reportSelect: {
+          type: String,
+          value: "today"
+        },
+
+        selectDate: {
+          type: Object,
+          value: {},
           //observer:"_selectChanged"
         },
-        yearList:{
+
+        yearList: {
           type:Array,
           value:[]
         },
-        monthList:{
-          type:Array,
-          value:[
+
+        monthList: {
+          type: Array,
+          value: [
             "January",
             "February",
             "March",
@@ -454,36 +513,45 @@
           ]
         },
       },
-      observers:[
+
+      observers: [
         "_computeGraphRows(reportsData.*)",
         "_selectChanged(selectDate.*)"
       ],
-      behaviors:[
+
+      behaviors: [
         Polymer.carePlanAnimation,
         Polymer.suPrintBehavior,
         Polymer.suResizeBehavior
       ],
-      _computeReadableDate:function(data){
+
+      _computeReadableDate: function(data) {
         var date = new Date(parseInt(data));
         return date.toLocaleDateString();
       },
-      toggleSection:function(e){
-        this.$$("#r"+e.model.report.$key).toggle();
+
+      toggleSection: function(e) {
+        this.$$("#r" + e.model.report.$key).toggle();
       },
-      viewThisDay:function(){
+
+      viewThisDay: function() {
         var date = new Date();
         var days = date.getDate();
         var months = date.getMonth();
         var years = date.getFullYear();
         var date = new Date(years, months, days);
         var now = date.getTime();
-        this.$.selectYear.value=null;
+        this.$.selectYear.value = null;
         this.$.reportsDB.startAt = now.toString();
         this.$.reportsDB.endAt = now.toString();
-        this.$.reportsDB.path = "homes/"+this.home+"/patients/"+this.patient+"/dailyReports";
+        this.$.reportsDB.path = "homes/" + this.home + "/patients/" + this.patient + "/dailyReports";
+        this.$.reportsDB.query.once('value', function(snapshot) {
+          this.fire('viewReportsReady');
+        }.bind(this));
         this.$.dateSelector.hide();
       },
-      viewThisWeek:function(){
+
+      viewThisWeek: function() {
         var date = new Date();
         var days = date.getDate();
         var months = date.getMonth();
@@ -492,12 +560,13 @@
         var now = date.getTime();
         var nowWeekday = date.getDay();
         var week = now - (1000 * 60 * 60 * 24 * nowWeekday);
-        this.$.selectYear.value=null;
-        this.$.reportsDB.startAt=week.toString();
-        this.$.reportsDB.endAt=now.toString();
+        this.$.selectYear.value = null;
+        this.$.reportsDB.startAt = week.toString();
+        this.$.reportsDB.endAt = now.toString();
         this.$.dateSelector.hide();
       },
-      viewThisMonth:function(){
+
+      viewThisMonth: function() {
         var date = new Date();
         var months = date.getMonth();
         var years = date.getFullYear();
@@ -506,12 +575,13 @@
         var endDate = new Date(years, nextMonths);
         var now = date.getTime();
         var end = endDate.getTime()-1;
-        this.$.selectYear.value=null;
+        this.$.selectYear.value = null;
         this.$.reportsDB.startAt = now.toString();
         this.$.reportsDB.endAt = end.toString();
         this.$.dateSelector.hide();
       },
-      viewThisYear:function(){
+
+      viewThisYear: function() {
         var date = new Date();
         var years = date.getFullYear();
         var date = new Date(years, 0);
@@ -521,26 +591,27 @@
         var end = endDate.getTime()-1;
         this.$.reportsDB.limitToLast = 5;
       },
-      _computeGraphRows:function(data){
-        var rowArr=[];
+
+      _computeGraphRows: function(data) {
+        var rowArr = [];
         for(x in data.base){
           var date = new Date(parseInt(data.base[x].$key)).toLocaleDateString();
           //need data and value
-          var mornHealth=0;
-          var mornModd=0;
-          var afterHealth=0;
-          var afterMood=0;
-          var nightHealth=0;
-          var nightMood=0;
-          if(data.base[x].morning){
+          var mornHealth = 0;
+          var mornModd = 0;
+          var afterHealth = 0;
+          var afterMood = 0;
+          var nightHealth = 0;
+          var nightMood = 0;
+          if(data.base[x].morning) {
             mornHealth = data.base[x].morning.health;
             mornMood = data.base[x].morning.mood;
           };
-          if(data.base[x].afternoon){
+          if(data.base[x].afternoon) {
             afterHealth = data.base[x].afternoon.health;
             afterMood = data.base[x].afternoon.mood;
           };
-          if(data.base[x].night){
+          if(data.base[x].night) {
             nightHealth = data.base[x].night.health;
             nightMood = data.base[x].night.mood;
           };
@@ -551,67 +622,74 @@
         };
         this.graphRows = rowArr;
       },
-      _selectChanged:function(date){
-        if(date.base.month && date.base.year){
+
+      _selectChanged: function(date) {
+        if(date.base.month && date.base.year) {
           var months = date.base.month;
           var years = parseInt(date.base.year);
           var dateMonths = this.monthList.indexOf(months);
           var date = new Date(years, dateMonths);
-
-          var nextMonths = dateMonths+1;
+          var nextMonths = dateMonths + 1;
           var endDate = new Date(years, nextMonths);
           var now = date.getTime();
-          var end = endDate.getTime()-1;
+          var end = endDate.getTime() - 1;
           this.$.reportsDB.startAt = now.toString();
           this.$.reportsDB.endAt = end.toString();
           this.graphDate = this.monthList[months] + " " + years;
         };
       },
-      _computeYearList:function(){
+
+      _computeYearList: function() {
         var date = new Date();
         year = date.getFullYear();
         prevYear = date.getFullYear() - 1;
         this.yearList = [year.toString(), prevYear.toString()];
       },
-      _computeCurrentYear:function(){
+
+      _computeCurrentYear: function() {
         var date = new Date();
         return date.getFullYear();
       },
-      _computeStatusColor:function(number){
+
+      _computeStatusColor: function(number) {
         var int = parseInt(number);
-        if(int<=33){
+        if(int <= 33){
           return "percentage bad";
         };
-        if(int>34 && int<=66){
+        if(int > 34 && int <= 66){
           return "percentage ok";
         };
-        if(int>66){
+        if(int > 66){
           return "percentage good";
         };
       },
-      _computeProgressColor:function(number){
+
+      _computeProgressColor: function(number) {
         var int = parseInt(number);
-        if(int<=33){
+        if(int <= 33) {
           return "bad";
         };
-        if(int>34 && int<=66){
+        if(int > 34 && int <= 66) {
           return "ok";
         };
-        if(int>66){
+        if(int > 66) {
           return "good";
         };
       },
-      setDateRangeDisplay:function(){
+
+      setDateRangeDisplay: function() {
         var date = new Date();
         var months = date.getMonth();
         var years = date.getFullYear();
         var vagueDate = new Date(years, months);
         this.graphDate = this.monthList[months] + " " + years;
       },
-      chooseDate:function(){
+
+      chooseDate: function() {
         this.$.dateSelector.toggle();
         this.$.dateDisplay.toggle();
       }
+
     });
 
   </script>

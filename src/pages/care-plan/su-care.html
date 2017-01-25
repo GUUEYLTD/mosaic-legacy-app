@@ -37,6 +37,7 @@
       data="{{careData}}"
       path="/homes/[[home]]/patients/[[patient]]/carePlan">
     </firebase-document>
+
     <firebase-document
       id="agreeDB"
       app-name="main"
@@ -342,26 +343,32 @@
     Polymer({
 
       is: 'su-care',
-      ready:function(){
-        this.fire("pageLoaded", {page:this.page});
-        this.$.usersDB.query.on("value", function(snapshot){
+
+      ready: function() {
+        this.fire("pageLoaded", {page: this.page});
+        this.$.usersDB.query.on("value", function(snapshot) {
           this.updateUsers(snapshot);
         }.bind(this));
       },
-      properties:{
-        page:{
-          type:String,
+
+      properties: {
+
+        page: {
+          type: String,
         },
-        patient:{
-          type:String,
+
+        patient: {
+          type: String,
         },
-        home:{
-          type:String,
+
+        home: {
+          type: String,
         },
+
         //table inputs need to be declared here
-        wellBeingQuestionnaireInputs:{
-          type:Array,
-          value:[
+        wellBeingQuestionnaireInputs: {
+          type: Array,
+          value: [
             'Bathing',
             'Body Spray',
             'Haircut',
@@ -373,46 +380,52 @@
             'Skin care'
           ]
         },
-      myHealthQuestionnaireInputs:{
-        type:Array,
-        value:[
-          'Dental',
-          'Weight',
-          'Skin care',
-          'Exercise',
-          'Diet',
-          'Blood Pressure',
-          'Open bowels',
-          'Emotions & Mood Changes'
-        ]
+
+        myHealthQuestionnaireInputs: {
+          type: Array,
+          value: [
+            'Dental',
+            'Weight',
+            'Skin care',
+            'Exercise',
+            'Diet',
+            'Blood Pressure',
+            'Open bowels',
+            'Emotions & Mood Changes'
+          ]
+        },
+
+        myRoomQuestionnaireInputs: {
+          type: Array,
+          value: [
+            'Laundry',
+            'Change bed sheets',
+            'Dust room',
+            'Hoovering or vaccuming',
+            'Cleaning sink',
+            'Ironing clothes',
+            'Changing socks',
+            'Cleaning shoes',
+            'Air freshening room'
+          ]
+        }
+
       },
-      myRoomQuestionnaireInputs:{
-        type:Array,
-        value:[
-          'Laundry',
-          'Change bed sheets',
-          'Dust room',
-          'Hoovering or vaccuming',
-          'Cleaning sink',
-          'Ironing clothes',
-          'Changing socks',
-          'Cleaning shoes',
-          'Air freshening room'
-        ]
-      }
-      },
-      observers:[
-        "requirementsMet(agreeData)"
+
+      observers: [
+        "_requirementsMet(agreeData)"
       ],
-      behaviors:[
+
+      behaviors: [
         Polymer.carePlanAnimation,
         Polymer.suPrintBehavior,
         Polymer.suResizeBehavior
       ],
-      updateUsers:function(snapshot){
-        var tempList=[];
-        if(snapshot.val()){
-          var data=snapshot.val();
+
+      updateUsers: function(snapshot) {
+        var tempList = [];
+        if(snapshot.val()) {
+          var data = snapshot.val();
           for(x in data){
             if(data[x].displayName){
               tempList.push(data[x].displayName);
@@ -421,69 +434,91 @@
             };
           };
         };
-        this.userList=tempList;
+        this.userList = tempList;
       },
-      _checkServiceUser:function(suBasicInfo){
-        var fullName=suBasicInfo.fName+" "+suBasicInfo.lName;
-        if(!this.agreeData.suName){
-          this.agreeData.suName=fullName;
+
+      _checkServiceUser: function(suBasicInfo) {
+        var fullName = suBasicInfo.fName + " " + suBasicInfo.lName;
+        if(!this.agreeData.suName) {
+          this.agreeData.suName = fullName;
           this.set("agreeData.suName", fullName);
         };
       },
-      suAgreeUpdate:function(e){
-        this.$.formDB.path=null;
-        this.$.formDB.data=true;
-        this.$.formDB.save("/homes/"+this.home+"/patients/"+this.patient+"/carePlan/statementOfServiceUser/","suAgree");
+
+      suAgreeUpdate: function(e) {
+        this.$.formDB.path = null;
+        this.$.formDB.data = true;
+        this.$.formDB.save("/homes/" + this.home + "/patients/" + this.patient + "/carePlan/statementOfServiceUser/", "suAgree")
+          .then(function() {
+            this.fire("suAgreeUpdated");
+          }.bind(this))
+          .catch(function(err) {
+            this.fire("suAgreeUpdateError", {err:err});
+          }.bind(this));
       },
-      swAgreeUpdate:function(e){
-        this.$.formDB.path=null;
-        this.$.formDB.data=true;
-        this.$.formDB.save("/homes/"+this.home+"/patients/"+this.patient+"/carePlan/statementOfServiceUser/","swAgree");
+
+      swAgreeUpdate: function(e) {
+        this.$.formDB.path = null;
+        this.$.formDB.data = true;
+        this.$.formDB.save("/homes/" + this.home + "/patients/" + this.patient + "/carePlan/statementOfServiceUser/", "swAgree")
+        .then(function() {
+          this.fire("swAgreeUpdated");
+        }.bind(this))
+        .catch(function(err) {
+          this.fire("swAgreeUpdateError", {err:err});
+        }.bind(this));
       },
-      createNewSection:function(){
-        this.$.customInput.path=null;
-        this.$.customInput.data={};
+
+      createNewSection: function() {
+        this.$.customInput.path = null;
+        this.$.customInput.data = {};
         this.$.customSectionModal.open();
       },
-      saveNewSection:function(){
-        var path="/homes/"+this.home+"/patients/"+this.patient+"/carePlan/custom"
+
+      saveNewSection: function() {
+        var path = "/homes/" + this.home + "/patients/" + this.patient + "/carePlan/custom"
         this.$.customInput.save(path, null)
-          .then(function(){
+          .then(function() {
             this.$.customSectionModal.close();
-            this.fire("openToast",{toastText:"New custom section saved."});
+            this.fire("openToast", {toastText: "New custom section saved."});
+            var key = this.$.customInput.path.split("/").pop();
+            this.fire("customSectionCreated", {key: key});
           }.bind(this))
-          .catch(function(error){
+          .catch(function(error) {
             this.$.customSectionModal.close();
-            this.fire("openToast",{toastText:"There was an error saving your custom section: "+error});
+            this.fire("openToast", {toastText :"There was an error saving your custom section: " + error});
           });
       },
-      cancelNewSection:function(){
-        this.$.customInput.path=null;
-        this.$.customInput.data={};
+
+      cancelNewSection: function() {
+        this.$.customInput.path = null;
+        this.$.customInput.data = {};
         this.$.customSectionModal.close();
       },
-      requirementsMet:function(data){
-        if(!data.suName){
-          this.fire("openToast", {toastText:"Please enter a service user for the agreement."});
+
+      _requirementsMet: function(data) {
+        if(!data.suName) {
+          this.fire("openToast", {toastText: "Please enter a service user for the agreement.", missing: "suName"});
           return false;
-        } else if(!this.agreeData.suDate){
-          this.fire("openToast", {toastText:"Please enter a date for when the service user agreed."});
+        } else if(!this.agreeData.suDate) {
+          this.fire("openToast", {toastText: "Please enter a date for when the service user agreed.", missing: "suDate"});
           return false;
-        } else if(!data.suAgree){
-          this.fire("openToast", {toastText:"Please ensure that the service user agrees by tapping on the agree button."});
+        } else if(!data.suAgree) {
+          this.fire("openToast", {toastText: "Please ensure that the service user agrees by tapping on the agree button.", missing: "suAgree"});
           return false;
-        } else if(!data.swName){
-          this.fire("openToast", {toastText:"Please enter a staff worker name for the agreement."});
+        } else if(!data.swName) {
+          this.fire("openToast", {toastText: "Please enter a staff worker name for the agreement.", missing: "swName"});
           return false;
-        } else if(!this.agreeData.swDate){
-          this.fire("openToast", {toastText:"Please enter a date for when the staff worker agreed."});
+        } else if(!this.agreeData.swDate) {
+          this.fire("openToast", {toastText: "Please enter a date for when the staff worker agreed.", missing: "swDate"});
           return false;
-        } else if(!data.swAgree){
-          this.fire("openToast", {toastText:"Please ensure that the staff worker agrees by tapping on the agree button."});
+        } else if(!data.swAgree) {
+          this.fire("openToast", {toastText: "Please ensure that the staff worker agrees by tapping on the agree button.", missing: "swAgree"});
         } else {
           return true;
         };
-      },
+      }
+
     });
 
   </script>
