@@ -35,9 +35,11 @@
 <dom-module id="su-medication">
 
   <template>
+
     <media-queries
       dimensions="{{dimensions}}">
     </media-queries>
+
     <firebase-document
       id="medDB"
       app-name="main">
@@ -83,27 +85,32 @@
 
     <style include="paper-time-picker-dialog-style"></style>
     <style include="common-styles">
-      :host{
+      :host {
         --app-grid-columns:2;
         --app-grid-expandible-item-columns:2;
       }
-      .timeChunkMorning{
+
+      .timeChunkMorning {
           background-image:url(../../../../images/timechunks/morning.png);
           border-left:#F76363 solid 5px;
       }
-      .timeChunkAfternoon{
+
+      .timeChunkAfternoon {
           background-image:url(../../../../images/timechunks/afternoon.png);
           border-left:#FFC200 solid 5px;
       }
-      .timeChunkEvening{
+
+      .timeChunkEvening {
           background-image:url(../../../../images/timechunks/evening.png);
           border-left:#FF5607 solid 5px;
       }
-      .timeChunkNight{
+
+      .timeChunkNight {
           background-image:url(../../../../images/timechunks/night.png);
           border-left:#6735BA solid 5px;
       }
-      .timeChunkBar{
+
+      .timeChunkBar {
         background-color:#F5F2F2;
         margin:20px 0 20px 0;
         background-repeat:no-repeat;
@@ -116,7 +123,8 @@
           padding:0;
         };
       }
-      .timeChunkLabel{
+
+      .timeChunkLabel {
         flex-grow:2;
         text-transform:uppercase;
         color:#009688;
@@ -126,10 +134,12 @@
         font-size:var(--time-chunk-label-font-size, 24px);
         margin-right:5px;
       }
-      .timeChunkLabel:hover{
+
+      .timeChunkLabel:hover {
         cursor:pointer;
       }
-      .timeChunkTime{
+
+      .timeChunkTime {
         flex-grow:1;
         font-weight:bold;
         font-size:var(--time-chunk-time-font-size, 20px);
@@ -138,32 +148,41 @@
         text-align:right;
         margin: 0 5px 0 5px;
       }
-      .timeChunkButton{
+
+      .timeChunkButton {
         margin:calc(var(--time-chunk-bar-background-position) - 5);
       }
-      #timeChunkModal{
+
+      #timeChunkModal {
         margin:0;
       }
-      #timeChunkModal paper-item{
+
+      #timeChunkModal paper-item {
         text-transform:uppercase;
       }
-      #timeChunkModal paper-item:hover{
+
+      #timeChunkModal paper-item:hover {
         cursor:pointer;
       }
-      .commentButton{
+
+      .commentButton {
         color:#009688;
       }
-      .offset-table{
+
+      .offset-table {
         margin-left:var(--time-chunk-bar-background-position, 140px)
         padding:0;
       }
-      .left-partial{
+
+      .left-partial {
         width:200px;
       }
-      .delete-button{
+
+      .delete-button {
         padding:8px;
         float:left;
       }
+
     </style>
 
     <paper-dialog
@@ -179,56 +198,56 @@
 
     <paper-dialog id="medModal" class="guuey-modal guuey-add-modal">
 
-        <h2>Add Medication</h2>
+      <h2>Add Medication</h2>
 
-        <paper-input
-          class="left-partial"
-          label="Medication Name"
-          value="{{newMed.medicine}}"
-          required
-          auto-validate
-          pattern="[a-zA-Z\s]*"
-          error-message="Please enter a valid medicine name.">
-        </paper-input>
+      <paper-input
+        class="left-partial"
+        label="Medication Name"
+        value="{{newMed.medicine}}"
+        required
+        auto-validate
+        pattern="[a-zA-Z\s]*"
+        error-message="Please enter a valid medicine name.">
+      </paper-input>
 
-        <vaadin-combo-box
-          class="dialogHalf"
-          allow-custom-status
-          label="Method"
-          value="{{newMed.method}}"
-          items="[[medMethods]]"
-          required
-          auto-validate
-          error-message="Please select a method.">
-        </vaadin-combo-box>
-        <!--need units of meds-->
-        <paper-input
-          class="dialogHalf"
-          label="dosage"
-          value="{{newMed.dosage}}"
-          required
-          auto-validate
-          pattern="\d{1,4}[a-zA-Z\s]*"
-          error-message="Please enter in the following format: (number) (units).">
-        </paper-input>
+      <vaadin-combo-box
+        class="dialogHalf"
+        allow-custom-status
+        label="Method"
+        value="{{newMed.method}}"
+        items="[[medMethods]]"
+        required
+        auto-validate
+        error-message="Please select a method.">
+      </vaadin-combo-box>
+      <!--need units of meds-->
+      <paper-input
+        class="dialogHalf"
+        label="dosage"
+        value="{{newMed.dosage}}"
+        required
+        auto-validate
+        pattern="\d{1,4}[a-zA-Z\s]*"
+        error-message="Please enter in the following format: (number) (units).">
+      </paper-input>
 
-        <paper-textarea
-          label="Comments"
-          value="{{newMed.comment}}">
-        </paper-textarea>
+      <paper-textarea
+        label="Comments"
+        value="{{newMed.comment}}">
+      </paper-textarea>
 
-        <guuey-time-chunk-selector
-          value="{{newMed.timeChunk}}">
-        </guuey-time-chunk-selector>
+      <guuey-time-chunk-selector
+        value="{{newMed.timeChunk}}">
+      </guuey-time-chunk-selector>
 
-        <guuey-weekday-selector
-          value="{{newMed.weekdays}}">
-        </guuey-weekday-selector>
+      <guuey-weekday-selector
+        value="{{newMed.weekdays}}">
+      </guuey-weekday-selector>
 
-        <div class="modal-button-container">
-          <paper-button class="cancel-button" dialog-dismiss>Cancel</paper-button>
-          <paper-button class="confirm-button" on-tap="saveMed">Save</paper-button>
-        </div>
+      <div class="modal-button-container">
+        <paper-button class="cancel-button" dialog-dismiss>Cancel</paper-button>
+        <paper-button class="confirm-button" on-tap="saveMed">Save</paper-button>
+      </div>
 
     </paper-dialog>
 
@@ -634,36 +653,55 @@
     Polymer({
 
       is: 'su-medication',
-      ready:function(){
-        this.fire("pageLoaded", {page:this.page});
+
+      ready: function() {
+        this.fire("pageLoaded", {page: this.page});
         this.addEventListener("print", this.print);
-        this.$.timesDB.ref.on("value",function(snapshot){
+        this.$.timesDB.ref.on("value", function(snapshot){
           this.timeChunkTimeCheck(snapshot);
         }.bind(this));
       },
-      properties:{
-        page:{
-          type:String,
+
+      properties: {
+
+        dimensions: {
+          type: Object
         },
-        home:{
-          type:String,
+
+        page: {
+          type: String,
         },
-        patient:{
-          type:String,
+
+        home: {
+          type: String,
         },
-        medMethods:{
-          type:String,
-          value:[
+
+        patient: {
+          type: String,
+        },
+
+        timesData: {
+          type: Object
+        },
+
+        medsData: {
+          type: Object
+        },
+
+        medMethods: {
+          type: String,
+          value: [
             "Oral",
             "Topic",
             "Injection",
             "Nasal"
           ]
         },
-        newMed:{
-          type:Object,
-          value:{
-            weekdays:[
+
+        newMed: {
+          type: Object,
+          value: {
+            weekdays: [
               "mo",
               "tu",
               "we",
@@ -675,292 +713,307 @@
           }
         },
       },
-      timeTarget:{
-        type:Object
+
+      timeTarget: {
+        type: Object
       },
-      defaultTimeChunkTimes:{
-        type:Object,
-        value:{
-          morning:"09:00",
-          afternoon:"13:00",
-          evening:"19:00",
-          night:"01:00"
+
+      defaultTimeChunkTimes: {
+        type: Object,
+        value: {
+          morning: "09:00",
+          afternoon: "13:00",
+          evening: "19:00",
+          night: "01:00"
         }
       },
-      observers:[
 
-      ],
-      behaviors:[
+      behaviors: [
         Polymer.carePlanAnimation,
         Polymer.suPrintBehavior,
         Polymer.suResizeBehavior
       ],
-      startNewMed:function(){
-        this.$.medModal.toggle();
-        this.hideSaveMed=false;
-      },
-      toggleTime:function(e){
-        this.$.timeDialog.toggle();
-        this.timeTarget=e.model.med;
-      },
-      editMed:function(e){
-        this.newMedEdit=e.model.med;
-        this.$.editMedModal.toggle();
 
+      startNewMed: function() {
+        this.$.medModal.toggle();
       },
-      saveEditMed:function(){
-        this.$.medDB.path=null;
-        var editPath=this.newMedEdit.parent;
-        this.newMedEdit.parent=null;
-        this.$.medDB.data.med=this.newMedEdit;
-        this.$.medDB.data.log={};
-        this.$.medDB.data.log.user=this.user.uid;
-        this.$.medDB.data.log.time=Date.now();
-        this.$.medDB.save("homes/"+this.home+"/patients/"+this.patient+"/medicationOutline/medications/"+editPath, null)
-          .then(function(med){
-            //guuey notify goes here
-            this.$.dailyMedNotify.notifyRoute=this.$.medDB.path;
-            this.$.dailyMedNotify.notifyMessage=this.suBasicInfo.fName+" has medication that is ready to be taken within the hour.";
-            this.$.dailyMedNotify.notifyTarget=editPath;
-            this.$.dailyMedNotify.initialize();
-          }.bind(this));
-        this.$.editMedModal.toggle();
-        this.newMedEdit={};
-        this.hideEditingMed=true;
-      },
-      saveMed:function(e){
-        this.$.medDB.path=null;
-        this.$.medDB.data={};
-        if(this.newMed.timeChunk && this.newMed.medicine){
-          var medPath="homes/"+this.home+"/patients/"+this.patient+"/medicationOutline/medications";
+
+      saveMed: function() {
+        this.$.medDB.path = null;
+        this.$.medDB.data = {};
+        if(this.newMed.timeChunk && this.newMed.medicine) {
+          var medPath = "homes/" + this.home + "/patients/" + this.patient + "/medicationOutline/medications";
           this.$.medDB.save(medPath, null)
-            .then(function(){
-              var notifyTarget=this.$.medDB.path.slice(medPath.length+1);
-              this.$.medDB.data.med=this.newMed;
-              this.$.medDB.data.log={};
-              this.$.medDB.data.log.user=this.user.uid;
-              this.$.medDB.data.log.time=Date.now();
+            .then(function() {
+              var medId = this.$.medDB.path.split("/").pop();
+              var notifyTarget = this.$.medDB.path.slice(medPath.length + 1);
+              this.$.medDB.data.med = this.newMed;
+              this.$.medDB.data.log = {};
+              this.$.medDB.data.log.user = this.user.uid;
+              this.$.medDB.data.log.time = Date.now();
               this.$.medDB.save(this.$.medDB.path, null)
-                .then(function(){
-                  this.newMed={};
+                .then(function() {
+                  var medItemId = this.$.medDB.path.split("/").pop();
+                  this.fire("newMedSaved", {medId: medId, medItemId: medItemId});
+                  this.newMed = {};
                   //guuey-notify goes here
-                  this.$.dailyMedNotify.notifyRoute=this.$.medDB.path;
-                  this.$.dailyMedNotify.notifyMessage=this.suBasicInfo.fName+" has medication that is ready to be taken within the hour.";
-                  this.$.dailyMedNotify.notifyTarget=notifyTarget;
+                  this.$.dailyMedNotify.notifyRoute = this.$.medDB.path;
+                  this.$.dailyMedNotify.notifyMessage = this.suBasicInfo.fName + " has medication that is ready to be taken within the hour.";
+                  this.$.dailyMedNotify.notifyTarget = notifyTarget;
                   this.$.dailyMedNotify.initialize();
                 }.bind(this));
             }.bind(this));
           this.$.medModal.toggle();
-          this.hideSaveMed=true;
         } else {
-          this.fire("openToast",{toastText:"Please make sure that you have set a name and a time of day (morning, afternoon etc) for this new medication."});
+          this.fire("openToast",{toastText: "Please make sure that you have set a name and a time of day (morning, afternoon etc) for this new medication."});
         };
       },
-      deleteMed:function(){
-        this.$.medDB.path=null;
-        var editPath=this.newMedEdit.parent;
-        this.newMedEdit.parent=null;
-        this.$.medDB.data.med=this.newMedEdit;
-        this.$.medDB.data.med.archived=true;
-        this.$.medDB.data.log={};
-        this.$.medDB.data.log.user=this.user.uid;
-        this.$.medDB.data.log.time=Date.now();
-        this.$.medDB.save("homes/"+this.home+"/patients/"+this.patient+"/medicationOutline/medications/"+editPath, null)
-          .then(function(med){
+
+      editMed: function(e) {
+        this.newMedEdit = e.model.med;
+        this.$.editMedModal.toggle();
+      },
+
+      saveEditMed: function() {
+        this.$.medDB.path = null;
+        var editPath = this.newMedEdit.parent;
+        this.newMedEdit.parent = null;
+        this.$.medDB.data.med = this.newMedEdit;
+        this.$.medDB.data.log = {};
+        this.$.medDB.data.log.user = this.user.uid;
+        this.$.medDB.data.log.time = Date.now();
+        this.$.medDB.save("homes/" + this.home + "/patients/" + this.patient + "/medicationOutline/medications/" + editPath, null)
+          .then(function(med) {
             //guuey notify goes here
-            var suffixes=["morning","afternoon","evening","night"];
+            this.$.dailyMedNotify.notifyRoute = this.$.medDB.path;
+            this.$.dailyMedNotify.notifyMessage = this.suBasicInfo.fName+" has medication that is ready to be taken within the hour.";
+            this.$.dailyMedNotify.notifyTarget = editPath;
+            this.$.dailyMedNotify.initialize();
+          }.bind(this));
+        this.$.editMedModal.toggle();
+        this.newMedEdit = {};
+      },
+
+      deleteMed: function() {
+        this.$.medDB.path = null;
+        var editPath = this.newMedEdit.parent;
+        this.newMedEdit.parent = null;
+        this.$.medDB.data.med = this.newMedEdit;
+        this.$.medDB.data.med.archived = true;
+        this.$.medDB.data.log = {};
+        this.$.medDB.data.log.user = this.user.uid;
+        this.$.medDB.data.log.time = Date.now();
+        this.$.medDB.save("homes/" + this.home + "/patients/" + this.patient + "/medicationOutline/medications/" + editPath, null)
+          .then(function(med) {
+            //guuey notify goes here
+            var suffixes = ["morning","afternoon","evening","night"];
             this.$.dailyMedNotify.deNotify(this.home, editPath, suffixes);
           }.bind(this));
         this.$.editMedModal.toggle();
-        this.newMedEdit={};
-        this.hideEditingMed=true;
+        this.newMedEdit = {};
       },
-      newTime:function(time){
-        this.newMed.time=time;
-        this.newMed.timeChunk=this.convertTime(rawTime);
+
+      newTime: function(time) {
+        this.newMed.time = time;
+        this.newMed.timeChunk = this.convertTime(rawTime);
       },
-      setTime:function(time){
-        var rawTime=this.$.timePicker.rawValue;
-        var timeChunk=this.convertTime(rawTime);
-        this.newMed.timeChunk=timeChunk;
+
+      setTime: function(time) {
+        var rawTime = this.$.timePicker.rawValue;
+        var timeChunk = this.convertTime(rawTime);
+        this.newMed.timeChunk = timeChunk;
       },
-      timeChunkOptions:function(e){
-        var timeChunk=e.target.getAttribute("time-chunk");
-        this.timeChunkTarget=timeChunk;
-        this.$.timeChunkModal.positionTarget=e.target;
+
+      timeChunkOptions: function(e) {
+        var timeChunk = e.target.getAttribute("time-chunk");
+        this.timeChunkTarget = timeChunk;
+        this.$.timeChunkModal.positionTarget = e.target;
         this.$.timeChunkModal.open();
       },
-      setTimeEdit:function(time){
-        var rawTime=this.$.editTimePicker.rawValue;
-        var timeChunk=this.convertTime(rawTime);
-        this.newMedEdit.timeChunk=timeChunk;
+
+      setTimeEdit: function(time) {
+        var rawTime = this.$.editTimePicker.rawValue;
+        var timeChunk = this.convertTime(rawTime);
+        this.newMedEdit.timeChunk = timeChunk;
       },
-      toggleMorning:function(){
+
+      toggleMorning: function() {
         this.$.morning.toggle();
       },
-      toggleAfternoon:function(){
+
+      toggleAfternoon: function() {
         this.$.afternoon.toggle();
       },
-      toggleEvening:function(){
+
+      toggleEvening: function() {
         this.$.evening.toggle();
       },
-      toggleNight:function(){
+
+      toggleNight: function() {
         this.$.night.toggle();
       },
-      filterMorning:function(item){
+
+      filterMorning: function(item) {
+        if(item.archived) {
+          return false;
+        } else {
+          return item.timeChunk.indexOf("morning") != -1;
+        };
+      },
+
+      filterAfternoon: function(item) {
+        if(item.archived) {
+          return false;
+        } else {
+          return item.timeChunk.indexOf("afternoon") != -1;
+        };
+      },
+
+      filterEvening: function(item) {
+        if(item.archived) {
+          return false;
+        } else {
+          return item.timeChunk.indexOf("evening") != -1;
+        };
+      },
+
+      filterNight: function(item) {
         if(item.archived){
           return false;
         } else {
-          return item.timeChunk.indexOf("morning")!=-1;
+          return item.timeChunk.indexOf("night") != -1;
         };
       },
-      filterAfternoon:function(item){
-        if(item.archived){
-          return false;
-        } else {
-          return item.timeChunk.indexOf("afternoon")!=-1;
-        };
-      },
-      filterEvening:function(item){
-        if(item.archived){
-          return false;
-        } else {
-          return item.timeChunk.indexOf("evening")!=-1;
-        };
-      },
-      filterNight:function(item){
-        if(item.archived){
-          return false;
-        } else {
-          return item.timeChunk.indexOf("night")!=-1;
-        };
-      },
-      convertTime:function(rawTime){
-        if(rawTime>=60*5 && rawTime<60*12){
+
+      convertTime: function(rawTime) {
+        if(rawTime >= 60 * 5 && rawTime < 60 * 12) {
           return "morning";
-        } else if(rawTime>=60*12 && rawTime<60*17){
+        } else if(rawTime >= 60 * 12 && rawTime < 60 * 17) {
           return "afternoon";
-        } else if(rawTime>=60*17 && rawTime<60*21){
+        } else if(rawTime >= 60 * 17 && rawTime < 60 * 21) {
           return "evening"
         } else {
           return "night";
         };
       },
-      _computeMedList:function(meds){
+
+      _computeMedList: function(meds) {
         //return the most recent sub doc from medication docs
-        var currentMedList=[];
+        var currentMedList = [];
         var now = Date.now();
-        for(x in meds){
-          if(x!="timeChunks"){
-            var med=meds[x];
-            var medCandidate=null;
-            for(y in med){
-              var medHistory=med[y];
-              if(medHistory.log){
+        for(x in meds) {
+          if(x != "timeChunks") {
+            var med = meds[x];
+            var medCandidate = null;
+            for(y in med) {
+              var medHistory = med[y];
+              if(medHistory.log) {
                 medTime = medHistory.log.time;
-                if(medCandidate!=null){
-                  if(medCandidate.log.time<medTime){
-                    medCandidate=medHistory;
+                if(medCandidate != null) {
+                  if(medCandidate.log.time < medTime) {
+                    medCandidate = medHistory;
                   };
                 } else {
-                  medCandidate=medHistory;
+                  medCandidate = medHistory;
                 };
               };
             };
-            medCandidate=medCandidate.med;
-            medCandidate.parent=x;
+            medCandidate = medCandidate.med;
+            medCandidate.parent = x;
             currentMedList.push(medCandidate);
           }
         };
         return currentMedList;
       },
-      _computeTime:function(timeData, timeChunk){
+
+      _computeTime: function(timeData, timeChunk) {
         var newestCandidate;
-        var currentChunk=timeData[timeChunk];
-        for(x in currentChunk){
-          var candidate=currentChunk[x];
-          if(newestCandidate!=null){
-            if(newestCandidate.log.time<candidate.log.time){
-              newestCandidate=candidate;
+        var currentChunk = timeData[timeChunk];
+        for(x in currentChunk) {
+          var candidate = currentChunk[x];
+          if(newestCandidate != null) {
+            if(newestCandidate.log.time < candidate.log.time) {
+              newestCandidate = candidate;
             }
           } else {
-            newestCandidate=candidate;
+            newestCandidate = candidate;
           };
         };
-        if(newestCandidate){
+        if(newestCandidate) {
           return newestCandidate.time;
         } else {
           return "loading...";
         }
       },
-      editTimeDialog:function(){
+
+      editTimeDialog: function() {
         this.$.timeChunkModal.close();
         this.$.editTimeDialog.toggle();
       },
-      saveEditTime:function(){
-        this.$.timeDB.path=null;
-        this.$.timeDB.data={};
-        var path="homes/"+this.home+"/patients/"+this.patient+"/medicationOutline/timeChunks/"+this.timeChunkTarget;
-        var now=Date.now();
-        this.$.timeDB.data={
-          log:{
-            user:this.user.uid,
-            time:now
+
+      saveEditTime: function() {
+        this.$.timeDB.path = null;
+        this.$.timeDB.data = {};
+        var path="homes/" + this.home + "/patients/" + this.patient + "/medicationOutline/timeChunks/" + this.timeChunkTarget;
+        var now = Date.now();
+        this.$.timeDB.data = {
+          log: {
+            user: this.user.uid,
+            time: now
           },
-          time:this.newTime
+          time: this.newTime
         };
         this.$.timeDB.save(path, null)
-          .then(function(val){
+          .then(function(val) {
             this.$.editTimeDialog.close();
-            this.newTime=null;
+            this.newTime = null;
           }.bind(this))
-          .catch(function(error){
-            this.fire("openToast", {toastText:"Error saving new time: "+error});
+          .catch(function(error) {
+            this.fire("openToast", {toastText: "Error saving new time: " + error});
           }.bind(this));
       },
-      timeDialog:function(){
-        this.$.timeDialog.toggle();
-      },
-      timeChunkTimeCheck:function(data){
-        var now=Date.now();
-        data=data.val();
-        if(data===null){
-          var path="homes/"+this.home+"/patients/"+this.patient+"/medicationOutline/";
-          this.$.timeDB.data={
-            morning:{
-              genesis:{
-                log:{
-                  user:"system logged in as: "+this.user.uid,
-                  time:now
+
+      timeChunkTimeCheck: function(data) {
+        var now = Date.now();
+        data = data.val();
+        if(data=== null){
+          var path = "homes/" + this.home + "/patients/" + this.patient + "/medicationOutline/";
+          this.$.timeDB.data = {
+            morning: {
+              genesis: {
+                log: {
+                  user: "system logged in as: " + this.user.uid,
+                  time: now
                 },
-                time:"09:00"
+                time: "09:00"
               }
             },
-            afternoon:{
-              genesis:{
-                log:{
-                  user:"system logged in as: "+this.user.uid,
-                  time:now
+            afternoon: {
+              genesis: {
+                log: {
+                  user: "system logged in as: "+this.user.uid,
+                  time: now
                 },
-                time:"13:00"
+
+                time: "13:00"
               }
             },
-            evening:{
-              genesis:{
-                log:{
-                  user:"system logged in as: "+this.user.uid,
-                  time:now
+            evening: {
+              genesis: {
+                log: {
+                  user: "system logged in as: "+this.user.uid,
+                  time: now
                 },
-                time:"19:00"
+                time: "19:00"
               }
             },
-            night:{
-              genesis:{
+            night: {
+              genesis: {
                 log:{
-                  user:"system logged in as: "+this.user.uid,
-                  time:now
+                  user: "system logged in as: "+this.user.uid,
+                  time: now
                 },
-                time:"01:00"
+                time: "01:00"
               }
             },
           };

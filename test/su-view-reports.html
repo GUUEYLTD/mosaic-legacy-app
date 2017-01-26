@@ -82,16 +82,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         var firebaseApp = fixture('firebaseApp');
 
         setup(function(done) {
-          this.timeout(50000);
+          this.timeout(10000);
           page = fixture('basic');
           auth = fixture('auth');
           testDoc = fixture('testDoc');
           auth.signInWithEmailAndPassword("123@mailinator.com", "123123")
             .then(function() {
-              page.addEventListener('viewReportsReady', function() {
-                testDoc.setStoredValue(testDoc.path, {});
-                createData();
-              });
+              testDoc.setStoredValue(testDoc.path, {})
+                .then(function() {
+                  createData();
+                });
             })
             .catch(function(err) {
               console.log(err);
@@ -99,13 +99,32 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             function createData() {
               var testData = {};
-              var date = new Date();
               for(i = 0; i < 60; i++) {
-                var entry = date.setDate(date.getDate() - i);
-                testData[entry] = {
+                var date = new Date();
+                var days = date.getDate();
+                var months = date.getMonth();
+                var years = date.getFullYear();
+                var beforeEntry = new Date(years, months, days);
+                var afterEntry = new Date(years, months, days);
+                beforeEntry.setDate(beforeEntry.getDate() - i);
+                beforeEntry = beforeEntry.getTime();
+                afterEntry.setDate(afterEntry.getDate() + i);
+                afterEntry = afterEntry.getTime();
+                testData[beforeEntry] = {
                   morning: {
                     activities: Math.random().toString(36).substr(2, 5),
-                    health: Math.floor(Math.random() * 100 + 1),
+                    health: Math.floor(Math.random() * 30 + 1),
+                    healthComments: Math.random().toString(36).substr(2, 5),
+                    incidents: Math.random().toString(36).substr(2, 5),
+                    locations: Math.random().toString(36).substr(2, 5),
+                    mood: Math.floor(Math.random() * 30 + 1),
+                    moodComments: Math.random().toString(36).substr(2, 5),
+                    summaryOfChunk: Math.random().toString(36).substr(2, 5),
+                  },
+
+                  afternoon: {
+                    activities: Math.random().toString(36).substr(2, 5),
+                    health: Math.floor(Math.random() * 70 + 1),
                     healthComments: Math.random().toString(36).substr(2, 5),
                     incidents: Math.random().toString(36).substr(2, 5),
                     locations: Math.random().toString(36).substr(2, 5),
@@ -113,7 +132,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     moodComments: Math.random().toString(36).substr(2, 5),
                     summaryOfChunk: Math.random().toString(36).substr(2, 5),
                   },
-                  afternoon: {
+
+                  night: {
                     activities: Math.random().toString(36).substr(2, 5),
                     health: Math.floor(Math.random() * 100 + 1),
                     healthComments: Math.random().toString(36).substr(2, 5),
@@ -122,7 +142,32 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     mood: Math.floor(Math.random() * 100 + 1),
                     moodComments: Math.random().toString(36).substr(2, 5),
                     summaryOfChunk: Math.random().toString(36).substr(2, 5),
+                  }
+                };
+
+                testData[afterEntry] = {
+                  morning: {
+                    activities: Math.random().toString(36).substr(2, 5),
+                    health: Math.floor(Math.random() * 30 + 1),
+                    healthComments: Math.random().toString(36).substr(2, 5),
+                    incidents: Math.random().toString(36).substr(2, 5),
+                    locations: Math.random().toString(36).substr(2, 5),
+                    mood: Math.floor(Math.random() * 100 + 1),
+                    moodComments: Math.random().toString(36).substr(2, 5),
+                    summaryOfChunk: Math.random().toString(36).substr(2, 5),
                   },
+
+                  afternoon: {
+                    activities: Math.random().toString(36).substr(2, 5),
+                    health: Math.floor(Math.random() * 70 + 1),
+                    healthComments: Math.random().toString(36).substr(2, 5),
+                    incidents: Math.random().toString(36).substr(2, 5),
+                    locations: Math.random().toString(36).substr(2, 5),
+                    mood: Math.floor(Math.random() * 100 + 1),
+                    moodComments: Math.random().toString(36).substr(2, 5),
+                    summaryOfChunk: Math.random().toString(36).substr(2, 5),
+                  },
+
                   night: {
                     activities: Math.random().toString(36).substr(2, 5),
                     health: Math.floor(Math.random() * 100 + 1),
@@ -144,6 +189,112 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 done();
               });
             };
+        });
+
+        test('_computeReadableDate() works', function() {
+          var date = new Date();
+          date.setDate(date.getDate() - 10);
+          var testVal = page._computeReadableDate(date.getTime());
+          expect(testVal).to.equal(date.toLocaleDateString());
+        });
+
+        test('toggleSection() works', function(done) {
+            var date = new Date();
+            var days = date.getDate();
+            var months = date.getMonth();
+            var years = date.getFullYear();
+            var testDate = new Date(years, months, days);
+            testDate.setDate(testDate.getDate());
+            testDate = testDate.getTime().toString();
+            var dummyE = {
+              model: {
+                report: {
+                  $key: testDate
+                }
+              }
+            };
+            flush(function() {
+              page.toggleSection(dummyE);
+              expect(page.$$('#r' + testDate).opened).to.equal(true);
+              done();
+            });
+        });
+
+        test('viewThisMonth shows only the current month', function(done) {
+          page.$.reportsDB.query.once('child_added', function(snap) {
+              var data = Array.from(page.reportsData);
+              var dateChecks = data
+              .map(function(dateCheck) {
+                return dateCheck.$key;
+              })
+              .map(function(dateCheck) {
+                var date = new Date();
+                var months = date.getMonth();
+                var years = date.getFullYear();
+                var date = new Date(years, months);
+                var nextMonths = months + 1;
+                var nowMonth = date.getTime();
+                var endDate = new Date(years, nextMonths);
+                var end = endDate.getTime() - 1;
+                return dateCheck >= nowMonth && dateCheck <= end;
+              });
+              expect(dateChecks).to.not.contain(false);
+              done();
+          });
+          page.viewThisMonth();
+        });
+
+        test('_selectChanged() picks up date changes and properly filters the query', function(done) {
+          page.$.reportsDB.query.once('child_added', function() {
+            var data = Array.from(page.reportsData);
+            var dateChecks = data
+            .map(function(dateCheck) {
+              return dateCheck.$key;
+            })
+            .map(function(dateCheck) {
+              var months = page.selectDate.month;
+              var years = parseInt(page.selectDate.year);
+              var dateMonths = page.monthList.indexOf(months);
+              var date = new Date(years, dateMonths);
+              var nextMonths = dateMonths + 1;
+              var endDate = new Date(years, nextMonths);
+              var now = date.getTime();
+              var end = endDate.getTime() - 1;
+              return dateCheck >= now && dateCheck <= end;
+            });
+            expect(dateChecks).to.not.contain(false);
+            done();
+          });
+          var date = new Date();
+          var previousMonth = date.getMonth() - 1 < 0 ? 11 : date.getMonth() - 1;
+          var month = page.monthList[previousMonth];
+          var year = date.getMonth() - 1 < 0 ? page.yearList[1] : page.yearList[0];
+          page.set("selectDate", {month: month, year: year});
+        });
+
+        test('color classes apply correctly to elements', function(done) {
+          page.$.reportsDB.query.once('child_added', function(snap) {
+              var data = Array.from(page.reportsData);
+
+              var badMoods = data
+              .filter(function(badMoods) {
+                return moodCheck.afternoon.mood < 30;
+              });
+
+              var okMoods = data
+              .filter(function(badMoods) {
+                return moodCheck.afternoon.mood < 30;
+              });
+
+              var goodMoods = data
+              .filter(function(badMoods) {
+                return moodCheck.afternoon.mood < 30;
+              });
+
+              expect(dateChecks).to.not.contain(false);
+              done();
+          });
+          page.viewThisMonth();
         });
 
         test('care-plan to care-plan animations are correct', function() {

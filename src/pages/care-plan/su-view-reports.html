@@ -438,6 +438,7 @@
 
     Polymer({
       is:"su-view-reports",
+
       ready:function(){
         this.fire("pageLoaded",{page:this.page});
         this._computeYearList();
@@ -539,11 +540,12 @@
         var days = date.getDate();
         var months = date.getMonth();
         var years = date.getFullYear();
-        var date = new Date(years, months, days);
-        var now = date.getTime();
+        now = new Date(years, months, days);
+        var now = now.getTime();
+        var beforeTomorrow = now + ((1000 * 60 * 60 * 24) - 1);
         this.$.selectYear.value = null;
         this.$.reportsDB.startAt = now.toString();
-        this.$.reportsDB.endAt = now.toString();
+        this.$.reportsDB.endAt = beforeTomorrow.toString();
         this.$.reportsDB.path = "homes/" + this.home + "/patients/" + this.patient + "/dailyReports";
         this.$.reportsDB.query.once('value', function(snapshot) {
           this.fire('viewReportsReady');
@@ -556,7 +558,7 @@
         var days = date.getDate();
         var months = date.getMonth();
         var years = date.getFullYear();
-        var date = new Date(years, months, days);
+        date = new Date(years, months, days);
         var now = date.getTime();
         var nowWeekday = date.getDay();
         var week = now - (1000 * 60 * 60 * 24 * nowWeekday);
@@ -571,24 +573,25 @@
         var months = date.getMonth();
         var years = date.getFullYear();
         var date = new Date(years, months);
-        var nextMonths = months+1;
+        var nextMonths = months + 1;
+        var nowMonth = date.getTime();
         var endDate = new Date(years, nextMonths);
-        var now = date.getTime();
-        var end = endDate.getTime()-1;
+        var end = endDate.getTime() - 1;
         this.$.selectYear.value = null;
-        this.$.reportsDB.startAt = now.toString();
+        this.$.reportsDB.startAt = nowMonth.toString();
         this.$.reportsDB.endAt = end.toString();
         this.$.dateSelector.hide();
       },
 
+      //not in use right now... too much data...
       viewThisYear: function() {
         var date = new Date();
         var years = date.getFullYear();
         var date = new Date(years, 0);
-        var nextYears = years+1;
+        var nextYears = years + 1;
         var endDate = new Date(nextYears, 0);
         var now = date.getTime();
-        var end = endDate.getTime()-1;
+        var end = endDate.getTime() - 1;
         this.$.reportsDB.limitToLast = 5;
       },
 
