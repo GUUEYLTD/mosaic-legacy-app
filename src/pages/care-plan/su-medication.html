@@ -347,7 +347,7 @@
             class="timeChunkButton"
             icon="icons:more-vert"
             time-chunk="morning"
-            on-tap="timeChunkOptions">
+            on-tap="openTimeChunkOptions">
           </paper-icon-button>
         </paper-item>
         <iron-collapse id="morning" opened>
@@ -423,7 +423,7 @@
             class="timeChunkButton"
             icon="icons:more-vert"
             time-chunk="afternoon"
-            on-tap="timeChunkOptions">
+            on-tap="openTimeChunkOptions">
           </paper-icon-button>
         </paper-item>
         <iron-collapse id="afternoon">
@@ -500,7 +500,7 @@
             class="timeChunkButton"
             icon="icons:more-vert"
             time-chunk="evening"
-            on-tap="timeChunkOptions">
+            on-tap="openTimeChunkOptions">
           </paper-icon-button>
         </paper-item>
         <iron-collapse id="evening">
@@ -577,7 +577,7 @@
             class="timeChunkButton"
             icon="icons:more-vert"
             time-chunk="night"
-            on-tap="timeChunkOptions">
+            on-tap="openTimeChunkOptions">
           </paper-icon-button>
         </paper-item>
         <iron-collapse id="night">
@@ -784,6 +784,8 @@
         this.$.medDB.data.log.time = Date.now();
         this.$.medDB.save("homes/" + this.home + "/patients/" + this.patient + "/medicationOutline/medications/" + editPath, null)
           .then(function(med) {
+            var medItemId = this.$.medDB.path.split("/").pop();
+            this.fire("medEditSaved", {medId: editPath, medItemId: medItemId});
             //guuey notify goes here
             this.$.dailyMedNotify.notifyRoute = this.$.medDB.path;
             this.$.dailyMedNotify.notifyMessage = this.suBasicInfo.fName+" has medication that is ready to be taken within the hour.";
@@ -805,6 +807,8 @@
         this.$.medDB.data.log.time = Date.now();
         this.$.medDB.save("homes/" + this.home + "/patients/" + this.patient + "/medicationOutline/medications/" + editPath, null)
           .then(function(med) {
+            var medItemId = this.$.medDB.path.split("/").pop();
+            this.fire("medDeleted", {medId: editPath, medItemId: medItemId});
             //guuey notify goes here
             var suffixes = ["morning","afternoon","evening","night"];
             this.$.dailyMedNotify.deNotify(this.home, editPath, suffixes);
@@ -813,28 +817,11 @@
         this.newMedEdit = {};
       },
 
-      newTime: function(time) {
-        this.newMed.time = time;
-        this.newMed.timeChunk = this.convertTime(rawTime);
-      },
-
-      setTime: function(time) {
-        var rawTime = this.$.timePicker.rawValue;
-        var timeChunk = this.convertTime(rawTime);
-        this.newMed.timeChunk = timeChunk;
-      },
-
-      timeChunkOptions: function(e) {
+      openTimeChunkOptions: function(e) {
         var timeChunk = e.target.getAttribute("time-chunk");
         this.timeChunkTarget = timeChunk;
         this.$.timeChunkModal.positionTarget = e.target;
         this.$.timeChunkModal.open();
-      },
-
-      setTimeEdit: function(time) {
-        var rawTime = this.$.editTimePicker.rawValue;
-        var timeChunk = this.convertTime(rawTime);
-        this.newMedEdit.timeChunk = timeChunk;
       },
 
       toggleMorning: function() {

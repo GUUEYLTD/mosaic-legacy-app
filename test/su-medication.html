@@ -92,6 +92,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                   checkTimesDB();
                   checkMedsDB();
                 });
+
+              //checkTimeDB();
+              //checkMedsDB();
             })
             .catch(function(err) {
               console.log(err);
@@ -190,8 +193,106 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         });
 
         test('saveEditMed() works', function(done) {
+          var parent;
+          var medItemId;
+          var newMedData = {
+            medicine: "Testacine",
+            method: "Oral",
+            dosage: "20mg",
+            comments: "test comment",
+            timeChunk: ["morning", "afternoon", "evening", "night"],
+            weekdays: ["mo", "tu", "we", "th", "fr", "sa", "so"]
+          };
 
-          done();
+          var editMedData = {
+            medicine: "Testacine2",
+            method: "Injection",
+            dosage: "30mg",
+            comments: "test comment2",
+            timeChunk: ["morning"],
+            weekdays: ["mo"],
+          };
+
+          page.addEventListener("newMedSaved", function(e) {
+            parent = e.detail.medId;
+            medItemId = e.detail.medItemId;
+            var dummyE = {
+              model: {
+                $key: medItemId
+              }
+            };
+            page.editMed(dummyE);
+            editMedData.parent = parent;
+            page.set("newMedEdit", editMedData);
+            page.saveEditMed();
+          });
+
+          page.addEventListener("medEditSaved", function(e) {
+            var saveData = page.medsData[parent][medItemId];
+            var editData = page.medsData[parent][e.detail.medItemId];
+            delete editMedData.parent;
+            for(x in newMedData) {
+              if(newMedData[x].constructor === Array) {
+                assert.equal(newMedData[x].length, saveData.med[x].length);
+              } else {
+                assert.equal(newMedData[x], saveData.med[x]);
+              };
+            };
+
+            for(x in editMedData) {
+              if(editMedData[x].constructor === Array) {
+                assert.equal(editMedData[x].length, editData.med[x].length);
+              } else {
+                assert.equal(editMedData[x], editData.med[x]);
+              };
+            };
+
+            done();
+          });
+
+          page.set("newMed", newMedData);
+          page.saveMed();
+        });
+
+        test('delete med works... doesnt actually delete med', function(done) {
+          var saveMedId;
+          var saveMedItemId;
+          var newMedData = {
+            medicine: "Testacine",
+            method: "Oral",
+            dosage: "20mg",
+            comments: "test comment",
+            timeChunk: ["morning", "afternoon", "evening", "night"],
+            weekdays: ["mo", "tu", "we", "th", "fr", "sa", "so"]
+          };
+
+          page.addEventListener("newMedSaved", function(e) {
+            saveMedId = e.detail.medId;
+            saveMedItemId = e.detail.medItemId;
+            page.newMedEdit = {
+              parent: saveMedId
+            };
+            page.deleteMed();
+          });
+
+          page.addEventListener("medDeleted", function(e) {
+            var medId = e.detail.medId;
+            var medItemId = e.detail.medItemId;
+            var archiveData = page.medsData[medId][medItemId];
+            var saveData = page.medsData[saveMedId][saveMedItemId];
+            expect(archiveData.med.archived).to.equal(true);
+            for(x in newMedData) {
+              if(newMedData[x].constructor === Array) {
+                assert.equal(newMedData[x].length, saveData.med[x].length);
+              } else {
+                assert.equal(newMedData[x], saveData.med[x]);
+              };
+            };
+            done();
+          });
+
+          page.set("newMed", newMedData);
+          page.saveMed();
         });
 
         test('care-plan to care-plan animations are correct', function() {
