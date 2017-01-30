@@ -10,6 +10,7 @@
 <link rel="import" href="../../../bower_components/paper-button/paper-button.html" />
 <link rel="import" href="../../../bower_components/paper-dialog/paper-dialog.html" />
 <link rel="import" href="../../../bower_components/iron-collapse/iron-collapse.html" />
+<link rel="import" href="../../../bower_components/paper-fab/paper-fab.html" />
 
 
 <!--temp animations till hero animations work-->
@@ -31,7 +32,8 @@
     <media-queries dimensions="{{dimensions}}"></media-queries>
 
     <style include="common-styles">
-      .detailDescription{
+
+      .detailDescription {
         background-color:#4DB6AC;
         width:100%;
         height:150px;
@@ -40,21 +42,25 @@
         background-position:bottom left;
         margin: 0 0 20px 0;
       }
-      .descriptionViewText{
+
+      .descriptionViewText {
         color:#FFFFFF;
         font-size:20px;
         padding:20px;
       }
-      .descriptionViewText:hover{
+
+      .descriptionViewText:hover {
         cursor:pointer;
         opacity:.8;
       }
-      .descriptionEditInput{
+
+      .descriptionEditInput {
         --paper-input-container-color:#FFFFFF;
         --paper-input-container-input-color:#FFFFFF;
       }
+
       /* new styles */
-      .topEditCard{
+      .topEditCard {
         width:calc(100% - 40px);
         margin:20px;
         --paper-card-header-image:{
@@ -66,21 +72,26 @@
         };
         --paper-card-header-color:#FFFFFF;
       }
-      .topEditCategory{
+
+      .topEditCategory {
 
       }
-      .guuey-table{
+
+      .guuey-table {
         width:100%;
         padding:0;
         display:block;
       }
-      .guuey-table table{
+
+      .guuey-table table {
         padding:0;
       }
-      .guuey-table paper-fab{
+
+      .guuey-table paper-fab {
         float:left;
       }
-      #descriptionView{
+
+      #descriptionView {
         display:flex;
         flex-direction:row;
         align-items:center;
@@ -88,7 +99,8 @@
         float:right;
         height:100%;
       }
-      #descriptionEdit{
+
+      #descriptionEdit {
         display:flex;
         flex-direction:row;
         align-items:center;
@@ -96,18 +108,23 @@
         float:right;
         height:100%;
       }
-      #descriptionEdit paper-input{
+
+      #descriptionEdit paper-input {
         width: calc(100% - 10px);
       }
-      #descriptionEditButton{
+
+      #descriptionEditButton {
         color:#FFFFFF;
       }
-      .stepNumber{
+
+      .stepNumber {
         background-color:#F76363;
       }
-      .stepNumber:hover{
+
+      .stepNumber:hover {
         cursor:default;
       }
+
     </style>
 
     <paper-dialog id="stepModal" class="guuey-modal guuey-add-modal">
@@ -263,17 +280,25 @@
     Polymer({
 
       is:"su-goals-edit-view",
-      properties:{
-        goalData:{
-          type:Object,
-          notify:true
+
+      properties: {
+
+        dimensions: {
+          type: Object
         },
-        userList:{
-          type:Array
+
+        goalData: {
+          type: Object,
+          notify: true
         },
-        goalTypes:{
-          type:Array,
-          value:[
+
+        userList: {
+          type: Array
+        },
+
+        goalTypes: {
+          type: Array,
+          value: [
             "Accommodation",
             "Finance And Budget",
             "Social Skills",
@@ -282,30 +307,36 @@
             "Other"
           ]
         },
-        stepModalOpen:{
-          type:String,
-          notify:true,
-          observer:"_stepModalCheck"
+
+        stepModalOpen: {
+          type: String,
+          notify: true,
+          observer: "_stepModalCheck"
         },
-        stepId:{
-          type:String,
-          notify:true
+
+        stepId: {
+          type: String,
+          notify: true
         },
-        stepsData:{
-          type:Array,
-          notify:true
+
+        stepsData: {
+          type: Array,
+          notify: true
         },
-        stepData:{
-          type:Object,
-          notify:true
+
+        stepData: {
+          type: Object,
+          notify: true
         },
-        viewType:{
-          type:String,
-          value:"edit-view"
+
+        viewType: {
+          type: String,
+          value: "edit-view"
         },
-        stepOptions:{
-          type:Array,
-          value:[
+
+        stepOptions: {
+          type: Array,
+          value: [
             "1",
             "2",
             "3",
@@ -317,37 +348,46 @@
             "9"
           ]
         }
+
       },
-      behaviors:[
+
+      behaviors: [
         Polymer.editViewResizeBehavior,
         Polymer.multiEditAnimationBehavior
       ],
-      addStep:function(){
+
+      addStep: function() {
         this.fire("addStep");
       },
-      editStep:function(e){
-        this.stepId=e.model.step.$key;
+
+      editStep: function(e) {
+        this.stepId = e.model.step.$key;
         this.fire("editStep");
       },
-      saveStep:function(){
+
+      saveStep: function() {
         this.fire("saveStep");
       },
-      cancelStep:function(){
-        this.stepModalOpen="close";
+
+      cancelStep: function() {
+        this.stepModalOpen = "close";
       },
-      _stepModalCheck:function(state){
-        if(state==="close"){
+
+      _stepModalCheck: function(state) {
+        if(state === "close") {
           this.$.stepModal.close();
-        } else if(state="open"){
+        } else if(state = "open") {
           this.$.stepModal.open();
         };
       },
-      checkboxChanged:function(e){
-        var checkBool=e.model.step.completed;
-        var stepID=e.model.step.$key;
-        this.fire("checkboxChanged", {checkBool:checkBool, stepID:stepID});
+
+      checkboxChanged: function(e) {
+        var checkBool = e.model.step.completed;
+        var stepID = e.model.step.$key;
+        this.fire("checkboxChanged", {checkBool: checkBool, stepID: stepID});
       },
-      _computeGoalImage:function(cat){
+
+      _computeGoalImage: function(cat) {
         switch(cat) {
           case "Accommodation":
               this.customStyle["--category-background-color"] = "#ffd600";
@@ -381,17 +421,20 @@
               break;
         };
       },
+
       //function to sort steps based on order
-      _sortSteps:function(a, b){
+      _sortSteps: function(a, b) {
         if (a.order === b.order) return 0;
         return a.order < b.order ? -1 : 1;
       },
-      _toggleCollapses:function(){
+
+      _toggleCollapses: function() {
         this.$.descriptionView.toggle();
         this.$.descriptionView.notifyResize();
         this.$.descriptionEdit.toggle();
         this.$.descriptionEdit.notifyResize();
       }
+
     });
 
   </script>

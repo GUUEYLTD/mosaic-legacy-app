@@ -79,6 +79,7 @@
 
           <paper-input value="{{reviewData.name}}" label="name of the review"></paper-input>
           <paper-input value="{{reviewData.description}}" label="short description"></paper-input>
+
           <guuey-date-input
             class="modal-date-input"
             value="{{reviewData.nextReviewDate}}"
@@ -151,96 +152,123 @@
   <script>
 
     Polymer({
+
       is: 'su-care-review',
-      ready:function(){
-        this.fire("pageLoaded", {page:this.page});
+
+      ready:function() {
+        this.fire("pageLoaded", {page: this.page});
         this.addEventListener("print", this.print);
         this.addEventListener("editReview", this.editReview);
         this.addEventListener("deleteReview", this.deleteReview);
       },
-      properties:{
-        page:{
-          type:String,
-        },
-        patient:{
-          type:String,
-        },
-        home:{
-          type:String,
-        },
-        pageState:{
-          type:String,
-          value:"multi-view"
-        },
-        reviewId:{
-          type:String,
-          observer:"initNotify"
-        },
-      },
-      observers:[
 
-      ],
-      behaviors:[
+      properties: {
+
+        dimensions: {
+          type: Object
+        },
+
+        page: {
+          type:String,
+        },
+
+        patient: {
+          type: String,
+        },
+
+        home: {
+          type: String,
+        },
+
+        pageState: {
+          type: String,
+          value: "multi-view"
+        },
+
+        reviewId: {
+          type: String,
+          observer: "initNotify"
+        },
+
+      },
+
+      behaviors: [
         Polymer.carePlanAnimation,
         Polymer.fabAnimationBehavior,
         Polymer.suPrintBehavior,
         Polymer.suResizeBehavior
       ],
-      initNotify:function(){
+
+      initNotify: function() {
         this.$.dateNotify.initialize();
       },
-      _checkServiceUser:function(suBasicInfo){
-        var fullName=suBasicInfo.fName+" "+suBasicInfo.lName;
-        if(!this.reviewData.suName){
-          this.reviewData.suName=fullName;
+
+      _checkServiceUser: function(suBasicInfo) {
+        var fullName = suBasicInfo.fName + " " + suBasicInfo.lName;
+        if(!this.reviewData.suName) {
+          this.reviewData.suName = fullName;
           this.set("reviewData.suName", fullName);
         };
       },
-      addReview:function(){
-        this.$.reviewDB.path=null;
-        this.$.reviewData={};
+
+      addReview: function() {
+        this.$.reviewDB.path = null;
+        this.reviewData = {};
         this.$.addReviewDialog.open();
       },
-      saveNewReview:function(){
-        var path="/homes/"+this.home+"/patients/"+this.patient+"/carePlanReviews";
+
+      saveNewReview: function() {
+        var path = "/homes/" + this.home + "/patients/" + this.patient + "/carePlanReviews";
         this.$.reviewDB.save(path, null)
-          .then(function(val){
-            this.reviewId=this.$.reviewDB.path.slice(path.length+1);
+          .then(function(val) {
+            this.reviewId = this.$.reviewDB.path.split("/").pop();
             this.$.addReviewDialog.close();
-            this.pageState="edit-view"
+            this.pageState = "edit-view"
             this.animateEditViewFab();
-            this.fire("openToast",{toastText:"New care plan review saved."});
-            this.$.reviewDB.transactionsComplete=this._checkServiceUser(this.suBasicInfo);
+            this.fire("openToast", {toastText: "New care plan review saved."});
+            this.$.reviewDB.transactionsComplete = this._checkServiceUser(this.suBasicInfo);
+            this.fire("newCareReviewSaved", {reviewId: this.reviewId});
           }.bind(this))
-          .catch(function(error){
+          .catch(function(error) {
             this.$.addReviewDialog.close();
-            this.fire("openToast",{toastText:"There was an error saving the care plan review: "+error});
+            this.fire("openToast",{toastText: "There was an error saving the care plan review: " + error});
           }.bind(this));
       },
-      cancelNewReview:function(){
+
+      cancelNewReview: function() {
         this.$.addReviewDialog.close();
-        this.$.reviewDB.path=null;
-        this.$.reviewData={};
+        this.$.reviewDB.path = null;
+        this.reviewData = {};
       },
-      editReview:function(e){
-        this.reviewId=e.detail.reviewId;
-        this.$.reviewDB.path="/homes/"+this.home+"/patients/"+this.patient+"/carePlanReviews/"+this.reviewId;
-        this.$.reviewDB.transactionsComplete=this._checkServiceUser(this.suBasicInfo);
-        this.pageState="edit-view";
+
+      editReview:function(e) {
+        this.reviewId = e.detail.reviewId;
+        this.$.reviewDB.path = "/homes/" + this.home + "/patients/" + this.patient + "/carePlanReviews/" + this.reviewId;
+        this.$.reviewDB.transactionsComplete = this._checkServiceUser(this.suBasicInfo);
+        this.pageState = "edit-view";
         this.animateEditViewFab();
       },
-      deleteReview:function(e){
-        this.reviewId=e.detail.reviewId;
-        var path="/homes/"+this.home+"/patients/"+this.patient+"/carePlanReviews/"+this.reviewId;
-        this.$.reviewDB.setStoredValue(path, null);
+
+      deleteReview: function(e) {
+        this.reviewId = e.detail.reviewId;
+        var path = "/homes/" + this.home + "/patients/" + this.patient + "/carePlanReviews/" + this.reviewId;
+        this.$.reviewDB.setStoredValue(path, null)
+          .then(function(snap) {
+            this.fire("careReviewDeleted");
+          }.bind(this))
+          .catch(function(err) {
+            console.log(err);
+          });
         this.$.dateNotify.deNotify(this.home, this.reviewId);
       },
-      finishReview:function(){
-        this.pageState="multi-view";
+
+      finishReview: function() {
+        this.pageState = "multi-view";
         this.animateMultiViewFab();
-        this.$.reviewDB.path=null;
-        this.$.reviewDB.data={};
+        this.$.reviewDB.path = null;
+        this.$.reviewDB.data = {};
       }
+
     });
 
   </script>

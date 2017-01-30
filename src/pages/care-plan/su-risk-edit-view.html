@@ -26,13 +26,15 @@
 
     <style include="common-styles">
 
-      .dateInput{
+      .dateInput {
         padding-top:40px;
       }
-      .inputWrapper{
+
+      .inputWrapper {
         padding:20px;
       }
-      .riskDescription{
+
+      .riskDescription {
         text-align:center;
         font-size:18px;
         height:50%;
@@ -40,11 +42,13 @@
         margin:4%;
         overflow:hidden;
       }
-      .guttered{
+
+      .guttered {
         margin-left:5%;
         margin-right:5%;
       }
-      .topEditCard{
+
+      .topEditCard {
         margin:10px 5% 10px 5%;
         width:90%;
         --paper-card-header-color:#FFFFFF;
@@ -56,19 +60,23 @@
           background-color:var(--category-background-color);
         };
       }
-      .topEditCard .flexRow{
+
+      .topEditCard .flexRow {
         margin:20px;
         display:flex;
         flex-direction:row;
       }
-      .topEditCard .flexRow *{
+
+      .topEditCard .flexRow * {
         align-self:center;
         padding:20px;
       }
-      .topEditCard .flexRow guuey-date-input{
+
+      .topEditCard .flexRow guuey-date-input {
         width:20%;
       }
-      .topEditCard .flexRow guuey-slider{
+
+      .topEditCard .flexRow guuey-slider {
         flex-grow:1;
       }
 
@@ -127,22 +135,31 @@
     Polymer({
 
       is:"su-risk-edit-view",
-      properties:{
-        dbLoaded:{
-          type:Boolean,
-          value:false
+
+      properties: {
+
+        dbLoaded: {
+          type: Boolean,
+          value: false
         },
-        riskData:{
-          type:Object,
-          notify:true,
+
+        dimensions: {
+          type: Object
         },
-        viewType:{
-          type:String,
-          value:"edit-view"
+
+        riskData: {
+          type: Object,
+          notify: true,
         },
-        evalFreq:{
-          type:Array,
-          value:[
+
+        viewType: {
+          type: String,
+          value: "edit-view"
+        },
+
+        evalFreq: {
+          type: Array,
+          value: [
             "daily",
             "weekly",
             "bi-weekly",
@@ -151,9 +168,10 @@
             "yearly"
           ]
         },
-        riskTypes:{
-          type:Array,
-          value:[
+
+        riskTypes: {
+          type: Array,
+          value: [
             "Moving & Handling",
             "Slips & Trips",
             "Violence & Agression",
@@ -165,14 +183,17 @@
           ]
         }
       },
-      behaviors:[
+
+      behaviors: [
         Polymer.editViewResizeBehavior,
         //Polymer.multiEditAnimationBehavior
       ],
-      observers:[
+
+      observers: [
         "_riskDataChanged(riskData.*)"
       ],
-      _computeGoalImage:function(cat){
+
+      _computeGoalImage: function(cat) {
         switch(cat) {
           case "Moving & Handling":
               this.customStyle["--category-background-color"] = "#ab47bc";
@@ -216,12 +237,14 @@
               break;
         };
       },
-      _riskDataChanged:function(riskData){
+
+      _riskDataChanged: function(riskData) {
         if(this.dbLoaded && this.riskData.base != {}){
           var date = new Date();
           this.riskData.changed;
-        }
+        };
       }
+
     });
 
   </script>

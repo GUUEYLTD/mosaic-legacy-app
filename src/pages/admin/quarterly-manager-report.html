@@ -4,8 +4,7 @@
 <link rel="import" href="../../../bower_components/neon-animation/animations/scale-up-animation.html" />
 
 <link rel="import" href="../../elements/guuey-text-input/guuey-text-input.html" />
-
-<link rel="import" href="manager-report-input-section.html" />
+<link rel="import" href="../../elements/manager-report-input-section/manager-report-input-section.html" />
 
 <link rel="import" href="../../styles/common-styles.html" />
 
@@ -152,40 +151,26 @@
     Polymer({
 
       is:"quarterly-manager-report",
-      ready:function(){
-        this.setReportKey();
-      },
-      properties:{
-        suListData:{
-          type:Array,
-          observer:"suLIstDataChanged"
-        },
-        value:{
-          type:Object,
-          notify:true,
-          value:{}
-        },
-        reportKey:{
-          type:Number,
-          notify:true
-        }
-      },
-      observers:[
-        "valueChanged(value.*)"
-      ],
-      behaviors:[
 
-      ],
-      valueChanged:function(value){
-        //console.log(value);
-      },
-      suLIstDataChanged:function(list){
-        //console.log(list);
-      },
-      setReportKey:function(){
-        //gets current month - 7 days
+      properties: {
+
+        suListData: {
+          type: Array
+        },
+
+        value: {
+          type: Object,
+          notify: true,
+          value: {}
+        },
+
+        reportKey: {
+          type: Number,
+          notify: true
+        }
 
       }
+
     });
 
   </script>

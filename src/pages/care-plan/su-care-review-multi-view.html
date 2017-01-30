@@ -7,6 +7,7 @@
 <link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html" />
 <link rel="import" href="../../../bower_components/iron-icons/iron-icons.html" />
 <link rel="import" href="../../../bower_components/iron-icon/iron-icon.html" />
+<link rel="import" href="../../../bower_components/paper-dialog/paper-dialog.html" />
 
 <link rel="import" href="../../elements/media-queries/media-queries.html" />
 <link rel="import" href="../../elements/guuey-truncate/guuey-truncate.html" />
@@ -25,9 +26,11 @@
     </media-queries>
 
     <style include="common-styles">
-    :host{
+
+    :host {
       --app-grid-gutter:20px;
-    };
+    }
+
     </style>
 
     <paper-dialog horizontal-align="left" vertical-align="top" id="editModal">
@@ -79,44 +82,59 @@
     Polymer({
 
       is:"su-care-review-multi-view",
+
       ready:function(){
         this.addEventListener("truncate-read-more", this._readMore)
       },
-      properties:{
-        viewType:{
-          type:String,
-          value:"multi-view"
+      
+      properties: {
+
+        dimensions: {
+          type: Object
         },
-        reviewsData:{
-          type:Object,
-          notify:true,
+
+        viewType: {
+          type: String,
+          value: "multi-view"
+        },
+
+        reviewsData: {
+          type: Object,
+          notify: true,
         }
+
       },
+
       behaviors:[
         Polymer.multiViewResizeBehavior,
         Polymer.multiViewGridBehavior
         //Polymer.multiEditAnimationBehavior
       ],
-      toggleEditModal:function(e){
+
+      toggleEditModal: function(e) {
         this.$.editModal.positionTarget = e.target;
-        this.reviewId=e.model.review.$key;
+        this.reviewId = e.model.review.$key;
         this.$.editModal.toggle();
       },
-      editReview:function(e){
-        this.fire("editReview", {reviewId:this.reviewId})
+
+      editReview: function(e) {
+        this.fire("editReview", {reviewId: this.reviewId})
         this.$.editModal.close();
       },
-      deleteReview:function(e){
-        this.fire("deleteReview", {reviewId:this.reviewId});
+
+      deleteReview: function(e) {
+        this.fire("deleteReview", {reviewId: this.reviewId});
         this.$.editModal.close();
       },
-      _sortReviewDate:function(review1, review2){
-        var date1=new Date(review1.nextReviewDate).getTime();
-        var date2=new Date(review2.nextReviewDate).getTime();
-        return date1>date2;
+
+      _sortReviewDate: function(review1, review2) {
+        var date1 = new Date(review1.nextReviewDate).getTime();
+        var date2 = new Date(review2.nextReviewDate).getTime();
+        return date1 > date2;
       },
-      _computeReviewImage:function(date){
-        var date=new Date(date).getMonth();
+
+      _computeReviewImage: function(date) {
+        var date = new Date(date).getMonth();
         switch(date) {
           case 0:
               return "images/reviews/01jan.png";
@@ -159,21 +177,25 @@
               break;
         };
       },
-      _computeDate:function(date){
-        if(typeof date==="string"){
+
+      _computeDate: function(date) {
+        if(typeof date === "string") {
           return date.slice(3,15);
         } else {
           return "Date not set";
         };
       },
-      directEditModal:function(e){
+
+      directEditModal: function(e) {
         this.reviewId = e.model.review.$key;
-        this.fire("editReview", {reviewId:this.reviewId});
+        this.fire("editReview", {reviewId: this.reviewId});
       },
-      _readMore:function(e){
+
+      _readMore: function(e) {
         this.reviewId = this.$.domRepeat.modelForElement(e.path[5]).review.$key;
-        this.fire("editReview", {reviewId:this.reviewId});
+        this.fire("editReview", {reviewId: this.reviewId});
       }
+
     });
 
   </script>

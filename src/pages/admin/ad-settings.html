@@ -3,6 +3,7 @@
 <link rel="import" href="../../../bower_components/paper-slider/paper-slider.html" />
 <link rel="import" href="../../../bower_components/polymerfire/firebase-document.html" />
 <link rel="import" href="../../../bower_components/paper-toggle-button/paper-toggle-button.html" />
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html" />
 
 <link rel="import" href="../../elements/admin-header/admin-header.html" />
 <link rel="import" href="../../elements/media-queries/media-queries.html" />
@@ -28,18 +29,22 @@
     </media-queries>
 
     <style include="common-styles">
-    :host{
+
+    :host {
       --app-grid-columns:2;
     }
-    .pageCard{
+
+    .pageCard {
       min-height:800px;
     }
-    #exampleBlurImage{
+
+    #exampleImage {
       position:relative;
       height:200px;
       width:200px;
     }
-    #exampleBlurImage:hover:after{
+
+    #exampleImage:hover:after {
       content:'\A';
       position:absolute;
       width:100%;
@@ -49,7 +54,8 @@
       opacity:0;
       background-color:var(--privacy-overlay-color, '#000000');
     }
-    #exampleBlurImage:after{
+
+    #exampleImage:after {
       content:'\A';
       position:absolute;
       width:100%;
@@ -60,27 +66,34 @@
       background-color:var(--privacy-overlay-color, '#000000');
       transition: opacity .25s ease-in-out;
     }
-    .example{
+
+    .example {
       text-align:center;
       vertical-align:middle;
     }
-    .content *{
+
+    .content * {
       align-self:center;
     }
-    #blurSlider{
+
+    #blurSlider {
       width:100%;
     }
-    .guuey-su-name{
+
+    .guuey-su-name {
       color:transparent;
       transition:color .5s;
     }
-    .guuey-su-name:first-letter{
+
+    .guuey-su-name:first-letter {
       color:#000000;
     }
-    .guuey-su-name:hover{
+
+    .guuey-su-name:hover {
       color:#000000;
       cursor:pointer;
     }
+
     </style>
 
     <paper-card class="pageCard">
@@ -98,16 +111,16 @@
             </div>
             <paper-slider id="blurSlider" value="[[settingsData.privacyOverlayOpacity]]" immediate-value="{{privacyOverlayOpacity}}"></paper-slider>
             <input type="color" value="{{privacyOverlayColor::input}}"/>
-            <paper-button on-tap="_savePrivacyOverlaySettings">save overlay settings</paper-button>
+            <paper-button on-tap="savePrivacyOverlaySettings">save overlay settings</paper-button>
           </div>
 
           <div class="example">
-            <iron-image sizing="cover" id="exampleBlurImage" src="/images/people/001m.jpg"></iron-image>
+            <iron-image sizing="cover" id="exampleImage" src="/images/people/001m.jpg"></iron-image>
           </div>
 
           <div class="control">
             <paper-toggle-button checked="{{privacyNameEnabled}}">Hide Full Service User Names</paper-toggle-button>
-            <paper-button on-tap="_savePrivacyNameSettings">save name settings</paper-button>
+            <paper-button on-tap="savePrivacyNameSettings">save name settings</paper-button>
           </div>
 
           <div class="example">
@@ -118,7 +131,7 @@
             <p class="guuey-su-name">John</p>
             <p class="guuey-su-name">Doe</p>
             <p>
-              Current Mode: [[filterName(privacyNameEnabled, 'John')]] [[filterName(privacyNameEnabled, 'Doe')]]
+              Current Mode: [[_filterName(privacyNameEnabled, 'John')]] [[_filterName(privacyNameEnabled, 'Doe')]]
             </p>
           </div>
 
@@ -134,56 +147,97 @@
     Polymer({
 
       is: 'ad-settings',
-      ready:function(){
-        this.fire("pageLoaded", {page:this.page});
-        this.customStyle["--privacy-overlay-color"]="#000000";
-        this.customStyle["--privacy-overlay-opacity"]="0";
+
+      ready:function() {
+        this.fire("pageLoaded", {page: this.page});
+        this.customStyle["--privacy-overlay-color"] = "#000000";
+        this.customStyle["--privacy-overlay-opacity"] = "0";
         this.updateStyles();
       },
-      properties:{
-        privacyOverlayOpacity:{
-          type:Number,
-          observer:"_privacyOverlayOpacityChanged"
+
+      properties: {
+        dimensions: {
+          type: Object
         },
-        privacyOverlayColor:{
-          type:String,
-          observer:"_privacyOverlayColorChanged"
+
+        home: {
+          type: String
+        },
+
+        page: {
+          type: String
+        },
+
+        privacyOverlayOpacity: {
+          type: Number,
+          observer: "_privacyOverlayOpacityChanged"
+        },
+
+        privacyOverlayColor: {
+          type: String,
+          observer: "_privacyOverlayColorChanged"
+        },
+
+        privacyNameEnabled: {
+          type: Boolean
         }
+
       },
-      behaviors:[
+
+      behaviors: [
         Polymer.adminPagesAnimation,
         Polymer.adminResizeBehavior
       ],
-      observers:[
+
+      observers: [
         "_settingsChanged(settingsData.*)"
       ],
-      _settingsChanged:function(settings){
+
+      _settingsChanged: function(settings) {
         this.privacyNameEnabled = settings.base.privacyNameEnabled || false;
+        this.fire("privacyNameSettingsUpdated", {privacyNameEnabled: settings.base.privacyNameEnabled || false});
       },
-      _privacyOverlayOpacityChanged:function(value){
+
+      _privacyOverlayOpacityChanged: function(value) {
         this.customStyle["--privacy-overlay-opacity"] = String(value / 100);
         this.updateStyles();
       },
-      _privacyOverlayColorChanged:function(value){
+
+      _privacyOverlayColorChanged: function(value) {
         this.customStyle["--privacy-overlay-color"] = value;
         this.updateStyles();
       },
-      _savePrivacyOverlaySettings:function(){
-        var path = "homes/"+this.home+"/settings/";
-        this.$.settingsDB.setStoredValue(path+"privacyOverlayOpacity", this.privacyOverlayOpacity || .8);
-        this.$.settingsDB.setStoredValue(path+"privacyOverlayColor", this.privacyOverlayColor || "#000000");
+
+      savePrivacyOverlaySettings: function() {
+        var path = "homes/" + this.home + "/settings/";
+        this.$.settingsDB.setStoredValue(path + "privacyOverlayOpacity", this.privacyOverlayOpacity || .8)
+          .then(function() {
+            this.$.settingsDB.setStoredValue(path + "privacyOverlayColor", this.privacyOverlayColor || "#000000")
+              .then(function() {
+                this.fire("privacyOverlaySettingsUpdated", {privacyOverlayColor: this.privacyOverlayColor, privacyOverlayOpacity: this.privacyOverlayOpacity})
+              }.bind(this))
+              .catch(function(err) {
+                console.log(err);
+              });
+          }.bind(this))
+          .catch(function(err) {
+            console.log(err);
+          });
       },
-      _savePrivacyNameSettings:function(){
-        var path = "homes/"+this.home+"/settings/";
-        this.$.settingsDB.setStoredValue(path+"privacyNameEnabled", this.privacyNameEnabled || false);
+
+      savePrivacyNameSettings: function() {
+        var path = "homes/" + this.home + "/settings/";
+        this.$.settingsDB.setStoredValue(path + "privacyNameEnabled", this.privacyNameEnabled || false);
       },
-      filterName:function(privacyNameEnabled, name){
-        if(privacyNameEnabled){
+
+      _filterName: function(privacyNameEnabled, name) {
+        if(privacyNameEnabled) {
           return name.trim().charAt(0).toUpperCase() + ".";
         } else {
           return name;
         };
       }
+
     });
 
   </script>

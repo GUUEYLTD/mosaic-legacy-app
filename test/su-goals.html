@@ -1,0 +1,388 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>su-goals</title>
+
+    <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../bower_components/web-component-tester/browser.js"></script>
+
+    <!-- Import the element to test -->
+    <link rel="import" href="../src/pages/care-plan/su-goals.html">
+    <link rel="import" href="../bower_components/polymerfire/firebase-app.html" />
+    <link rel="import" href="../bower_components/polymerfire/firebase-auth.html" />
+    <link rel="import" href="../bower_components/polymerfire/firebase-query.html" />
+  </head>
+  <body>
+
+    <test-fixture id="firebaseApp">
+      <template>
+        <firebase-app
+          name="main"
+          auth-domain="careplan-c2677.firebaseapp.com"
+          database-url="https://careplan-c2677.firebaseio.com"
+          api-key="AIzaSyBdtmHIV_7epC0OBiXkTNoqrGRspA58Epc"
+          storage-bucket="careplan-c2677.appspot.com">
+        </firebase-app>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="auth">
+      <template>
+        <firebase-auth
+          app-name="main"
+          user="{{user}}"
+          signed-in="{{signedIn}}"
+          status-known="{{statusKnown}}"
+          on-error="handleError">
+        </firebase-auth>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="testDoc">
+      <template>
+        <firebase-document
+          path="/homes/-KTBXzZw3-qoZz4c7nY7/patients/-TESTTESTTESTTEST123/personalGoals"
+          data="{{goalsDataLive}}"
+          app-name="main">
+        </firebase-document>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="basic">
+      <template>
+        <su-goals
+          current-page="su-goals"
+          current-cat="care-plan"
+          intended-cat="care-plan"
+          page="su-goals"
+          patient="-TESTTESTTESTTEST123"
+          home="-KTBXzZw3-qoZz4c7nY7"
+          name="su-goals">
+        </su-goals>
+      </template>
+    </test-fixture>
+
+    <script>
+      suite('su-goals tests', function() {
+          var page;
+          var auth;
+          var testDoc;
+          var firebaseApp = fixture('firebaseApp');
+
+          setup(function(done) {
+            page = fixture('basic');
+            auth = fixture('auth');
+            testDoc = fixture('testDoc');
+            auth.signInWithEmailAndPassword("123@mailinator.com", "123123")
+              .then(function() {
+                checkGoalsDB();
+                checkUsersDB()
+              })
+              .catch(function(err) {
+                console.log(err);
+              });
+
+            var goalsDB = false;
+            var usersDB = false;
+            suIndexDB = false;
+
+            function checkAllReady() {
+              if(goalsDB && usersDB && suIndexDB) {
+                done();
+              };
+            };
+
+            page.addEventListener("suIndexLoaded", function() {
+              suIndexDB = true;
+              checkAllReady();
+            });
+
+            function checkGoalsDB() {
+              page.$.goalsDB.query.once('value', function() {
+                testDoc.setStoredValue(testDoc.path, {});
+                goalsDB = true;
+                checkAllReady();
+              });
+            };
+
+            function checkUsersDB() {
+              page.$.usersDB.query.once('value', function() {
+                usersDB = true;
+                checkAllReady();
+              });
+            };
+
+          });
+
+        test('instantiating the element works', function() {
+          assert.equal(page.is, 'su-goals');
+        });
+
+        test('saving a goal works', function(done) {
+          var testData = {
+            category: "Accomodation",
+            startDate: "Mon Oct 31 2016 00:00:00 GMT+0100 (CET)",
+            finishDate: "Mon Oct 31 2016 00:00:00 GMT+0100 (CET)",
+            coordinator: "1548162581@mailinator.com",
+            description: "test description",
+            steps: {
+              test1: {
+                completed: true,
+                description: "test goal 1",
+                order: 1
+              },
+              test2: {
+                completed: false,
+                description: "test goal 2",
+                order: 2
+              }
+            }
+          };
+
+          page.addEventListener("newGoalSaved", function(e) {
+            testDoc.ref.once("child_added", function(snap) {
+              var savedTest = snap.val();
+              for(x in testData) {
+                if(x === "steps") {
+                  for(y in testData[x]) {
+                    for(z in testData[x][y])
+                    assert.equal(savedTest[x][y][z], testData[x][y][z])
+                  };
+                } else {
+                  assert.equal(savedTest[x], testData[x]);
+                };
+              };
+              done();
+            })
+          });
+
+          page.addGoal();
+          assert.equal(page.$.addGoalModal.opened, true);
+          page.set("newGoal", testData);
+
+        });
+
+        test('cancelling add goal closes dialog and clears data', function() {
+          var testData = {
+            category: "Accomodation",
+            startDate: "Mon Oct 31 2016 00:00:00 GMT+0100 (CET)",
+            finishDate: "Mon Oct 31 2016 00:00:00 GMT+0100 (CET)",
+            coordinator: "1548162581@mailinator.com",
+            description: "test description",
+            steps: {
+              test1: {
+                completed: true,
+                description: "test goal 1",
+                order: 1
+              },
+              test2: {
+                completed: false,
+                description: "test goal 2",
+                order: 2
+              }
+            }
+          };
+
+          page.set("newGoal", testData);
+          page.addGoal();
+          assert.equal(page.$.addGoalModal.opened, true);
+          page.$.addGoalModal.cancelNewGoal();
+          assert.equal(page.$.addGoalModal.opened, false);
+          for(x in testData) {
+            expect(page.$.goalDB.data).to.not.ownProperty(testData[x]);
+          };
+        });
+
+        test('editing a created goal opens edit view and sets the goalDB path correctly', function(done) {
+          var testData = {
+            category: "Accomodation",
+            startDate: "Mon Oct 31 2016 00:00:00 GMT+0100 (CET)",
+            finishDate: "Mon Oct 31 2016 00:00:00 GMT+0100 (CET)",
+            coordinator: "1548162581@mailinator.com",
+            description: "test description",
+            steps: {
+              test1: {
+                completed: true,
+                description: "test goal 1",
+                order: 1
+              },
+              test2: {
+                completed: false,
+                description: "test goal 2",
+                order: 2
+              }
+            }
+          };
+
+          page.addEventListener("newGoalSaved", function(e) {
+            testDoc.ref.once("child_added", function(snap) {
+              var dummyE = {
+                detail: {
+                  goalId: e.detail.goalId
+                }
+              };
+              page.editGoal(dummyE);
+              assert.equal(page.pageState, "edit-view");
+              done();
+            });
+          });
+
+          page.addGoal();
+          assert.equal(page.$.addGoalModal.opened, true);
+          page.set("newGoal", testData);
+        });
+
+        test('deleting a created goal with an associated goalId deletes the goal', function(done) {
+          var goalId;
+          var testData = {
+            category: "Accomodation",
+            startDate: "Mon Oct 31 2016 00:00:00 GMT+0100 (CET)",
+            finishDate: "Mon Oct 31 2016 00:00:00 GMT+0100 (CET)",
+            coordinator: "1548162581@mailinator.com",
+            description: "test description",
+            steps: {
+              test1: {
+                completed: true,
+                description: "test goal 1",
+                order: 1
+              },
+              test2: {
+                completed: false,
+                description: "test goal 2",
+                order: 2
+              }
+            }
+          };
+
+          page.addEventListener("goalDeleted", function() {
+            expect(testDoc[goalId]).to.equal(undefined);
+            done();
+          });
+
+          page.addEventListener("newGoalSaved", function(e) {
+            testDoc.ref.once("child_added", function(snap) {
+              goalId = e.detail.goalId;
+              var dummyE = {
+                detail: {
+                  goalId: e.detail.goalId
+                }
+              };
+              page.deleteGoal(dummyE);
+            });
+          });
+
+          page.addGoal();
+          assert.equal(page.$.addGoalModal.opened, true);
+          page.set("newGoal", testData);
+        });
+
+        test('finishGoal() closes edit-view and changes back to multi-view. goalDB.path and goalDB.data are both emptied', function(done) {
+          var goalId;
+          var testData = {
+            category: "Accomodation",
+            startDate: "Mon Oct 31 2016 00:00:00 GMT+0100 (CET)",
+            finishDate: "Mon Oct 31 2016 00:00:00 GMT+0100 (CET)",
+            coordinator: "1548162581@mailinator.com",
+            description: "test description",
+            steps: {
+              test1: {
+                completed: true,
+                description: "test goal 1",
+                order: 1
+              },
+              test2: {
+                completed: false,
+                description: "test goal 2",
+                order: 2
+              }
+            }
+          };
+
+          page.addEventListener("newGoalSaved", function(e) {
+            testDoc.ref.once("child_added", function(snap) {
+              goalId = e.detail.goalId;
+              var dummyE = {
+                detail: {
+                  goalId: e.detail.goalId
+                }
+              };
+              page.finishGoal();
+              assert.equal(page.pageState, "multi-view");
+              for(x in testData) {
+                expect(page.$.goalDB.data).to.not.ownProperty(testData[x]);
+              };
+              done();
+            });
+          });
+
+          page.addGoal();
+          assert.equal(page.$.addGoalModal.opened, true);
+          page.set("newGoal", testData);
+        });
+
+        test('care-plan to care-plan animations are correct', function() {
+          page.currentPage = "su-pre";
+          page.currentCat = "care-plan";
+          page.intendedCat = "care-plan";
+
+          expect(page.animationConfig.entry[0].name).to.equal("slide-down-entry-animation");
+          expect(page.animationConfig.exit[0].name).to.equal("slide-down-exit-animation");
+        });
+
+        test('care-plan to default animations are correct', function() {
+          page.currentPage = "su-pre";
+          page.currentCat = "care-plan";
+          page.intendedCat = "default";
+
+          expect(page.animationConfig.exit[0].name).to.equal("slide-right-animation");
+        });
+
+        test('care-plan to admin animations are correct', function() {
+          page.currentPage = "su-pre";
+          page.currentCat = "care-plan";
+          page.intendedCat = "admin";
+
+          expect(page.animationConfig.exit[0].name).to.equal("slide-right-animation");
+        });
+
+        test('admin to care-plan animations are correct', function() {
+          page.currentPage = "ad-profile";
+          page.currentCat = "admin";
+          page.intendedCat = "care-plan";
+
+          expect(page.animationConfig.entry[0].name).to.equal("slide-from-right-animation");
+        });
+
+        test('default to care-plan animations are correct', function() {
+          page.currentPage = "def-account";
+          page.currentCat = "default";
+          page.intendedCat = "care-plan";
+
+          expect(page.animationConfig.entry[0].name).to.equal("slide-from-right-animation");
+        });
+
+        test('def-home to care-plan animations are correct', function() {
+          page.currentPage = "def-home";
+          page.currentCat = "default";
+          page.intendedCat = "care-plan";
+
+          expect(page.animationConfig.entry[0].name).to.equal("hero-animation");
+        });
+
+      });
+    </script>
+  </body>
+</html>

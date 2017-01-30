@@ -42,13 +42,31 @@
     Polymer({
 
       is: 'ad-support',
-      ready:function(){
-        this.fire("pageLoaded", {page:this.page});
+
+      properties: {
+
+        dimensions: {
+          type: Object
+        },
+
+        home: {
+          type: String
+        },
+
+        page: {
+          type: String
+        }
       },
-      behaviors:[
+
+      ready:function() {
+        this.fire("pageLoaded", {page: this.page});
+      },
+
+      behaviors: [
         Polymer.adminPagesAnimation,
         Polymer.adminResizeBehavior
       ]
+
     });
 
   </script>

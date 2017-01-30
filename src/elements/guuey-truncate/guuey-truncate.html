@@ -53,12 +53,19 @@ doesnt work in demo mode.. need to address this later...
 
       //once when the element is attached to dom runs truncating functions and then sets to ready. needs to be run when attached to get proper dimensions
       attached: function(){
-        this.$.mainText.getDistributedNodes()[0].textContent.trim();
-        this.textContent = this.$.mainText.getDistributedNodes()[0].nodeValue.trim();
-        setTimeout(function() {
-          this._truncateContent();
-          this._displayReady();
-        }.bind(this), 500);
+        var that = this;
+        this.async(function() {
+          that._observer = Polymer.dom(that.$$(".mainText")).observeNodes(function(info) {
+            if(that.$.mainText && that.$.mainText.getDistributedNodes()[0]) {
+              that.$.mainText.getDistributedNodes()[0].textContent.trim();
+              that.textContent = that.$.mainText.getDistributedNodes()[0].nodeValue.trim();
+              setTimeout(function() {
+                that._truncateContent();
+                that._displayReady();
+              }.bind(that), 500);
+            };
+          });
+        });
       },
 
       properties: {

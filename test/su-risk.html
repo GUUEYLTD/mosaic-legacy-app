@@ -14,13 +14,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
-    <title>su-care-review</title>
+    <title>su-risk</title>
 
     <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
     <script src="../bower_components/web-component-tester/browser.js"></script>
 
     <!-- Import the element to test -->
-    <link rel="import" href="../src/pages/care-plan/su-care-review.html">
+    <link rel="import" href="../src/pages/care-plan/su-risk.html">
     <link rel="import" href="../bower_components/polymerfire/firebase-app.html" />
     <link rel="import" href="../bower_components/polymerfire/firebase-auth.html" />
     <link rel="import" href="../bower_components/polymerfire/firebase-query.html" />
@@ -54,30 +54,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <test-fixture id="testDoc">
       <template>
         <firebase-document
-          id="reviewsDB"
-          app-name="main"
-          data="{{reviewsDataLive}}"
-          path="homes/-KTBXzZw3-qoZz4c7nY7/patients/-TESTTESTTESTTEST123/carePlanReviews">
+          path="/homes/-KTBXzZw3-qoZz4c7nY7/patients/-TESTTESTTESTTEST123/riskAssessment"
+          data="{{risksDataLive}}"
+          app-name="main">
         </firebase-document>
       </template>
     </test-fixture>
 
     <test-fixture id="basic">
       <template>
-        <su-care-review
-          current-page="su-care-review"
+        <su-risk
+          current-page="su-risk"
           current-cat="care-plan"
           intended-cat="care-plan"
-          page="su-care-review"
+          page="su-risk"
           patient="-TESTTESTTESTTEST123"
           home="-KTBXzZw3-qoZz4c7nY7"
-          name="su-care-review">
-        </su-care-review>
+          name="su-risk">
+        </su-risk>
       </template>
     </test-fixture>
 
     <script>
-      suite('su-care-review tests', function() {
+      suite('su-risk tests', function() {
           var page;
           var auth;
           var testDoc;
@@ -89,17 +88,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             testDoc = fixture('testDoc');
             auth.signInWithEmailAndPassword("123@mailinator.com", "123123")
               .then(function() {
-                checkReviewsDB();
+                checkrisksDB();
               })
               .catch(function(err) {
                 console.log(err);
               });
 
-            var reviewsDB = false;
+            var risksDB = false;
             var suIndex = false;
 
             function checkAllReady() {
-              if(reviewsDB && suIndex) {
+              if(risksDB && suIndex) {
                 done();
               };
             };
@@ -109,11 +108,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               checkAllReady();
             });
 
-            function checkReviewsDB() {
-              page.$.reviewsDB.query.once('value', function() {
+            function checkrisksDB() {
+              page.$.risksDB.query.once('value', function() {
                 testDoc.setStoredValue(testDoc.path, {})
                   .then(function(snap) {
-                    reviewsDB = true;
+                    risksDB = true;
                     checkAllReady();
                   })
                   .catch(function(err) {
@@ -125,17 +124,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           });
 
         test('instantiating the element works', function() {
-          assert.equal(page.is, 'su-care-review');
+          assert.equal(page.is, 'su-risk');
         });
 
-        test('saving a review works', function(done) {
+        test('saving a risk works', function(done) {
           var testData = {
-            name: "Test Review Name",
-            description: "Test Description",
-            nextReviewDate: "Fri Jan 27 2017 09:46:17 GMT+0100 (CET)"
+            category: "Moving & Handling",
+            date: "Sat Oct 29 2016 00:00:00 GMT+0200 (CEST)",
+            backgroundOfRisk: "stuff and things",
+            evaluation: "Sat Oct 29 2016 00:00:00 GMT+0200 (CEST)",
+            riskIdentified: "other stuff and things",
+            crisisPlan: "things and other stuff",
+            agreedFrequencyOfEvaluation: "bi-weekly",
+            evaluation: "Sat Oct 29 2016 00:00:00 GMT+0200 (CEST)",
+            riskLevel: 3
           };
 
-          page.addEventListener("newCareReviewSaved", function(e) {
+          page.addEventListener("newRiskAssessmentSaved", function(e) {
             testDoc.ref.once("child_added", function(snap) {
               var savedTest = snap.val();
               for(x in testData) {
@@ -145,121 +150,146 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                   assert.equal(savedTest[x], testData[x]);
                 };
               };
-              assert.equal(page.$.addReviewDialog.opened, false);
+              assert.equal(page.$.addRiskDialog.opened, false);
               done();
             })
           });
 
-          page.addReview();
-          assert.equal(page.$.addReviewDialog.opened, true);
-          page.$.reviewDB.data = testData;
-          page.saveNewReview();
+          page.addRisk();
+          assert.equal(page.$.addRiskDialog.opened, true);
+          page.$.riskDB.data = testData;
+          page.saveNewRisk();
 
         });
 
-        test('cancelling add review closes dialog and clears data', function() {
+        test('cancelling add risk closes dialog and clears data', function() {
           var testData = {
-            name: "Test Review Name",
-            description: "Test Description",
-            nextReviewDate: "Fri Jan 27 2017 09:46:17 GMT+0100 (CET)"
+            category: "Moving & Handling",
+            date: "Sat Oct 29 2016 00:00:00 GMT+0200 (CEST)",
+            backgroundOfRisk: "stuff and things",
+            evaluation: "Sat Oct 29 2016 00:00:00 GMT+0200 (CEST)",
+            riskIdentified: "other stuff and things",
+            crisisPlan: "things and other stuff",
+            agreedFrequencyOfEvaluation: "bi-weekly",
+            evaluation: "Sat Oct 29 2016 00:00:00 GMT+0200 (CEST)",
+            riskLevel: 3
           };
-          page.reviewData = testData;
-          page.addReview();
-          assert.equal(page.$.addReviewDialog.opened, true);
-          page.cancelNewReview();
-          assert.equal(page.$.addReviewDialog.opened, false);
-          expect(page.reviewData).to.not.ownProperty("name");
-          expect(page.reviewData).to.not.ownProperty("description");
-          expect(page.reviewData).to.not.ownProperty("nextReviewDate");
+
+          page.riskData = testData;
+          page.addRisk();
+          assert.equal(page.$.addRiskDialog.opened, true);
+          page.cancelNewRisk();
+          assert.equal(page.$.addRiskDialog.opened, false);
+          for(x in testData) {
+            expect(page.$.riskDB.data).to.not.ownProperty(testData[x]);
+          };
         });
 
-        test('editing a created review opens edit view and sets the reviewDB path correctly', function(done) {
+        test('editing a created risk opens edit view and sets the riskDB path correctly', function(done) {
           var testData = {
-            name: "Test Review Name",
-            description: "Test Description",
-            nextReviewDate: "Fri Jan 27 2017 09:46:17 GMT+0100 (CET)"
+            category: "Moving & Handling",
+            date: "Sat Oct 29 2016 00:00:00 GMT+0200 (CEST)",
+            backgroundOfRisk: "stuff and things",
+            evaluation: "Sat Oct 29 2016 00:00:00 GMT+0200 (CEST)",
+            riskIdentified: "other stuff and things",
+            crisisPlan: "things and other stuff",
+            agreedFrequencyOfEvaluation: "bi-weekly",
+            evaluation: "Sat Oct 29 2016 00:00:00 GMT+0200 (CEST)",
+            riskLevel: 3
           };
 
-          page.addEventListener("newCareReviewSaved", function(e) {
+          page.addEventListener("newRiskAssessmentSaved", function(e) {
             testDoc.ref.once("child_added", function(snap) {
               var dummyE = {
                 detail: {
-                  reviewId: e.detail.reviewId
+                  riskId: e.detail.riskId
                 }
               };
-              page.editReview(dummyE);
+              page.editRisk(dummyE);
               assert.equal(page.pageState, "edit-view");
               done();
             });
           });
 
-          page.addReview();
-          assert.equal(page.$.addReviewDialog.opened, true);
-          page.$.reviewDB.data = testData;
-          page.saveNewReview();
+          page.addRisk();
+          assert.equal(page.$.addRiskDialog.opened, true);
+          page.$.riskDB.data = testData;
+          page.saveNewRisk();
         });
 
-        test('deleting a created review with an associated reviewId deletes the review', function(done) {
-          var reviewId;
+        test('deleting a created risk with an associated riskId deletes the risk', function(done) {
+          var riskId;
           var testData = {
-            name: "Test Review Name",
-            description: "Test Description",
-            nextReviewDate: "Fri Jan 27 2017 09:46:17 GMT+0100 (CET)"
+            category: "Moving & Handling",
+            date: "Sat Oct 29 2016 00:00:00 GMT+0200 (CEST)",
+            backgroundOfRisk: "stuff and things",
+            evaluation: "Sat Oct 29 2016 00:00:00 GMT+0200 (CEST)",
+            riskIdentified: "other stuff and things",
+            crisisPlan: "things and other stuff",
+            agreedFrequencyOfEvaluation: "bi-weekly",
+            evaluation: "Sat Oct 29 2016 00:00:00 GMT+0200 (CEST)",
+            riskLevel: 3
           };
 
-          page.addEventListener("careReviewDeleted", function() {
-            expect(testDoc[reviewId]).to.equal(undefined);
+          page.addEventListener("riskAssessmentDeleted", function() {
+            expect(testDoc[riskId]).to.equal(undefined);
             done();
           });
 
-          page.addEventListener("newCareReviewSaved", function(e) {
+          page.addEventListener("newRiskAssessmentSaved", function(e) {
             testDoc.ref.once("child_added", function(snap) {
-              reviewId = e.detail.reviewId;
+              riskId = e.detail.riskId;
               var dummyE = {
                 detail: {
-                  reviewId: e.detail.reviewId
+                  riskId: e.detail.riskId
                 }
               };
-              page.deleteReview(dummyE);
+              page.deleteRisk(dummyE);
             });
           });
 
-          page.addReview();
-          assert.equal(page.$.addReviewDialog.opened, true);
-          page.$.reviewDB.data = testData;
-          page.saveNewReview();
+          page.addRisk();
+          assert.equal(page.$.addRiskDialog.opened, true);
+          page.$.riskDB.data = testData;
+          page.saveNewRisk();
         });
 
-        test('finishReview() closes edit-view and changes back to multi-view. reviewDB.path and reviewDB.data are both emptied', function(done) {
-          var reviewId;
+        test('finishRisk() closes edit-view and changes back to multi-view. riskDB.path and riskDB.data are both emptied', function(done) {
+          var riskId;
           var testData = {
-            name: "Test Review Name",
-            description: "Test Description",
-            nextReviewDate: "Fri Jan 27 2017 09:46:17 GMT+0100 (CET)"
+            category: "Moving & Handling",
+            date: "Sat Oct 29 2016 00:00:00 GMT+0200 (CEST)",
+            backgroundOfRisk: "stuff and things",
+            evaluation: "Sat Oct 29 2016 00:00:00 GMT+0200 (CEST)",
+            riskIdentified: "other stuff and things",
+            crisisPlan: "things and other stuff",
+            agreedFrequencyOfEvaluation: "bi-weekly",
+            evaluation: "Sat Oct 29 2016 00:00:00 GMT+0200 (CEST)",
+            riskLevel: 3
           };
 
-          page.addEventListener("newCareReviewSaved", function(e) {
+          page.addEventListener("newRiskAssessmentSaved", function(e) {
             testDoc.ref.once("child_added", function(snap) {
-              reviewId = e.detail.reviewId;
+              riskId = e.detail.riskId;
               var dummyE = {
                 detail: {
-                  reviewId: e.detail.reviewId
+                  riskId: e.detail.riskId
                 }
               };
-              page.finishReview();
+              page.finishRisk();
               assert.equal(page.pageState, "multi-view");
-              assert.equal(page.$.reviewDB.path, null);
-              expect(page.$.reviewDB.data).to.not.ownProperty("name");
-              expect(page.$.reviewDB.data).to.not.ownProperty("description");
-              expect(page.$.reviewDB.data).to.not.ownProperty("nextReviewDate");
+              assert.equal(page.$.riskDB.path, null);
+              for(x in testData) {
+                expect(page.$.riskDB.data).to.not.ownProperty(testData[x]);
+              };
               done();
             });
           });
 
-          page.addReview();
-          assert.equal(page.$.addReviewDialog.opened, true);
-          page.$.reviewDB.data = testData;
-          page.saveNewReview();
+          page.addRisk();
+          assert.equal(page.$.addRiskDialog.opened, true);
+          page.$.riskDB.data = testData;
+          page.saveNewRisk();
         });
 
         test('care-plan to care-plan animations are correct', function() {

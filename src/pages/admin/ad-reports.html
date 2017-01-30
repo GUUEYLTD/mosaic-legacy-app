@@ -7,6 +7,8 @@
 <link rel="import" href="../../../bower_components/paper-fab/paper-fab.html" />
 <link rel="import" href="../../../bower_components/vaadin-combo-box/vaadin-combo-box.html" />
 <link rel="import" href="../../../bower_components/neon-animation/neon-animated-pages.html" />
+<link rel="import" href="../../../bower_components/polymerfire/firebase-document.html" />
+<link rel="import" href="../../../bower_components/polymerfire/firebase-query.html" />
 
 <link rel="import" href="../../elements/admin-header/admin-header.html" />
 <link rel="import" href="../../elements/media-queries/media-queries.html" />
@@ -43,15 +45,19 @@
     </firebase-document>
 
     <style include="common-styles">
-      :host{
+
+      :host {
         --app-grid-columns:2;
       }
-      #reportPages{
+
+      #reportPages {
         height:700px;
       }
-      .reportSelector{
+
+      .reportSelector {
         padding-left:5%;
       }
+
     </style>
 
     <paper-card class="pageCard">
@@ -114,58 +120,70 @@
     Polymer({
       is:"ad-reports",
 
-      ready:function(){
-        this.fire("pageLoaded", {page:this.page});
+      ready:function() {
+        this.fire("pageLoaded", {page: this.page});
       },
 
-      properties:{
-        reportList:{
-          type:Array,
-          value:[
+      properties: {
+
+        dimensions: {
+          type: Object
+        },
+
+        home: {
+          type: String
+        },
+
+        reportList: {
+          type: Array,
+          value: [
             "Monthly Manager Report",
             "Quarterly Manager Report",
             "Annual Manager Report",
           ]
         },
-        reportType:{
-          type:String,
-          value:"monthlyManagerReport",
-          observer:"_selectedReportChanged"
+
+        reportType: {
+          type: String,
+          value: "monthlyManagerReport",
+          observer: "_selectedReportChanged"
         },
-        reportKey:{
-          type:Number
+
+        reportKey: {
+          type: Number
+        },
+
+        reportsData: {
+          type: Object
         }
+
       },
 
-      observers:[
-
-      ],
-
-      behaviors:[
+      behaviors: [
         Polymer.adminPagesAnimation,
         Polymer.adminResizeBehavior
       ],
-      startReport:function(){
-        this.$.createReport.open();
-      },
-      _selectedReportChanged:function(reportType){
-        console.log(reportType);
-        if(reportType.indexOf("monthly") != -1 ){
+
+      _selectedReportChanged: function(reportType) {
+        if(reportType.indexOf("monthly") != -1 ) {
           this.setMonthlyKey();
         };
-        if(reportType.indexOf("quarterly") != -1 ){
+        if(reportType.indexOf("quarterly") != -1 ) {
           this.setQuarterlyKey();
         };
-        if(reportType.indexOf("annual") != -1 ){
+        if(reportType.indexOf("annual") != -1 ) {
           this.setAnnualKey();
         };
       },
-      _convertToCamelCase:function(report){
+
+      _convertToCamelCase: function(report) {
         var newString = report.replace(/ /g,"");
         newString = newString.charAt(0).toLowerCase() + newString.slice(1);
         return newString;
       },
-      setMonthlyKey:function(){
+
+      setMonthlyKey: function() {
+        console.log("setting key");
         var date = new Date();
         var currentTime = date.getTime();
         var minusSevenDays = currentTime - (1000 * 60 * 60 * 24 * 7);
@@ -175,8 +193,10 @@
         var newDate = new Date(years, months);
         var time = newDate.getTime();
         this.set("reportKey", time);
+        this.fire("monthlyReportKeyAdded", {key: time});
       },
-      setQuarterlyKey:function(){
+
+      setQuarterlyKey: function() {
         var date = new Date();
         var currentTime = date.getTime();
         var minusSevenDays = currentTime - (1000 * 60 * 60 * 24 * 7);
@@ -185,16 +205,18 @@
         var realMonths = months+1;
         var monthModulus = realMonths % 3;
         var quarterStart = months-monthModulus;
-        if(quarterStart<0){
-          quarterStart+=11;
+        if(quarterStart < 0) {
+          quarterStart += 11;
           years--;
         };
         var years = minusDate.getFullYear();
         var newDate = new Date(years, quarterStart);
         var time = newDate.getTime();
         this.set("reportKey", time);
+        this.fire("quarterlyReportKeyAdded", {key: time});
       },
-      setAnnualKey:function(){
+
+      setAnnualKey: function() {
         var date = new Date();
         var currentTime = date.getTime();
         var minusSevenDays = currentTime - (1000 * 60 * 60 * 24 * 7);
@@ -202,9 +224,10 @@
         var years = minusDate.getFullYear();
         var newDate = new Date(years, 0);
         var time = newDate.getTime();
-        console.log(time);
         this.set("reportKey", time);
+        this.fire("annualReportKeyAdded", {key: time});
       }
+
     });
 
   </script>

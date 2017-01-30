@@ -28,62 +28,77 @@
     </media-queries>
 
     <style include="common-styles">
-      :host{
+
+      :host {
         --app-grid-columns:2;
         --app-grid-item-height:100px;
         --app-grid-expandible-item-columns:2;
       }
-      .sectionHeading{
+
+      .sectionHeading {
         background-color:#42c6ff;
         width:100%;
       }
-      .sectionHeadingText{
+
+      .sectionHeadingText {
         font-size: 24px;
         color:#FFFFFF;
       }
-      .subHeadingText{
+
+      .subHeadingText {
         color:#FFFFFF;
       }
-      .container{
+
+      .container {
         padding:20px;
       }
-      .container paper-input,guuey-date-input,paper-button{
+
+      .container paper-input, guuey-date-input, paper-button {
         padding:20px;
       }
-      .container .buttonContainer{
+
+      .container .buttonContainer {
         @apply(--app-grid-expandible-item);
         text-align:right;
       }
-      paper-card .agreement{
+
+      paper-card .agreement {
         width:50%;
         display:flex;
         flex-direction:column;
       }
-      .agreementRow{
+
+      .agreementRow {
         display:flex;
         flex-direction:row;
       }
-      .smallHeader{
+
+      .smallHeader {
         --guuey-list-min-header-height:50px;
       }
-      .halfSizeLeft{
+
+      .halfSizeLeft {
         --guuey-list-width:var(--list-width-half);
         --guuey-list-float:var(--guuey-list-float-left);
       }
-      .halfSizeRight{
+
+      .halfSizeRight {
         --guuey-list-width:var(--list-width-half);
         --guuey-list-float:var(--guuey-list-float-right);
       }
-      .inputLeft{
+
+      .inputLeft {
         float:left;
         width:40%;
         min-height:100px;
       }
-      .inputRight{
+
+      .inputRight {
         float:right;
         width:40%;
         min-height:100px;
       }
+
     </style>
     <paper-card class="editViewCard">
 
@@ -229,22 +244,31 @@
     Polymer({
 
       is:"su-care-review-edit-view",
-      properties:{
-        viewType:{
-          type:String,
-          value:"edit-view"
+
+      properties: {
+
+        dimensions: {
+          type: Object
         },
-        reviewData:{
-          type:Object,
-          notify:true,
+
+        viewType: {
+          type: String,
+          value: "edit-view"
         },
-        reviewId:{
-          type:String,
+
+        reviewData: {
+          type: Object,
+          notify: true,
         },
+
+        reviewId: {
+          type: String,
+        },
+
         //table inputs need to be declared here
-        wellBeingQuestionnaireInputs:{
-          type:Array,
-          value:[
+        wellBeingQuestionnaireInputs: {
+          type: Array,
+          value: [
             'Bathing',
             'Body Spray',
             'Haircut',
@@ -256,9 +280,10 @@
             'Skin care'
           ]
         },
-        myHealthQuestionnaireInputs:{
-          type:Array,
-          value:[
+
+        myHealthQuestionnaireInputs: {
+          type: Array,
+          value: [
             'Dental',
             'Weight',
             'Skin care',
@@ -269,9 +294,10 @@
             'Emotions & Mood Changes'
           ]
         },
-        myRoomQuestionnaireInputs:{
-          type:Array,
-          value:[
+
+        myRoomQuestionnaireInputs: {
+          type: Array,
+          value: [
             'Laundry',
             'Change bed sheets',
             'Dust room',
@@ -283,44 +309,50 @@
             'Air freshening room'
           ]
         },
+
       },
-      observers:[
+
+      observers: [
         "requirementsMet(reviewData)"
       ],
-      behaviors:[
+
+      behaviors: [
         Polymer.editViewResizeBehavior,
         //Polymer.multiEditAnimationBehavior
       ],
-      suConfirm:function(){
-        this.set("reviewData.suAgree","true");
+      suConfirm:function() {
+        this.set("reviewData.suAgree", "true");
       },
-      swConfirm:function(){
-        this.set("reviewData.swAgree","true");
+
+      swConfirm:function() {
+        this.set("reviewData.swAgree", "true");
       },
-      requirementsMet:function(data){
-        if(Object.keys(data).length === 0 && data.constructor === Object){
+
+      requirementsMet: function(data) {
+        if(Object.keys(data).length === 0 && data.constructor === Object) {
           //do nothing and wait for change
         } else {
-          if(!data.suDate){
-            this.fire("openToast",{toastText:"Service user date of agreement is required."});
+          if(!data.suDate) {
+            this.fire("openToast", {toastText: "Service user date of agreement is required."});
             return false;
-          } else if(!data.swDate){
-            this.fire("openToast",{toastText:"Staff worker date of agreement is required."});
+          } else if(!data.swDate) {
+            this.fire("openToast", {toastText: "Staff worker date of agreement is required."});
             return false;
-          } else if(!data.suAgree){
-            this.fire("openToast",{toastText:"The service user needs to agree to the agreement."});
+          } else if(!data.suAgree) {
+            this.fire("openToast", {toastText: "The service user needs to agree to the agreement."});
             return false;
-          } else if(!data.swAgree){
-            this.fire("openToast",{toastText:"The staff worker needs to agree to the agreement."});
+          } else if(!data.swAgree) {
+            this.fire("openToast", {toastText: "The staff worker needs to agree to the agreement."});
             return false;
-          } else if(!data.swName){
-            this.fire("openToast",{toastText:"A service worker must be selected for this agreement."});
+          } else if(!data.swName) {
+            this.fire("openToast",{toastText: "A service worker must be selected for this agreement."});
             return false;
           } else {
             return true;
           };
         };
-      },
+      }
+
     });
 
   </script>

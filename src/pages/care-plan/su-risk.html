@@ -141,24 +141,24 @@
           on-tap="finishRisk">
         </paper-fab>
 
-          <neon-animated-pages
-            entry-animation="scale-up-animation"
-            exit-animation="scale-down-animation"
-            attr-for-selected="name"
-            selected="[[pageState]]">
+        <neon-animated-pages
+          entry-animation="scale-up-animation"
+          exit-animation="scale-down-animation"
+          attr-for-selected="name"
+          selected="[[pageState]]">
 
-            <su-risk-multi-view
-              name="multi-view"
-              risks-data="{{risksData}}">
-            </su-risk-multi-view>
+          <su-risk-multi-view
+            name="multi-view"
+            risks-data="{{risksData}}">
+          </su-risk-multi-view>
 
-            <su-risk-edit-view
-              db-loaded="[[dbLoaded]]"
-              name="edit-view"
-              risk-data="{{riskData}}">
-            </su-risk-edit-view>
+          <su-risk-edit-view
+            db-loaded="[[dbLoaded]]"
+            name="edit-view"
+            risk-data="{{riskData}}">
+          </su-risk-edit-view>
 
-          </neon-animated-pages>
+        </neon-animated-pages>
 
       </div>
 
@@ -171,41 +171,55 @@
     Polymer({
 
       is: 'su-risk',
-      ready:function(){
-        this.fire("pageLoaded", {page:this.page});
+
+      ready: function() {
+        this.fire("pageLoaded", {page: this.page});
         this.addEventListener("print", this.print);
         this.addEventListener("editRisk", this.editRisk);
         this.addEventListener("deleteRisk", this.deleteRisk);
       },
-      properties:{
-        dbLoaded:{
-          type:Boolean,
-          value:false
+
+      properties: {
+
+        dbLoaded: {
+          type: Boolean,
+          value: false
         },
-        page:{
-          type:String,
+
+        dimensions: {
+          type: Object
         },
-        patient:{
-          type:String,
+
+        page: {
+          type: String,
         },
-        home:{
-          type:String,
+
+        patient: {
+          type: String,
         },
-        inputDisabled:{
-          type:Boolean,
-          value:true
+
+        home: {
+          type: String,
         },
-        pageState:{
-          type:String,
-          value:"multi-view"
+
+        inputDisabled: {
+          type: Boolean,
+          value: true
         },
-        riskId:{
-          type:String,
-          value:null
+
+        pageState: {
+          type: String,
+          value: "multi-view"
         },
-        evalFreq:{
-          type:Array,
-          value:[
+
+        riskId: {
+          type: String,
+          value: null
+        },
+
+        evalFreq: {
+          type: Array,
+          value: [
             "daily",
             "weekly",
             "bi-weekly",
@@ -214,9 +228,10 @@
             "yearly"
           ]
         },
-        riskTypes:{
-          type:Array,
-          value:[
+
+        riskTypes: {
+          type: Array,
+          value: [
             "Moving & Handling",
             "Slips & Trips",
             "Violence & Agression",
@@ -227,70 +242,90 @@
             "Other"
           ]
         }
+
       },
-      observers:[
+
+      observers: [
         "requirementsMet(risksData)"
       ],
-      behaviors:[
+
+      behaviors: [
         Polymer.fabAnimationBehavior,
         Polymer.carePlanAnimation,
         Polymer.suPrintBehavior,
         Polymer.suResizeBehavior,
       ],
-      editRisk:function(e){
-        var riskId=e.detail.riskId;
-        this.$.riskDB.path="/homes/"+this.home+"/patients/"+this.patient+"/riskAssessment/"+riskId;
+
+      editRisk: function(e) {
+        var riskId = e.detail.riskId;
+        this.$.riskDB.path = "/homes/" + this.home + "/patients/" + this.patient + "/riskAssessment/" + riskId;
         this.animateEditViewFab();
         this.goEdit();
       },
-      deleteRisk:function(e){
-        var riskId=e.detail.riskId;
-        var path="/homes/"+this.home+"/patients/"+this.patient+"/riskAssessment/"+riskId;
-        this.$.riskDB.setStoredValue(path, null);
+
+      deleteRisk: function(e) {
+        var riskId = e.detail.riskId;
+        var path = "/homes/" + this.home + "/patients/" + this.patient + "/riskAssessment/" + riskId;
+        this.$.riskDB.setStoredValue(path, null)
+        .then(function() {
+          this.fire("riskAssessmentDeleted");
+        }.bind(this));
       },
-      goEdit:function(){
-        this.pageState="edit-view";
+
+      goEdit: function() {
+        this.pageState = "edit-view";
       },
-      goMulti:function(){
+
+      goMulti: function() {
         this.pageState="multi-view";
       },
-      toggleEdit:function(){
-        this.inputDisabled=!this.inputDisabled;
+
+      toggleEdit: function() {
+        this.inputDisabled = !this.inputDisabled;
       },
-      addRisk:function(){
-        this.$.riskDB.path=null;
-        this.$.riskDB.data={};
+
+      addRisk: function() {
+        this.$.riskDB.path = null;
+        this.$.riskDB.data = {};
         this.$.addRiskDialog.open();
       },
-      saveNewRisk:function(){
-        var path="/homes/"+this.home+"/patients/"+this.patient+"/riskAssessment";
+
+      saveNewRisk: function() {
+        var path = "/homes/" + this.home + "/patients/" + this.patient + "/riskAssessment";
         this.$.riskDB.save(path, null)
-          .then(function(val){
+          .then(function(val) {
+            var riskId = this.$.riskDB.path.split("/").pop();
             this.$.addRiskDialog.close();
-            this.fire("openToast",{toastText:"New risk assessment saved."});
+            this.fire("newRiskAssessmentSaved", {riskId: riskId});
+            this.fire("openToast",{toastText: "New risk assessment saved."});
           }.bind(this))
-          .catch(function(error){
+          .catch(function(error) {
             this.$.addRiskDialog.close();
-            this.fire("openToast",{toastText:"There was an error saving the new risk: "+error});
+            this.fire("openToast",{toastText: "There was an error saving the new risk: " + error});
           }.bind(this));
       },
-      cancelNewRisk:function(){
+
+      cancelNewRisk: function() {
         this.$.addRiskDialog.close();
-        this.$.riskDB.data={};
+        this.$.riskDB.data = {};
       },
-      finishRisk:function(e){
-        this.pageState="multi-view";
+
+      finishRisk: function(e) {
+        this.pageState = "multi-view";
+        this.$.riskDB.path = null;
         this.animateMultiViewFab();
       },
-      requirementsMet:function(data){
+
+      requirementsMet: function(data) {
         //change case
-        this.$.risksDB.query.on("child_changed",function(){
+        this.$.risksDB.query.on("child_changed", function() {
           var riskData = this.$.riskDB.data;
-          if(!riskData.date){
-            this.fire("openToast", {toastText:"Date of risk assessment is reqiured."});
+          if(!riskData.date) {
+            this.fire("openToast", {toastText: "Date of risk assessment is reqiured."});
           };
         }.bind(this));
       }
+
     });
 
   </script>

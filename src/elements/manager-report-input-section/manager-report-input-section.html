@@ -1,5 +1,11 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../../bower_components/polymer/polymer.html" />
 <link rel="import" href="../../../bower_components/paper-input/paper-textarea.html" />
+
+<!--
+`manager-report-input-section` is an input section for monthly manager reports.
+@demo demo/index.html
+-->
 
 <dom-module id="manager-report-input-section">
 
@@ -19,38 +25,38 @@
 
     Polymer({
 
-      is:"manager-report-input-section",
-      ready:function(){
+      is: "manager-report-input-section",
+
+      properties: {
+        value: {
+          type: Object,
+        },
+
+        inputValue: {
+          type: String,
+          value: "",
+        },
+
+        inputHeader: {
+          type: String
+        },
+
+        inputName: {
+          type: String,
+        },
+
+        inputCategory: {
+          type: String
+        }
 
       },
-      properties:{
-        value:{
-          type:Object,
-        },
-        inputValue:{
-          type:String,
-          value:"",
-        },
-        inputHeader:{
-          type:String
-        },
-        inputName:{
-          type:String,
-        },
-        inputCategory:{
-          type:String
-        }
-      },
-      observers:[
+
+      observers: [
         "inputValueChanged(inputValue, inputName, inputCategory)"
       ],
-      behaviors:[
 
-      ],
       inputValueChanged:function(inputValue, inputName, inputCategory){
-        //console.log(inputValue, inputName, inputCategory);
         if(inputValue && inputName && inputCategory){
-          //console.log(inputName+inputCategory);
           this.set("value."+inputCategory+inputName,inputValue);
         };
       }

@@ -40,40 +40,40 @@
       url="{{homeImage}}">
     </firebase-storage>
 
-    <iron-media-query
-      query="(max-width:600px)"
-      query-matches="{{query600}}">
-    </iron-media-query>
-
     <style include="common-styles"></style>
 
     <style>
-      :host{
+      :host {
         --app-grid-columns:2;
         --app-grid-expandible-item-columns:2;
         --app-grid-item-height:100px;
       }
-      paper-input{
+
+      paper-input {
         padding:20px;
       }
-      .imageWrapper{
+
+      .imageWrapper {
         height:200px;
         width:50%;
         margin:20px 25% 20px 25%;
         @appply(--app-grid-expandible-item);
         position:relative;
       }
-      .businessImage{
+
+      .businessImage {
         width:100%;
         height:200px;
         background-color:lightgray;
         border: 1px solid grey;
       }
-      .imageButton{
+
+      .imageButton {
         position:absolute;
         bottom:5%;
         right:5%;
       }
+
     </style>
 
     <paper-card class="pageCard">
@@ -194,34 +194,46 @@
 
     Polymer({
       is: 'ad-profile',
-      ready:function(){
-        this.fire("pageLoaded", {page:this.page});
+
+      ready: function() {
+        this.fire("pageLoaded", {page: this.page});
         this.$.storage._downloadFile(this.$.storage.path);
       },
-      properties:{
-        home:{
+
+      properties: {
+
+        dimensions: {
+          type: Object
+        },
+
+        home: {
           type:String,
         },
-        homePhoto:{
-          type:String,
-          observer:"_inputChanged"
+
+        homePhoto: {
+          type: String,
+          observer: "_inputChanged"
         }
+
       },
-      observers:[
+
+      observers: [
         "_computeImage(careHomeProfile.profileImage)"
       ],
-      behaviors:[
+
+      behaviors: [
         Polymer.adminPagesAnimation,
         Polymer.adminResizeBehavior
       ],
-      _inputChanged:function(image) {
+
+      _inputChanged: function(image) {
         this.$.storage._uploadFile(image)
         .then(function(fileLoc) {
           Polymer.dom(this.$.homeImage).setAttribute("src", fileLoc);
-          this.fileLoc=fileLoc;
+          this.fileLoc = fileLoc;
         }.bind(this))
-        .catch(function(error){
-
+        .catch(function(error) {
+          console.log(err);
         });
       },
       _onAddFilesClick: function(e) {
@@ -231,15 +243,16 @@
         }
       },
       _computeImage:function(image){
-        var type=typeof image;
-        if(type==="undefined"){
+        var type = typeof image;
+        if(type === "undefined") {
           return false;
-        } else if(image.length>1){
+        } else if(image.length > 1) {
           return true;
         } else {
           return false;
         };
       }
+      
     });
 
   </script>

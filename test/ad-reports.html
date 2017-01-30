@@ -1,0 +1,258 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>ad-reports</title>
+
+    <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../bower_components/web-component-tester/browser.js"></script>
+
+    <!-- Import the element to test -->
+    <link rel="import" href="../src/pages/admin/ad-reports.html">
+    <link rel="import" href="../bower_components/polymerfire/firebase-app.html" />
+    <link rel="import" href="../bower_components/polymerfire/firebase-auth.html" />
+  </head>
+  <body>
+    <test-fixture id="firebaseApp">
+      <template>
+        <firebase-app
+          name="main"
+          auth-domain="careplan-c2677.firebaseapp.com"
+          database-url="https://careplan-c2677.firebaseio.com"
+          api-key="AIzaSyBdtmHIV_7epC0OBiXkTNoqrGRspA58Epc"
+          storage-bucket="careplan-c2677.appspot.com">
+        </firebase-app>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="auth">
+      <template>
+        <firebase-auth
+          app-name="main"
+          user="{{user}}"
+          signed-in="{{signedIn}}"
+          status-known="{{statusKnown}}"
+          on-error="handleError">
+        </firebase-auth>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="basic">
+      <template>
+        <ad-reports
+          current-page="ad-reports"
+          current-cat="admin"
+          intended-cat="admin"
+          page="ad-reports"
+          patient="-TESTTESTTESTTEST123"
+          home="-KTBXzZw3-qoZz4c7nY7"
+          name="ad-reports">
+        </ad-reports>
+      </template>
+    </test-fixture>
+
+    <script>
+      suite('ad-reports tests', function() {
+        var page;
+        var auth;
+        var firebaseApp = fixture('firebaseApp');
+
+        setup(function(done) {
+          this.timeout = 10000;
+          page = fixture('basic');
+          auth = fixture('auth');
+          auth.signInWithEmailAndPassword("123@mailinator.com", "123123")
+            .then(function() {
+              checkInitialKey();
+            })
+            .catch(function(err) {
+              console.log(err);
+            });
+
+          var suListDB = false;
+          var reportDB = false;
+          var initialKey = false;
+
+          function checkAllReady() {
+            if(suListDB && reportDB && initialKey) {
+              done();
+            };
+          };
+
+          function checkSUListDB() {
+            page.$.suListDB.query.once('value', function() {
+              suListDB = true;
+              checkAllReady();
+            });
+          };
+
+          function checkReportDB() {
+            page.$.reportDB.ref.once('value', function() {
+              reportDB = true;
+              checkAllReady();
+            });
+          };
+
+          function checkInitialKey() {
+            if(!page.reportKey) {
+              page.addEventListener("monthlyReportKeyAdded", function(e) {
+                initialKey = true;
+                checkSUListDB();
+                checkReportDB();
+              });
+            } else {
+              initialKey = true;
+              checkSUListDB();
+              checkReportDB();
+            };
+          };
+
+        });
+
+        test('instantiating the element works', function() {
+          assert.equal(page.is, 'ad-reports');
+        });
+
+        test('setting quarterly from monthly report works', function(done) {
+          page.addEventListener("quarterlyReportKeyAdded", function(e) {
+            assert.equal(e.detail.key, page.reportKey);
+            done();
+          });
+          page.set("reportType", "quarterlyManagerReport");
+        });
+
+        test('updating data from monthly report works', function(done) {
+          expect(page.reportKey.toString().length).to.be.above(0);
+          var testEntry = {
+            serviceUserReview: Math.random().toString(36).substr(2, 5),
+            incidents: Math.random().toString(36).substr(2, 5),
+            staff: Math.random().toString(36).substr(2, 5),
+            activities: Math.random().toString(36).substr(2, 5),
+            medication: Math.random().toString(36).substr(2, 5)
+          };
+          page.$.reportDB.ref.on("value", function(snap) {
+            if(snap.val()["serviceUserReview"] === testEntry["serviceUserReview"]) {
+              for(x in testEntry) {
+                assert.equal(testEntry[x], page.reportData[x]);
+              };
+              done();
+            };
+          });
+          page.set("reportData", testEntry);
+        });
+
+        test('updating data from quarterly report works', function(done) {
+          expect(page.reportKey.toString().length).to.be.above(0);
+          var testEntry = {
+            serviceUserReview: Math.random().toString(36).substr(2, 5),
+            incidents: Math.random().toString(36).substr(2, 5),
+            staff: Math.random().toString(36).substr(2, 5),
+            activities: Math.random().toString(36).substr(2, 5),
+            medication: Math.random().toString(36).substr(2, 5)
+          };
+
+          page.addEventListener("quarterlyReportKeyAdded", function(e) {
+            assert.equal(e.detail.key, page.reportKey);
+
+            page.$.reportDB.ref.on("value", function(snap) {
+              console.log(snap.val(), testEntry)
+              if(snap.val()["serviceUserReview"] === testEntry["serviceUserReview"]) {
+                for(x in testEntry) {
+                  assert.equal(testEntry[x], page.reportData[x]);
+                };
+                done();
+              };
+            });
+
+            page.set("reportData", testEntry);
+          });
+
+          page.set("reportType", "quarterlyManagerReport");
+        });
+
+        test('updating data from annual report works', function(done) {
+          expect(page.reportKey.toString().length).to.be.above(0);
+          var testEntry = {
+            serviceUserReview: Math.random().toString(36).substr(2, 5),
+            incidents: Math.random().toString(36).substr(2, 5),
+            staff: Math.random().toString(36).substr(2, 5),
+            activities: Math.random().toString(36).substr(2, 5),
+            medication: Math.random().toString(36).substr(2, 5)
+          };
+
+          page.addEventListener("annualReportKeyAdded", function(e) {
+            assert.equal(e.detail.key, page.reportKey);
+
+            page.$.reportDB.ref.on("value", function(snap) {
+              console.log(snap.val(), testEntry)
+              if(snap.val()["serviceUserReview"] === testEntry["serviceUserReview"]) {
+                for(x in testEntry) {
+                  assert.equal(testEntry[x], page.reportData[x]);
+                };
+                done();
+              };
+            });
+
+            page.set("reportData", testEntry);
+          });
+
+          page.set("reportType", "annualManagerReport");
+        });
+
+        test('admin to admin animations are correct', function() {
+          page.currentPage = "ad-reports";
+          page.currentCat = "admin";
+          page.intendedCat = "admin";
+
+          expect(page.animationConfig.entry.name).to.equal("slide-down-entry-animation");
+          expect(page.animationConfig.exit.name).to.equal("slide-down-exit-animation");
+        });
+
+        test('admin to default animations are correct', function() {
+          page.currentPage = "ad-reports";
+          page.currentCat = "admin";
+          page.intendedCat = "default";
+
+          expect(page.animationConfig.exit.name).to.equal("slide-left-animation");
+        });
+
+        test('admin to care-plan animations are correct', function() {
+          page.currentPage = "ad-reports";
+          page.currentCat = "admin";
+          page.intendedCat = "care-plan";
+
+          expect(page.animationConfig.exit.name).to.equal("slide-left-animation");
+        });
+
+        test('care-plan to admin animations are correct', function() {
+          page.currentPage = "ad-reports";
+          page.currentCat = "care-plan";
+          page.intendedCat = "admin";
+
+          expect(page.animationConfig.entry.name).to.equal("slide-from-left-animation");
+        });
+
+        test('default to admin animations are correct', function() {
+          page.currentPage = "def-account";
+          page.currentCat = "default";
+          page.intendedCat = "admin";
+
+          expect(page.animationConfig.entry.name).to.equal("slide-from-left-animation");
+        });
+
+      });
+    </script>
+  </body>
+</html>

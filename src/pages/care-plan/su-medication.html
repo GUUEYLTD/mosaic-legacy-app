@@ -378,7 +378,7 @@
                   is="dom-repeat"
                   items="{{_computeMedList(medsData)}}"
                   as="med"
-                  filter="filterMorning"
+                  filter="_filterMorning"
                   observe="timeChunk">
                   <tr>
                     <td>
@@ -455,7 +455,7 @@
                   is="dom-repeat"
                   items="{{_computeMedList(medsData)}}"
                   as="med"
-                  filter="filterAfternoon"
+                  filter="_filterAfternoon"
                   observe="timeChunk">
                   <tr>
                     <td>
@@ -532,7 +532,7 @@
                   is="dom-repeat"
                   items="{{_computeMedList(medsData)}}"
                   as="med"
-                  filter="filterEvening"
+                  filter="_filterEvening"
                   observe="timeChunk">
                   <tr>
                     <td>
@@ -609,7 +609,7 @@
                   is="dom-repeat"
                   items="{{_computeMedList(medsData)}}"
                   as="med"
-                  filter="filterNight"
+                  filter="_filterNight"
                   observe="timeChunk">
                   <tr>
                     <td>
@@ -840,7 +840,7 @@
         this.$.night.toggle();
       },
 
-      filterMorning: function(item) {
+      _filterMorning: function(item) {
         if(item.archived) {
           return false;
         } else {
@@ -848,7 +848,7 @@
         };
       },
 
-      filterAfternoon: function(item) {
+      _filterAfternoon: function(item) {
         if(item.archived) {
           return false;
         } else {
@@ -856,7 +856,7 @@
         };
       },
 
-      filterEvening: function(item) {
+      _filterEvening: function(item) {
         if(item.archived) {
           return false;
         } else {
@@ -864,23 +864,11 @@
         };
       },
 
-      filterNight: function(item) {
+      _filterNight: function(item) {
         if(item.archived){
           return false;
         } else {
           return item.timeChunk.indexOf("night") != -1;
-        };
-      },
-
-      convertTime: function(rawTime) {
-        if(rawTime >= 60 * 5 && rawTime < 60 * 12) {
-          return "morning";
-        } else if(rawTime >= 60 * 12 && rawTime < 60 * 17) {
-          return "afternoon";
-        } else if(rawTime >= 60 * 17 && rawTime < 60 * 21) {
-          return "evening"
-        } else {
-          return "night";
         };
       },
 
@@ -914,11 +902,11 @@
       },
 
       _computeTime: function(timeData, timeChunk) {
-        var newestCandidate;
+        var newestCandidate = null;
         var currentChunk = timeData[timeChunk];
         for(x in currentChunk) {
           var candidate = currentChunk[x];
-          if(newestCandidate != null) {
+          if(newestCandidate && newestCandidate.log && newestCandidate.time) {
             if(newestCandidate.log.time < candidate.log.time) {
               newestCandidate = candidate;
             }
@@ -941,7 +929,7 @@
       saveEditTime: function() {
         this.$.timeDB.path = null;
         this.$.timeDB.data = {};
-        var path="homes/" + this.home + "/patients/" + this.patient + "/medicationOutline/timeChunks/" + this.timeChunkTarget;
+        var path = "homes/" + this.home + "/patients/" + this.patient + "/medicationOutline/timeChunks/" + this.timeChunkTarget;
         var now = Date.now();
         this.$.timeDB.data = {
           log: {
@@ -952,6 +940,8 @@
         };
         this.$.timeDB.save(path, null)
           .then(function(val) {
+            var timeItemId = this.$.timeDB.path.split("/").pop();
+            this.fire("medTimeEditSaved", {timeItemId: timeItemId, timeChunk: this.timeChunkTarget});
             this.$.editTimeDialog.close();
             this.newTime = null;
           }.bind(this))
@@ -963,7 +953,7 @@
       timeChunkTimeCheck: function(data) {
         var now = Date.now();
         data = data.val();
-        if(data=== null){
+        if(data === null){
           var path = "homes/" + this.home + "/patients/" + this.patient + "/medicationOutline/";
           this.$.timeDB.data = {
             morning: {

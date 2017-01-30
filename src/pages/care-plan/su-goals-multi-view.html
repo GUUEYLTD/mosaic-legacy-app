@@ -31,31 +31,38 @@
     </media-queries>
 
     <style include="common-styles">
-      :host{
+      :host {
         --app-grid-columns:3;
         --app-grid-gutter:20px;
       }
-      .goalProgress{
+
+      .goalProgress {
         width:100%;
       }
-      .stepsFab{
+
+      .stepsFab {
         background-color:#F76363;
       }
-      .stepsFab:hover{
+
+      .stepsFab:hover {
         cursor:default;
       }
-      .goalStepsText{
+
+      .goalStepsText {
         padding-left:20px;
       }
-      .flexRow{
+
+      .flexRow {
         display:flex;
         flex-direction:row;
         align-items:center;
         height:75px;
       }
-      flexRow *{
+
+      flexRow * {
         vertical-align:middle;
       }
+
     </style>
 
     <paper-dialog horizontal-align="left" vertical-align="top" id="editModal">
@@ -126,37 +133,51 @@
     Polymer({
 
       is:"su-goals-multi-view",
-      ready:function(){
+
+      ready: function() {
         this.addEventListener("truncate-read-more", this._readMore);
       },
-      properties:{
-        goalsData:{
-          type:Array,
-          notify:true,
+
+      properties: {
+
+        dimensions: {
+          type: Object
         },
-        goalId:{
-          type:String,
-          notify:true
+
+        goalsData: {
+          type: Array,
+          notify: true,
         },
-        viewType:{
-          type:String,
-          value:"multi-view"
+
+        goalId: {
+          type: String,
+          notify: true
+        },
+
+        viewType: {
+          type: String,
+          value: "multi-view"
         }
+
       },
-      behaviors:[
+
+      behaviors: [
         Polymer.multiViewResizeBehavior,
         //Polymer.multiEditAnimationBehavior,
         Polymer.multiViewGridBehavior
       ],
-      editGoal:function(e){
+
+      editGoal: function(e) {
         this.fire("editGoal");
         this.$.editModal.toggle();
       },
-      deleteGoal:function(){
+
+      deleteGoal: function() {
         this.fire("deleteGoal");
         this.$.editModal.toggle();
       },
-      _computeGoalImage:function(cat){
+
+      _computeGoalImage: function(cat) {
         switch(cat) {
           case "Accommodation":
               return "images/goals/accommodation.png"
@@ -177,62 +198,70 @@
               return "images/goals/other.png"
         };
       },
-      _computeQueryCount:function(goal){
-        if(!this.queryCount){
-          this.queryCount=0;
+
+      _computeQueryCount: function(goal) {
+        if(!this.queryCount) {
+          this.queryCount = 0;
         };
         this.queryCount++;
       },
-      _computeCompleteSteps:function(steps){
-        var completeCount=0;
-        for(x in steps){
-          if(steps[x].completed){
-            if(steps[x].completed===true){
+
+      _computeCompleteSteps: function(steps) {
+        var completeCount = 0;
+        for(x in steps) {
+          if(steps[x].completed) {
+            if(steps[x].completed === true) {
               completeCount++;
             };
           };
         };
         return completeCount;
       },
-      _computeSteps:function(steps){
-        var stepCount=0;
-        for(x in steps){
+
+      _computeSteps: function(steps) {
+        var stepCount = 0;
+        for(x in steps) {
           stepCount++;
-        }
+        };
         return stepCount;
       },
-      toggleEditModal:function(e){
+
+      toggleEditModal: function(e) {
         this.$.editModal.positionTarget = e.target;
         this.goalId = e.model.goal.$key;
         this.$.editModal.toggle();
       },
-      directEditModal:function(e){
-        this.goalId=e.model.goal.$key;
+
+      directEditModal: function(e) {
+        this.goalId = e.model.goal.$key;
         this.fire("editGoal");
       },
-      computeDisplayCat:function(goal){
-        if(goal.indexOf("&")!= -1){
+
+      computeDisplayCat: function(goal) {
+        if(goal.indexOf("&") != -1){
           var arr = goal.split(" & ");
-          arr[0]+=" &";
+          arr[0] += " &";
           return arr;
-        } else if(goal.indexOf("And")!= -1){
+        } else if(goal.indexOf("And") != -1) {
           var arr = goal.split(" And ");
-          arr[0]+=" &";
+          arr[0] += " &";
           return arr;
-        } else if(goal.indexOf("and")!= -1){
+        } else if(goal.indexOf("and") != -1) {
           var arr = goal.split(" and ");
-          arr[0]+=" &";
+          arr[0] += " &";
           return arr;
         } else {
-          var arr=[];
+          var arr = [];
           arr.push(goal);
           return arr;
         };
       },
-      _readMore:function(e){
+
+      _readMore: function(e) {
         this.goalId = this.$.domRepeat.modelForElement(e.path[5]).goal.$key;
         this.fire("editGoal");
       }
+
     });
 
   </script>

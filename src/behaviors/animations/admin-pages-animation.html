@@ -15,73 +15,86 @@
     /*
     @polymerBehavior Polymer.adminPagesAnimation
     */
-    Polymer.adminPagesAnimationImp={
+    Polymer.adminPagesAnimationImp = {
       is: "admin-pages-animation",
-      properties:{
-        intendedCat:{
+
+      properties: {
+
+        intendedCat: {
+          type: String,
+        },
+
+        currentCat: {
           type:String,
         },
-        currentCat:{
+
+        currentPage: {
           type:String,
         },
-        currentPage:{
-          type:String,
-        },
-        page:{
+
+        page: {
           type:String,
         }
+
       },
-      observers:[
+
+      observers: [
         "catChanged(currentCat, intendedCat, currentPage)"
       ],
-      catChanged:function(curCat, intCat, currentPage){
-        if(curCat==="admin" && intCat==="admin"){
-          this.animationConfig={};
-          this.animationConfig.entry={
+
+      catChanged: function(curCat, intCat, currentPage) {
+        if(curCat === "admin" && intCat === "admin"){
+          this.animationConfig = {};
+          this.animationConfig.entry = {
             name:"slide-down-entry-animation",
             node: this,
-            timing:{duration:500}
+            timing: {duration: 500}
           };
-          this.animationConfig.exit={
-            name:"slide-down-exit-animation",
+          this.animationConfig.exit = {
+            name: "slide-down-exit-animation",
             node: this,
-            timing:{duration:500}
-          };
-        };
-        if(curCat==="admin" && intCat==="default"){
-          this.animationConfig={};
-          this.animationConfig.exit={
-            name:"slide-left-animation",
-            node: this,
-            timing:{duration:500}
+            timing:{duration: 500}
           };
         };
-        if(curCat==="admin" && intCat==="care-plan"){
-          this.animationConfig={};
-          this.animationConfig.exit={
-            name:"slide-left-animation",
+
+        if(curCat === "admin" && intCat === "default") {
+          this.animationConfig = {};
+          this.animationConfig.exit = {
+            name: "slide-left-animation",
             node: this,
-            timing:{duration:500}
+            timing: {duration: 500}
           };
         };
-        if(curCat==="default" && intCat==="admin"){
-          this.animationConfig={};
-          this.animationConfig.entry={
-            name:"slide-from-left-animation",
+
+        if(curCat === "admin" && intCat === "care-plan") {
+          this.animationConfig = {};
+          this.animationConfig.exit = {
+            name: "slide-left-animation",
             node: this,
-            timing:{duration:500}
+            timing: {duration: 500}
           };
         };
-        if(curCat==="care-plan" && intCat==="admin"){
-          this.animationConfig={};
-          this.animationConfig.entry={
-            name:"slide-from-left-animation",
+
+        if(curCat === "default" && intCat === "admin") {
+          this.animationConfig = {};
+          this.animationConfig.entry = {
+            name: "slide-from-left-animation",
             node: this,
-            timing:{duration:500}
+            timing: {duration: 500}
+          };
+        };
+
+        if(curCat === "care-plan" && intCat === "admin") {
+          this.animationConfig = {};
+          this.animationConfig.entry = {
+            name: "slide-from-left-animation",
+            node: this,
+            timing: {duration: 500}
           };
         };
 
       }
+
     }
     /*
     @polymerBehavior

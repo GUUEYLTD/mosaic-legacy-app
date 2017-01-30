@@ -71,7 +71,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         var firebaseApp = fixture('firebaseApp');
 
         setup(function(done) {
-          this.timeout = 10000;
           page = fixture('basic');
           auth = fixture('auth');
           auth.signInWithEmailAndPassword("123@mailinator.com", "123123")

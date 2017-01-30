@@ -19,7 +19,11 @@
 
     <style include="common-styles">
 
-      .pageCard{
+      :host {
+        display:block;
+      }
+
+      .pageCard {
         min-height:800px;
       }
 
@@ -30,9 +34,11 @@
         page="Dashboard"
         icon="icons:dashboard">
       </admin-header>
+
       <div class="pageInnerCont padded">
         <h1>Coming Soon!</h1>
       </div>
+
     </paper-card>
 
   </template>
@@ -42,13 +48,32 @@
     Polymer({
 
       is: 'ad-dash',
+
       ready:function(){
-        this.fire("pageLoaded", {page:this.page});
+        this.fire("pageLoaded", {page: this.page});
       },
-      behaviors:[
+
+      properties: {
+
+        dimensions: {
+          type: Object
+        },
+
+        home: {
+          type: String
+        },
+
+        page: {
+          type: String
+        }
+
+      },
+
+      behaviors: [
         Polymer.adminPagesAnimation,
         Polymer.adminResizeBehavior
       ]
+
     });
 
   </script>

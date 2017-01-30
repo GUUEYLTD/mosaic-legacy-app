@@ -254,7 +254,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           page.saveMed();
         });
 
-        test('delete med works... doesnt actually delete med', function(done) {
+        test('deleteMed() works... doesnt actually delete med', function(done) {
           var saveMedId;
           var saveMedItemId;
           var newMedData = {
@@ -293,6 +293,172 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           page.set("newMed", newMedData);
           page.saveMed();
+        });
+
+        test('timeChunk toggles work', function() {
+          //morning preset to open thus expect false after toggle
+          page.toggleMorning();
+          assert.equal(page.$.morning.opened, false);
+          page.toggleAfternoon();
+          assert.equal(page.$.afternoon.opened, true);
+          page.toggleEvening();
+          assert.equal(page.$.evening.opened, true);
+          page.toggleNight();
+          assert.equal(page.$.night.opened, true);
+
+          page.toggleMorning();
+          assert.equal(page.$.morning.opened, true);
+          page.toggleAfternoon();
+          assert.equal(page.$.afternoon.opened, false);
+          page.toggleEvening();
+          assert.equal(page.$.evening.opened, false);
+          page.toggleNight();
+          assert.equal(page.$.night.opened, false);
+        });
+
+        test('filter timechunks works', function() {
+          var testItems = {
+            test1 : {
+              medicine: "Testacine",
+              method: "Oral",
+              dosage: "20mg",
+              comments: "test comment",
+              timeChunk: ["morning"],
+              weekdays: ["mo", "tu", "we", "th", "fr", "sa", "so"]
+            },
+
+            test2 : {
+              medicine: "Testacine",
+              method: "Oral",
+              dosage: "20mg",
+              comments: "test comment",
+              timeChunk: ["afternoon"],
+              weekdays: ["mo", "tu", "we", "th", "fr", "sa", "so"]
+            },
+
+            test3 : {
+              medicine: "Testacine",
+              method: "Oral",
+              dosage: "20mg",
+              comments: "test comment",
+              timeChunk: ["evening"],
+              weekdays: ["mo", "tu", "we", "th", "fr", "sa", "so"]
+            },
+
+            test4 : {
+              medicine: "Testacine",
+              method: "Oral",
+              dosage: "20mg",
+              comments: "test comment",
+              timeChunk: ["night"],
+              weekdays: ["mo", "tu", "we", "th", "fr", "sa", "so"]
+            },
+
+            test5 : {
+              medicine: "Testacine",
+              method: "Oral",
+              dosage: "20mg",
+              comments: "test comment",
+              timeChunk: ["morning", "afternoon", "evening", "night"],
+              weekdays: ["mo", "tu", "we", "th", "fr", "sa", "so"],
+              archived: true
+            }
+          };
+
+          assert.equal(page._filterMorning(testItems.test1), true);
+          assert.equal(page._filterMorning(testItems.test2), false);
+          assert.equal(page._filterMorning(testItems.test3), false);
+          assert.equal(page._filterMorning(testItems.test4), false);
+          assert.equal(page._filterMorning(testItems.test5), false);
+
+          assert.equal(page._filterAfternoon(testItems.test1), false);
+          assert.equal(page._filterAfternoon(testItems.test2), true);
+          assert.equal(page._filterAfternoon(testItems.test3), false);
+          assert.equal(page._filterAfternoon(testItems.test4), false);
+          assert.equal(page._filterAfternoon(testItems.test5), false);
+
+          assert.equal(page._filterEvening(testItems.test1), false);
+          assert.equal(page._filterEvening(testItems.test2), false);
+          assert.equal(page._filterEvening(testItems.test3), true);
+          assert.equal(page._filterEvening(testItems.test4), false);
+          assert.equal(page._filterEvening(testItems.test5), false);
+
+          assert.equal(page._filterNight(testItems.test1), false);
+          assert.equal(page._filterNight(testItems.test2), false);
+          assert.equal(page._filterNight(testItems.test3), false);
+          assert.equal(page._filterNight(testItems.test4), true);
+          assert.equal(page._filterNight(testItems.test5), false);
+        });
+
+        test('_computeMedList() returns the most recent med items', function(done) {
+          var parent;
+          var medItemId;
+          var newMedData = {
+            medicine: "Testacine",
+            method: "Oral",
+            dosage: "20mg",
+            comments: "test comment",
+            timeChunk: ["morning", "afternoon", "evening", "night"],
+            weekdays: ["mo", "tu", "we", "th", "fr", "sa", "so"]
+          };
+
+          var editMedData = {
+            medicine: "Testacine2",
+            method: "Injection",
+            dosage: "30mg",
+            comments: "test comment2",
+            timeChunk: ["morning"],
+            weekdays: ["mo"],
+          };
+
+          page.addEventListener("medEditSaved", function(e) {
+            var saveData = page.medsData[parent][medItemId];
+            var editData = page.medsData[parent][e.detail.medItemId];
+            for(x in editMedData) {
+              assert.equal(page._computeMedList(page.medsData)[x], editMedData[x]);
+            };
+            done();
+          });
+
+          page.addEventListener("newMedSaved", function(e) {
+            parent = e.detail.medId;
+            medItemId = e.detail.medItemId;
+            var dummyE = {
+              model: {
+                $key: medItemId
+              }
+            };
+            page.editMed(dummyE);
+            editMedData.parent = parent;
+            page.set("newMedEdit", editMedData);
+            page.saveEditMed();
+          });
+
+          page.set("newMed", newMedData);
+          page.saveMed();
+        });
+
+        test('editTimeDialog() opens dialog', function() {
+          page.editTimeDialog();
+          assert.equal(page.$.editTimeDialog.opened, true);
+        });
+
+        test('saveEditTime() works', function(done) {
+          var testTimeChunk = "morning";
+          var testTime = "8:00 AM";
+          page.addEventListener('medTimeEditSaved', function(e) {
+            var savedTestTime = page.timesData[e.detail.timeChunk][e.detail.timeItemId];
+            var existingGenesis = page.timesData[e.detail.timeChunk].genesis
+            assert.equal(savedTestTime.time, testTime);
+            assert.equal(savedTestTime.log.user, auth.user.uid);
+            assert.equal(existingGenesis.time, "09:00");
+            done();
+          });
+          page.set("timeChunkTarget", testTimeChunk);
+          page.set("newTime", testTime);
+          page.editTimeDialog();
+          page.saveEditTime();
+
         });
 
         test('care-plan to care-plan animations are correct', function() {

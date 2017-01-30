@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>manager-report-input-section test</title>
+
+    <script src="../../../../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../../../bower_components/web-component-tester/browser.js"></script>
+
+    <link rel="import" href="../manager-report-input-section.html">
+  </head>
+  <body>
+    <test-fixture id="basic">
+      <template>
+        <manager-report-input-section></manager-report-input-section>
+      </template>
+    </test-fixture>
+
+    <script>
+      suite('manager-report-input-section', function() {
+        test('instantiating the element works', function() {
+          var element = fixture('basic');
+          assert.equal(element.is, 'manager-report-input-section');
+        });
+      });
+    </script>
+  </body>
+</html>
