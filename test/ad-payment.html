@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>ad-dash</title>
+
+    <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../bower_components/web-component-tester/browser.js"></script>
+
+    <!-- Import the element to test -->
+    <link rel="import" href="../src/pages/admin/ad-dash.html">
+    <link rel="import" href="../bower_components/polymerfire/firebase-app.html" />
+    <link rel="import" href="../bower_components/polymerfire/firebase-auth.html" />
+  </head>
+  <body>
+    <test-fixture id="firebaseApp">
+      <template>
+        <firebase-app
+          name="main"
+          auth-domain="careplan-c2677.firebaseapp.com"
+          database-url="https://careplan-c2677.firebaseio.com"
+          api-key="AIzaSyBdtmHIV_7epC0OBiXkTNoqrGRspA58Epc"
+          storage-bucket="careplan-c2677.appspot.com">
+        </firebase-app>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="auth">
+      <template>
+        <firebase-auth
+          app-name="main"
+          user="{{user}}"
+          signed-in="{{signedIn}}"
+          status-known="{{statusKnown}}"
+          on-error="handleError">
+        </firebase-auth>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="basic">
+      <template>
+        <ad-dash
+          current-page="ad-dash"
+          current-cat="admin"
+          intended-cat="admin"
+          page="ad-dash"
+          patient="-TESTTESTTESTTEST123"
+          home="-KTBXzZw3-qoZz4c7nY7"
+          name="ad-dash">
+        </ad-dash>
+      </template>
+    </test-fixture>
+
+    <script>
+      suite('ad-dash tests', function() {
+        var page;
+        var auth;
+        var firebaseApp = fixture('firebaseApp');
+
+        setup(function(done) {
+          this.timeout = 10000;
+          page = fixture('basic');
+          auth = fixture('auth');
+          auth.signInWithEmailAndPassword("123@mailinator.com", "123123")
+            .then(function() {
+              done();
+            })
+            .catch(function(err) {
+              console.log(err);
+            });
+
+        });
+
+        test('instantiating the element works', function() {
+          assert.equal(page.is, 'ad-dash');
+        });
+
+        test('admin to admin animations are correct', function() {
+          page.currentPage = "ad-dash";
+          page.currentCat = "admin";
+          page.intendedCat = "admin";
+
+          expect(page.animationConfig.entry.name).to.equal("slide-down-entry-animation");
+          expect(page.animationConfig.exit.name).to.equal("slide-down-exit-animation");
+        });
+
+        test('admin to default animations are correct', function() {
+          page.currentPage = "ad-dash";
+          page.currentCat = "admin";
+          page.intendedCat = "default";
+
+          expect(page.animationConfig.exit.name).to.equal("slide-left-animation");
+        });
+
+        test('admin to care-plan animations are correct', function() {
+          page.currentPage = "ad-dash";
+          page.currentCat = "admin";
+          page.intendedCat = "care-plan";
+
+          expect(page.animationConfig.exit.name).to.equal("slide-left-animation");
+        });
+
+        test('care-plan to admin animations are correct', function() {
+          page.currentPage = "ad-profile";
+          page.currentCat = "care-plan";
+          page.intendedCat = "admin";
+
+          expect(page.animationConfig.entry.name).to.equal("slide-from-left-animation");
+        });
+
+        test('default to admin animations are correct', function() {
+          page.currentPage = "def-account";
+          page.currentCat = "default";
+          page.intendedCat = "admin";
+
+          expect(page.animationConfig.entry.name).to.equal("slide-from-left-animation");
+        });
+
+      });
+    </script>
+  </body>
+</html>
