@@ -278,6 +278,17 @@
         this.fire("dbLoaded", {page: "def-home"});
       },
 
+      attached: function() {
+        var that = this;
+        setTimeout(function() {
+          if(that.fromLogin) {
+            that.fire("openToast", {toastText: 'Remember the terms and stuff...', terms: true});
+            that.fromLogin = false;
+          };
+        }, 1000);
+
+      },
+
       properties: {
 
         //the current patient that is in use
@@ -299,6 +310,12 @@
         dimensions: {
           type: Object,
           value: {}
+        },
+
+        fromLogin: {
+          type: Boolean,
+          value: false,
+          notify:true
         },
 
         //settings data from firebase for updating settings such as privacy mode

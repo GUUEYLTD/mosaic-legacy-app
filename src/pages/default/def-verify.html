@@ -5,6 +5,10 @@
 <link rel="import" href="../../../bower_components/polymerfire/firebase-document.html" />
 <link rel="import" href="../../../bower_components/paper-input/paper-input.html" />
 <link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html" />
+<link rel="import" href="../../../bower_components/paper-dialog/paper-dialog.html" />
+<link rel="import" href="../../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html" />
+<link rel="import" href="../../../bower_components/paper-checkbox/paper-checkbox.html" />
+
 <link rel="import" href="../../elements/media-queries/media-queries.html" />
 
 <link rel="import" href="../../behaviors/animations/default-pages-animation.html" />
@@ -49,7 +53,428 @@
             }
         </style>
 
-        <span hidden="[[!verifyReminderDisplay]]">
+        <paper-dialog opened="{{agreeOpen}}" id="agreeDialog" vertical-offset="100">
+          <paper-dialog-scrollable>
+            <table border="0" cellspacing="0" cellpadding="0" class="Sect1">
+              <colgroup/>
+              <tr>
+                <td>
+                  <p class="P16"><span class="T14">1.</span><span class="T15">        </span><span class="T16">Customer Orders        1</span></p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p class="P16"><span class="T14">2.</span><span class="T15">        </span><span class="T16">User Subscriptions        2</span></p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p class="P16"><span class="T14">3.</span><span class="T15">        </span><span class="T16">Additional User Subscriptions        4</span></p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p class="P16"><span class="T14">4.</span><span class="T15">        </span><span class="T16">Services        4</span></p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p class="P16"><span class="T14">5.</span><span class="T15">        </span><span class="T16">Charges and Payment        5</span></p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p class="P16"><span class="T14">6.</span><span class="T15">        </span><span class="T16">Customer Data        6</span></p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p class="P16"><span class="T14">7. </span><span class="T15">        </span><span class="T16">Guuey's Obligations        7</span></p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p class="P16"><span class="T14">8.</span><span class="T15">        </span><span class="T16">Customer's Obligations        8</span></p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p class="P16"><span class="T14">9.</span><span class="T15">        </span><span class="T16">Proprietary rights        9</span></p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p class="P16"><span class="T14">10.</span><span class="T15">        </span><span class="T16">Confidentiality        9</span></p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p class="P16"><span class="T14">11.</span><span class="T15">        </span><span class="T16">Indemnity        10</span></p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p class="P16"><span class="T14">12.</span><span class="T15">        </span><span class="T16">Limitation of liability        11</span></p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p class="P16"><span class="T14">13.</span><span class="T15">        </span><span class="T16">Term and termination        12</span></p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p class="P16"><span class="T14">14.</span><span class="T15">        </span><span class="T16">Force majeure        15</span></p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p class="P16"><span class="T14">15.</span><span class="T15">        </span><span class="T16">Conflict        15</span></p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p class="P16"><span class="T14">16.</span><span class="T15">        </span><span class="T16">Variation        16</span></p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p class="P16"><span class="T14">17.</span><span class="T15">        </span><span class="T16">Waiver        16</span></p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p class="P16"><span class="T14">18.</span><span class="T15">        </span><span class="T16">Rights and remedies        16</span></p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p class="P16"><span class="T14">19.</span><span class="T15">        </span><span class="T16">Severance        16</span></p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p class="P16"><span class="T14">20.</span><span class="T15">        </span><span class="T16">Entire agreement        16</span></p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p class="P16"><span class="T14">21.</span><span class="T15">        </span><span class="T16">Assignment        17</span></p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p class="P16"><span class="T14">22.</span><span class="T15">        </span><span class="T16">No partnership or agency        17</span></p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p class="P16"><span class="T14">23.</span><span class="T15">        </span><span class="T16">Third party rights        17</span></p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p class="P16"><span class="T14">24.</span><span class="T15">        </span><span class="T16">Notices        17</span></p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p class="P16"><span class="T14">25.</span><span class="T15">        </span><span class="T16">Governing law        18</span></p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p class="P16"><span class="T14">26.</span><span class="T15">        </span><span class="T16">Jurisdiction        18</span></p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p class="P16"><span class="T14">27.</span><span class="T15">        </span><span class="T16">Interpretation        19</span></p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p class="P17" />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p class="P11" />
+                </td>
+              </tr>
+            </table>
+            <h6 class="P14"><a id="a__Schedule"><span/></a><span class="T6">Schedule</span></h6>
+            <table border="0" cellspacing="0" cellpadding="0" class="Sect1">
+              <colgroup/>
+              <tr>
+                <td>
+                  <p class="P18"><span class="T7">Schedule 1</span><span class="T15">        </span><span class="T7">Subscription Fees        21</span></p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p class="P16"><span class="T14">1.</span><span class="T15">        </span><span class="T16">Subscription Fees        </span><span class="T17">Error! Bookmark not defined.</span></p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p class="P11" />
+                </td>
+              </tr>
+            </table>
+            <p class="P19"><span class="T2">Guuey [UK Limited] Customer Agreement </span></p>
+            <p class="P20"><span class="T11">DATE</span></p>
+            <p class="P20"><span class="T2"> </span></p>
+            <ol>
+              <li>
+                <p class="P40" style="margin-left:0cm;"><span style="display:block;float:left;min-width:NaNcm;">(1)</span><a id="a299878" /><span class="T9">Guuey has developed software applications and platforms (“Careplan”) which it makes available to subscribers via the internet on a pay-per-use basis for the purpose of Care home administration and management.</span><a
+                          id="a122341" /><span class="odfLiEnd" /> </p>
+              </li>
+            </ol>
+            <p class="P41"> </p>
+            <ol>
+              <li>
+                <p class="P40" style="margin-left:0cm;"><span style="display:block;float:left;min-width:NaNcm;">(2)</span><span class="T9">The Customer wishes to use Guuey's service in its business operations</span><a id="a389374" /><span class="odfLiEnd" /> </p>
+              </li>
+            </ol>
+            <p class="P41"> </p>
+            <ol>
+              <li>
+                <p class="P40" style="margin-left:0cm;"><span style="display:block;float:left;min-width:NaNcm;">(3)</span><span class="T9">Guuey has agreed to provide and the Customer has agreed to take and pay for Guuey’s service subject to the terms and conditions of this agreement.</span><span class="odfLiEnd"
+                  /> </p>
+              </li>
+            </ol>
+            <ol>
+              <li>
+                <h class="P43" style="margin-left:0cm;"><span style="display:block;float:left;min-width:NaNcm;">1.</span><a id="a_1__Customer_orders"><span class="T3">Customer orders</span></a><span class="odfLiEnd" /> </h>
+              </li>
+            </ol>
+            <h1 class="P44"><a id="a__Upon_the_Customer_placing_an_order_with__Guuey_company_name___for_Careplan_the_following_terms_and_conditions_shall_apply_"><span/></a><span class="T13">Upon the Customer placing an order with [Guuey company name ) for Careplan the following terms and conditions shall apply.</span></h1>
+            <ol>
+              <li>
+                <h class="P43" style="margin-left:0cm;"><span style="display:block;float:left;min-width:NaNcm;">2.</span><a id="a_2__User_subscriptions"><span class="T3">User subscriptions</span></a><span class="odfLiEnd" /> </h>
+              </li>
+            </ol>
+            <h2 class="P21"><a id="a__2_1_Subject_to_the_Customer_purchasing_the_User_Subscriptions_in_accordance_with_clause_3_3_and_clause_5__Payment___the_restrictions_set_out_in_this_clause_2_and_the_other_terms_and_conditions_of_this_agreement__Guuey_hereby_grants_to_the_Customer_a_non-exclusive__non-transferable_right_to_permit_the_Authorised_Users_to_use_the_Services_and_the_Documentation_during_the_Subscription_Term_solely_for_the_Customer's_internal_business_operations_"><span/></a><span class="T9">2.1         Subject to the Customer purchasing the User Subscriptions in accordance with clause 3.3 and clause 5 (Payment), the restrictions set out in this clause 2 and the other terms and conditions of this agreement, Guuey hereby grants to the Customer a non-exclusive, non-transferable right to permit the Authorised Users to use the Services and the Documentation during the Subscription Term solely for the Customer's internal business operations.</span></h2>
+            <h2 class="P21"><a id="a__2_2_In_relation_to_the_Authorised_Users__the_Customer_undertakes_that_"><span/></a><span class="T9">2.2        In relation to the Authorised Users, the Customer undertakes that:</span></h2>
+            <h3 class="P24"><a id="a___i_the_maximum_number_of_Authorised_Users_that_it_authorises_to_access_and_use_the_Services_and_the_Documentation_shall_not_exceed_the_number_of_User_Subscriptions_it_has_purchased_from_time_to_time_"><span/></a><span class="T9">(i)        the maximum number of Authorised Users that it authorises to access and use the Services and the Documentation shall not </span><span class="T9">exceed the number of User Subscriptions it has purchased from time to time;</span></h3>
+            <h3 class="P24"><a id="a___ii__it_will_not_allow_or_suffer_any_User_Subscription_to_be_used_by_more_than_one_individual_Authorised_User_unless_it_has_been_reassigned_in_its_entirety_to_another_individual_Authorised_User__in_which_case_the_prior_Authorised_User_shall_no_longer_have_any_right_to_access_or_use_the_Services_and_or_Documentation_"><span/></a><span class="T9">(ii)         it will not allow or suffer any User Subscription to be used by more than one individual Authorised User unless it has been reassigned in its entirety to another individual Authorised User, in which case the prior Authorised User shall no longer have any right to access or use the Services and/or Documentation;</span></h3>
+            <h3 class="P24"><a id="a___iii__each_Authorised_User_shall_keep_a_secure_password_for_his_her_use_of_the_Services_and_Documentation__that_such_password_shall_be_changed_no_less_frequently_than__MONTHLY__and_that_each_Authorised_User_shall_keep_his_her_password_confidential_"><span/></a><span class="T9">(iii)         each Authorised User shall keep a secure password for his/her use of the Services and Documentation, that such password shall be changed no less frequently than [MONTHLY] and that each Authorised User shall keep his/her password confidential;</span></h3>
+            <h3 class="P24"><a id="a___iv__it_shall_maintain_a_written__up_to_date_list_of_current_Authorised_Users_and_provide_such_list_to_Guuey_within__5__Business_Days_of_Guuey's_written_request_at_any_time_or_times_"><span/></a><a id="a859728"/><span class="T9">(iv)         it shall maintain a written, up to date list of current Authorised Users and provide such list to Guuey within [5] Business Days of Guuey's written request at any time or times;</span></h3>
+            <h3 class="P24"><a id="a___v__it_shall_permit_Guuey_to_audit_the_Services_in_order_to_establish_the_name_and_password_of_each_Authorised_User__Such_audit_may_be_conducted_no_more_than_once_per_quarter__at_Guuey's_expense__and_this_right_shall_be_exercised_with_reasonable_prior_notice__in_such_a_manner_as_not_to_substantially_interfere_with_the_Customer's_normal_conduct_of_business_"><span/></a><a id="a674100"/><span class="T9">(v)         it shall permit Guuey to audit the Services in order to establish the name and password of each Authorised User.  Such audit may be conducted no more than once per quarter, at Guuey's expense, and this right shall be exercised with reasonable prior notice, in such a manner as not to substantially interfere with the Customer's normal conduct of business;</span></h3>
+            <h3 class="P24"><a id="a___vi_if_any_of_the_audits_referred_to_in_clause_2_2_v__reveal_that_any_password_has_been_provided_to_any_individual_who_is_not_an_Authorised_User__then_without_prejudice_to_Guuey's_other_rights__the_Customer_shall_promptly_disable_such_passwords_and_Guuey_shall_not_issue_any_new_passwords_to_any_such_individual__and"><span/></a><span class="T9">(vi)        if any of the audits referred to in clause 2.2(v) reveal that any password has been provided to any individual who is not an Authorised User, then without prejudice to Guuey's other rights, the Customer shall promptly disable such passwords and Guuey shall not issue any new passwords to any such individual; and</span></h3>
+            <h3 class="P24"><a id="a___vii_if_any_of_the_audits_referred_to_in_clause_2_2_v__reveal_that_the_Customer_has_underpaid_Subscription_Fees_to_Guuey__then_without_prejudice_to_Guuey's_other_rights__the_Customer_shall_pay_to_Guuey_an_amount_equal_to_such_underpayment_as_calculated_in_accordance_with_the_prices_set_out_in_clause_9_within__10__Business_Days_of_the_date_of_the_relevant_audit_"><span/></a><span class="T9">(vii)        if any of the audits referred to in clause 2.2(v) reveal that the Customer has underpaid Subscription Fees to Guuey, then without prejudice to Guuey's other rights, the Customer shall pay to Guuey an amount equal to such underpayment as calculated in accordance with the prices set out in clause 9 within [10] Business Days of the date of the relevant audit.</span></h3>
+            <h2 class="P21"><a id="a__2_3The_Customer_shall_not_access__store__distribute_or_transmit_any_Viruses__or_any_material_during_the_course_of_its_use_of_the_Services_that_"><span/></a><span class="T18">2.3        The Customer shall not access, store, distribute or transmit any Viruses, or any material during the course of its use of the Services that:</span></h2>
+            <h3 class="P24"><a id="a___i__is_unlawful__harmful__threatening__defamatory__obscene__infringing__harassing_or_racially_or_ethnically_offensive_"><span/></a><span class="T9">(i)         is unlawful, harmful, threatening, defamatory, obscene, infringing, harassing or racially or ethnically offensive;</span></h3>
+            <h3 class="P24"><a id="a___ii__facilitates_illegal_activity_"><span/></a><span class="T9">(ii)         facilitates illegal activity;</span></h3>
+            <h3 class="P24"><a id="a___iii__depicts_sexually_explicit_images_"><span/></a><span class="T9">(iii)         depicts sexually explicit images;</span></h3>
+            <h3 class="P24"><a id="a___iv_promotes_unlawful_violence_"><span/></a><span class="T9">(iv)        promotes unlawful violence;</span></h3>
+            <h3 class="P24"><a id="a___v__is_discriminatory_based_on_race__gender__colour__religious_belief__sexual_orientation__disability__or"><span/></a><span class="T9">(v)         is discriminatory based on race, gender, colour, religious belief, sexual orientation, disability; or</span></h3>
+            <h3 class="P24"><a id="a___vi_in_a_manner_that_is_otherwise_illegal_or_causes_damage_or_injury_to_any_person_or_property_"><span/></a><span class="T9">(vi)        in a manner that is otherwise illegal or causes damage or injury to any person or property;</span></h3>
+            <p class="P25"><span class="T9">and Guuey reserves the right, without liability or prejudice to its other rights to the Customer, to disable the Customer's access to any material that breaches the provisions of this clause.</span></p>
+            <h2 class="P21"><a id="a__2_4The_Customer_shall_not_"><span/></a><span class="T18">2.4        The Customer shall not:</span></h2>
+            <h3 class="P24"><a id="a___i_except_as_may_be_allowed_by_any_applicable_law_which_is_incapable_of_exclusion_by_agreement_between_the_parties_and_except_to_the_extent_expressly_permitted_under_this_agreement__attempt_to_copy__modify__duplicate__create_derivative_works_from__frame__mirror__republish__download__display__transmit__or_distribute_all_or_any_portion_of_the_Software_and_or_Documentation__as_applicable__in_any_form_or_media_or_by_any_means__or"><span/></a><span class="T9">(i)        except as may be allowed by any applicable law which is incapable of exclusion by agreement between the parties and except to the extent expressly permitted under this agreement, attempt to copy, modify, duplicate, create derivative works from, frame, mirror, republish, download, display, transmit, or distribute all or any portion of the Software and/or Documentation (as applicable) in any form or media or by any means; or</span></h3>
+            <h3 class="P24"><a id="a___ii_attempt_to_reverse_compile__disassemble__reverse_engineer_or_otherwise_reduce_to_human-perceivable_form_all_or_any_part_of_the_Software__or"><span/></a><span class="T9">(ii)        attempt to reverse compile, disassemble, reverse engineer or otherwise reduce to human-perceivable form all or any part of the Software; or</span></h3>
+            <h3 class="P24"><a id="a___iii__access_all_or_any_part_of_the_Services_and_Documentation_in_order_to_build_a_product_or_service_which_competes_with_the_Services_and_or_the_Documentation__or"><span/></a><span class="T9">(iii)         access all or any part of the Services and Documentation in order to build a product or service which competes with the Services and/or the Documentation; or</span></h3>
+            <h3 class="P24"><a id="a___iv_use_the_Services_and_or_Documentation_to_provide_services_to_third_parties__or"><span/></a><span class="T9">(iv)        use the Services and/or Documentation to provide services to third parties; or</span></h3>
+            <h3 class="P24"><a id="a___v_license__sell__rent__lease__transfer__assign__distribute__display__disclose__or_otherwise_commercially_exploit__or_otherwise_make_the_Services_and_or_Documentation_available_to_any_third_party_except_the_Authorised_Users__or"><span/></a><span class="T9">(v)        license, sell, rent, lease, transfer, assign, distribute, display, disclose, or otherwise commercially exploit, or otherwise make the Services and/or Documentation available to any third party except the Authorised Users, or</span></h3>
+            <h3 class="P24"><a id="a___vi_attempt_to_obtain__or_assist_third_parties_in_obtaining__access_to_the_Services_and_or_Documentation__other_than_as_provided_under_this_clause_2_4__and"><span/></a><span class="T9">(vi)        attempt to obtain, or assist third parties in obtaining, access to the Services and/or Documentation, other than as provided under this clause 2.4; and</span></h3>
+            <h2 class="P21"><a id="a__2_5The_Customer_shall_use_all_reasonable_endeavours_to_prevent_any_unauthorised_access_to__or_use_of__the_Services_and_or_the_Documentation_and__in_the_event_of_any_such_unauthorised_access_or_use__promptly_notify_Guuey_"><span/></a><span class="T18">2.5        The</span><a id="_GoBack"/><span class="T18"> Customer shall use all reasonable endeavours to prevent any unauthorised access to, or use of, the Services and/or the Documentation and, in the event of any such unauthorised access or use, promptly notify Guuey.</span></h2>
+            <h2 class="P21"><a id="a__2_6The_rights_provided_under_this_clause_2_are_granted_to_the_Customer_only__and_shall_not_be_considered_granted_to_any_subsidiary_or_holding_company_of_the_Customer_"><span/></a><span class="T18">2.6        The rights provided under this clause 2 are granted to the Customer only, and shall not be considered granted to any subsidiary or holding company of the Customer.</span></h2>
+            <h1 class="P28"><a id="a__3__Additional_user_subscriptions"><span/></a><a id="a154220"/><a id="_Toc447611962"/><span class="T3">3.         Additional user subscriptions</span></h1>
+            <h2 class="P21"><a id="a__3_1The_Customer_may__from_time_to_time_during_any_Subscription_Term__purchase_additional_User_Subscriptions_in_excess_of_the_number_set_out_in_clause_2_and_Guuey_shall_grant_access_to_the_Services_and_the_Documentation_to_such_additional_Authorised_Users_in_accordance_with_the_provisions_of_this_agreement_"><span/></a><span class="T18">3.1        The Customer may, from time to time during any Subscription Term, purchase additional User Subscriptions in excess of the number set out in clause 2 and Guuey shall grant access to the Services and the Documentation to such additional Authorised Users in accordance with the provisions of this agreement.</span></h2>
+            <h2 class="P21"><a id="a__3_2If_the_Customer_wishes_to_purchase_additional_User_Subscriptions__the_Customer_shall_notify_Guuey_in_writing__Guuey_shall_evaluate_such_request_for_additional_User_Subscriptions_and_respond_to_the_Customer_with_approval_or_rejection_of_the_request_"><span/></a><a id="a911140"/><span class="T18">3.2        If the Customer wishes to purchase additional User Subscriptions, the Customer shall notify Guuey in writing. Guuey shall evaluate such request for additional User Subscriptions and respond to the Customer with approval or rejection of the request</span><span class="T18">.</span></h2>
+            <h2 class="P21"><a id="a__3_3If_Guuey_approves_the_Customer's_request_to_purchase_additional_User_Subscriptions__the_Customer_shall__within_30_days_of_the_date_of_Guuey's_invoice__pay_to_Guuey_the_relevant_fees_for_such_additional_User_Subscriptions_as_set_out_in_clause_9_and__if_such_additional_User_Subscriptions_are_purchased_by_the_Customer_part_way_through_the_Initial_Subscription_Term_or_any_Renewal_Period__as_applicable___such_fees_shall_be_pro-rated_for_the_remainder_of_the_Initial_Subscription_Term_or_then_current_Renewal_Period__as_applicable__"><span/></a><a id="a801736"/><span class="T18">3.3        If Guuey approves the Customer's request to purchase additional User Subscriptions, the Customer shall, within 30 days of the date of Guuey's invoice, pay to Guuey the relevant fees for such additional User Subscriptions as set out in clause 9 and, if such additional User Subscriptions are purchased by the Customer part way through the Initial Subscription Term or any Renewal Period (as applicable), such fees shall be pro-rated for the remainder of the Initial Subscription Term or then current Renewal Period (as applicable).</span></h2>
+            <h1 class="P28"><a id="a__4__Services"><span/></a><a id="a207627"/><a id="_Toc447611963"/><span class="T3">4.         Services</span></h1>
+            <h2 class="P21"><a id="a__4_1Guuey_shall__during_the_Subscription_Term__provide_the_Services_and_make_available_the_Documentation_to_the_Customer_on_and_subject_to_the_terms_of_this_agreement_"><span/></a><span class="T18">4.1        Guuey shall, during the Subscription Term, provide the Services and make available the Documentation to the Customer on and subject to the terms of this agreement.</span></h2>
+            <h2 class="P21"><a id="a__4_2Guuey_shall_use_commercially_reasonable_endeavours_to_make_the_Services_available_24_hours_a_day__seven_days_a_week__except_for_"><span/></a><span class="T18">4.2        Guuey shall use commercially reasonable endeavours to make the Services available 24 hours a day, seven days a week, except for:</span></h2>
+            <h3 class="P24"><a id="a___i_planned_maintenance_carried_out_during_the_maintenance_window_of__10_00_pm_to_2_00_am_UK_time___and"><span/></a><span class="T9">(i)        planned maintenance carried out during the maintenance window of [10.00 pm to 2.00 am UK time]; and</span></h3>
+            <h3 class="P24"><a id="a___ii_unscheduled_maintenance_performed_outside_Normal_Business_Hours__provided_that_Guuey_has_used_reasonable_endeavours_to_give_the_Customer_at_least___6__Normal_Business_Hours'__notice_in_advance_"><span/></a><span class="T9">(ii)        unscheduled maintenance performed outside Normal Business Hours, provided that Guuey has used reasonable endeavours to give the Customer at least [6] Normal Business Hours'] notice in advance.</span></h3>
+            <h2 class="P21"><a id="a__4_3The_Customer_may_purchase_Guuey’s_standard_customer_support_services_during_Normal_Business_Hours_in_accordance_with_Guuey's_Support_Services_Policy__Insert_Link__in_effect_at_the_time_that_the_Services_are_provided_at_Guuey’s_then_current_rates__Guuey_may_amend_the_Support_Services_Policy_in_its_sole_and_absolute_discretion_from_time_to_time_"><span/></a><span class="T18">4.3        The Customer may purchase Guuey’s standard customer support services during Normal Business Hours in accordance with Guuey's Support Services Policy [Insert Link] in effect at the time that the Services are provided at Guuey’s then current rates.  Guuey may amend the Support Services Policy in its sole and absolute discretion from time to time.  </span></h2>
+            <h1 class="P28"><a id="a__5__Charges_and_payment"><span/></a><a id="a627723"/><a id="_Toc447611968"/><span class="T3">5.         Charges and payment</span></h1>
+            <h2 class="P21"><a id="a__5_1The_Customer_shall_pay_the_Subscription_Fees_to_Guuey_for_the_User_Subscriptions_in_accordance_with_this_clause_5_"><span/></a><a id="a877439"/><span class="T18">5.1        The Customer shall pay the Subscription Fees to Guuey for the User Subscriptions in accordance with this clause 5.</span></h2>
+            <h2 class="P22"><a id="a__5_2The_Customer_shall_on_the_Effective_Date_provide_to_Guuey_valid__up-to-date_and_complete_credit_or_debit_card_details_or_approved_purchase_order_information_acceptable_to_Guuey_and_any_other_relevant_valid__up-to-date_and_complete_contact_and_billing_details_and__if_the_Customer_provides_its_credit__debit_card_details_to_Guuey__the_Customer_hereby_authorises_Guuey_to_bill_such_credit__debit_card_"><span/></a><span class="T18">5.2        The Customer shall on the Effective Date provide to Guuey valid, up-to-date and complete credit or debit card details or approved purchase order information acceptable to Guuey and any other relevant valid, up-to-date and complete contact and billing details and, if the Customer provides </span><span class="T9">its credit /debit card details to Guuey, the Customer hereby authorises Guuey to bill such credit /debit card. </span></h2>
+            <h2 class="P23"><a id="a__5_3_Payment_for_each_subscription_shall_be_as_set_out_in_Schedule_2_"><span/></a><span class="T18">5.3       Payment for each subscription shall be as set out in Schedule 2. </span></h2>
+            <h2 class="P23"><a id="a__5_4_All_Subscription_Fees_must_be_paid_monthly_in_advance_"><span/></a><span class="T18">5.4        All Subscription Fees must be paid monthly in advance.</span></h2>
+            <h2 class="P23"><a id="a__5_5_If_Guuey_has_not_received_payment_within__30_days__after_the_due_date__and_without_prejudice_to_any_other_rights_and_remedies_of_Guuey_"><span/></a><span class="T18">5.5    If Guuey has not received payment within [30 days] after the due date, and without prejudice to any other rights and remedies of Guuey:</span></h2>
+            <h3 class="P24"><a id="a___i_Guuey_may__without_liability_to_the_Customer__disable_the_Customer's_password__account_and_access_to_all_or_part_of_the_Services_and_Guuey_shall_be_under_no_obligation_to_provide_any_or_all_of_the_Services_while_the_invoice_s__concerned_remain_unpaid__and"><span/></a><span class="T9">(i)        Guuey may, without liability to the Customer, disable the Customer's password, account and access to all or part of the Services and Guuey shall be under no obligation to provide any or all of the Services while the invoice(s) concerned remain unpaid; and</span></h3>
+            <h3 class="P24"><a id="a___ii_interest_shall_accrue_on_a_daily_basis_on_such_due_amounts_at_an_annual_rate_equal_to__3___over_the_then_current_base_lending_rate_of__Guuey's_bankers_in_the_UK__from_time_to_time__commencing_on_the_due_date_and_continuing_until_fully_paid__whether_before_or_after_judgment_"><span/></a><span class="T9">(ii)        interest shall accrue on a daily basis on such due amounts at an annual rate equal to [3]% over the then current base lending rate of [Guuey's bankers in the UK] from time to time, commencing on the due date and continuing until fully paid, whether before or after judgment.</span></h3>
+            <h2 class="P21"><a id="a__5_6All_amounts_and_fees_stated_or_referred_to_in_this_agreement_"><span/></a><span class="T18">5.6        All amounts and fees stated or referred to in this agreement:</span></h2>
+            <h3 class="P24"><a id="a___i_shall_be_payable_in__pounds_sterling__"><span/></a><span class="T9">(i)        shall be payable in [pounds sterling];</span></h3>
+            <h3 class="P24"><a id="a___ii_are_non-cancellable_and_non-refundable_"><span/></a><span class="T9">(ii)        are non-cancellable and non-refundable;</span></h3>
+            <h3 class="P24"><a id="a___iii_are_exclusive_of_value_added_tax__which_shall_be_added_to_Guuey's_invoice_s__at_the_appropriate_rate_"><span/></a><span class="T9">(iii)        are exclusive of value added tax, which shall be added to Guuey's invoice(s) at the appropriate rate.</span></h3>
+            <h2 class="P21"><a id="a__5_7If__at_any_time_whilst_using_the_Services__the_Customer_exceeds_the_amount_of_disk_storage_space_specified_in_the_Documentation__Guuey_shall_charge_the_Customer__and_the_Customer_shall_pay__Guuey’s_then_current_excess_data_storage_fees__Guuey’s_excess_data_storage_fees_current_as_at_the_Effective_Date_are_set_out_in_Guuey’s_Support_Services_Policy_"><span/></a><a id="a269871"/><span class="T18">5.7        If, at any time whilst using the Services, the Customer exceeds the amount of disk storage space specified in the Documentation, Guuey shall charge the Customer, and the Customer shall pay, Guuey’s then current excess data storage fees. Guuey’s excess data storage fees current as at the Effective Date are set out in </span><span class="T18">Guuey’s Support Services Policy. </span></h2>
+            <h2 class="P21"><a id="a__5_8Guuey_shall_be_entitled_to_increase_the_Subscription_Fees__the_fees_payable_in_respect_of_the_additional_User_Subscriptions_purchased_and_or_the_excess_storage_fees_payable_at_the_start_of_each_Renewal_Period_upon_90_days'_prior_notice_to_the_Customer_"><span/></a><span class="T18">5.8        Guuey shall be entitled to increase the Subscription Fees, the fees payable in respect of the additional User Subscriptions purchased and/or the excess storage fees payable at the start of each Renewal Period upon 90 days' prior notice to the Customer.</span></h2>
+            <h1 class="P28"><a id="a__6__Customer_data"><span/></a><a id="a391801"/><a id="_Toc447611964"/><span class="T3">6.         Customer data</span></h1>
+            <h2 class="P21"><a id="a__6_1The_Customer_shall_own_all_right__title_and_interest_in_and_to_all_of_the_Customer_Data_and_shall_have_sole_responsibility_for_the_legality__reliability__integrity__accuracy_and_quality_of_the_Customer_Data_"><span/></a><span class="T18">6.1        The Customer shall own all right, title and interest in and to all of the Customer Data and shall have sole responsibility for the legality, reliability, integrity, accuracy and quality of the Customer Data.</span></h2>
+            <h2 class="P21"><a id="a__6_2Guuey_shall_follow_its_archiving_procedures_for_Customer_Data_as_set_out_in_its_Back-Up_Policy__Insert_Link__as_such_document_may_be_amended_by_Guuey_in_its_sole_discretion_from_time_to_time__In_the_event_of_any_loss_or_damage_to_Customer_Data__the_Customer's_sole_and_exclusive_remedy_shall_be_for_Guuey_to_use_reasonable_commercial_endeavours_to_restore_the_lost_or_damaged_Customer_Data_from_the_latest_back-up_of_such_Customer_Data_maintained_by_Guuey_in_accordance_with_the_archiving_procedure_described_in_its_Back-Up_Policy__Insert_Link___Guuey_shall_not_be_responsible_for_any_loss__destruction__alteration_or_disclosure_of_Customer_Data_caused_by_any_third_party_"><span/></a><span class="T18">6.2        Guuey shall follow its archiving procedures for Customer Data as set out in its Back-Up Policy [Insert Link] as such document may be amended by Guuey in </span><span class="T18">its sole discretion from time to time.  In the event of any loss or damage to Customer Data, the Customer's sole and exclusive remedy shall be for Guuey to use reasonable commercial endeavours to restore the lost or damaged Customer Data from the latest back-up of such Customer Data maintained by Guuey in accordance with the archiving procedure described in its Back-Up Policy [Insert Link]. Guuey shall not be responsible for any loss, destruction, alteration or disclosure of Customer Data caused by any third party.</span></h2>
+            <h2 class="P21"><a id="a__6_3Guuey_shall__in_providing_the_Services__comply_with_its_Privacy_Policy__Insert_Link__relating_to_the_privacy_of_the_Customer_Data_as_such_document_may_be_amended_from_time_to_time_by_Guuey_in_its_sole_discretion_"><span/></a><span class="T18">6.3        Guuey shall, in providing the Services, comply with its Privacy Policy [Insert Link] relating to the privacy of the Customer Data as such document may be amended from time to time by Guuey in its sole discretion.</span></h2>
+            <h2 class="P21"><a id="a__6_4If_Guuey_processes_any_personal_data_on_the_Customer's_behalf_when_performing_its_obligations_under_this_agreement__the_parties_record_their_intention_that_the_Customer_shall_be_the_data_controller_and_Guuey_shall_be_a_data_processor_and_in_any_such_case_"><span/></a><span class="T18">6.4        If Guuey processes any personal data on the Customer's behalf when performing its obligations under this agreement, the parties record their intention that the Customer shall be the data controller and Guuey shall be a data processor and in any such case:</span></h2>
+            <h3 class="P24"><a id="a___i_the_Customer_acknowledges_and_agrees_that_the_personal_data_may_be_transferred_or_stored_outside_the_EEA_or_the_country_where_the_Customer_and_the_Authorised_Users_are_located_in_order_to_carry_out_the_Services_and_Guuey's_other_obligations_under_this_agreement_"><span/></a><span class="T9">(i)        the Customer acknowledges and agrees that the personal data may be transferred or stored outside the EEA or the country where the Customer and the Authorised Users are located in order to carry out the Services and Guuey's other obligations under this agreement;</span></h3>
+            <h3 class="P24"><a id="a___ii__the_Customer_shall_ensure_that_the_Customer_is_entitled_to_transfer_the_relevant_personal_data_to_Guuey_so_that_Guuey_may_lawfully_use__process_and_transfer_the_personal_data_in_accordance_with_this_agreement_on_the_Customer's_behalf_"><span/></a><span class="T9">(ii)         the Customer shall ensure that the Customer is entitled to transfer the relevant personal data to Guuey so that Guuey may lawfully use, process and transfer the personal data in accordance with this agreement on the Customer's behalf;</span></h3>
+            <h3 class="P24"><a id="a___iii_the_Customer_shall_ensure_that_the_relevant_third_parties_have_been_informed_of__and_have_given_their_consent_to__such_use__processing__and_transfer_as_required_by_all_applicable_data_protection_legislation_"><span/></a><span class="T9">(iii)        the Customer shall ensure that the relevant third parties have been informed of, and have given their consent to, such use, processing, and transfer as required by all applicable data protection legislation;</span></h3>
+            <h3 class="P24"><a id="a___iv__each_party_shall_take_appropriate_technical_and_organisational_measures_against_unauthorised_or_unlawful_processing_of_the_personal_data_or_its_accidental_loss__destruction_or_damage_"><span/></a><span class="T9"> (iv)         each party shall take appropriate technical and organisational measures against unauthorised or unlawful processing of the personal data or its accidental loss, destruction or damage.</span></h3>
+            <h1 class="P28"><a id="a__7__Guuey's_obligations"><span/></a><a id="a646812"/><a id="_Toc447611966"/><span class="T3">7.         Guuey's obligations</span></h1>
+            <h2 class="P21"><a id="a__7_1Guuey_undertakes_that_the_Services_will_be_performed_with_reasonable_skill_and_care_"><span/></a><a id="a836484"/><span class="T18">7.1        Guuey undertakes that the Services will be performed with reasonable skill and care.</span></h2>
+            <h2 class="P21"><a id="a__7_2The_undertaking_at_clause_7_1_shall_not_apply_to_the_extent_of_any_non-conformance_which_is_caused_by_use_of_the_Services_contrary_to_Guuey’s_instructions__or_modification_or_alteration_of_the_Services_by_any_party_other_than_Guuey_or_Guuey’s_duly_authorised_contractors_or_agents_"><span/></a><span class="T18">7.2        The undertaking at clause 7.1 shall not apply to the extent of any non-conformance which is caused by use of the Services contrary to Guuey’s instructions, or modification or alteration of the Services by any party other than Guuey or Guuey’s duly authorised contractors or agents. </span></h2>
+            <h2 class="P21"><a id="a__7_3Guuey_"><span/></a><span class="T18">7.3        Guuey:</span></h2>
+            <h3 class="P24"><a id="a___i_does_not_warrant_that_the_Customer's_use_of_the_Services_will_be_uninterrupted_or_error-free__or_that_the_Services__Documentation_and_or_the_information_obtained_by_the_Customer_through_the_Services_will_meet_the_Customer's_requirements__and"><span/></a><span class="T9">(i)        does not warrant that the Customer's use of the Services will be uninterrupted or error-free; or that the Services, Documentation and/or the information obtained by the Customer through the Services will meet the Customer's requirements; and</span></h3>
+            <h3 class="P24"><a id="a___ii_is_not_responsible_for_any_delays__delivery_failures__or_any_other_loss_or_damage_resulting_from_the_transfer_of_data_over_communications_networks_and_facilities__including_the_internet__and_the_Customer_acknowledges_that_the_Services_and_Documentation_may_be_subject_to_limitations__delays_and_other_problems_inherent_in_the_use_of_such_communications_facilities_"><span/></a><span class="T9">(ii)        is not responsible for any delays, delivery failures, or any other loss or damage resulting from the transfer of data over communications networks and facilities, including the internet, and the Customer acknowledges that the Services and Documentation may be subject to limitations, delays and other problems inherent in the use of such communications facilities.</span></h3>
+            <h2 class="P21"><a id="a__7_4This_agreement_shall_not_prevent_Guuey_from_entering_into_similar_agreements_with_third_parties__or_from_independently_developing__using__selling_or_licensing_documentation__products_and_or_services_which_are_similar_to_those_provided_under_this_agreement_"><span/></a><span class="T18">7.4        This agreement shall not prevent Guuey from entering into similar agreements with third parties, or from independently developing, using, selling or licensing documentation, products and/or services which are similar to those provided under this agreement.</span></h2>
+            <h1 class="P28"><a id="a__8__Customer's_obligations"><span/></a><a id="a783898"/><a id="_Toc447611967"/><span class="T3">8.         Customer's obligations</span></h1>
+            <p class="P29"><span class="T9">8.1        The Customer shall:</span></p>
+            <h3 class="P24"><a id="a___i_provide_Guuey_with_"><span/></a><span class="T9">(i)        provide Guuey with:</span></h3>
+            <h4 class="P31"><a id="a___a__all_necessary_co-operation_in_relation_to_this_agreement__and"><span/></a><span class="T9">(a)         all necessary co-operation in relation to this agreement; and</span></h4>
+            <h4 class="P31"><a id="a___b_all_necessary_access_to_such_information_as_may_be_required_by_Guuey_"><span/></a><span class="T9">(b)        all necessary access to such information as may be required by Guuey;</span></h4>
+            <p class="P32"><span class="T9">in order to provide the Services, including but not limited to Customer Data, security access information and configuration services;</span></p>
+            <h3 class="P24"><a id="a___ii_comply_with_all_applicable_laws_and_regulations_with_respect_to_its_activities_under_this_agreement_"><span/></a><span class="T9">(ii)        comply with all applicable laws and regulations with respect to its activities under this agreement;</span></h3>
+            <h3 class="P24"><a id="a___iii_carry_out_all_other_Customer_responsibilities_set_out_in_this_agreement_in_a_timely_and_efficient_manner__In_the_event_of_any_delays_in_the_Customer's_provision_of_such_assistance_as_agreed_by_the_parties__Guuey_may_adjust_any_agreed_timetable_or_delivery_schedule_as_reasonably_necessary_"><span/></a><span class="T9">(iii)        carry out all other Customer responsibilities set out in this agreement in a timely and efficient manner. In the event of any delays in the </span><span class="T9">Customer's provision of such assistance as agreed by the parties, Guuey may adjust any agreed timetable or delivery schedule as reasonably necessary;</span></h3>
+            <h3 class="P24"><a id="a___iv_ensure_that_the_Authorised_Users_use_the_Services_and_the_Documentation_in_accordance_with_the_terms_and_conditions_of_this_agreement_and_shall_be_responsible_for_any_Authorised_User's_breach_of_this_agreement_"><span/></a><span class="T9">(iv)        ensure that the Authorised Users use the Services and the Documentation in accordance with the terms and conditions of this agreement and shall be responsible for any Authorised User's breach of this agreement;</span></h3>
+            <h3 class="P24"><a id="a___v_obtain_and_shall_maintain_all_necessary_licences__consents__and_permissions_necessary_for_Guuey__its_contractors_and_agents_to_perform_their_obligations_under_this_agreement__including_without_limitation_the_Services_"><span/></a><span class="T9">(v)        obtain and shall maintain all necessary licences, consents, and permissions necessary for Guuey, its contractors and agents to perform their obligations under this agreement, including without limitation the Services;</span></h3>
+            <h3 class="P24"><a id="a___vi_ensure_that_its_network_and_systems_comply_with_the_relevant_specifications_provided_by_Guuey_from_time_to_time__and"><span/></a><span class="T9">(vi)        ensure that its network and systems comply with the relevant specifications provided by Guuey from time to time; and</span></h3>
+            <h3 class="P24"><a id="a___vii_be_solely_responsible_for_procuring_and_maintaining_its_network_connections_and_telecommunications_links_from_its_systems_to_Guuey’s_data_centres__and_all_problems__conditions__delays__delivery_failures_and_all_other_loss_or_damage_arising_from_or_relating_to_the_Customer's_network_connections_or_telecommunications_links_or_caused_by_the_internet_"><span/></a><span class="T9">(vii)        be solely responsible for procuring and maintaining its network connections and telecommunications links from its systems to Guuey’s data centres, and all problems, conditions, delays, delivery failures and all other loss or damage arising from or relating to the Customer's network connections or telecommunications links or caused by the internet.</span></h3>
+            <h1 class="P28"><a id="a__9__Proprietary_rights"><span/></a><a id="a872071"/><a id="_Toc447611969"/><span class="T3">9.          Proprietary rights</span></h1>
+            <h2 class="P21"><a id="a__9_1The_Customer_acknowledges_and_agrees_that_Guuey_and_or_its_licensors_own_all_intellectual_property_rights_in_the_Services_and_the_Documentation__Except_as_expressly_stated_herein__this_agreement_does_not_grant_the_Customer_any_rights_to__or_in__patents__copyright__database_right__trade_secrets__trade_names__trade_marks__whether_registered_or_unregistered___or_any_other_rights_or_licences_in_respect_of_the_Services_or_the_Documentation_"><span/></a><span class="T18">9.1        The Customer acknowledges and agrees that Guuey and/or its licensors own all intellectual property rights in the Services and the Documentation. Except as expressly stated herein, this agreement does not grant the Customer any rights to, or in, patents, copyright, database right, trade secrets, trade names, trade marks (whether registered or unregistered), or any other rights or licences in respect of the Services or the Documentation.</span></h2>
+            <h1 class="P28"><a id="a__10__Confidentiality"><span/></a><a id="a622355"/><a id="_Toc447611970"/><span class="T3">10.                 Confidentiality </span></h1>
+            <h2 class="P21"><a id="a__10_1Each_party_may_be_given_access_to_Confidential_Information_from_the_other_party_in_order_to_perform_its_obligations_under_this_agreement__A_party's_Confidential_Information_shall_not_be_deemed_to_include_information_that_"><span/></a><span class="T18">10.1        Each party may be given access to Confidential Information from the other party in order to perform its obligations under this agreement. A party's Confidential Information shall not be deemed to include information that:</span></h2>
+            <h3 class="P24"><a id="a___i_is_or_becomes_publicly_known_other_than_through_any_act_or_omission_of_the_receiving_party_"><span/></a><span class="T9">(i)        is or becomes publicly known other than through any act or omission of the receiving party;</span></h3>
+            <h3 class="P24"><a id="a___ii_was_in_the_other_party's_lawful_possession_before_the_disclosure_"><span/></a><span class="T9">(ii)        was in the other party's lawful possession before the disclosure;</span></h3>
+            <h3 class="P24"><a id="a___iii_is_lawfully_disclosed_to_the_receiving_party_by_a_third_party_without_restriction_on_disclosure_"><span/></a><span class="T9">(iii)        is lawfully disclosed to the receiving party by a third party without restriction on disclosure;</span></h3>
+            <h3 class="P24"><a id="a___iv_is_independently_developed_by_the_receiving_party__which_independent_development_can_be_shown_by_written_evidence__or"><span/></a><span class="T9">(iv)        is independently developed by the receiving party, which independent development can be shown by written evidence; or</span></h3>
+            <h3 class="P24"><a id="a___v_is_required_to_be_disclosed_by_law__by_any_court_of_competent_jurisdiction_or_by_any_regulatory_or_administrative_body_"><span/></a><span class="T9">(v)        is required to be disclosed by law, by any court of competent jurisdiction or by any regulatory or administrative body.</span></h3>
+            <h2 class="P21"><a id="a__10_2Each_party_shall_hold_the_other's_Confidential_Information_in_confidence_and__unless_required_by_law__not_make_the_other's_Confidential_Information_available_to_any_third_party__or_use_the_other's_Confidential_Information_for_any_purpose_other_than_the_implementation_of_this_agreement_"><span/></a><span class="T18">10.2        Each party shall hold the other's Confidential Information in confidence and, unless required by law, not make the other's Confidential Information available to any third party, or use the other's Confidential Information for any purpose other than the implementation of this agreement.</span></h2>
+            <h2 class="P21"><a id="a__10_3Each_party_shall_take_all_reasonable_steps_to_ensure_that_the_other's_Confidential_Information_to_which_it_has_access_is_not_disclosed_or_distributed_by_its_employees_or_agents_in_violation_of_the_terms_of_this_agreement_"><span/></a><span class="T18">10.3        Each party shall take all reasonable steps to ensure that the other's Confidential Information to which it has access is not disclosed or distributed by its employees or agents in violation of the terms of this agreement.</span></h2>
+            <h2 class="P21"><a id="a__10_4Neither_party_shall_be_responsible_for_any_loss__destruction__alteration_or_disclosure_of_Confidential_Information_caused_by_any_third_party_"><span/></a><span class="T18">10.4        Neither party shall be responsible for any loss, destruction, alteration or disclosure of Confidential Information caused by any third party.</span></h2>
+            <h2 class="P21"><a id="a__10_5The_Customer_acknowledges_that_details_of_the_Services__and_the_results_of_any_performance_tests_of_the_Services__constitute_Guuey's_Confidential_Information_"><span/></a><a id="a882752"/><span class="T18">10.5        The Customer acknowledges that details of the Services, and the results of any performance tests of the Services, constitute Guuey's Confidential Information.</span></h2>
+            <h2 class="P21"><a id="a__10_6Guuey_acknowledges_that_the_Customer_Data_is_the_Confidential_Information_of_the_Customer_"><span/></a><span class="T18">10.6        Guuey acknowledges that the Customer Data is the Confidential Information of the Customer.</span></h2>
+            <h2 class="P21"><a id="a__10_7No_party_shall_make__or_permit_any_person_to_make__any_public_announcement_concerning_this_agreement_without_the_prior_written_consent_of_the_other_parties__such_consent_not_to_be_unreasonably_withheld_or_delayed___except_as_required_by_law__any_governmental_or_regulatory_authority__including__without_limitation__any_relevant_securities_exchange___any_court_or_other_authority_of_competent_jurisdiction_"><span/></a><span class="T18">10.7        No party shall make, or permit any person to make, any public announcement concerning this agreement without the prior written consent of the other parties (such consent not to be unreasonably withheld or delayed), except as required by law, any governmental or regulatory authority (including, without limitation, any relevant securities exchange), any court or other authority of competent jurisdiction.</span></h2>
+            <h1 class="P33"><a id="a__11__Indemnity"><span/></a><a id="a333959"/><a id="_Toc447611971"/><span class="T19">11</span><span class="T18">.  </span><span class="T3">Indemnity</span></h1>
+            <h2 class="P21"><a id="a__11_1The_Customer_shall_defend__indemnify_and_hold_harmless_Guuey_against_claims__actions__proceedings__losses__damages__expenses_and_costs__including_without_limitation_court_costs_and_reasonable_legal_fees__arising_out_of_or_in_connection_with_the_Customer's_use_of_the_Services_and_or_Documentation__provided_that_"><span/></a><span class="T18">11.1        The Customer shall defend, indemnify and hold harmless Guuey against claims, actions, proceedings, losses, damages, expenses and costs </span><span class="T18">(including without limitation court costs and reasonable legal fees) arising out of or in connection with the Customer's use of the Services and/or Documentation, provided that:</span></h2>
+            <h3 class="P24"><a id="a___i_the_Customer_is_given_prompt_notice_of_any_such_claim_"><span/></a><span class="T9">(i)        the Customer is given prompt notice of any such claim;</span></h3>
+            <h3 class="P24"><a id="a___ii_Guuey_provides_reasonable_co-operation_to_the_Customer_in_the_defence_and_settlement_of_such_claim__at_the_Customer's_expense__and"><span/></a><span class="T9">(ii)        Guuey provides reasonable co-operation to the Customer in the defence and settlement of such claim, at the Customer's expense; and</span></h3>
+            <h3 class="P24"><a id="a___iii_the_Customer_is_given_sole_authority_to_defend_or_settle_the_claim_"><span/></a><span class="T9">(iii)        the Customer is given sole authority to defend or settle the claim.</span></h3>
+            <h2 class="P21"><a id="a__11_2Guuey_shall_defend_the_Customer__its_officers__directors_and_employees_against_any_claim_that_the_Services_or_Documentation_infringes_any__United_Kingdom__patent_effective_as_of_the_Effective_Date__copyright__trade_mark__database_right_or_right_of_confidentiality__and_shall_indemnify_the_Customer_for_any_amounts_awarded_against_the_Customer_in_judgment_or_settlement_of_such_claims__provided_that_"><span/></a><a id="a455499"/><span class="T18">11.2        Guuey shall defend the Customer, its officers, directors and employees against any claim that the Services or Documentation infringes any [United Kingdom] patent effective as of the Effective Date, copyright, trade mark, database right or right of confidentiality, and shall indemnify the Customer for any amounts awarded against the Customer in judgment or settlement of such claims, provided that:</span></h2>
+            <h3 class="P24"><a id="a___i_Guuey_is_given_prompt_notice_of_any_such_claim_"><span/></a><span class="T9">(i)        Guuey is given prompt notice of any such claim;</span></h3>
+            <h3 class="P24"><a id="a___ii_the_Customer_provides_reasonable_co-operation_to_Guuey_in_the_defence_and_settlement_of_such_claim__at_Guuey’s_expense__and"><span/></a><span class="T9">(ii)        the Customer provides reasonable co-operation to Guuey in the defence and settlement of such claim, at Guuey’s expense; and</span></h3>
+            <h3 class="P24"><a id="a___iii_Guuey_is_given_sole_authority_to_defend_or_settle_the_claim_"><span/></a><span class="T9">(iii)        Guuey is given sole authority to defend or settle the claim.</span></h3>
+            <h2 class="P21"><a id="a__11_3In_the_defence_or_settlement_of_any_claim__Guuey_may_procure_the_right_for_the_Customer_to_continue_using_the_Services__replace_or_modify_the_Services_so_that_they_become_non-infringing_or__if_such_remedies_are_not_reasonably_available__terminate_this_agreement_on__2__Business_Days'_notice_to_the_Customer_without_any_additional_liability_or_obligation_to_pay_liquidated_damages_or_other_additional_costs_to_the_Customer_"><span/></a><span class="T18">11.3        In the defence or settlement of any claim, Guuey may procure the right for the Customer to continue using the Services, replace or modify the Services so that they become non-infringing or, if such remedies are not reasonably available, terminate this agreement on [2] Business Days' notice to the Customer without any additional liability or obligation to pay liquidated damages or other additional costs to the Customer.</span></h2>
+            <h2 class="P21"><a id="a__11_4In_no_event_shall_Guuey__its_employees__agents_and_sub-contractors_be_liable_to_the_Customer_to_the_extent_that_the_alleged_infringement_is_based_on_"><span/></a><span class="T18">11.4        In no event shall Guuey, its employees, agents and sub-contractors be liable to the Customer to the extent that the alleged infringement is based on:</span></h2>
+            <h3 class="P24"><a id="a___i_a_modification_of_the_Services_or_Documentation_by_anyone_other_than_Guuey__or"><span/></a><span class="T9">(i)        a modification of the Services or Documentation by anyone other than Guuey; or</span></h3>
+            <h3 class="P24"><a id="a___ii_the_Customer's_use_of_the_Services_or_Documentation_in_a_manner_contrary_to_the_instructions_given_to_the_Customer_by_Guuey__or"><span/></a><span class="T9">(ii)        the Customer's use of the Services or Documentation in a manner contrary to the instructions given to the Customer by Guuey; or</span></h3>
+            <h3 class="P24"><a id="a___iii_the_Customer's_use_of_the_Services_or_Documentation_after_notice_of_the_alleged_or_actual_infringement_from_Guuey_or_any_appropriate_authority_"><span/></a><span class="T9">(iii)        the Customer's use of the Services or Documentation after notice of the alleged or actual infringement from Guuey or any appropriate authority.</span></h3>
+            <h2 class="P21"><a id="a__11_5The_foregoing_and_clause_12_states_the_Customer's_sole_and_exclusive_rights_and_remedies__and_Guuey’s__including_Guuey's_employees'__agents'_and_sub-contractors'__entire_obligations_and_liability__for_infringement_of_any_patent__copyright__trade_mark__database_right_or_right_of_confidentiality_"><span/></a><span class="T18">11.5        The foregoing and clause 12 states the Customer's sole and exclusive rights and remedies, and Guuey’s (including Guuey's employees', agents' and sub-contractors') entire obligations and liability, for infringement of any patent, copyright, trade mark, database right or right of confidentiality.</span></h2>
+            <h1 class="P33"><a id="a__12__Limitation_of_liability"><span/></a><a id="a990385"/><a id="_Toc447611972"/><span class="T3">12.  Limitation of liability</span></h1>
+            <h2 class="P21"><a id="a__12_1This_clause_12_sets_out_the_entire_financial_liability_of_Guuey__including_any_liability_for_the_acts_or_omissions_of_its_employees__agents_and_sub-contractors__to_the_Customer_"><span/></a><span class="T18">12.1        This clause 12 sets out the entire financial liability of Guuey (including any liability for the acts or omissions of its employees, agents and sub-contractors) to the Customer:</span></h2>
+            <h3 class="P24"><a id="a___i_arising_under_or_in_connection_with_this_agreement_"><span/></a><span class="T9">(i)        arising under or in connection with this agreement;</span></h3>
+            <h3 class="P24"><a id="a___ii_in_respect_of_any_use_made_by_the_Customer_of_the_Services_and_Documentation_or_any_part_of_them__and"><span/></a><span class="T9">(ii)        in respect of any use made by the Customer of the Services and Documentation or any part of them; and</span></h3>
+            <h3 class="P24"><a id="a___iii_in_respect_of_any_representation__statement_or_tortious_act_or_omission__including_negligence__arising_under_or_in_connection_with_this_agreement_"><span/></a><span class="T9">(iii)        in respect of any representation, statement or tortious act or omission (including negligence) arising under or in connection with this agreement.</span></h3>
+            <h2 class="P21"><a id="a__12_2Except_as_expressly_and_specifically_provided_in_this_agreement_"><span/></a><a id="a710080"/><span class="T18">12.2        Except as expressly and specifically provided in this agreement:</span></h2>
+            <h3 class="P24"><a id="a___i_the_Customer_assumes_sole_responsibility_for_results_obtained_from_the_use_of_the_Services_and_the_Documentation_by_the_Customer__and_for_conclusions_drawn_from_such_use__Guuey_shall_have_no_liability_for_any_damage_caused_by_errors_or_omissions_in_any_information__instructions_or_scripts_provided_to_Guuey_by_the_Customer_in_connection_with_the_Services__or_any_actions_taken_by_Guuey_at_the_Customer's_direction_"><span/></a><span class="T9">(i)        the Customer assumes sole responsibility for results obtained from the use of the Services and the Documentation by the Customer, and for conclusions drawn from such use. Guuey shall have no liability for any damage caused by errors or omissions in any information, instructions or scripts provided to Guuey by the Customer in connection with the Services, or any actions taken by Guuey at the Customer's direction;</span></h3>
+            <h3 class="P24"><a id="a___ii_all_warranties__representations__conditions_and_all_other_terms_of_any_kind_whatsoever_implied_by_statute_or_common_law_are__to_the_fullest_extent_permitted_by_applicable_law__excluded_from_this_agreement__and"><span/></a><span class="T9">(ii)        all warranties, representations, conditions and all other terms of any kind whatsoever implied by statute or common law are, to the fullest extent permitted by applicable law, excluded from this agreement; and</span></h3>
+            <h3 class="P24"><a id="a___iii_the_Services_and_the_Documentation_are_provided_to_the_Customer_on_an_&quot;as_is&quot;_basis_"><span/></a><span class="T9">(iii)        the Services and the Documentation are provided to the Customer on an "as is" basis.</span></h3>
+            <h2 class="P21"><a id="a__12_3Nothing_in_this_agreement_excludes_the_liability_of_Guuey_"><span/></a><a id="a445638"/><span class="T18">12.3        Nothing in this agreement excludes the liability of Guuey:</span></h2>
+            <h3 class="P24"><a id="a___i_for_death_or_personal_injury_caused_by_Guuey's_negligence__or"><span/></a><span class="T9">(i)        for death or personal injury caused by Guuey's negligence; or</span></h3>
+            <h3 class="P24"><a id="a___ii_for_fraud_or_fraudulent_misrepresentation_"><span/></a><span class="T9">(ii)        for fraud or fraudulent misrepresentation. </span></h3>
+            <h2 class="P21"><a id="a__12_4Guuey_shall_not_be_liable_whether_in_tort__including_for__negligence_or__breach_of_statutory_duty___contract__misrepresentation__restitution_or_otherwise_for_any_loss_of_profits__loss_of_business__depletion_of_goodwill_and_or_similar_losses_or_loss_or_corruption_of_data_or_information__or_pure_economic_loss__or_for_any_special__indirect_or_consequential_loss__costs__damages__charges_or_expenses_however_arising_under_this_agreement__and"><span/></a><span class="T18">12.4        </span><span class="T9">Guuey shall not be liable whether in tort (including for [negligence or] breach of statutory duty), contract, misrepresentation, restitution or otherwise for any loss of profits, loss of business, depletion of goodwill and/or similar losses or loss or corruption of data or information, or pure economic loss, or for any special, indirect or consequential loss, costs, damages, charges or expenses however arising under this agreement; and</span><a id="a97199"/></h2>
+            <h2 class="P21"><a id="a__12_5Guuey’s_total_aggregate_liability_in_contract__in_respect_of_the_indemnity_at_clause_11___tort__including_negligence_or_breach_of_statutory_duty___misrepresentation__restitution_or_otherwise__arising_in_connection_with_the_performance_or_contemplated_performance_of_this_agreement_shall_be_limited_to_£500_00_the_total_Subscription_Fees_paid_for_the_User_Subscriptions_during_the_12_months_immediately_preceding_the_date_on_which_the_claim_arose_whichever_is_the_lesser_amount_"><span/></a><span class="T18"> 12.5        </span><span class="T9">Guuey’s total aggregate liability in contract [in respect of the indemnity at clause 11), tort (including negligence or breach of statutory duty), misrepresentation, restitution or otherwise, arising in connection with the performance or contemplated performance of this agreement shall be limited to £500.00 the total Subscription Fees paid for the User Subscriptions during the 12 months immediately preceding the date on which the claim arose whichever is the lesser amount.</span></h2>
+            <h1 class="P33"><a id="a__13__Term_and_termination"><span/></a><a id="a236056"/><a id="_Toc447611973"/><span class="T3">13. Term and termination</span></h1>
+            <h2 class="P21"><a id="a__13_1This_agreement_shall__unless_otherwise_terminated_as_provided_in_this_clause_13__commence_on_the_Effective_Date_and_shall_continue_for_the_Initial_Subscription_Term_and__thereafter__this_agreement_shall_be_automatically_renewed_for_successive_periods_of_12_months__each_a_Renewal_Period___unless_"><span/></a><a id="a819484"/><span class="T18">13.1        This agreement shall, unless otherwise terminated as provided in this clause 13, commence on the Effective Date and shall continue for the Initial Subscription Term and, thereafter, this agreement shall be automatically renewed for successive periods of 12 months (each a </span><span class="T19">Renewal Period</span><span class="T18">), unless: </span></h2>
+            <h3 class="P24"><a id="a___i_either_party_notifies_the_other_party_of_termination__in_writing__at_least_30_days_before_the_end_of_the_Initial_Subscription_Term_or_any_Renewal_Period__in_which_case_this_agreement_shall_terminate_upon_the_expiry_of_the_applicable_Initial_Subscription_Term_or_Renewal_Period__or"><span/></a><span class="T9">(i)        either party notifies the other party of termination, in writing, at least 30 days before the end of the Initial Subscription Term or any Renewal Period, in which case this agreement shall terminate upon the expiry of the applicable Initial Subscription Term or Renewal Period; or</span></h3>
+            <h3 class="P24"><a id="a___ii_otherwise_terminated_in_accordance_with_the_provisions_of_this_agreement_"><span/></a><span class="T9">(ii)        otherwise terminated in accordance with the provisions of this agreement;</span></h3>
+            <p class="P25"><span class="T9">and the Initial Subscription Term together with any subsequent Renewal Periods shall constitute the </span><span class="T19">Subscription Term</span><span class="T9">.</span></p>
+            <h2 class="P21"><a id="a__13_2Without_affecting_any_other_right_or_remedy_available_to_it__either_party_may_terminate_this_agreement_with_immediate_effect_by_giving_written_notice_to_the_other_party_if_"><span/></a><span class="T18">13.2        Without affecting any other right or remedy available to it, either party may terminate this agreement with immediate effect by giving written notice to the other party if:</span></h2>
+            <h3 class="P24"><a id="a___i_the_other_party_fails_to_pay_any_amount_due_under_this_agreement_on_the_due_date_for_payment_and_remains_in_default_not_less_than_7_days_after_being_notified_in_writing_to_make_such_payment_"><span/></a><span class="T9">(i)        the other party fails to pay any amount due under this agreement on the due date for payment and remains in default not less than 7 days after being notified in writing to make such payment;</span></h3>
+            <h3 class="P24"><a id="a___ii_the_other_party_commits_a_material_breach_of_any_other_term_of_this_agreement_which_breach_is_irremediable_or__if_such_breach_is_remediable__fails_to_remedy_that_breach_within_a_period_of_7_days_after_being_notified_in_writing_to_do_so_"><span/></a><span class="T9">(ii)        the other party commits a material breach of any other term of this agreement which breach is irremediable or (if such breach is remediable) fails to remedy that breach within a period of 7 days after being notified in writing to do so;</span></h3>
+            <h3 class="P24"><a id="a___iii_the_other_party_repeatedly_breaches_any_of_the_terms_of_this_agreement_in_such_a_manner_as_to_reasonably_justify_the_opinion_that_its_conduct_is_inconsistent_with_it_having_the_intention_or_ability_to_give_effect_to_the_terms_of_this_agreement_"><span/></a><span class="T9">(iii)        the other party repeatedly breaches any of the terms of this agreement in such a manner as to reasonably justify the opinion that its conduct is inconsistent with it having the intention or ability to give effect to the terms of this agreement;</span></h3>
+            <h3 class="P24"><a id="a___iv_the_other_party_suspends__or_threatens_to_suspend__payment_of_its_debts_or_is_unable_to_pay_its_debts_as_they_fall_due_or_admits_inability_to_pay_its_debts_or_is_deemed_unable_to_pay_its_debts_within_the_meaning_of_section_123_of_the_Insolvency_Act_1986_"><span/></a><a id="a804694"/><span class="T9">(iv)        the other party suspends, or threatens to suspend, payment of its debts or is unable to pay its debts as they fall due or admits inability to pay its debts or is deemed unable to pay its debts within the meaning of section 123 of the Insolvency Act 1986;</span></h3>
+            <h3 class="P24"><a id="a___v_the_other_party_commences_negotiations_with_all_or_any_class_of_its_creditors_with_a_view_to_rescheduling_any_of_its_debts__or_makes_a_proposal_for_or_enters_into_any_compromise_or_arrangement_with_its_creditors_other_than_for_the_sole_purpose_of_a_scheme_for_a_solvent_amalgamation_of_that_other_party_with_one_or_more_other_companies_or_the_solvent_reconstruction_of_that_other_party_"><span/></a><span class="T9">(v)        the other party commences negotiations with all or any class of its creditors with a view to rescheduling any of its debts, or makes a proposal for or enters into any compromise or arrangement with its creditors other than for the sole purpose of a scheme for a solvent amalgamation of that other party with one or more other companies or the solvent reconstruction of that other party;</span></h3>
+            <h3 class="P24"><a id="a___vi_a_petition_is_filed__a_notice_is_given__a_resolution_is_passed__or_an_order_is_made__for_or_in_connection_with_the_winding_up_of_that_other_party_other_than_for_the_sole_purpose_of_a_scheme_for_a_solvent_amalgamation_of_that_other_party_with_one_or_more_other_companies_or_the_solvent_reconstruction_of_that_other_party_"><span/></a><span class="T9">(vi)        a petition is filed, a notice is given, a resolution is passed, or an order is made, for or in connection with the winding up of that other party other than for the sole purpose of a scheme for a solvent amalgamation of that other party with one or more other companies or the solvent reconstruction of that other party;</span></h3>
+            <h3 class="P24"><a id="a___vii_an_application_is_made_to_court__or_an_order_is_made__for_the_appointment_of_an_administrator__or_if_a_notice_of_intention_to_appoint_an_administrator_is_given_or_if_an_administrator_is_appointed__over_the_other_party_"><span/></a><span class="T9">(vii)        an application is made to court, or an order is made, for the appointment of an administrator, or if a notice of intention to appoint an administrator is given or if an administrator is appointed, over the other party;</span></h3>
+            <h3 class="P24"><a id="a___viii_the_holder_of_a_qualifying_floating_charge_over_the_assets_of_that_other_party_has_become_entitled_to_appoint_or_has_appointed_an_administrative_receiver_"><span/></a><span class="T9">(viii)        the holder of a qualifying floating charge over the assets of that other party has become entitled to appoint or has appointed an administrative receiver;</span></h3>
+            <h3 class="P24"><a id="a___ix__a_person_becomes_entitled_to_appoint_a_receiver_over_the_assets_of_the_other_party_or_a_receiver_is_appointed_over_the_assets_of_the_other_party_"><span/></a><span class="T9">(ix) a person becomes entitled to appoint a receiver over the assets of the other party or a receiver is appointed over the assets of the other party;</span></h3>
+            <h3 class="P24"><a id="a___x_a_creditor_or_encumbrancer_of_the_other_party_attaches_or_takes_possession_of__or_a_distress__execution__sequestration_or_other_such_process_is_levied_or_enforced_on_or_sued_against__the_whole_or_any_part_of_the_other_party's_assets_and_such_attachment_or_process_is_not_discharged_within__14__days_"><span/></a><a id="a494390"/><span class="T9">(x)        a creditor or encumbrancer of the other party attaches or takes possession of, or a distress, execution, sequestration or other such process is levied or enforced on or sued against, the whole or any part of the other party's assets and such attachment or process is not discharged within [14] days;</span></h3>
+            <h3 class="P24"><a id="a___xi_any_event_occurs__or_proceeding_is_taken__with_respect_to_the_other_party_in_any_jurisdiction_to_which_it_is_subject_that_has_an_effect_equivalent_or_similar_to_any_of_the_events_mentioned_in_clause__iv__to_clause__xii___inclusive__"><span/></a><span class="T9">(xi)        any event occurs, or proceeding is taken, with respect to the other party in any jurisdiction to which it is subject that has an effect equivalent or similar to any of the events mentioned in clause (iv) to clause (xii) (inclusive);</span></h3>
+            <h3 class="P24"><a id="a___xii_the_other_party_suspends_or_ceases__or_threatens_to_suspend_or_cease__carrying_on_all_or_a_substantial_part_of_its_business__or"><span/></a><span class="T9">(xii)        the other party suspends or ceases, or threatens to suspend or cease, carrying on all or a substantial part of its business; or</span></h3>
+            <h3 class="P24"><a id="a___xiii_there_is_a_change_of_control_of_the_other_party__or"><span/></a><span class="T9">(xiii)        there is a change of control of the other party; or</span></h3>
+            <h2 class="P21"><a id="a__13_3On_termination_of_this_agreement_for_any_reason_"><span/></a><span class="T18">13.3        On termination of this agreement for any reason:</span></h2>
+            <h3 class="P24"><a id="a___i_all_licences_granted_under_this_agreement_shall_immediately_terminate_"><span/></a><span class="T9">(i)        all licences granted under this agreement shall immediately terminate; </span></h3>
+            <h3 class="P24"><a id="a___ii_each_party_shall_return_and_make_no_further_use_of_any_equipment__property__Documentation_and_other_items__and_all_copies_of_them__belonging_to_the_other_party_"><span/></a><span class="T9">(ii)        each party shall return and make no further use of any equipment, property, Documentation and other items (and all copies of them) belonging to the other party;</span></h3>
+            <h3 class="P24"><a id="a___iii_Guuey_may_destroy_or_otherwise_dispose_of_any_of_the_Customer_Data_in_its_possession_unless_Guuey_receives__no_later_than_ten_days_after_the_effective_date_of_the_termination_of_this_agreement__a_written_request_for_the_delivery_to_the_Customer_of_the_then_most_recent_back-up_of_the_Customer_Data__Guuey_shall_use_reasonable_commercial_endeavours_to_deliver_the_back-up_to_the_Customer_within_30_days_of_its_receipt_of_such_a_written_request__provided_that_the_Customer_has__at_that_time__paid_all_fees_and_charges_outstanding_at_and_resulting_from_termination__whether_or_not_due_at_the_date_of_termination___The_Customer_shall_pay_all_reasonable_expenses_incurred_by_Guuey_in_returning_or_disposing_of_Customer_Data__and"><span/></a><span class="T9">(iii)        Guuey may destroy or otherwise dispose of any of the Customer Data in its possession unless Guuey receives, no later than ten days after the effective date of the termination of this agreement, a written request for the delivery to the Customer of the then most recent back-up of the Customer Data. Guuey shall use reasonable commercial endeavours to deliver the back-up to the Customer within 30 days of its receipt of such a written request, provided that the Customer has, at that time, paid all fees and charges outstanding at and resulting from termination (whether or not due at the date of </span><span class="T9">termination). The Customer shall pay all reasonable expenses incurred by Guuey in returning or disposing of Customer Data; and</span></h3>
+            <h3 class="P24"><a id="a___iv_any_rights__remedies__obligations_or_liabilities_of_the_parties_that_have_accrued_up_to_the_date_of_termination__including_the_right_to_claim_damages_in_respect_of_any_breach_of_the_agreement_which_existed_at_or_before_the_date_of_termination_shall_not_be_affected_or_prejudiced_"><span/></a><span class="T9">(iv)        any rights, remedies, obligations or liabilities of the parties that have accrued up to the date of termination, including the right to claim damages in respect of any breach of the agreement which existed at or before the date of termination shall not be affected or prejudiced.</span></h3>
+            <h1 class="P33"><a id="a__14__Force_majeure"><span/></a><a id="a693134"/><a id="_Toc447611974"/><span class="T3">14.  Force majeure</span></h1>
+            <p class="P25"><span class="T9">Guuey shall have no liability to the Customer under this agreement if it is prevented from or delayed in performing its obligations under this agreement, or from carrying on its business, by acts, events, omissions or accidents beyond its reasonable control, including, without limitation, strikes, lock-outs or other industrial disputes (whether involving the workforce of Guuey or any other party), failure of a utility service or transport or telecommunications network, act of God, war, riot, civil commotion, malicious damage, compliance with any law or governmental order, rule, regulation or direction, accident, breakdown of plant or machinery, fire, flood, storm or default of suppliers or sub-contractors, provided that the Customer is notified of such an event and its expected duration.</span></p>
+            <h1
+                    class="P33"><a id="a__15__Conflict"><span/></a><a id="a164320"/><a id="_Toc447611975"/><span class="T3">15.  Conflict</span></h1>
+            <p class="P25"><span class="T9">If there is an inconsistency between any of the provisions in the main body of this agreement and the Schedules, the provisions in the main body of this agreement shall prevail.</span></p>
+            <h1 class="P33"><a id="a__16__Variation"><span/></a><a id="a594084"/><a id="_Toc447611976"/><span class="T3">16. Variation</span></h1>
+            <p class="P25"><span class="T9">No variation of this agreement shall be effective unless it is in writing and signed by the parties (or their authorised representatives).</span></p>
+            <h1 class="P33"><a id="a__17__Waiver"><span/></a><a id="a893488"/><a id="_Toc447611977"/><span class="T3"> 17. Waiver</span></h1>
+            <p class="P25"><span class="T9">No failure or delay by a party to exercise any right or remedy provided under this agreement or by law shall constitute a waiver of that or any other right or remedy, nor shall it prevent or restrict the further exercise of that or any other </span><span
+                      class="T9">right or remedy. No single or partial exercise of such right or remedy shall prevent or restrict the further exercise of that or any other right or remedy.</span></p>
+            <h1 class="P33"><a id="a__18__Rights_and_remedies"><span/></a><a id="a949188"/><a id="_Toc447611978"/><span class="T3">18. Rights and remedies</span></h1>
+            <p class="P25"><span class="T9">Except as expressly provided in this agreement, the rights and remedies provided under this agreement are in addition to, and not exclusive of, any rights or remedies provided by law.</span></p>
+            <h1 class="P33"><a id="a__19__Severance"><span/></a><a id="a310060"/><a id="_Toc447611979"/><span class="T3">19. Severance</span></h1>
+            <h2 class="P21"><a id="a__19_1If_any_provision__or_part_of_a_provision__of_this_agreement_is_found_by_any_court_or_administrative_body_of_competent_jurisdiction_to_be_invalid__unenforceable_or_illegal__the_other_provisions_shall_remain_in_force_"><span/></a><span class="T18">19.1        If any provision (or part of a provision) of this agreement is found by any court or administrative body of competent jurisdiction to be invalid, unenforceable or illegal, the other provisions shall remain in force.</span></h2>
+            <h2 class="P21"><a id="a__19_2If_any_invalid__unenforceable_or_illegal_provision_would_be_valid__enforceable_or_legal_if_some_part_of_it_were_deleted__the_provision_shall_apply_with_whatever_modification_is_necessary_to_give_effect_to_the_commercial_intention_of_the_parties_"><span/></a><span class="T18">19.2        If any invalid, unenforceable or illegal provision would be valid, enforceable or legal if some part of it were deleted, the provision shall apply with whatever modification is necessary to give effect to the commercial intention of the parties.</span></h2>
+            <h1 class="P33"><a id="a__20__Entire_agreement"><span/></a><a id="a1000301"/><a id="_Toc447611980"/><span class="T3">20.  Entire agreement</span></h1>
+            <h2 class="P21"><a id="a__20_1This_agreement__and_any_documents_referred_to_in_it__constitute_the_whole_agreement_between_the_parties_and_supersede_any_previous_arrangement__understanding_or_agreement_between_them_relating_to_the_subject_matter_they_cover_"><span/></a><span class="T18">20.1        This agreement, and any documents referred to in it, constitute the whole agreement between the parties and supersede any previous arrangement, understanding or agreement between them relating to the subject matter they cover.</span></h2>
+            <h2 class="P21"><a id="a__20_2Each_of_the_parties_acknowledges_and_agrees_that_in_entering_into_this_agreement_it_does_not_rely_on_any_undertaking__promise__assurance__statement__representation__warranty_or_understanding__whether_in_writing_or_not__of_any_person__whether_party_to_this_agreement_or_not__relating_to_the_subject_matter_of_this_agreement__other_than_as_expressly_set_out_in_this_agreement_"><span/></a><span class="T18">20.2        Each of the parties acknowledges and agrees that in entering into this agreement it does not rely on any undertaking, promise, assurance, statement, representation, warranty or understanding (whether in writing or not) of any person (whether party to this agreement or not) relating to the subject matter of this agreement, other than as expressly set out in this agreement.</span></h2>
+            <h1 class="P33"><a id="a__21__Assignment"><span/></a><a id="a160522"/><a id="_Toc447611981"/><span class="T3">21.  Assignment</span></h1>
+            <h2 class="P21"><a id="a__21_1The_Customer_shall_not__without_the_prior_written_consent_of_Guuey__assign__transfer__charge__sub-contract_or_deal_in_any_other_manner_with_all_or_any_of_its_rights_or_obligations_under_this_agreement_"><span/></a><a id="a761267"/><span class="T18">21.1        The Customer shall not, without the prior written consent of Guuey, assign, transfer, charge, sub-contract or deal in any other manner with all or any of its rights or obligations under this agreement.</span></h2>
+            <h2 class="P21"><a id="a__21_2Guuey_may_at_any_time_assign__transfer__charge__sub-contract_or_deal_in_any_other_manner_with_all_or_any_of_its_rights_or_obligations_under_this_agreement_"><span/></a><span class="T18">21.2        Guuey may at any time assign, transfer, charge, sub-contract or deal in any other manner with all or any of its rights or obligations under this agreement.</span></h2>
+            <h1 class="P33"><a id="a__22__No_partnership_or_agency"><span/></a><a id="a569003"/><a id="_Toc447611982"/><span class="T3">22.  No partnership or agency</span></h1>
+            <p class="P25"><span class="T9">Nothing in this agreement is intended to or shall operate to create a partnership between the parties, or authorise either party to act as agent for the other, and neither party shall have the authority to act in the name or on behalf of or otherwise to bind the other in any way (including, but not limited to, the making of any representation or warranty, the assumption of any obligation or liability and the exercise of any right or power).</span></p>
+            <h1
+                    class="P33"><a id="a__23__Third_party_rights"><span/></a><a id="a573048"/><a id="_Toc447611983"/><span class="T3">23. Third party rights</span></h1>
+            <p class="P25"><span class="T9">This agreement does not confer any rights on any person or party (other than the parties to this agreement and, where applicable, their successors and permitted assigns) pursuant to the Contracts (Rights of Third Parties) Act 1999.</span></p>
+            <h1
+                    class="P33"><a id="a__24__Notices"><span/></a><a id="a671771"/><a id="_Toc447611984"/><span class="T3">24. Notices</span></h1>
+            <h2 class="P21"><a id="a__24_1Any_notice_required_to_be_given_under_this_agreement_shall_be_in_writing_and_shall_be_delivered_by_hand_or_sent_by_pre-paid_first-class_post_or_recorded_delivery_post_to_the_other_party_at_its_address_set_out_in_this_agreement__or_such_other_address_as_may_have_been_notified_by_that_party_for_such_purposes__or_sent_by_fax_to_the_other_party's_fax_number_as_set_out_in_this_agreement_"><span/></a><span class="T18">24.1        Any notice required to be given under this agreement shall be in writing and shall be delivered by hand or sent by pre-paid first-class post or recorded delivery post to the other party at its address set out in this agreement, or such other address as may have been notified by that party for such purposes, or sent by fax to the other party's fax number as set out in this agreement.</span></h2>
+            <h2 class="P21"><a id="a__24_2A_notice_delivered_by_hand_shall_be_deemed_to_have_been_received_when_delivered__or_if_delivery_is_not_in_business_hours__at_9_am_on_the_first_business_day_following_delivery___A_correctly_addressed_notice_sent_by_pre-paid_first-class_post_or_recorded_delivery_post_shall_be_deemed_to_have_been_received_at_the_time_at_which_it_would_have_been_delivered_in_the_normal_course_of_post__A_notice_sent_by_fax_shall_be_deemed_to_have_been_received_at_the_time_of_transmission__as_shown_by_the_timed_printout_obtained_by_the_sender__"><span/></a><span class="T18">24.2        A notice delivered by hand shall be deemed to have been received when delivered (or if delivery is not in business hours, at 9 am on the first business day following delivery). A correctly addressed notice sent by pre-paid first-class post or recorded delivery post shall be deemed to have been received at the time at which it would have been delivered in the normal course of post. A notice sent by fax shall be deemed to have been received at the time of transmission (as shown by the timed printout obtained by the sender).</span></h2>
+            <h1 class="P33"><a id="a__25__Governing_law"><span/></a><a id="a196364"/><a id="_Toc447611985"/><span class="T3">25.  Governing law</span></h1>
+            <p class="P25"><span class="T9">This agreement and any dispute or claim arising out of or in connection with it or its subject matter or formation (including non-contractual disputes or claims) shall be governed by and construed in accordance with the law of England and Wales.</span></p>
+            <h1
+                    class="P33"><a id="a__26__Jurisdiction"><span/></a><a id="a201476"/><a id="_Toc447611986"/><span class="T3">26.  Jurisdiction</span></h1>
+            <p class="P25"><span class="T9">Each party irrevocably agrees that the courts of England and Wales shall have exclusive jurisdiction to settle any dispute or claim arising out of or in connection with this agreement or its subject matter or formation (including non-contractual disputes or claims).</span></p>
+            <p
+                    class="P26"> </p>
+            <p class="P20"><span class="T2">Agreed terms</span></p>
+            <h1 class="P34"><a id="a__27__Interpretation"><span/></a><a id="a588274"/><a id="_Toc447611960"/><span class="T3">    27. Interpretation</span></h1>
+            <h2 class="P21"><a id="a__The_definitions_and_rules_of_interpretation_in_this_clause_apply_in_this_agreement_"><span/></a><span class="T18">        The definitions and rules of interpretation in this clause apply in this agreement.</span></h2>
+            <p class="P27"><span class="T19">Authorised Users</span><span class="T11">:</span><span class="T9"> those employees, agents and independent contractors of the Customer who are authorised by the Customer to use the Services and the Documentation.</span></p>
+            <p class="P27"><span class="T19">Business Day</span><span class="T11">:</span><span class="T9"> a day other than a Saturday, Sunday or public holiday in England when banks in London are open for business.</span></p>
+            <p class="P27"><span class="T19">Change of Control</span><span class="T11">:</span><span class="T9"> means the beneficial ownership of more than 50% of the issued share capital of a company or the legal power to direct or cause the direction of the general management of the company, and </span><span
+                      class="T11">controls</span><span class="T9">, </span><span class="T11">controlled</span><span class="T9"> and the expression </span><span class="T11">change of control</span><span class="T9"> shall be construed accordingly.</span></p>
+            <p class="P27"><span class="T19">Confidential Information</span><span class="T11">:</span><span class="T9"> information that is proprietary or confidential and is either clearly labelled as such or identified as Confidential Information in clause 10.</span></p>
+            <p class="P27"><span class="T19">Customer Data</span><span class="T11">:</span><span class="T9"> the data inputted by the Customer, Authorised Users, or Guuey on the Customer's behalf for the purpose of using the Services or facilitating the Customer's use of the Services. </span></p>
+            <p
+                    class="P27"><span class="T19">Documentation</span><span class="T11">:</span><span class="T9"> the document made available to the Customer by Guuey online via [please give URL] or such other web address notified by Guuey to the Customer from time to time which sets out a description of the Services and the user instructions for the Services.</span></p>
+            <p
+                    class="P27"><span class="T19">Effective Date</span><span class="T11">:</span><span class="T9"> the date of this agreement.</span></p>
+            <p class="P27"><span class="T19">Initial Subscription Term</span><span class="T11">:</span><span class="T9"> the initial term of this agreement as set out in  the </span><span class="T10">Customer order.</span></p>
+            <p class="P27"><span class="T19">Normal Business Hours</span><span class="T11">:</span><span class="T9"> 8.00 am to 6.00 pm local UK time, each Business Day.</span></p>
+            <p class="P27"><span class="T19">Renewal Period</span><span class="T11">:</span><span class="T9"> the period described in clause 13.</span></p>
+            <p class="P27"><span class="T19">Services</span><span class="T11">:</span><span class="T9"> the subscription services provided by Guuey to the Customer under this agreement via [please give URL] or any other website notified to the Customer by Guuey from time to time, as more particularly described in the Documentation.</span></p>
+            <p
+                    class="P27"><span class="T19">Software</span><span class="T11">:</span><span class="T9"> the online software applications provided by Guuey as part of the Services.</span></p>
+            <p class="P27"><span class="T19">Subscription Fees</span><span class="T11">:</span><span class="T9"> the subscription fees payable by the Customer to Guuey for the User Subscriptions.</span></p>
+            <p class="P27"><span class="T19">Subscription Term</span><span class="T11">:</span><span class="T9"> has the meaning given in clause 13 (being the Initial Subscription Term together with any subsequent Renewal Periods).</span></p>
+            <p class="P27"><span class="T19">Support Services Policy</span><span class="T11">:</span><span class="T9"> Guuey's policy for providing support in relation to the Services as made available at [please give URL] or such other website address as may be notified to the Customer from time to time.</span></p>
+            <p
+                    class="P27"><span class="T19">User Subscriptions</span><span class="T11">:</span><span class="T9"> the user subscriptions purchased by the Customer pursuant to clause 2 which entitle Authorised Users to access and use the Services and the Documentation in accordance with this agreement.</span></p>
+            <p
+                    class="P27"><span class="T19">Virus</span><span class="T11">:</span><span class="T9"> any thing or device (including any software, code, file or programme) which may: prevent, impair or otherwise adversely affect the operation of any computer software, hardware or network, any telecommunications service, equipment or network or any other service or device; prevent, impair or otherwise adversely affect access to or the operation of any programme or data, including the reliability of any programme or data (whether by re-arranging, altering or erasing the programme or data in whole or part or </span><span
+                      class="T9">otherwise); or adversely affect the user experience, including worms, trojan horses, viruses and other similar things or devices.</span></p>
+            <p class="P30"><a id="main" /></p>
+            <p class="P9"> </p>
+            <p class="P12"><span class="T9">This agreement has been entered into on the date stated at the beginning of it.</span></p>
+
+            <paper-checkbox checked="{{agreeStatus}}">I Agree</paper-checkbox>
+            <paper-button on-tap="agreeTerms">Proceed</paper-button>
+          </paper-dialog-scrollable>
+        </paper-dialog>
+
+        <span hidden$="[[!verifyReminderDisplay]]">
 
           <paper-card class="pageCard">
             <div class="pageInnerCont padded">
@@ -69,19 +494,19 @@
                 If you have found the link and already verified, but are still seeing this page, please logout and login again.
               </p>
 
-              <paper-button on-tap="verifyEmail">send email again</paper-button>
+              <paper-button on-tap="resendEmail">send email again</paper-button>
             </div>
 
           </paper-card>
 
         </span>
 
-        <span hidden="[[!showResetPassForm]]">
+        <span hidden$="[[!showResetPassForm]]">
 
           <paper-card class="pageCard">
             <div class="pageInnerCont padded">
               <h1>Reset Password</h1>
-              <span hidden="[[!passwordSet]]">
+              <span hidden$="[[!passwordSet]]">
 
                 <p>
                   Your password must be at least 6 characters long.
@@ -92,13 +517,13 @@
 
               </span>
 
-              <span hidden="[[!resetVerifySuccess]]">
+              <span hidden$="[[!resetVerifySuccess]]">
 
                 Your password has been set: [[resetVerifySuccessMessage]]
 
               </span>
 
-              <span hidden="[[!resetVerifyError]]">
+              <span hidden$="[[!resetVerifyError]]">
 
                 There was an error with your password reset: [[resetVerifyErrorMessage]]
 
@@ -109,7 +534,7 @@
 
         </span>
 
-        <span hidden="[[!showRecoverEmailForm]]">
+        <span hidden$="[[!showRecoverEmailForm]]">
 
           <paper-card class="pageCard">
             <div class="pageInnerCont padded">
@@ -122,11 +547,11 @@
 
         </span>
 
-        <span hidden="[[!showVerifyEmailForm]]">
+        <span hidden$="[[!showVerifyEmailForm]]">
 
           <paper-card class="pageCard">
             <div class="pageInnerCont">
-              <span hidden="[[!verifySuccess]]">
+              <span hidden$="[[!verifySuccess]]">
 
                 <p>
                   Your email has been verified: [[verifyResponse]]
@@ -134,7 +559,7 @@
 
               </span>
 
-              <span hidden="[[!verifyError]]">
+              <span hidden$="[[!verifyError]]">
 
                 Email Verification failed: [[verifyErrorMessage]]
 
@@ -151,61 +576,132 @@
         Polymer({
 
             is: 'def-verify',
-            ready:function(){
+
+            ready: function() {
               this.fire("pageLoaded", {page:"def-verify"});
               this.actionRouter();
             },
-            properties:{
-              verifyReminderDisplay:{
+
+            properties: {
+
+              dimensions: {
+                type: Object
+              },
+
+              user: {
+                type: Object
+              },
+
+              signedIn: {
+                type: Boolean,
+                value: false
+              },
+
+              statusKnown: {
+                type: Boolean,
+                value: false
+              },
+
+              agreeOpen: {
+                type: Boolean,
+                value: false
+              },
+
+              agreeStatus: {
+                type: Boolean,
+                value: false
+              },
+
+              newPassword: {
+                type: String
+              },
+
+              verifyReminderDisplay: {
+                type: Boolean,
+                value: false
+              },
+
+              showResetPassForm: {
+                type: Boolean,
+                value: false
+              },
+
+              showRecoverEmailForm: {
+                type: Boolean,
+                value: false
+              },
+
+              showVerifyEmailForm: {
+                type: Boolean,
+                value: false
+              },
+
+              resetVerifySuccess: {
+                type: Boolean,
+                value: false
+              },
+
+              resetVerifyError: {
                 type:Boolean,
                 value:false
               },
-              showResetPassForm:{
+
+              resetVerifySuccessMessage: {
+                type: String
+              },
+
+              resetVerifyErrorMessage: {
+                type: String
+              },
+
+              verifySuccess: {
                 type:Boolean,
                 value:false
               },
-              showRecoverEmailForm:{
+
+              verifyResponse: {
+                type: String
+              },
+
+              verifyErrorMessage: {
+                type: String
+              },
+
+              verifyError: {
                 type:Boolean,
                 value:false
               },
-              showVerifyEmailForm:{
+
+              passwordSet: {
                 type:Boolean,
                 value:false
               },
-              resetVerifySuccess:{
-                type:Boolean,
-                value:false
-              },
-              resetVerifyError:{
-                type:Boolean,
-                value:false
-              },
-              verifySuccess:{
-                type:Boolean,
-                value:false
-              },
-              verifyError:{
-                type:Boolean,
-                value:false
-              },
-              passwordSet:{
-                type:Boolean,
-                value:false
+
+              mode: {
+                type: String
               }
+
             },
-            behaviors:[
+
+            observers: [
+              "keepDialogOpen(agreeOpen, agreeStatus)"
+            ],
+
+            behaviors: [
               Polymer.defPagesAnimation,
               Polymer.defaultResizeBehavior
             ],
-            verifyEmail: function() {
+
+            resendEmail: function() {
               this.$.auth.user.sendEmailVerification()
                 .then(function() {
-                this.fire("openToast",{toastText:"Email sent."});
+                this.fire("openToast", {toastText:"Email sent."});
               }.bind(this), function(error) {
-                this.fire("openToast",{toastText:error});
+                this.fire("openToast", {toastText:error});
               }.bind(this));
             },
-            getParameterByName:function(name, url) {
+
+            getParameterByName: function(name, url) {
               if (!url) url = window.location.href;
               name = name.replace(/[\[\]]/g, "\\$&");
               var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
@@ -214,14 +710,15 @@
               if (!results[2]) return '';
               return decodeURIComponent(results[2].replace(/\+/g, " "));
             },
-            actionRouter:function(){
+
+            actionRouter: function() {
               var mode = this.getParameterByName("mode");
               var actionCode = this.getParameterByName("oobCode");
               //save for other functions
               this.actionCode = actionCode;
               var apiKey = this.getParameterByName("apiKey");
-
-              switch(mode){
+              this.mode = mode;
+              switch(mode) {
                 case "resetPassword":
                   //display reset password handler and uri
                   this.handleResetPassword(actionCode);
@@ -230,80 +727,102 @@
                   //display recovery email handler and uri
                   this.handleRecoverEmail(actionCode);
                   break;
-
                 case "verifyEmail":
                   //display email verification handler and uri
                   this.handleVerifyEmail(actionCode);
                   break;
-
                 default:
                   //display the regular page with resend verify button and info
                   this.verifyReminderDisplay = true;
                   break;
-              }
+              };
             },
-            handleResetPassword:function(actionCode){
+
+            handleResetPassword: function(actionCode) {
               this.showResetPassForm = true;
               var accountEmail;
               console.log("handling password reset");
               //verify password reset code
               this.$.auth.auth.verifyPasswordResetCode(actionCode)
-                .then(function(email){
+                .then(function(email) {
                   console.log("password reset code verified");
                   this.passwordSet = true;
                   this.accountEmail = email;
                 }.bind(this))
-                .catch(function(error){
+                .catch(function(error) {
                   console.log("password reset code verify error :"+error);
                   this.resetVerifyError = true;
                   this.resetVerifyErrorMessage = error;
                 }.bind(this));
             },
-            changePassword:function(){
+
+            changePassword: function() {
               this.$.auth.auth.confirmPasswordReset(this.actionCode, this.newPassword)
-                .then(function(resp){
+                .then(function(resp) {
                   console.log("password change successful :" + resp);
                   this.passwordSet = false;
                   this.resetVerifySuccess = true;
                   this.resetVerifyMessage = resp;
                 }.bind(this))
-                .catch(function(error){
+                .catch(function(error) {
                   console.log("password change not successful :"+error);
                   this.passwordSet = false;
                   this.resetVerifyError = true;
                   this.resetVerifyMessage = error;
                 }.bind(this));
             },
-            handleRecoverEmail:function(actionCode){
+
+            handleRecoverEmail: function(actionCode) {
               this.showRecoverEmailForm = true;
               var restoredEmail = null;
               //confirm action code is valid
               this.$.auth.auth.checkActionCode(actionCode)
-                .then(function(info){
+                .then(function(info) {
                   //get restored email address
                   restoredEmail = info['data']['email'];
                   //this function doesnt seem right... check on this later and implement properly
                   console.log(restoredEmail);
                 }.bind(this))
-                .catch(function(error){
+                .catch(function(error) {
                   console.log(error);
                 }.bind(this));
             },
-            handleVerifyEmail:function(actionCode){
+
+            verifyEmail: function() {
               this.showVerifyEmailForm = true;
-              this.$.auth.auth.applyActionCode(actionCode)
-                .then(function(resp){
+              this.$.auth.auth.applyActionCode(this.actionCode)
+                .then(function(resp) {
                   //email address verified
                   this.verifyResponse = resp;
                   this.verifySuccess = true;
                   this.startTrial();
                 }.bind(this))
-                .catch(function(error){
+                .catch(function(error) {
                   this.verifyErrorMessage = error;
                   this.verifyError = true;
                 }.bind(this));
             },
-            startTrial:function(){
+
+            handleVerifyEmail: function(actionCode) {
+              this.$.agreeDialog.open();
+            },
+
+            agreeTerms: function() {
+              if(!this.agreeStatus) {
+                this.fire("openToast", {toastText: "You must agree to the terms before proceeding."});
+              } else {
+                this.$.userIndexDB.setStoredValue("/userIndex/" + this.user.uid, {agreeTerms: true})
+                  .then(function() {
+                    this.verifyEmail();
+                  }.bind(this))
+                  .catch(function(err) {
+                    console.log(err);
+                    this.fire("openToast", {toastText: "Oops.. something went wrong. contact technical support please."});
+                  }.bind(this));
+              };
+            },
+
+            startTrial: function() {
               this.$.userIndexDB.getStoredValue("/userIndex/"+this.user.uid+"/home")
                 .then(function(home){
                   this.$.trialSetCall.body = {
@@ -312,7 +831,24 @@
                   this.$.trialSetCall.url = "https://glacial-tor-36526.herokuapp.com/trial/starttrial";
                   this.$.trialSetCall.generateRequest();
                 }.bind(this));
-            }
+            },
+
+            _handleTrialSetCall: function(res) {
+              console.log(res);
+              this.logout();
+            },
+
+            keepDialogOpen: function(agreeOpen, agreeStatus) {
+              if(!agreeStatus && !agreeOpen && this.mode === "verifyEmail") {
+                this.$.agreeDialog.open();
+              };
+            },
+
+            logout:function(){
+              this.$.auth.signOut();
+              window.location="/default/default/def-login";
+            },
+
         });
     </script>
 
