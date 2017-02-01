@@ -9,154 +9,173 @@
     */
     Polymer.pageChangeMiddleware={
       is:"page-change-middleware",
+
       observers:[
         "_middleware(page)"
       ],
+
       properties:{
-        adTrialOver:{
-          type:String,
+
+        adTrialOver: {
+          type: String,
           value: "Trial Period is over please update payment info to continue service usage."
         },
-        swTrialOver:{
-          type:String,
+
+        swTrialOver: {
+          type: String,
           value: "Trial Period is over please inform your supervisor that payment information must be updated in order to continue."
         },
-        adNoPayment:{
-          type:String,
+
+        adNoPayment: {
+          type: String,
           value: "Due to no payment, your accounts have been locked. Please update payment information in order to continue."
         },
-        swNoPayment:{
-          type:String,
+
+        swNoPayment: {
+          type: String,
           value: "Due to no payment, your account has been locked. Please inform your supervisor that valid payment information must be updated in order to continue."
         },
-        noCoreText:{
-          type:String,
+
+        noCoreText: {
+          type: String,
           value: "It looks like your main service plan has been removed. If you feel this is in error, please contact support."
         },
-        allowedPages:{
-          type:Array,
-          value:[
+
+        allowedPages: {
+          type: Array,
+          value: [
             "ad-support"
           ]
         }
-      },
-      pageAllowed: function(page){
 
+      },
+
+      pageAllowed: function(page) {
         return this.allowedPages.indexOf(page) !== -1;
       },
-      checkAdmin:function(){
+
+      checkAdmin: function() {
         if(this.currentUserType != "admin" && this.currentUserType != "manager" && this.catData.category === "admin" && !this.pageAllowed(this.page)){
           this.set("catData.category", "default");
           this.set("pageData.page", "def-home");
           this.fire("openToast", {toastText: "That page is for admins only. Returned to default page."});
         };
       },
-      setRightMenuSelect:function(){
+
+      setRightMenuSelect: function() {
         if(this.page==="def-home"){
-          this.rightMenuSelect="home";
+          this.rightMenuSelect = "home";
         } else {
-          this.rightMenuSelect=null;
+          this.rightMenuSelect = null;
         };
       },
-      verifyReroute:function(){
-        if(this.statusKnown && !this.user.emailVerified && this.currentUserType === "admin"){
+
+      verifyReroute: function() {
+        if(this.statusKnown && !this.user.emailVerified && this.currentUserType === "admin") {
           this.set("catData.category", "default");
           this.set("pageData.page", "def-verify");
         };
       },
-      paymentReroute:function(){
-        this.$.paymentsDB.ref.once("value", function(snapshot){
+
+      paymentReroute: function() {
+        this.$.paymentsDB.ref.once("value", function(snapshot) {
           var payments = snapshot.val();
           var core1 = false;
-          for(x in payments){
+          for(x in payments) {
             if(payments[x].id === "core1"){
               core1 = payments[x];
             };
           };
-          if(this.currentUserType){
+          if(this.currentUserType) {
             //set restriction text for admins, managers, and others
-            if(payments && payments.trial){
-              if(payments.trial.status === "canceled"){
+            if(payments && payments.trial) {
+              if(payments.trial.status === "canceled") {
                 this.restrictToastText = this.adTrialOver;
                 this.restrictDialogText = this.swTrialOver;
               };
-            } else if(core1){
-              if(core1.status === "canceled"){
+            } else if(core1) {
+              if(core1.status === "canceled") {
                 this.restrictToastText = this.adNoPayment;
                 this.restrictDialogText = this.swNoPayment;
-              }
+              };
             } else {
               this.restrictDialogText = this.noCoreText;
               this.restrictToastText = this.noCoreText;
             };
             //handle restrictions for admins, managers, and others
-            if(payments && payments.trial && payments.trial.status === "canceled" && (this.currentUserType === "admin" || this.currentUserType === "manager")){
+            if(payments && payments.trial && payments.trial.status === "canceled" && (this.currentUserType === "admin" || this.currentUserType === "manager")) {
               this.set("catData.category", "admin");
               this.set("pageData.page", "ad-payment");
               this.fire("openToast", {toastText: this.restrictToastText});
-            } else if(payments && payments.trial && payments.trial.status === "canceled"){
+            } else if(payments && payments.trial && payments.trial.status === "canceled") {
               this.$.lockedDialog.open();
-            } else if(core1 && core1.status === "canceled" && (this.currentUserType === "admin" || this.currentUserType === "manager")){
+            } else if(core1 && core1.status === "canceled" && (this.currentUserType === "admin" || this.currentUserType === "manager")) {
               this.set("catData.category", "admin");
               this.set("pageData.page", "ad-payment");
               this.fire("openToast", {toastText: this.restrictToastText});
             } else if(core1 && core1.status === "canceled"){
               this.$.lockedDialog.open();
-            } else if(!core1 && (this.currentUserType === "admin" || this.currentUserType === "manager")){
+            } else if(!core1 && (this.currentUserType === "admin" || this.currentUserType === "manager")) {
               this.set("catData.category", "admin");
               this.set("pageData.page", "ad-payment");
               this.fire("openToast", {toastText: this.restrictToastText});
-            } else if(!core1){
+            } else if(!core1) {
               this.$.lockedDialog.open();
             };
           };
         }.bind(this));
       },
-      toggleLoadingDisplay:function(page){
-        if(page==="def-home" && !this[page]){
+
+      toggleLoadingDisplay: function(page) {
+        if(page === "def-home" && !this[page]) {
           this.enableDBLoading();
         } else {
           this.disableDBLoading();
         };
-        if(page!="def-home" && !this[page]){
+        if(page!="def-home" && !this[page]) {
           this.enablePageLoading();
         };
       },
-      enableDBLoading:function(){
-        this.customStyle["--db-loading-display"]="flex";
+
+      enableDBLoading: function() {
+        this.customStyle["--db-loading-display"] = "flex";
         this.updateStyles();
       },
-      disableDBLoading:function(e){
+
+      disableDBLoading: function(e) {
         if(e){
-          var page=e.detail.page
-          this[e.detail.page]=true;
+          var page = e.detail.page
+          this[e.detail.page] = true;
         };
-        this.customStyle["--db-loading-display"]="none";
+        this.customStyle["--db-loading-display"] = "none";
         this.updateStyles();
       },
-      enablePageLoading:function(){
-        this.customStyle["--page-loading-active-color"]="#FFEB3B";
+
+      enablePageLoading:function() {
+        this.customStyle["--page-loading-active-color"] = "#FFEB3B";
         this.updateStyles();
       },
-      disablePageLoading:function(e){
-        if(e){
-          var page=e.detail.page
-          this[e.detail.page]=true;
+
+      disablePageLoading: function(e) {
+        if(e) {
+          var page = e.detail.page
+          this[e.detail.page] = true;
         };
-        this.customStyle["--page-loading-active-color"]="transparent";
+        this.customStyle["--page-loading-active-color"] = "transparent";
         this.updateStyles();
       },
-      lazyLoadPage:function(page){
+
+      lazyLoadPage: function(page) {
         // load page import on demand.
-        this.importHref(
-          this.resolveUrl('pages/' + this.category + '/' + page + '.html'),
-          function(){
-            if(!this.currentCat){
+        this.importHref (
+          this.resolveUrl ('pages/' + this.category + '/' + page + '.html'),
+          function() {
+            if(!this.currentCat) {
               this.currentCat = this.category;
             } else {
               this.currentCat = this.intendedCat;
               this.intendedCat = this.category;
-            }
+            };
             this.selected = this.page;
             this.ensureLayout(page);
           },
@@ -164,21 +183,24 @@
             this.errorRedirect();
           }, false);
       },
-      ensureLayout:function(page){
-        if(page.slice(0,3)==="def" || page.slice(0,2)==="ad" || page==="su-create"){
-          this.$.appDrawerLayout.forceNarrow=true;
+
+      ensureLayout: function(page) {
+        if(page.slice(0,3) === "def" || page.slice(0,2) === "ad" || page === "su-create") {
+          this.$.appDrawerLayout.forceNarrow = true;
           this.$.appHeader.notifyResize();
           this.$.suDrawer.close();
         } else {
-          this.$.appDrawerLayout.forceNarrow=false;
+          this.$.appDrawerLayout.forceNarrow = false;
           this.$.appHeader.notifyResize();
         };
       },
-      errorRedirect:function(){
+
+      errorRedirect: function() {
         this.set("catData.category", "default");
         this.set("pageData.page", "def-error");
       },
-      _middleware:function(page) {
+
+      _middleware: function(page) {
         if(this.user) {
           this.checkAdmin();
           this.paymentReroute();
@@ -187,6 +209,7 @@
         this.setRightMenuSelect();
         this.toggleLoadingDisplay(this.page);
         this.lazyLoadPage(this.page);
+        this.resizeElements();
       },
     };
 
