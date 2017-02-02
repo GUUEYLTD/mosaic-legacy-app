@@ -11,7 +11,8 @@
       is:"page-change-middleware",
 
       observers:[
-        "_middleware(page)"
+        "_middleware(page)",
+        "_userTypeReady(home, user)"
       ],
 
       properties:{
@@ -54,11 +55,35 @@
         return this.allowedPages.indexOf(page) !== -1;
       },
 
+      _userTypeReady: function(home, user) {
+        if(user && user.uid) {
+          this.$.userTypeDB.path = "/homes/" + home + "/users/" + user.uid + "/role";
+          this.$.userTypeDB.ref.on("value", function(snap) {
+            console.log("setting currentUserType to: " + snap.val());
+            this.currentUserType = snap.val();
+            this.checkAdmin();
+          }.bind(this));
+        };
+      },
+
       checkAdmin: function() {
-        if(this.currentUserType != "admin" && this.currentUserType != "manager" && this.catData.category === "admin" && !this.pageAllowed(this.page)){
-          this.set("catData.category", "default");
-          this.set("pageData.page", "def-home");
-          this.fire("openToast", {toastText: "That page is for admins only. Returned to default page."});
+        console.log("checking pages...");
+        if(this.catData.category === "admin" && !this.pageAllowed(this.page)) {
+          console.log("restricted pages");
+          console.log(this.currentUserType);
+          if(this.currentUserType === "admin" || this.currentUserType === "manager") {
+            console.log("it's alright they are manager or admin");
+            return;
+          } else {
+            console.log("not allowed");
+            var userType = this.currentUserType;
+            var cat = this.catData.category;
+            var page = this.page;
+            console.log({userType, cat, page});
+            this.set("catData.category", "default");
+            this.set("pageData.page", "def-home");
+            this.fire("openToast", {toastText: "That page is for admins only. Returned to default page."});
+          }
         };
       },
 

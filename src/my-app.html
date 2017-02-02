@@ -1113,7 +1113,7 @@
             this.$.userTypeDB.getStoredValue("/homes/"+this.home+"/users/"+this.user.uid+"/role")
               .then(function(userType){
                 this.currentUserType=userType;
-                if(userType==="admin" && !this.user.emailVerified){
+                if(!this.user.emailVerified){
                   this.set("catData.category", "default");
                   this.set("pageData.page", "def-verify");
                 }
