@@ -226,7 +226,7 @@ drawer for admin functions
           <paper-toggle-button
             name="Version Control"
             toggles
-            value="{{vcActive}}">
+            checked="{{settingsData.vcActive}}">
           </paper-toggle-button>
         </paper-item>
       </paper-listbox>
@@ -272,12 +272,14 @@ drawer for admin functions
         allowedPages: {
           type:Array
         },
-        //will be used in the future to dictate whether or not version control is active... will need to be linked to firebase.
-        vcActive: {
-          type:Boolean,
-          value:false
+
+        settingsData: {
+          type: Object,
+          notify: true
         }
+
       },
+
       //depending on user type certain links are greyed out actual route prevention happens on page-change-middleware
       _userTypeChanged:function(userType) {
         var links = Polymer.dom(this.$$(".adrawer-list")).children;

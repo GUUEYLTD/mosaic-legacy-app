@@ -59,7 +59,6 @@
         if(user && user.uid) {
           this.$.userTypeDB.path = "/homes/" + home + "/users/" + user.uid + "/role";
           this.$.userTypeDB.ref.on("value", function(snap) {
-            console.log("setting currentUserType to: " + snap.val());
             this.currentUserType = snap.val();
             this.checkAdmin();
           }.bind(this));

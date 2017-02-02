@@ -92,6 +92,7 @@
       app-name="user2"
       user="{{newUser}}">
     </firebase-auth>
+
     <firebase-storage
       id="storage"
       app-name="main"
@@ -134,6 +135,12 @@
     <firebase-document
       id="notifiableDB"
       app-name="main">
+    </firebase-document>
+
+    <firebase-document
+      id="settingsDB"
+      app-name="main"
+      data="{{settingsData}}">
     </firebase-document>
 
     <firebase-query
@@ -312,7 +319,8 @@
         email="[[user.email]]"
         user-type="[[currentUserType]]"
         opened="{{opened}}"
-        allowed-pages="[[allowedPages]]">
+        allowed-pages="[[allowedPages]]"
+        settings-data="{{settingsData}}">
       </admin-drawer>
       <!--second drawer to contain target info links (company service user etc...) link up to db later-->
       <app-drawer align="end" id="suDrawer" swipe-open>
@@ -581,7 +589,8 @@
             patient="[[param]]"
             home="[[home]]"
             user="{{user}}"
-            name="su-medication">
+            name="su-medication"
+            settings-data="[[settingsData]]">
           </su-medication>
           <su-pre
             current-page="[[currentPage]]"
@@ -1025,13 +1034,17 @@
         this.param = param || '';
       },
       _homeChanged:function(home){
-        if(home!='default'){
-          this.home=this.homeData.home;
+        if(home != 'default'){
+          this.home = this.homeData.home;
+          this.$.settingsDB.path = "/homes/" + this.home + "/settings";
         };
+
+        //lockout of dev server for beta tester
         if(home === "-KRSjsbJCBdJM8et8BUe") {
           this.$.movedDialog.open();
         };
       },
+
       _catChanged:function(cat){
         //make an exception for the default category 'default' if not default track changes to cat
         if(cat!='default'){

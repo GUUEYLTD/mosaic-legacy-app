@@ -41,6 +41,13 @@
     </media-queries>
 
     <firebase-document
+      id="usersDB"
+      app-name="main"
+      path="/homes/[[home]]/users"
+      data="{{usersData}}">
+    </firebase-document>
+
+    <firebase-document
       id="medDB"
       app-name="main">
     </firebase-document>
@@ -360,7 +367,7 @@
                     Medication
                   </th>
                   <th>
-                    Method
+                    Route
                   </th>
                   <th>
                     Dosage
@@ -368,17 +375,23 @@
                   <th>
                     Comment
                   </th>
-                  <th>
-                    Edit
+                  <th hidden$="{{settingsData.vcActive}}">
+                    Edit {{settingsData.vcActive}}
+                  </th>
+                  <th hidden$="{{!settingsData.vcActive}}">
+                    Time
+                  </th>
+                  <th hidden$="{{!settingsData.vcActive}}">
+                    User
                   </th>
                 </tr>
               </thead>
               <tbody>
                 <template
                   is="dom-repeat"
-                  items="{{_computeMedList(medsData)}}"
+                  items="{{_computeMedList(medsData, settingsData.vcActive)}}"
                   as="med"
-                  filter="_filterMorning"
+                  filter="_filterNight"
                   observe="timeChunk">
                   <tr>
                     <td>
@@ -399,8 +412,14 @@
                         </paper-icon-button>
                       </span>
                     </td>
-                    <td>
+                    <td hidden$="{{settingsData.vcActive}}">
                       <paper-icon-button on-tap="editMed" icon="editor:editor:mode-edit"></paper-icon-button>
+                    </td>
+                    <td hidden$="{{!settingsData.vcActive}}">
+                      [[_computeTimeOfChange(med.log.time)]]
+                    </td>
+                    <td hidden$="{{!settingsData.vcActive}}">
+                      [[_computeUserDisplay(med.log, usersData)]]
                     </td>
                   </tr>
 
@@ -445,17 +464,23 @@
                   <th>
                     Comment
                   </th>
-                  <th>
-                    Edit
+                  <th hidden$="{{settingsData.vcActive}}">
+                    Edit {{settingsData.vcActive}}
+                  </th>
+                  <th hidden$="{{!settingsData.vcActive}}">
+                    Time
+                  </th>
+                  <th hidden$="{{!settingsData.vcActive}}">
+                    User
                   </th>
                 </tr>
               </thead>
               <tbody>
                 <template
                   is="dom-repeat"
-                  items="{{_computeMedList(medsData)}}"
+                  items="{{_computeMedList(medsData, settingsData.vcActive)}}"
                   as="med"
-                  filter="_filterAfternoon"
+                  filter="_filterNight"
                   observe="timeChunk">
                   <tr>
                     <td>
@@ -476,8 +501,14 @@
                         </paper-icon-button>
                       </span>
                     </td>
-                    <td>
+                    <td hidden$="{{settingsData.vcActive}}">
                       <paper-icon-button on-tap="editMed" icon="editor:editor:mode-edit"></paper-icon-button>
+                    </td>
+                    <td hidden$="{{!settingsData.vcActive}}">
+                      [[_computeTimeOfChange(med.log.time)]]
+                    </td>
+                    <td hidden$="{{!settingsData.vcActive}}">
+                      [[_computeUserDisplay(med.log, usersData)]]
                     </td>
                   </tr>
 
@@ -522,17 +553,23 @@
                   <th>
                     Comment
                   </th>
-                  <th>
-                    Edit
+                  <th hidden$="{{settingsData.vcActive}}">
+                    Edit {{settingsData.vcActive}}
+                  </th>
+                  <th hidden$="{{!settingsData.vcActive}}">
+                    Time
+                  </th>
+                  <th hidden$="{{!settingsData.vcActive}}">
+                    User
                   </th>
                 </tr>
               </thead>
               <tbody>
                 <template
                   is="dom-repeat"
-                  items="{{_computeMedList(medsData)}}"
+                  items="{{_computeMedList(medsData, settingsData.vcActive)}}"
                   as="med"
-                  filter="_filterEvening"
+                  filter="_filterNight"
                   observe="timeChunk">
                   <tr>
                     <td>
@@ -553,8 +590,14 @@
                         </paper-icon-button>
                       </span>
                     </td>
-                    <td>
+                    <td hidden$="{{settingsData.vcActive}}">
                       <paper-icon-button on-tap="editMed" icon="editor:editor:mode-edit"></paper-icon-button>
+                    </td>
+                    <td hidden$="{{!settingsData.vcActive}}">
+                      [[_computeTimeOfChange(med.log.time)]]
+                    </td>
+                    <td hidden$="{{!settingsData.vcActive}}">
+                      [[_computeUserDisplay(med.log, usersData)]]
                     </td>
                   </tr>
 
@@ -599,15 +642,21 @@
                   <th>
                     Comment
                   </th>
-                  <th>
-                    Edit
+                  <th hidden$="{{settingsData.vcActive}}">
+                    Edit {{settingsData.vcActive}}
+                  </th>
+                  <th hidden$="{{!settingsData.vcActive}}">
+                    Time
+                  </th>
+                  <th hidden$="{{!settingsData.vcActive}}">
+                    User
                   </th>
                 </tr>
               </thead>
               <tbody>
                 <template
                   is="dom-repeat"
-                  items="{{_computeMedList(medsData)}}"
+                  items="{{_computeMedList(medsData, settingsData.vcActive)}}"
                   as="med"
                   filter="_filterNight"
                   observe="timeChunk">
@@ -630,8 +679,14 @@
                         </paper-icon-button>
                       </span>
                     </td>
-                    <td>
+                    <td hidden$="{{settingsData.vcActive}}">
                       <paper-icon-button on-tap="editMed" icon="editor:editor:mode-edit"></paper-icon-button>
+                    </td>
+                    <td hidden$="{{!settingsData.vcActive}}">
+                      [[_computeTimeOfChange(med.log.time)]]
+                    </td>
+                    <td hidden$="{{!settingsData.vcActive}}">
+                      [[_computeUserDisplay(med.log, usersData)]]
                     </td>
                   </tr>
 
@@ -680,6 +735,10 @@
           type: String,
         },
 
+        user: {
+          type: Object
+        },
+
         timesData: {
           type: Object
         },
@@ -712,20 +771,25 @@
             ]
           }
         },
-      },
 
-      timeTarget: {
-        type: Object
-      },
+        timeTarget: {
+          type: Object
+        },
 
-      defaultTimeChunkTimes: {
-        type: Object,
-        value: {
-          morning: "09:00",
-          afternoon: "13:00",
-          evening: "19:00",
-          night: "01:00"
+        defaultTimeChunkTimes: {
+          type: Object,
+          value: {
+            morning: "09:00",
+            afternoon: "13:00",
+            evening: "19:00",
+            night: "01:00"
+          }
+        },
+
+        settingsData: {
+          type: Object
         }
+
       },
 
       behaviors: [
@@ -872,7 +936,7 @@
         };
       },
 
-      _computeMedList: function(meds) {
+      getCurrentMeds: function(meds) {
         //return the most recent sub doc from medication docs
         var currentMedList = [];
         var now = Date.now();
@@ -896,9 +960,43 @@
             medCandidate = medCandidate.med;
             medCandidate.parent = x;
             currentMedList.push(medCandidate);
-          }
+          };
         };
         return currentMedList;
+      },
+
+      _computeTimeOfChange: function(time) {
+        var date = new Date(time);
+        return date.toString();
+      },
+
+      _computeUserDisplay: function(log, usersData) {
+        var userObj = usersData[log.user];
+        if(userObj.displayName && userObj.displayName != "undefined undefined") {
+          return userObj.displayName;
+        } else {
+          return userObj.email ? userObj.email : userObj.user;
+        };
+      },
+
+      getMedHistory: function(meds) {
+        var medHistory = [];
+        for(x in meds) {
+          for(y in meds[x]) {
+            var med = meds[x][y]["med"];
+            med.log = meds[x][y]["log"];
+            medHistory.push(med);
+          };
+        };
+        return medHistory;
+      },
+
+      _computeMedList: function(meds, vcActive) {
+        if(!vcActive) {
+          return this.getCurrentMeds(meds);
+        } else {
+          return this.getMedHistory(meds);
+        };
       },
 
       _computeTime: function(timeData, timeChunk) {
@@ -934,7 +1032,7 @@
         this.$.timeDB.data = {
           log: {
             user: this.user.uid,
-            time: now
+            time: now,
           },
           time: this.newTime
         };
