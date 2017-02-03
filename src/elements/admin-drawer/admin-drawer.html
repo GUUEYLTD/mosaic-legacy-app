@@ -224,9 +224,10 @@ drawer for admin functions
             Version control
           </p>
           <paper-toggle-button
+            id="vcToggle"
             name="Version Control"
             toggles
-            checked="{{settingsData.vcActive}}">
+            checked="{{userSettingsData.vcActive}}">
           </paper-toggle-button>
         </paper-item>
       </paper-listbox>
@@ -273,7 +274,8 @@ drawer for admin functions
           type:Array
         },
 
-        settingsData: {
+        //settings data passed in from app shell to dictate position of version control toggle. taken from firebase
+        userSettingsData: {
           type: Object,
           notify: true
         }
@@ -289,10 +291,13 @@ drawer for admin functions
               link.classList.add("disabled-link");
             };
           }.bind(this));
+          this.set("userSettingsData.vcActive", false);
+          this.$.vcToggle.disabled = true;
         } else {
           links.forEach(function(link) {
             link.classList.remove("disabled-link");
           }.bind(this));
+          this.$.vcToggle.disabled = false;
         };
       },
       //lose the admin drawer
