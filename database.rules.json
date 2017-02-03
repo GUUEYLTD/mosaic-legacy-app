@@ -36,6 +36,10 @@
             },
             "home": {
               ".validate": "newData.val()===$home"
+            },
+            "settings": {
+              ".write": "auth.uid===$user",
+              ".read": "auth.uid===$user"
             }
           }
         },
