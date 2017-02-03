@@ -143,6 +143,12 @@
       data="{{settingsData}}">
     </firebase-document>
 
+    <firebase-document
+      id="userSettingsDB"
+      app-name="main"
+      data="{{userSettingsData}}">
+    </firebase-document>
+
     <firebase-query
       id="paymentsDB"
       app-name="main"
@@ -320,7 +326,7 @@
         user-type="[[currentUserType]]"
         opened="{{opened}}"
         allowed-pages="[[allowedPages]]"
-        settings-data="{{settingsData}}">
+        user-settings-data="{{userSettingsData}}">
       </admin-drawer>
       <!--second drawer to contain target info links (company service user etc...) link up to db later-->
       <app-drawer align="end" id="suDrawer" swipe-open>
@@ -590,7 +596,7 @@
             home="[[home]]"
             user="{{user}}"
             name="su-medication"
-            settings-data="[[settingsData]]">
+            user-settings-data="[[userSettingsData]]">
           </su-medication>
           <su-pre
             current-page="[[currentPage]]"
@@ -996,7 +1002,8 @@
         '_authKnown(statusKnown)',
         '_computeNotificationCount(notifiesData)',
         '_computeNotifyDialogHidden(notifiesData.*)',
-        '_userChanged(user)'
+        '_userChanged(user)',
+        '_setUserSettingsPath(user.uid, home)'
       ],
       _userChanged:function(user){
         var userExists = true;
@@ -1020,6 +1027,21 @@
         Polymer.pageChangeMiddleware,
         Polymer.accountCreateBehavior
       ],
+
+      _setUserSettingsPath: function(user, home) {
+        var that = this;
+        if(user && home) {
+          this.$.userSettingsDB.path = "/homes/" + this.home + "/users/" + user + "/settings";
+          this.$.userSettingsDB.ref.once("value", function(snap) {
+            var userSettingsData = snap.val();
+            console.log(snap.val());
+            if(!userSettingsData || !userSettingsData.vcActive) {
+              that.set("userSettingsData.vcActive", false);
+            }
+          })
+        };
+      },
+
       _homeRouteChanged:function(home){
         this.home=home || 'default';
       },
