@@ -1044,10 +1044,14 @@
       },
 
       _sortMeds: function(a, b) {
-        if(a.log.time < b.log.time) {
-          return 1;
+        if (a.parent === b.parent) {
+          if (a.log.time === b.log.time) {
+            return 0;
+          } else {
+            return a.log.time > b.log.time ? -1 : 1;
+          };
         } else {
-          return -1;
+          return a.parent > b.parent ? -1 : 1;
         };
       },
 
@@ -1160,10 +1164,36 @@
 
       _computeDifferences: function(diffs) {
         if(!diffs || diffs.length < 1) {
-          return 'no differences';
+          return 'No Differences';
         } else {
-          return diffs.join(', ');
+          return readableDiffs = diffs.map(function(prop) {
+            var readableProp = this._convertPropToName(prop);
+            return readableProp;
+          }.bind(this)).join(', ');
         };
+      },
+
+      _convertPropToName: function(prop) {
+        switch(prop) {
+          case 'medicine':
+            return 'Medicine Name';
+            break;
+          case 'method':
+            return 'Route';
+            break;
+          case 'timeChunk':
+            return 'Time Of Day Administered';
+            break;
+          default:
+            return this._deCamelCase(prop);
+            break;
+        };
+      },
+
+      _deCamelCase: function(text) {
+        var result = text.replace(' ','').replace( /([A-Z])/g, " $1" );
+        var finalResult = result.charAt(0).toUpperCase() + result.slice(1);
+        return finalResult;
       },
 
       _computeTimeOfChange: function(time) {
