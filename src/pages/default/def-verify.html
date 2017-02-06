@@ -684,13 +684,18 @@
             },
 
             observers: [
-              "keepDialogOpen(agreeOpen, agreeStatus)"
+              "keepDialogOpen(agreeOpen, agreeStatus)",
+              "userReady(user)"
             ],
 
             behaviors: [
               Polymer.defPagesAnimation,
               Polymer.defaultResizeBehavior
             ],
+
+            userReady: function() {
+              this.fire("userVerifyReady");
+            },
 
             resendEmail: function() {
               this.$.auth.user.sendEmailVerification()
@@ -733,7 +738,13 @@
                   break;
                 default:
                   //display the regular page with resend verify button and info
-                  this.verifyReminderDisplay = true;
+                  this.addEventListener("userVerifyReady", function() {
+                    if(!this.verifyEmailSent) {
+                      this.resendEmail();
+                    };
+                    this.verifyEmailSent = true;
+                    this.verifyReminderDisplay = true;
+                  });
                   break;
               };
             },
@@ -811,7 +822,7 @@
               if(!this.agreeStatus) {
                 this.fire("openToast", {toastText: "You must agree to the terms before proceeding."});
               } else {
-                this.$.userIndexDB.setStoredValue("/userIndex/" + this.user.uid, {agreeTerms: true})
+                this.$.userIndexDB.setStoredValue("/homes/" + this.home + "/users/" + this.user.uid + "/agreeTerms", true)
                   .then(function() {
                     this.verifyEmail();
                   }.bind(this))
@@ -830,6 +841,10 @@
                   };
                   this.$.trialSetCall.url = "https://glacial-tor-36526.herokuapp.com/trial/starttrial";
                   this.$.trialSetCall.generateRequest();
+                }.bind(this))
+                .catch(function(err) {
+                  console.log(err);
+                  this.fire("openToast", {toastText: "Oops.. something went wrong. contact technical support please."});
                 }.bind(this));
             },
 

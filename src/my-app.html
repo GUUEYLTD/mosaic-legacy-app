@@ -999,7 +999,6 @@
         '_catRouteChanged(catData.category)',
         '_pageRouteChanged(pageData.page)',
         '_paramRouteChanged(paramData.param)',
-        '_authKnown(statusKnown)',
         '_computeNotificationCount(notifiesData)',
         '_computeNotifyDialogHidden(notifiesData.*)',
         '_userChanged(user)',
@@ -1034,7 +1033,6 @@
           this.$.userSettingsDB.path = "/homes/" + this.home + "/users/" + user + "/settings";
           this.$.userSettingsDB.ref.once("value", function(snap) {
             var userSettingsData = snap.val();
-            console.log(snap.val());
             if(!userSettingsData || !userSettingsData.vcActive) {
               that.set("userSettingsData.vcActive", false);
             }
@@ -1133,39 +1131,7 @@
       goBack:function(){
         window.history.back();
       },
-      //take in route as string and check against no auth routes
-      authRequired:function(route){
-        var noAuthRoutes=this.noAuthRoutes;
-        if(noAuthRoutes.indexOf(route)===-1){
-          return false;
-        } else {
-          return true;
-        };
-      },
-      _authKnown:function(known){
-        if(known===true){
-          if(this.user){
-            this.$.userTypeDB.getStoredValue("/homes/"+this.home+"/users/"+this.user.uid+"/role")
-              .then(function(userType){
-                this.currentUserType=userType;
-                if(!this.user.emailVerified){
-                  this.set("catData.category", "default");
-                  this.set("pageData.page", "def-verify");
-                }
-              }.bind(this));
-          }
-          if(!this.$.auth.user && !this.authRequired(this.$.location.path)){
-            window.location.href="/default/default/def-login";
-          } else {
-            if(this.user){
-              this.$.userIndexDB.getStoredValue("/userIndex/"+this.user.uid+"/home")
-                .then(function(value){
-                  this.set('homeData.home', value);
-                }.bind(this))
-            };
-          };
-        };
-      },
+
       _computeDrawerHidden:function(page){
         if(page.slice(0,3)==="def" || page.slice(0,2)==="ad"){
           return true;

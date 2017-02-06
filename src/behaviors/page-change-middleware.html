@@ -12,7 +12,9 @@
 
       observers:[
         "_middleware(page)",
-        "_userTypeReady(home, user)"
+        "_userTypeReady(home, user)",
+        "_authKnown(statusKnown)",
+        "_checkVerified(user, statusKnown)"
       ],
 
       properties:{
@@ -51,6 +53,39 @@
 
       },
 
+      //take in route as string and check against no auth routes
+      authRequired:function(route){
+        var noAuthRoutes=this.noAuthRoutes;
+        if(noAuthRoutes.indexOf(route)===-1){
+          return false;
+        } else {
+          return true;
+        };
+      },
+      _authKnown:function(known){
+        if(known===true){
+          if(!this.$.auth.user && !this.authRequired(this.$.location.path)){
+            window.location.href="/default/default/def-login";
+          } else {
+            if(this.user){
+              this.$.userIndexDB.getStoredValue("/userIndex/"+this.user.uid+"/home")
+                .then(function(value){
+                  this.set('homeData.home', value);
+                }.bind(this))
+            };
+          };
+        };
+      },
+
+      _checkVerified: function(user, statusKnown) {
+        if(statusKnown) {
+          if(this.user && !this.user.emailVerified) {
+            this.set("catData.category", "default");
+            this.set("pageData.page", "def-verify");
+          };
+        };
+      },
+
       pageAllowed: function(page) {
         return this.allowedPages.indexOf(page) !== -1;
       },
@@ -85,13 +120,6 @@
           this.rightMenuSelect = "home";
         } else {
           this.rightMenuSelect = null;
-        };
-      },
-
-      verifyReroute: function() {
-        if(this.statusKnown && !this.user.emailVerified && this.currentUserType === "admin") {
-          this.set("catData.category", "default");
-          this.set("pageData.page", "def-verify");
         };
       },
 
@@ -220,9 +248,9 @@
 
       _middleware: function(page) {
         if(this.user) {
+          this._checkVerified(this.user, this.statusKnown);
           this.checkAdmin();
           this.paymentReroute();
-          this.verifyReroute();
         };
         this.setRightMenuSelect();
         this.toggleLoadingDisplay(this.page);
