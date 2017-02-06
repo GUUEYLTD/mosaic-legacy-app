@@ -8,6 +8,7 @@
 <link rel="import" href="../../../bower_components/paper-dialog/paper-dialog.html" />
 <link rel="import" href="../../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html" />
 <link rel="import" href="../../../bower_components/paper-checkbox/paper-checkbox.html" />
+<link rel="import" href="../../../bower_components/paper-toast/paper-toast.html" />
 
 <link rel="import" href="../../elements/media-queries/media-queries.html" />
 
@@ -493,7 +494,7 @@
               <p>
                 If you have found the link and already verified, but are still seeing this page, please logout and login again.
               </p>
-
+              <paper-checkbox checked="{{resendCheck}}">I have waited 5 minutes and checked my email. There is no link.</paper-checkbox>
               <paper-button on-tap="resendEmail">send email again</paper-button>
             </div>
 
@@ -570,6 +571,13 @@
 
         </span>
 
+        <paper-toast
+          id="verifyToast"
+          class="fit-bottom"
+          duration="15000">
+          <paper-button on-tap="_closeToast">close</paper-button>
+        </paper-toast>
+
     </template>
 
     <script>
@@ -586,6 +594,11 @@
 
               dimensions: {
                 type: Object
+              },
+
+              resendCheck: {
+                type: Boolean,
+                value: false
               },
 
               user: {
@@ -698,12 +711,19 @@
             },
 
             resendEmail: function() {
-              this.$.auth.user.sendEmailVerification()
-                .then(function() {
-                this.fire("openToast", {toastText:"Email sent."});
-              }.bind(this), function(error) {
-                this.fire("openToast", {toastText:error});
-              }.bind(this));
+              if(!this.resendCheck) {
+                this.$.verifyToast.text = "If you have checked your email and not found a link, make sure the check the checkbox before  clicking the send email button";
+                this.$.verifyToast.open();
+              } else {
+                this.$.auth.user.sendEmailVerification()
+                  .then(function() {
+                  this.$.verifyToast.text = "Email sent.";
+                  this.$.verifyToast.open();
+                }.bind(this), function(error) {
+                  this.$.verifyToast.text = error;
+                  this.$.verifyToast.open();
+                }.bind(this));
+              };
             },
 
             getParameterByName: function(name, url) {
@@ -771,12 +791,20 @@
               this.$.auth.auth.confirmPasswordReset(this.actionCode, this.newPassword)
                 .then(function(resp) {
                   console.log("password change successful :" + resp);
+                  this.$.verifyToast.text = "Password has been changed. You will be taken to the login page in 5 seconds.";
+                  this.$.verifyToast.open();
                   this.passwordSet = false;
                   this.resetVerifySuccess = true;
                   this.resetVerifyMessage = resp;
+                  var that = this;
+                  setTimeout(function() {
+                    that.logout();
+                  }, 5000);
                 }.bind(this))
                 .catch(function(error) {
                   console.log("password change not successful :"+error);
+                  this.$.verifyToast.text = "Oops.. something went wrong. contact technical support please.";
+                  this.$.verifyToast.open();
                   this.passwordSet = false;
                   this.resetVerifyError = true;
                   this.resetVerifyMessage = error;
@@ -807,10 +835,14 @@
                   this.verifyResponse = resp;
                   this.verifySuccess = true;
                   this.startTrial();
+                  this.$.verifyToast.text = "Email verified and agremeents have been agreed to. You will be taken to the logout page in 5 seconds.";
+                  this.$.verifyToast.open();
                 }.bind(this))
                 .catch(function(error) {
                   this.verifyErrorMessage = error;
                   this.verifyError = true;
+                  this.$.verifyToast.text = "Oops.. something went wrong. contact technical support please.";
+                  this.$.verifyToast.open();
                 }.bind(this));
             },
 
@@ -820,7 +852,8 @@
 
             agreeTerms: function() {
               if(!this.agreeStatus) {
-                this.fire("openToast", {toastText: "You must agree to the terms before proceeding."});
+                this.$.verifyToast.text = "You must agree to the terms before proceeding.";
+                this.$.verifyToast.open();
               } else {
                 this.$.userIndexDB.setStoredValue("/homes/" + this.home + "/users/" + this.user.uid + "/agreeTerms", true)
                   .then(function() {
@@ -828,13 +861,14 @@
                   }.bind(this))
                   .catch(function(err) {
                     console.log(err);
-                    this.fire("openToast", {toastText: "Oops.. something went wrong. contact technical support please."});
+                    this.$.verifyToast.text = "Oops.. something went wrong. contact technical support please.";
+                    this.$.verifyToast.open();
                   }.bind(this));
               };
             },
 
             startTrial: function() {
-              this.$.userIndexDB.getStoredValue("/userIndex/"+this.user.uid+"/home")
+              this.$.userIndexDB.getStoredValue("/userIndex/" + this.user.uid + "/home")
                 .then(function(home){
                   this.$.trialSetCall.body = {
                     home:home
@@ -844,13 +878,18 @@
                 }.bind(this))
                 .catch(function(err) {
                   console.log(err);
-                  this.fire("openToast", {toastText: "Oops.. something went wrong. contact technical support please."});
+                  this.$.verifyToast.text = "Oops.. something went wrong. contact technical support please.";
+                  this.$.verifyToast.open();
                 }.bind(this));
             },
 
             _handleTrialSetCall: function(res) {
               console.log(res);
-              this.logout();
+              var that = this;
+              setTimeout(function() {
+                that.logout();
+              });
+
             },
 
             keepDialogOpen: function(agreeOpen, agreeStatus) {
@@ -863,6 +902,10 @@
               this.$.auth.signOut();
               window.location="/default/default/def-login";
             },
+
+            _closeToast: function() {
+              this.$.verifyToast.close();
+            }
 
         });
     </script>
