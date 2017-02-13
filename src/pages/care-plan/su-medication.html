@@ -537,6 +537,9 @@
                   <th hidden$="[[!userSettingsData.vcActive]]">
                     More
                   </th>
+                  <th hidden$="[[!userSettingsData.vcActive]]">
+                    Differences
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -544,7 +547,7 @@
                   is="dom-repeat"
                   items="{{_computeMedList(medsData, userSettingsData.vcActive)}}"
                   as="med"
-                  filter="_filterAfternoon"
+                  filter="_filterMorning"
                   observe="timeChunk"
                   sort="_sortMeds">
                   <tr class$="[[_computeRowClass(med, userSettingsData.vcActive)]]">
@@ -577,6 +580,9 @@
                     </td>
                     <td hidden$="[[!userSettingsData.vcActive]]">
                       <paper-icon-button on-tap="viewChanges" icon="icons:folder-open"></paper-icon-button>
+                    </td>
+                    <td hidden$="[[!userSettingsData.vcActive]]">
+                      [[_computeDifferences(med.differences)]]
                     </td>
                   </tr>
 
@@ -633,6 +639,9 @@
                   <th hidden$="[[!userSettingsData.vcActive]]">
                     More
                   </th>
+                  <th hidden$="[[!userSettingsData.vcActive]]">
+                    Differences
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -640,7 +649,7 @@
                   is="dom-repeat"
                   items="{{_computeMedList(medsData, userSettingsData.vcActive)}}"
                   as="med"
-                  filter="_filterEvening"
+                  filter="_filterMorning"
                   observe="timeChunk"
                   sort="_sortMeds">
                   <tr class$="[[_computeRowClass(med, userSettingsData.vcActive)]]">
@@ -673,6 +682,9 @@
                     </td>
                     <td hidden$="[[!userSettingsData.vcActive]]">
                       <paper-icon-button on-tap="viewChanges" icon="icons:folder-open"></paper-icon-button>
+                    </td>
+                    <td hidden$="[[!userSettingsData.vcActive]]">
+                      [[_computeDifferences(med.differences)]]
                     </td>
                   </tr>
 
@@ -729,6 +741,9 @@
                   <th hidden$="[[!userSettingsData.vcActive]]">
                     More
                   </th>
+                  <th hidden$="[[!userSettingsData.vcActive]]">
+                    Differences
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -736,7 +751,7 @@
                   is="dom-repeat"
                   items="{{_computeMedList(medsData, userSettingsData.vcActive)}}"
                   as="med"
-                  filter="_filterNight"
+                  filter="_filterMorning"
                   observe="timeChunk"
                   sort="_sortMeds">
                   <tr class$="[[_computeRowClass(med, userSettingsData.vcActive)]]">
@@ -769,6 +784,9 @@
                     </td>
                     <td hidden$="[[!userSettingsData.vcActive]]">
                       <paper-icon-button on-tap="viewChanges" icon="icons:folder-open"></paper-icon-button>
+                    </td>
+                    <td hidden$="[[!userSettingsData.vcActive]]">
+                      [[_computeDifferences(med.differences)]]
                     </td>
                   </tr>
 
