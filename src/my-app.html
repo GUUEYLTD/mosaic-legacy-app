@@ -3,6 +3,7 @@
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html" />
 <link rel="import" href="../bower_components/polymerfire/firebase-document.html" />
 <link rel="import" href="../bower_components/polymerfire/firebase-query.html" />
+<link rel="import" href="../bower_components/polymerfire/firebase-messaging.html" />
 <link rel="import" href="../bower_components/app-route/app-location.html" />
 <link rel="import" href="../bower_components/app-route/app-route.html" />
 <link rel="import" href="../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html" />
@@ -63,14 +64,17 @@
       name="recent-users"
       on-iron-localstorage-load-empty="_initializeRecentUsers">
     </iron-localstorage>
+
     <!--firebase app and auth config-->
     <firebase-app
       name="main"
       auth-domain="careplan-c2677.firebaseapp.com"
       database-url="https://careplan-c2677.firebaseio.com"
       api-key="AIzaSyBdtmHIV_7epC0OBiXkTNoqrGRspA58Epc"
-      storage-bucket="careplan-c2677.appspot.com">
+      storage-bucket="careplan-c2677.appspot.com"
+      messaging-sender-id="462773718811">
     </firebase-app>
+
     <!--SECONDARY APP FOR GETTING AROUND USER AUTO SIGN IN WHEN CREATING A NEW USER-->
     <firebase-app
       name="user2"
@@ -78,6 +82,7 @@
       database-url="https://careplan-c2677.firebaseio.com"
       api-key="AIzaSyBdtmHIV_7epC0OBiXkTNoqrGRspA58Epc">
     </firebase-app>
+
     <firebase-auth
       id="auth"
       app-name="main"
@@ -86,6 +91,7 @@
       status-known="{{statusKnown}}"
       on-error="handleError">
     </firebase-auth>
+
     <!--NEED TO PUT THIS SOMEWHERE ELSE LATER ONLY USED TO CREATE NEW USERS-->
     <firebase-auth
       id="createUser"
@@ -101,21 +107,25 @@
       use64="true"
       url="{{homeImage}}">
     </firebase-storage>
+
     <!--MOVE THIS WHEN REFACTORING CODE DOES NOT BELONG HERE!-->
     <firebase-document
       id="userDB"
       app-name="main">
     </firebase-document>
+
     <firebase-document
       id="userTypeDB"
       app-name="main">
     </firebase-document>
+
     <!--SAME AS ABOVE MOVE LATER USED TO GET PROFILE INFO FOR SIDEBAR-->
     <firebase-document
       path="/homes/[[home]]/details"
       data="{{careHomeProfile}}"
       app-name="main">
     </firebase-document>
+
     <!--firebase doc to create new home... NEEDS TO GO ELSEWHERE LATER!-->
     <firebase-document
       id="homeDB"
@@ -169,6 +179,20 @@
       data="{{suList}}"
       app-name="main">
     </firebase-query>
+
+    <firebase-document
+      id="messagingTokenDB"
+      app-name="main"
+      data="{{messagingToken}}">
+    </firebase-document>
+
+    <firebase-messaging
+      id="messaging"
+      app-name="main"
+      token="{{messagingToken}}"
+      on-message="_handleMessage">
+    </firebase-messaging>
+
     <!--routing config-->
     <app-location id="location" route="{{route}}"></app-location>
     <!--route to declare which home is being accessed-->
@@ -951,6 +975,12 @@
             "/default/default/def-login"
             ]
         },
+
+        messagingToken: {
+          type: String,
+          value: null
+        },
+
         appModules:{
           type:Object,
           value:{
@@ -1002,7 +1032,8 @@
         '_computeNotificationCount(notifiesData)',
         '_computeNotifyDialogHidden(notifiesData.*)',
         '_userChanged(user)',
-        '_setUserSettingsPath(user.uid, home)'
+        '_setUserSettingsPath(user.uid, home)',
+        '_setmessagingTokenPath(user.uid, home)'
       ],
       _userChanged:function(user){
         var userExists = true;
@@ -1030,7 +1061,7 @@
       _setUserSettingsPath: function(user, home) {
         var that = this;
         if(user && home) {
-          this.$.userSettingsDB.path = "/homes/" + this.home + "/users/" + user + "/settings";
+          this.$.userSettingsDB.path = "/homes/" + home + "/users/" + user + "/settings";
           this.$.userSettingsDB.ref.once("value", function(snap) {
             var userSettingsData = snap.val();
             if(!userSettingsData || !userSettingsData.vcActive) {
@@ -1386,7 +1417,37 @@
         } else {
           return name;
         };
+      },
+
+      _setmessagingTokenPath: function(uid, home) {
+        if(uid && home !="default") {
+          var that = this;
+          this.$.messagingTokenDB.path = '/homes/' + home + '/users/' + uid + '/messagingToken';
+          this.$.messagingTokenDB.ref.once('value', function(snap) {
+            console.log('value event');
+            var messagingToken = snap.val();
+            if(messagingToken) {
+              console.log('token exists');
+            } else {
+              that.requestNotificationPermission();
+            };
+          });
+        };
+      },
+
+      requestNotificationPermission: function() {
+        var that = this;
+        setTimeout(function() {
+          that.$.messaging.requestPermission()
+            .then(function() {
+              that.fire("openToast", {toastText: "Push notifications have been setup! You will now receive push notifications."})
+            })
+            .catch(function(err) {
+              that.fire("openToast", {toastText: "You must accept in order to get push notifications."});
+            })
+        }, 15000);
       }
+
     });
 
   </script>
