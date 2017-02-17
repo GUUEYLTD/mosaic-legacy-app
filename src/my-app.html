@@ -45,6 +45,7 @@
 <link rel="import" href="behaviors/shell-resize-behavior.html" />
 <link rel="import" href="behaviors/page-change-middleware.html" />
 <link rel="import" href="behaviors/account-create-behavior.html" />
+<link rel="import" href="behaviors/push-notification-behavior.html" />
 
 <link rel="import" href="styles/app-shell-styles.html" />
 
@@ -63,6 +64,13 @@
       id="recentUsers"
       name="recent-users"
       on-iron-localstorage-load-empty="_initializeRecentUsers">
+    </iron-localstorage>
+
+    <iron-localstorage
+      id="deviceNames"
+      name="device-names"
+      value="{{deviceNames}}"
+      on-iron-localstorage-load-empty="_initializeDeviceNames">
     </iron-localstorage>
 
     <!--firebase app and auth config-->
@@ -182,19 +190,23 @@
 
     <firebase-document
       id="messagingTokenDB"
+      path="/homes/[[home]]/users/[[user.uid]]/messagingTokens/[[currentDevice]]"
       app-name="main"
-      data="{{messagingToken}}">
+      data="[[messagingToken]]"
+      disabled>
     </firebase-document>
 
     <firebase-messaging
       id="messaging"
       app-name="main"
       token="{{messagingToken}}"
+      active="{{messagingActive}}"
       on-message="_handleMessage">
     </firebase-messaging>
 
     <!--routing config-->
     <app-location id="location" route="{{route}}"></app-location>
+
     <!--route to declare which home is being accessed-->
     <app-route
       route="{{route}}"
@@ -202,6 +214,7 @@
       data="{{homeData}}"
       tail="{{catRoute}}">
     </app-route>
+
     <!--route for page dir (category of page)-->
     <app-route
       route="{{catRoute}}"
@@ -209,6 +222,7 @@
       data="{{catData}}"
       tail="{{pageRoute}}">
     </app-route>
+
     <!--route for page name-->
     <app-route
       route="{{pageRoute}}"
@@ -216,13 +230,25 @@
       data="{{pageData}}"
       tail="{{paramRoute}}">
     </app-route>
+
     <!--final param for multi use (patientid, careworkerid etc...)-->
     <app-route
       route="{{paramRoute}}"
       pattern="/:param"
       data="{{paramData}}">
     </app-route>
+
     <style include="app-shell-styles"></style>
+
+    <paper-dialog id="requestNotificationModal" modal>
+      <h2>Permission Needed</h2>
+      <p>
+        We need your permission to send push notifications to your current device. Click Proceed to continue.
+      </p>
+      <paper-input label="current device name" value="{{newDevice}}"></paper-input>
+      <paper-button on-tap="requestNotificationPermission">proceed</paper-button>
+
+    </paper-dialog>
 
     <paper-dialog id="movedDialog" modal>
       <h2>app has moved</h2>
@@ -976,11 +1002,6 @@
             ]
         },
 
-        messagingToken: {
-          type: String,
-          value: null
-        },
-
         appModules:{
           type:Object,
           value:{
@@ -1033,7 +1054,6 @@
         '_computeNotifyDialogHidden(notifiesData.*)',
         '_userChanged(user)',
         '_setUserSettingsPath(user.uid, home)',
-        '_setmessagingTokenPath(user.uid, home)'
       ],
       _userChanged:function(user){
         var userExists = true;
@@ -1055,7 +1075,8 @@
       behaviors: [
         Polymer.shellResizeBehavior,
         Polymer.pageChangeMiddleware,
-        Polymer.accountCreateBehavior
+        Polymer.accountCreateBehavior,
+        Polymer.pushNotificationBehavior
       ],
 
       _setUserSettingsPath: function(user, home) {
@@ -1408,6 +1429,12 @@
       _initializeRecentUsers:function(){
         this.$.recentUsers.value=[];
       },
+
+      _initializeDeviceNames: function() {
+        console.log("initializing");
+        this.set("deviceNames", {});
+      },
+
       _computeUserPhoto:function(photo){
         return photo || "/images/defaultAvatar.png"
       },
@@ -1417,35 +1444,6 @@
         } else {
           return name;
         };
-      },
-
-      _setmessagingTokenPath: function(uid, home) {
-        if(uid && home !="default") {
-          var that = this;
-          this.$.messagingTokenDB.path = '/homes/' + home + '/users/' + uid + '/messagingToken';
-          this.$.messagingTokenDB.ref.once('value', function(snap) {
-            console.log('value event');
-            var messagingToken = snap.val();
-            if(messagingToken) {
-              console.log('token exists');
-            } else {
-              that.requestNotificationPermission();
-            };
-          });
-        };
-      },
-
-      requestNotificationPermission: function() {
-        var that = this;
-        setTimeout(function() {
-          that.$.messaging.requestPermission()
-            .then(function() {
-              that.fire("openToast", {toastText: "Push notifications have been setup! You will now receive push notifications."})
-            })
-            .catch(function(err) {
-              that.fire("openToast", {toastText: "You must accept in order to get push notifications."});
-            })
-        }, 15000);
       }
 
     });
