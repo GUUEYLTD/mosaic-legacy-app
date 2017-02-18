@@ -5,6 +5,10 @@
 <link rel="import" href="../../../bower_components/paper-input/paper-input.html" />
 <link rel="import" href="../../../bower_components/paper-dialog/paper-dialog.html" />
 <link rel="import" href="../../../bower_components/polymerfire/firebase-auth.html" />
+<link rel="import" href="../../../bower_components/polymerfire/firebase-document.html" />
+<link rel="import" href="../../../bower_components/polymerfire/firebase-query.html" />
+<link rel="import" href="../../../bower_components/paper-toggle-button/paper-toggle-button.html" />
+
 <link rel="import" href="../../elements/firebase-storage/firebase-storage.html" />
 <link rel="import" href="../../elements/account-header/account-header.html" />
 <link rel="import" href="../../elements/media-queries/media-queries.html" />
@@ -39,6 +43,20 @@
       use64="true">
     </firebase-storage>
 
+    <firebase-document
+      id="userDB"
+      app-name="main"
+      path="/homes/[[home]]/users/[[user.uid]]"
+      data="{{userData}}">
+    </firebase-document>
+
+    <firebase-query
+      id="notificationSourcesDB"
+      app-name="main"
+      path="/homes/[[home]]/users/[[user.uid]]/settings/notificationSources"
+      data="{{notificationsSourcesData}}">
+    </firebase-query>
+
     <style include="common-styles">
 
     </style>
@@ -55,11 +73,13 @@
     </paper-dialog>
 
     <paper-card class="pageCard">
+
       <account-header
         name="[[user.displayName]]"
         email="[[user.email]]"
         photo="[[user.photoURL]]">
       </account-header>
+
       <div class="pageInnerCont padded">
         <h2>Secure Account Information</h2>
         <h3>Account Email</h3>
@@ -69,6 +89,12 @@
         <paper-input type="password" label="update password" value="{{securePass}}"></paper-input>
         <paper-input type="password" label="confrim update password" value="{{securePassConfirm}}"></paper-input>
         <paper-button on-tap="saveSecureUpdate">update account</paper-button>
+        <h2>Notifications Settings</h2>
+        <template is="dom-repeat" items="{{notificationsSourcesData}}" as="token">
+
+          [[token.$key]] <paper-toggle-button checked="{{token.$val}}"></paper-toggle-button>
+
+        </template>
       </div>
 
     </paper-card>
