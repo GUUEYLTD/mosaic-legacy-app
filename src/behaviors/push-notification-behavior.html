@@ -1,0 +1,104 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html" />
+
+<script>
+
+  (function(){
+    "use-strict";
+    /*
+    @polymerBehavior Polymer.pushNotificationBehavior
+    */
+    Polymer.pushNotificationBehavior = {
+
+      is:"push-notification-behavior",
+
+      observers:[
+        '_setmessagingTokenPath(user.uid, home, currentDevice)'
+      ],
+
+      properties: {
+        messagingToken: {
+          type: String
+        },
+
+        messagingActive: {
+          type: Boolean,
+          value: false
+        },
+
+        deviceNames: {
+          type: Object,
+          value:{}
+        },
+
+        newDevice: {
+          type: String,
+          observer: "_newDeviceChanged"
+        },
+
+        currentDevice: {
+          type: String,
+          computed: "_computeCurrentDevice(user.uid, deviceNames, newDevice)",
+          observer: "_currentDeviceChanged"
+        }
+      },
+
+      ready:function() {
+
+      },
+
+      _computeCurrentDevice: function(uid, deviceNames, newDevice) {
+        if(newDevice) {
+          return newDevice;
+        } else {
+          return deviceNames[this.user.uid] ? deviceNames[this.user.uid] : null;
+        };
+      },
+
+      _currentDeviceChanged: function(device) {
+        if(device) {
+          this.$.messagingTokenDB.disabled = false;
+        };
+      },
+
+      _newDeviceChanged: function(device) {
+        if(device) {
+          this.set("deviceNames." + this.user.uid, device);
+        };
+      },
+
+      _setmessagingTokenPath: function(uid, home, currentDevice) {
+        if(uid && home !="default" && !currentDevice) {
+          this.openRequestNotificationModal();
+        };
+      },
+
+      openRequestNotificationModal: function() {
+        this.$.requestNotificationModal.open();
+      },
+
+      requestNotificationPermission: function() {
+        var that = this;
+        this.$.messaging.requestPermission()
+          .then(function() {
+            that.fire("openToast", {toastText: "Push notifications have been setup! You will now receive push notifications."})
+            var path = "/homes/" + that.home + "/users/" + that.user.uid + "/settings/notificationSources/" + that.currentDevice;
+            that.$.userSettingsDB.setStoredValue(path, true);
+            that.$.requestNotificationModal.close();
+          })
+          .catch(function(err) {
+            that.fire("openToast", {toastText: "You must accept in order to get push notifications."});
+            var path = "/homes/" + that.home + "/users/" + that.user.uid + "/settings/notificationSources/" + that.currentDevice;
+            that.$.userSettingsDB.setStoredValue(path, false);
+            that.$.requestNotificationModal.close();
+          });
+      },
+
+      _handleMessage: function(e) {
+        console.log(e);
+      }
+
+    };
+
+  })();
+
+</script>

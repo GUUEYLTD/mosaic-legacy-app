@@ -1,5 +1,14 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html" />
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html" />
+<link rel="import" href="../../../bower_components/iron-collapse/iron-collapse.html" />
+<link rel="import" href="../../../bower_components/paper-item/paper-item.html" />
+
+<link rel="import" href="../../../bower_components/paper-fab/paper-fab.html" />
+<link rel="import" href="../../../bower_components/iron-icon/iron-icon.html" />
+<link rel="import" href="../../../bower_components/iron-icons/iron-icons.html" />
+<link rel="import" href="../../../bower_components/iron-icons/social-icons.html" />
+<link rel="import" href="../../../bower_components/iron-icons/image-icons.html" />
+<link rel="import" href="../../../bower_components/iron-icons/av-icons.html" />
 
 <link rel="import" href="../../elements/admin-header/admin-header.html" />
 <link rel="import" href="../../elements/media-queries/media-queries.html" />
@@ -20,9 +29,39 @@
 
     <style include="common-styles">
 
-      .pageCard{
-        min-height:800px;
+      :host {
+        display: block
       }
+
+      .pageCard{
+        min-height: 800px;
+      }
+
+      .collapseItemTitle {
+        text-transform: uppercase;
+        background-color:#CFD8DC;
+      }
+
+      .collapseItemTitle:hover {
+        cursor:pointer;
+      }
+
+      .collapseItem {
+        padding-left:20px;
+      }
+
+      .collapseItemContent {
+
+      }
+
+      .realtime {
+        color: #42beff;
+      }
+
+      .non-realtime {
+        color: #7E57C2;
+      }
+
     </style>
 
     <paper-card class="pageCard">
@@ -33,6 +72,1108 @@
       <div class="pageInnerCont padded">
         <h1>Coming Soon!</h1>
       </div>
+
+      <!--
+      what needs to go in support???
+        general software support
+
+          reccommended devices
+            android tablet
+              **get min specs for this
+
+          how to save records
+            realtime database
+          user permissions
+            admin permissions
+            care worker rights
+          what should be done on mobile
+            tables better on desktop etc...
+          what should be done on a pc
+            tables and large data entry stuff etc...
+          offline functionality
+            how it workds
+            what can be done
+            how syncronization works
+          notifications
+            what gets notified
+              goal dates
+              risk assessment dates
+              medication
+              payment issues
+            who gets notified
+          push notifications
+            who gets notified
+            when do they get notified
+          where to find additional modules
+
+        service user basics
+          add a service user
+            add some basic information
+          add a pre admission assessment
+          add a care plan
+          add a care plan review
+          add a medical asesessment
+          add a risk assessment
+          add a service user goal
+          add a monthly report on a service user
+          view report for a service user
+
+        personal account settings
+          non real time
+            need to refresh after setting to see changes
+          about your account
+            admin privledges
+            care worker privledges
+            your username is your email
+          changing your email
+          changing your password
+          changing your account photo
+          changing your display name
+
+        version control
+          what is it
+          what does it do
+
+        home settings
+          who does it affect?
+          privacy mode
+          privacy photo overlay
+          privacy photo overlay color
+
+      admin software support
+        users
+          admin accounts
+            why special
+            what can they do?
+              change payment info / modules
+              view version control
+              set home settings
+              everything a care worker can do
+            admin as owner of account
+          manager accounts
+            what can they do?
+              change payment info / modules
+              view version control
+              set home settings
+              everything a care worker can do
+          care worker accounts
+            what can they do
+              view any service user's records in the home
+              update any service user's records in the home
+              access support pages
+          creating users
+            how to
+            password link as invite
+            verification & agreement process
+              links sent
+              agree by clicking
+          changing users
+            how to
+              verification on email change?
+              role change access rights time till effect
+                immediate due to real time...
+          removing users
+            how to
+              time till effect
+                immediate?
+
+        version control
+          what is it?
+          how does it work?
+          who sees it?
+          how to use
+            toggle location
+          what pages support version control?
+            medication outline
+
+        reports
+          manager reports
+            who can see?
+              only admin/managers
+            adding reports
+              date selected automatically
+            editing reports
+              can only previous reports so far... (1 month i think?)
+            viewing reports
+
+        company profile
+          company name
+            shows in rest of software
+          company image
+            shows in rest of software
+          other info...
+            why needed?
+            how used
+
+        payments
+          the module system
+            what is in the core module?
+          trial period
+            30 days then locked out if no pay
+          subscription system
+            billed montly
+          how billed?
+            service user count * % of billing cycle * module price (for each module)
+            examples
+          removing a module
+            immediate effect
+          payment methods
+            currently only cards
+          delinquent payments/grace period
+            **need to check stripe for this and what is set
+        dashboard
+          nothing really here yet...
+      -->
+
+      <!--
+      <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">general</paper-item>
+      <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+        <p>
+          description.
+        </p>
+      </iron-collapse>
+      -->
+
+      <paper-item class="collapseItemTitle">general software support</paper-item>
+      <iron-collapse class="collapseItem" opened>
+        <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">reccommended devices</paper-item>
+        <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+          <p>
+            Mosaic runs on any modern web browser. The supported browsers are listed below:
+          </p>
+          <ul>
+            <li>
+              Chrome
+            </li>
+            <li>
+              Firefox
+            </li>
+            <li>
+              Internet Explorer/Edge 11 or newer
+            </li>
+            <li>
+              Safari 7 or above
+            </li>
+            <li>
+              Chrome (android)
+            </li>
+            <li>
+              Safari (iOS 7.1) or newer
+            </li>
+          </ul>
+
+          <p>
+            It is worth noting offline functionality may be limited or absent if using Safari.
+          </p>
+
+          <p>
+            User experience is at its best when using a tablet or a pc. Some interfaces may be more difficult to use when using on a mobile phone.
+          </p>
+        </iron-collapse>
+
+        <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">how to save records</paper-item>
+        <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+          <p>
+            Mosaic uses a <span class="realtime">realtime database</span>. This means that as you enter in information it is saved automatically (in real time). You may have used previous applications where you click a save button or similar. This is NOT the case when using Mosaic. Think of Mosaic as a notebook; when you type information into a field it saves, just like when you write onto a notebook and it simply stays there. The difference here is that this "notbook" can be seen by everyone else in the care home who has an account. As you enter or edit a record, others can see this happen. This allows everyone to have the most up to date information.
+          </p>
+
+          <p>
+            There some areas that do not use this <span class="realtime">"real time"</span> feature. <span class="non-realtime">Non real time</span> features will typically have a <span class="non-realtime">purple</span> color and/or appear in dialog boxes (like popup windows). Real time features typically have a <span class="realtime">blue</span> color associated with them.
+          </p>
+        </iron-collapse>
+
+        <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">user roles</paper-item>
+        <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+          <p>
+            Depending on your role, you will have different access right. The first person who created the account for your care home is the admin. Other added users' roles are set when their account is created. Roles for users can be changed by an admin or manager. Changes to user account roles are implemented immediately.
+          </p>
+
+          <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">admin permissions</paper-item>
+          <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+            <p>
+              Admin accounts can:
+              <ul>
+                <li>
+                  Access the Admin Dashboard
+                </li>
+                <li>
+                  Care Home Profile Information
+                </li>
+                <li>
+                  Payments
+                </li>
+                <li>
+                  Update/Add/Delete Users
+                </li>
+                <li>
+                  Update Care Home Settings
+                </li>
+                <li>
+                  Access Manager Reports
+                </li>
+                <li>
+                  Version Control
+                </li>
+                <li>
+                  View/Update Any Service User Records
+                </li>
+                <li>
+                  View Support pages
+                </li>
+              </ul>
+            </p>
+          </iron-collapse>
+
+          <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">manager permissions</paper-item>
+          <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+            <p>
+              Manager accounts can:
+              <ul>
+                <li>
+                  Access the Admin Dashboard
+                </li>
+                <li>
+                  Care Home Profile Information
+                </li>
+                <li>
+                  Payments
+                </li>
+                <li>
+                  Update/Add/Delete Users
+                </li>
+                <li>
+                  Update Care Home Settings
+                </li>
+                <li>
+                  Access Manager Reports
+                </li>
+                <li>
+                  Access Version Control
+                </li>
+                <li>
+                  View/Update Any Service User Records
+                </li>
+                <li>
+                  View Support Pages
+                </li>
+              </ul>
+            </p>
+          </iron-collapse>
+
+          <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">care worker permissions</paper-item>
+          <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+            <p>
+              Care Worker accounts can:
+              <ul>
+                <li>
+                  View/Update Any Service User Records
+                </li>
+                <li>
+                  View Support Pages
+                </li>
+              </ul>
+            </p>
+          </iron-collapse>
+
+        </iron-collapse>
+
+        <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">reccommended activites on mobile</paper-item>
+        <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+          <p>
+            Using Mosaic on mobile is ideal for quick short service user record entries as you move around the care home. Due to lack of a keyboard for tablets and phones, it is reccommended that longer entries are done on pc. Pages with large tables such as the Care Plan page are also best viewed on a larger screen. Using these pages is still possible on mobile, but not ideal.
+          </p>
+        </iron-collapse>
+
+        <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">reccommended activities on desktop or laptop computer</paper-item>
+        <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+          <p>
+            Using Mosaic on a desktop or laptop computer is best for longer service user record entries. There is unlimited functionality when using Mosaic on these devices. The only drawback is lack of mobility.
+          </p>
+        </iron-collapse>
+
+        <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">offline functionality</paper-item>
+        <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+          <p>
+            Service user records are available offline as long as you have already accessed them while online. Any feature or page that has already been accessed while online will also work offline. Any updates to service user records will be syncronized once when you come back online. This feature also helps to speed up load times in care homes with slower or unstable internet.
+          </p>
+
+          <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">how it works</paper-item>
+          <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+            <p>
+              Mosaic automatically saves the pages, features, and records that you access while online. If your internet stops working you are still able to keep working with Mosaic. Other users will not be able to see the changes until you come back online though.
+            </p>
+          </iron-collapse>
+
+          <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">what can be done offline</paper-item>
+          <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+            <p>
+              You can update service user records (wont't be shown to other users till offline), view already accessed records, and access any page that you have already accessed while online.
+            </p>
+          </iron-collapse>
+
+          <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">how synchronization works</paper-item>
+          <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+            <p>
+              <!--TODO: add and explain this field -->
+            </p>
+          </iron-collapse>
+
+        </iron-collapse>
+
+        <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">notifications</paper-item>
+        <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+          <p>
+            Notifications show on the main menu area and will have a red circle with a number showing how many notifications currently exist.
+          </p>
+
+          <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">what causes notifications? when do they occur? who can see them?</paper-item>
+          <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+            <p>
+              The <iron-icon icon="social:notifications"></iron-icon> icon is where notifications show. It can be found on the main menu. Notifications can be seen by every user in your care home. Notifications can also be dismissed by any user.
+              The following records/events set notifications automaticallly:
+              <ul>
+                <li>
+                  Service User Scheduled Medication Times
+                  <ul>
+                    <li>
+                      Notifications are created an hour before medication
+                    </li>
+                    <li>
+                      Occurs for every medication for every service user every time a scheduled medication is required
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  Service User Goal Completion Dates
+                  <ul>
+                    <li>
+                      Notifications are created the day before a goal should be completed
+                    </li>
+                    <li>
+                      Occurs one time only.
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  Service User Risk Assessment Review Dates
+                  <ul>
+                    <li>
+                      Notifications are created the day before a risk assessment review should occur
+                    </li>
+                    <li>
+                      Occurs one time only.
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  Care Plan Review Dates
+                  <ul>
+                    <li>
+                      Notifications are created the day before a care plan review should occur
+                    </li>
+                    <li>
+                      Occurs one time only.
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  Payment Issues
+                  <ul>
+                    <li>
+                      Notifications are created when there is an issue with payment.
+                    </li>
+                    <li>
+                      Occurs for 5 days until the issue is resolved or the account is closed.
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  Trial Expiry
+                  <ul>
+                    <li>
+                      Notifications are first created 15 days before the trial expiry.
+                    </li>
+                    <li>
+                      Notifications occur with increasing frequency as time left becomes less.
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </p>
+
+          </iron-collapse>
+
+        </iron-collapse>
+
+        <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">where to find additional modules?</paper-item>
+        <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+          <p>
+            Additional modules can be added in the payment section which is only accessible by admin or manager users. Available modules can be found from the main menu by clicking on <iron-icon icon="icons:apps"></iron-icon>.
+          </p>
+        </iron-collapse>
+
+        <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">service user basics</paper-item>
+        <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+          <p>
+            Almost all important information is based around a service user. Each record entered corresponds to a specific service user. These pages to enter records can be found on the right side menu after selecting a service user from the home page or after creating a service user.
+          </p>
+
+          <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">add a service user</paper-item>
+          <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+            <p style="line-height:50px;" class="collapseItemContent">
+              To add a service user click on <paper-fab style="display:inline;" icon="icons:add"></paper-fab>. You will be taken to a new page which will require profile information for the new service user to continue. Once when you have completed the required information a new menu will pop up on the right side which will allow you to continue to fill in other records for service users.
+            </p>
+          </iron-collapse>
+
+          <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">update a service user profile</paper-item>
+          <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+            <p>
+              To update a service user profile, go to the home page by clicking on <iron-icon icon="icons:home"></iron-icon> if you are not already there. Next click on the service user that you would like to update. From there, simply update the fields that need to be changed or added. The records save as you type, you do not need to save anything. After you have finished your updates, you may go to another page.
+            </p>
+
+          </iron-collapse>
+
+          <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">add a pre-admission assessment</paper-item>
+          <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+            <p>
+              To update a service user pre-admission assessment, go to the home page by clicking on <iron-icon icon="icons:home"></iron-icon> if you are not already there. Next click on the service user that you would like to update. Next click on the Pre-Admission Assessment link on the right menu. From there, simply update the fields that need to be changed or added. The records save as you type, you do not need to save anything. After you have finished your updates, you may go to another page.
+            </p>
+
+            <p style="line-height:50px;">
+              You can also add custom fields on this page if you have some special information that does not fit into any of the fields but still belongs on the pre-admission assessment. To add a custom section, click on <paper-fab icon="icons:add"></paper-fab>. You will see a dialog open with a <span class="non-realtime">purple header</span>. Enter in the name of the new section and the description. click save (this is not real time like most other parts of Mosaic). After saving fill in the field as you would the others. Record entries are <span class="realtime">real time</span> once when you have created the new custom section. You can also later edit the custom section's name and description by clicking edit. clicking delete will remove the custom section permanently.
+            </p>
+          </iron-collapse>
+
+          <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">add a care plan</paper-item>
+          <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+            <p>
+              <p>
+                To update a service user care plan, go to the home page by clicking on <iron-icon icon="icons:home"></iron-icon> if you are not already there. Next click on the service user that you would like to update. Next click on the Care Plan link on the right menu. From there, simply update the fields that need to be changed or added. The records save as you type, you do not need to save anything. After you have finished your updates, you may go to another page.
+              </p>
+
+              <p>
+                Certain sections such as "Proposed Care & Support", "What service will the service user do?", or "Intervention by staff" allow you to create lists of entries by clicking add. When clicking add, a new line apears where you can add something else to the list. You can also edit the order of the list and/or delete items by clicking edit. Once when you are done with editing, click "Stop Editing". All of these changes are made <span class="realtime">realtime</span>.
+              </p>
+
+              <p>
+                The "Statement of Service User" section allows you to select a date by clicking on the date buttons. The service user is already selected. You can select from a list of care workers for the agreement. The last field allows you to enter a signature for both the service user and the care worker. These cannot be changed after they have been saved.
+              </p>
+
+              <p style="line-height:50px;">
+                You can also add custom fields on this page if you have some special information that does not fit into any of the fields but still belongs on the pre-admission assessment. To add a custom section, click on <paper-fab icon="icons:add"></paper-fab>. You will see a dialog open with a <span class="non-realtime">purple header</span>. Enter in the name of the new section and the description. click save (this is not real time like most other parts of Mosaic). After saving fill in the field as you would the others. Record entries are <span class="realtime">real time</span> once when you have created the new custom section. You can also later edit the custom section's name and description by clicking edit. clicking delete will remove the custom section permanently.
+              </p>
+            </p>
+          </iron-collapse>
+
+          <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">add a care plan review</paper-item>
+          <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+
+            <p>
+              Some pages, such as this one, have two modes: "Edit View" and "Multi View". When first arriving at the page, you will be in "Multi View". "Multi View" will show you all of the care plan reviews that you have added so far for this service user. After selecting a review, you will enter "Edit Mode". You can edit records relating to the selected review in "Edit Mode", this is done in <span class="realtime">real time</span>.
+            </p>
+
+            <p style="line-height:50px;">
+              To update a service user care plan, go to the home page by clicking on <iron-icon icon="icons:home"></iron-icon> if you are not already there. Next click on the service user that you would like to update. Next click on the Care Plan Review link on the right menu. If you have not added any records previously, you will see a blank page. Click on <paper-fab icon="icons:add"></paper-fab>. A <span class="non-realtime">dialog box</span> will open where you can enter the first few needed records to get started. Once when you are done click save.
+            </p>
+
+            <p>
+              A new page will appear where you can edit the care plan review records in <span class="realtime">real time</span>.
+            </p>
+
+            <p>
+              Certain sections such as "Proposed Care & Support", "What service will the service user do?", or "Intervention by staff" allow you to create lists of entries by clicking add. When clicking add, a new line apears where you can add something else to the list. You can also edit the order of the list and/or delete items by clicking edit. Once when you are done with editing, click "Stop Editing". All of these changes are made <span class="realtime">realtime</span>.
+            </p>
+
+            <p>
+              The "Statement of Service User" section allows you to select a date by clicking on the date buttons. The service user is already selected. You can select from a list of care workers for the agreement. The last field allows you to enter a signature for both the service user and the care worker. These cannot be changed after they have been saved.
+            </p>
+
+            <p>
+              When you are finished editing the current care plan review, click <paper-fab icon="icons:check"></paper-fab>. You will be taken back to the previous page where you can see a summary of your care plan review and any other ones that you add for this service user in the future.
+            </p>
+
+            <p>
+              To edit an existing review, click <iron-icon icon="icons:more-vert"></iron-icon> for the review that you want to edit. A menu will pop up. Select edit. You will be taken to "Edit View" to work on that review record.
+            </p>
+
+            <p>
+              To delete an existing review, click <iron-icon icon="icons:more-vert"></iron-icon> for the review that you want to delete. A menu will pop up. Select delete. The record will be removed permanently.
+            </p>
+          </iron-collapse>
+
+          <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">add a medical assessment</paper-item>
+          <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+            <p style="line-height:50px;">
+              To add a medical assessment for a particular service user, go to the home page by clicking on <iron-icon icon="icons:home"></iron-icon> if you are not already there. Next click on the service user that you would like to update. Next click on the Care Plan Review link on the right menu. If you have not added any records previously, you will see an empty table.
+            </p>
+
+            <p>
+              At the top of the page you can enter a name for the file that you will upload, this is optional. Click on upload file to select a file to save on Mosaic for later use. You can upload any file type that you want. Images and PDFs can be displayed within the application.
+            </p>
+
+            <P>
+              After you have uploaded your file, you will see your file in the table below. If you need to access the file, simply click "go to file". If the file is an image or PDF you will see the file in the window. If not, your file will be downloaded.
+            </P>
+
+            <p>
+              You can add comments for each file. These are updated in <span class="realtime">realtime</span>.
+            </p>
+
+          </iron-collapse>
+
+          <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">add a risk assessment</paper-item>
+          <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+            <p>
+              Some pages, such as this one, have two modes: "Edit View" and "Multi View". When first arriving at the page, you will be in "Multi View". "Multi View" will show you all of the risk assessments that you have added so far for this service user. After selecting a risk assessment, you will enter "Edit Mode". You can edit records relating to the selected assessment in "Edit Mode", this is done in <span class="realtime">real time</span>.
+            </p>
+
+            <p style="line-height:50px;">
+              To update a service user risk assessment, go to the home page by clicking on <iron-icon icon="icons:home"></iron-icon> if you are not already there. Next click on the service user that you would like to update. Next click on the Risk Assessment link on the right menu. If you have not added any records previously, you will see a blank page. Click on <paper-fab icon="icons:add"></paper-fab>. A <span class="non-realtime">dialog box</span> will open where you can enter the first few needed records to get started. Once when you are done click save.
+            </p>
+
+            <p>
+              A new page will appear where you can edit the risk assessment records in <span class="realtime">real time</span>.
+            </p>
+
+            <p>
+              When you are finished editing the current risk assessment, click <paper-fab icon="icons:check"></paper-fab>. You will be taken back to the previous page where you can see a summary of your risk assessment and any other ones that you add for this service user in the future.
+            </p>
+
+            <p>
+              To edit an existing assessment, click <iron-icon icon="icons:more-vert"></iron-icon> for the assessment that you want to edit. A menu will pop up. Select edit. You will be taken to "Edit View" to work on that review record.
+            </p>
+
+            <p>
+              To delete an existing assessment, click <iron-icon icon="icons:more-vert"></iron-icon> for the assessment that you want to delete. A menu will pop up. Select delete. The record will be removed permanently.
+            </p>
+          </iron-collapse>
+
+          <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">add a service user goal</paper-item>
+          <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+            <p>
+              Some pages, such as this one, have two modes: "Edit View" and "Multi View". When first arriving at the page, you will be in "Multi View". "Multi View" will show you all of the personal goals that you have added so far for this service user. After selecting a goal, you will enter "Edit Mode". You can edit records relating to the selected goal in "Edit Mode", this is done in <span class="realtime">real time</span>.
+            </p>
+
+            <p style="line-height:50px;">
+              To update a service user goal, go to the home page by clicking on <iron-icon icon="icons:home"></iron-icon> if you are not already there. Next click on the service user that you would like to update. Next click on the Personal Goals link on the right menu. If you have not added any records previously, you will see a blank page. Click on <paper-fab icon="icons:add"></paper-fab>. A <span class="non-realtime">dialog box</span> will open where you can enter the first few needed records to get started. The <paper-fab icon="icons:add"></paper-fab> allow you to add steps to the new goal. Once when you are done click save.
+            </p>
+
+            <p>
+              A new page will appear where you can edit the personal goal records in <span class="realtime">real time</span>.
+            </p>
+
+            <p>
+              When you are finished editing the current goal, click <paper-fab icon="icons:check"></paper-fab>. You will be taken back to the previous page where you can see a summary of the service user's goals and any other ones that you add for this service user in the future.
+            </p>
+
+            <p>
+              To edit an existing goal, click <iron-icon icon="icons:more-vert"></iron-icon> for the goal that you want to edit. A menu will pop up. Select edit. You will be taken to "Edit View" to work on that review record.
+            </p>
+
+            <p>
+              To delete an existing goal, click <iron-icon icon="icons:more-vert"></iron-icon> for the goal that you want to delete. A menu will pop up. Select delete. The record will be removed permanently.
+            </p>
+          </iron-collapse>
+
+          <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">add a monthly report for a service user</paper-item>
+          <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+            <p style="line-height:50px;">
+              To add a monthly report for a particular service user, go to the home page by clicking on <iron-icon icon="icons:home"></iron-icon> if you are not already there. Next click on the service user that you would like to update. Next click on the Monthly Reports link on the right menu.
+            </p>
+          </iron-collapse>
+
+          <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">view a service user report</paper-item>
+          <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+            <p style="line-height:50px;">
+              To view a report for a particular service user, go to the home page by clicking on <iron-icon icon="icons:home"></iron-icon> if you are not already there. Next click on the service user that you would like to whos records you would like to view. Next click on the View Reports link on the right menu.
+            </p>
+          </iron-collapse>
+
+        </iron-collapse>
+
+        <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">personal account settings</paper-item>
+        <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+          <p>
+            To change your account email, password, display name, or profile image, click <iron-icon icon="icons:account-circle"></iron-icon>. You will see a dialog box pop up. Click on your account name or image. You should now be on your account settings page.
+          </p>
+          <p>
+            All changes on this page are <span class="non-realtime">not real time</span>. You must click save or the appropriate button before changes are saved. You will also need to either logout or refresh the page before seeing the changes on the page.
+          </p>
+          <p>
+            To update your account email or password, fill out the appropriate fields and click "UPDATE ACCOUNT". You do not need to fill in the fields for both email and password. You can change one or the other or both as you wish. If you havent recently logged in, you will be asked for your current username and password before the changes are made. This is meant as a security measure to make sure that others do not change your account.
+          </p>
+
+          <p>
+            To update your display name, click on <iron-icon icon="icons:create"></iron-icon> next to your current display name and profile image. A blank line will appear in place of the display name. Click in this area and type in your new display name. Click <iron-icon icon="icons:check"></iron-icon> when you are finished, this will save your new display name.
+          </p>
+
+          <p>
+            To update your profile image, click on <iron-icon icon="image:add-a-photo"></iron-icon>. A dialog will appear which will allow you to upload a new photo and/or edit it. Here is a list of actions which can be performed:
+          </p>
+          <ul>
+            <li>
+              <iron-icon icon="image:add-a-photo"></iron-icon>: upload a new image. Can be a file from a computer or can be taken directly from the camera of your phone or tablet.
+            </li>
+            <li>
+              <iron-icon icon="image:rotate-left"></iron-icon>: rotate image left 90 degrees.
+            </li>
+            <li>
+              <iron-icon icon="image:rotate-right"></iron-icon>: rotate image right 90 degrees.
+            </li>
+            <li>
+              <iron-icon icon="image:crop"></iron-icon> crop the image. Will "cut out" an image from the purple box inside the dialog box. click and drag the image to move relative to the purple box and click and hold on any of the four solid purple square boxes to resize the image (two finger pinch zoom works on mobile). when ready to crop, click <iron-icon icon="image:crop"></iron-icon>.
+            </li>
+            <li>
+              <iron-icon icon="icons:save"></iron-icon>: save image. This will save and close the photo editing dialog.
+            </li>
+            <li>
+              <iron-icon icon="av:fast-rewind"></iron-icon>: revert photo. This will undo all of the edits (resize, crop, rotate) that you have done to the image.
+            </li>
+            <li>
+              <iron-icon icon="icons:cancel"></iron-icon>: cancel edit. This will close the dialog box without saving any changes.
+            </li>
+          </ul>
+        </iron-collapse>
+
+        <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">version control</paper-item>
+        <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+          <p>
+            Version control is a feature that allows admins to track changes to sensitive records such as medication. Only admins or managers can view the history of changes to pages that have version control enabled.
+          </p>
+
+        </iron-collapse>
+
+        <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">care home settings</paper-item>
+        <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+          <p>
+            There are certain settings which can be set for an entire care home account. These settings can only be changed by an admin or a manager. If you are a care worker and find the current settings to be less than ideal, talk to your admin or manager about changing. These settings include:
+          </p>
+          <ul>
+            <li>
+              Image Overlay Opacity: Optional transparency setting that goes over the service user image. The Opacity (or transparency) of the color that goes over the service user can be changed using the "Image Overlay Color" setting below. This setting is meant to be a privacy feature for care workers who are using the software while on the move around the care home. This makes it more difficult for service users to see when records are being made or updated relating to them. In order to reveal a service user image, hover your mouse over the image or tap and hold on the image while using a tablet or phone.
+            </li>
+            <li>
+              Image Overlay Color: The color that goes over all service user images. Should be used in conjunction with the "Image Overlay Opacity" setting above.
+            </li>
+            <li>
+              Hide Full Service User Names: Hides all service user full names and changes them to initials. hover your mouse over the initials to reveal full name or tap and hold while on a tablet or phone.
+            </li>
+          </ul>
+
+        </iron-collapse>
+
+      </iron-collapse>
+
+      <!--admins only-->
+
+      <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">admin software support</paper-item>
+      <iron-collapse opened on-mouseleave="collapseSelfHide">
+        <p>
+          description.
+        </p>
+
+        <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">users</paper-item>
+        <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+          <p>
+            description.
+          </p>
+
+          <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">admin accounts</paper-item>
+          <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+            <p>
+              description.
+            </p>
+
+            <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">what can admin accounts do?</paper-item>
+            <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+              <p>
+                description.
+              </p>
+
+              <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">change payment info and modules</paper-item>
+              <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+                <p>
+                  description.
+                </p>
+
+              </iron-collapse>
+
+              <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">view version control</paper-item>
+              <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+                <p>
+                  description.
+                </p>
+
+              </iron-collapse>
+
+              <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">set home settings</paper-item>
+              <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+                <p>
+                  description.
+                </p>
+
+              </iron-collapse>
+
+              <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">everything other users can do</paper-item>
+              <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+                <p>
+                  description.
+                </p>
+
+              </iron-collapse>
+
+            </iron-collapse>
+
+          </iron-collapse>
+
+          <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">manager accounts</paper-item>
+          <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+            <p>
+              description.
+            </p>
+
+            <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">what can manager accounts do?</paper-item>
+            <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+              <p>
+                description.
+              </p>
+
+              <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">change payment info and modules</paper-item>
+              <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+                <p>
+                  description.
+                </p>
+
+              </iron-collapse>
+
+              <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">view version control</paper-item>
+              <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+                <p>
+                  description.
+                </p>
+
+              </iron-collapse>
+
+              <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">set home settings</paper-item>
+              <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+                <p>
+                  description.
+                </p>
+
+              </iron-collapse>
+
+              <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">everything a care worker can do</paper-item>
+              <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+                <p>
+                  description.
+                </p>
+
+              </iron-collapse>
+
+            </iron-collapse>
+
+          </iron-collapse>
+
+          <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">care worker accounts</paper-item>
+          <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+            <p>
+              description.
+            </p>
+
+            <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">what can care workers do?</paper-item>
+            <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+              <p>
+                description.
+              </p>
+
+              <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">view any service user's records within the care home</paper-item>
+              <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+                <p>
+                  description.
+                </p>
+
+              </iron-collapse>
+
+              <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">update any service user's records in the home</paper-item>
+              <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+                <p>
+                  description.
+                </p>
+
+              </iron-collapse>
+
+              <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">access support pages</paper-item>
+              <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+                <p>
+                  description.
+                </p>
+
+              </iron-collapse>
+
+            </iron-collapse>
+
+          </iron-collapse>
+
+          <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">creating users</paper-item>
+          <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+            <p>
+              description.
+            </p>
+
+            <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">password link as invite</paper-item>
+            <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+              <p>
+                description.
+              </p>
+
+            </iron-collapse>
+
+            <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">verification and agreement process</paper-item>
+            <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+              <p>
+                description.
+              </p>
+
+            </iron-collapse>
+
+          </iron-collapse>
+
+          <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">changing users</paper-item>
+          <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+            <p>
+              description.
+            </p>
+
+            <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">verification email on change</paper-item>
+            <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+              <p>
+                description.
+              </p>
+
+            </iron-collapse>
+
+            <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">role change time till effect</paper-item>
+            <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+              <p>
+                description.
+              </p>
+
+            </iron-collapse>
+
+          </iron-collapse>
+
+          <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">removing users</paper-item>
+          <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+            <p>
+              description.
+            </p>
+
+            <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">time till effect</paper-item>
+            <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+              <p>
+                description.
+              </p>
+
+            </iron-collapse>
+
+          </iron-collapse>
+
+        </iron-collapse>
+
+        <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">version control</paper-item>
+        <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+          <p>
+            description.
+          </p>
+
+          <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">what is version control?</paper-item>
+          <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+            <p>
+              description.
+            </p>
+
+          </iron-collapse>
+
+          <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">how does it work?</paper-item>
+          <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+            <p>
+              description.
+            </p>
+
+          </iron-collapse>
+
+          <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">who sees it?</paper-item>
+          <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+            <p>
+              description.
+            </p>
+
+          </iron-collapse>
+
+          <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">how to use</paper-item>
+          <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+            <p>
+              description.
+            </p>
+
+            <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">toggle location</paper-item>
+            <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+              <p>
+                description.
+              </p>
+
+            </iron-collapse>
+
+          </iron-collapse>
+
+          <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">which pages support version control?</paper-item>
+          <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+            <p>
+              description.
+            </p>
+
+          </iron-collapse>
+
+        </iron-collapse>
+
+        <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">reports</paper-item>
+        <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+          <p>
+            description.
+          </p>
+
+          <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">manager reports</paper-item>
+          <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+            <p>
+              description.
+            </p>
+
+            <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">who can see?</paper-item>
+            <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+              <p>
+                description.
+              </p>
+
+            </iron-collapse>
+
+            <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">adding reports</paper-item>
+            <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+              <p>
+                description.
+              </p>
+
+            </iron-collapse>
+
+            <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">editing reports</paper-item>
+            <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+              <p>
+                description.
+              </p>
+
+            </iron-collapse>
+
+            <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">viewing reports</paper-item>
+            <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+              <p>
+                description.
+              </p>
+
+            </iron-collapse>
+
+          </iron-collapse>
+
+        </iron-collapse>
+
+        <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">company profile</paper-item>
+        <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+          <p>
+            description.
+          </p>
+
+        </iron-collapse>
+
+        <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">payments</paper-item>
+        <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+          <p>
+            description.
+          </p>
+
+          <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">the module system</paper-item>
+          <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+            <p>
+              description.
+            </p>
+
+            <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">what is in the core module?</paper-item>
+            <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+              <p>
+                description.
+              </p>
+
+            </iron-collapse>
+
+          </iron-collapse>
+
+          <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">trial period</paper-item>
+          <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+            <p>
+              description.
+            </p>
+
+          </iron-collapse>
+
+          <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">subscription system</paper-item>
+          <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+            <p>
+              description.
+            </p>
+
+          </iron-collapse>
+
+          <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">how is the subscription price calculated?</paper-item>
+          <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+            <p>
+              description.
+            </p>
+
+          </iron-collapse>
+
+          <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">removing a module</paper-item>
+          <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+            <p>
+              description.
+            </p>
+
+          </iron-collapse>
+
+          <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">payment methods accepted</paper-item>
+          <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+            <p>
+              description.
+            </p>
+
+          </iron-collapse>
+
+          <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">delingquent payments and grace period</paper-item>
+          <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+            <p>
+              description.
+            </p>
+
+          </iron-collapse>
+
+          <paper-item class="collapseItemTitle" on-mouseenter="openSiblingCollapse" on-tap="toggleSiblingCollapse">dashboard</paper-item>
+          <iron-collapse class="collapseItem" on-mouseleave="collapseSelfHide">
+            <p>
+              description.
+            </p>
+
+          </iron-collapse>
+
+        </iron-collapse>
+
+      </iron-collapse>
+
     </paper-card>
 
   </template>
@@ -65,7 +1206,24 @@
       behaviors: [
         Polymer.adminPagesAnimation,
         Polymer.adminResizeBehavior
-      ]
+      ],
+
+      openSiblingCollapse: function(e) {
+        var origin = e.path[0];
+        var collapse = Polymer.dom(origin).nextElementSibling;
+        collapse.show();
+      },
+
+      collapseSelfHide: function(e) {
+        var origin = e.path[0];
+        //origin.hide();
+      },
+
+      toggleSiblingCollapse: function(e) {
+        var origin = e.path[0];
+        var collapse = Polymer.dom(origin).nextElementSibling;
+        collapse.toggle();
+      }
 
     });
 

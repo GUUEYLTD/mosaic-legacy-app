@@ -3,6 +3,7 @@
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html" />
 <link rel="import" href="../bower_components/polymerfire/firebase-document.html" />
 <link rel="import" href="../bower_components/polymerfire/firebase-query.html" />
+<link rel="import" href="../bower_components/polymerfire/firebase-messaging.html" />
 <link rel="import" href="../bower_components/app-route/app-location.html" />
 <link rel="import" href="../bower_components/app-route/app-route.html" />
 <link rel="import" href="../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html" />
@@ -44,6 +45,7 @@
 <link rel="import" href="behaviors/shell-resize-behavior.html" />
 <link rel="import" href="behaviors/page-change-middleware.html" />
 <link rel="import" href="behaviors/account-create-behavior.html" />
+<link rel="import" href="behaviors/push-notification-behavior.html" />
 
 <link rel="import" href="styles/app-shell-styles.html" />
 
@@ -63,14 +65,24 @@
       name="recent-users"
       on-iron-localstorage-load-empty="_initializeRecentUsers">
     </iron-localstorage>
+
+    <iron-localstorage
+      id="deviceNames"
+      name="device-names"
+      value="{{deviceNames}}"
+      on-iron-localstorage-load-empty="_initializeDeviceNames">
+    </iron-localstorage>
+
     <!--firebase app and auth config-->
     <firebase-app
       name="main"
       auth-domain="careplan-c2677.firebaseapp.com"
       database-url="https://careplan-c2677.firebaseio.com"
       api-key="AIzaSyBdtmHIV_7epC0OBiXkTNoqrGRspA58Epc"
-      storage-bucket="careplan-c2677.appspot.com">
+      storage-bucket="careplan-c2677.appspot.com"
+      messaging-sender-id="462773718811">
     </firebase-app>
+
     <!--SECONDARY APP FOR GETTING AROUND USER AUTO SIGN IN WHEN CREATING A NEW USER-->
     <firebase-app
       name="user2"
@@ -78,6 +90,7 @@
       database-url="https://careplan-c2677.firebaseio.com"
       api-key="AIzaSyBdtmHIV_7epC0OBiXkTNoqrGRspA58Epc">
     </firebase-app>
+
     <firebase-auth
       id="auth"
       app-name="main"
@@ -86,12 +99,14 @@
       status-known="{{statusKnown}}"
       on-error="handleError">
     </firebase-auth>
+
     <!--NEED TO PUT THIS SOMEWHERE ELSE LATER ONLY USED TO CREATE NEW USERS-->
     <firebase-auth
       id="createUser"
       app-name="user2"
       user="{{newUser}}">
     </firebase-auth>
+
     <firebase-storage
       id="storage"
       app-name="main"
@@ -100,21 +115,25 @@
       use64="true"
       url="{{homeImage}}">
     </firebase-storage>
+
     <!--MOVE THIS WHEN REFACTORING CODE DOES NOT BELONG HERE!-->
     <firebase-document
       id="userDB"
       app-name="main">
     </firebase-document>
+
     <firebase-document
       id="userTypeDB"
       app-name="main">
     </firebase-document>
+
     <!--SAME AS ABOVE MOVE LATER USED TO GET PROFILE INFO FOR SIDEBAR-->
     <firebase-document
       path="/homes/[[home]]/details"
       data="{{careHomeProfile}}"
       app-name="main">
     </firebase-document>
+
     <!--firebase doc to create new home... NEEDS TO GO ELSEWHERE LATER!-->
     <firebase-document
       id="homeDB"
@@ -134,6 +153,18 @@
     <firebase-document
       id="notifiableDB"
       app-name="main">
+    </firebase-document>
+
+    <firebase-document
+      id="settingsDB"
+      app-name="main"
+      data="{{settingsData}}">
+    </firebase-document>
+
+    <firebase-document
+      id="userSettingsDB"
+      app-name="main"
+      data="{{userSettingsData}}">
     </firebase-document>
 
     <firebase-query
@@ -156,8 +187,26 @@
       data="{{suList}}"
       app-name="main">
     </firebase-query>
+
+    <firebase-document
+      id="messagingTokenDB"
+      path="/homes/[[home]]/users/[[user.uid]]/messagingTokens/[[currentDevice]]"
+      app-name="main"
+      data="[[messagingToken]]"
+      disabled>
+    </firebase-document>
+
+    <firebase-messaging
+      id="messaging"
+      app-name="main"
+      token="{{messagingToken}}"
+      active="{{messagingActive}}"
+      on-message="_handleMessage">
+    </firebase-messaging>
+
     <!--routing config-->
     <app-location id="location" route="{{route}}"></app-location>
+
     <!--route to declare which home is being accessed-->
     <app-route
       route="{{route}}"
@@ -165,6 +214,7 @@
       data="{{homeData}}"
       tail="{{catRoute}}">
     </app-route>
+
     <!--route for page dir (category of page)-->
     <app-route
       route="{{catRoute}}"
@@ -172,6 +222,7 @@
       data="{{catData}}"
       tail="{{pageRoute}}">
     </app-route>
+
     <!--route for page name-->
     <app-route
       route="{{pageRoute}}"
@@ -179,13 +230,25 @@
       data="{{pageData}}"
       tail="{{paramRoute}}">
     </app-route>
+
     <!--final param for multi use (patientid, careworkerid etc...)-->
     <app-route
       route="{{paramRoute}}"
       pattern="/:param"
       data="{{paramData}}">
     </app-route>
+
     <style include="app-shell-styles"></style>
+
+    <paper-dialog id="requestNotificationModal" modal>
+      <h2>Permission Needed</h2>
+      <p>
+        We need your permission to send push notifications to your current device. Click Proceed to continue.
+      </p>
+      <paper-input label="current device name" value="{{newDevice}}"></paper-input>
+      <paper-button on-tap="requestNotificationPermission">proceed</paper-button>
+
+    </paper-dialog>
 
     <paper-dialog id="movedDialog" modal>
       <h2>app has moved</h2>
@@ -312,7 +375,8 @@
         email="[[user.email]]"
         user-type="[[currentUserType]]"
         opened="{{opened}}"
-        allowed-pages="[[allowedPages]]">
+        allowed-pages="[[allowedPages]]"
+        user-settings-data="{{userSettingsData}}">
       </admin-drawer>
       <!--second drawer to contain target info links (company service user etc...) link up to db later-->
       <app-drawer align="end" id="suDrawer" swipe-open>
@@ -581,7 +645,8 @@
             patient="[[param]]"
             home="[[home]]"
             user="{{user}}"
-            name="su-medication">
+            name="su-medication"
+            user-settings-data="[[userSettingsData]]">
           </su-medication>
           <su-pre
             current-page="[[currentPage]]"
@@ -936,6 +1001,7 @@
             "/default/default/def-login"
             ]
         },
+
         appModules:{
           type:Object,
           value:{
@@ -984,10 +1050,10 @@
         '_catRouteChanged(catData.category)',
         '_pageRouteChanged(pageData.page)',
         '_paramRouteChanged(paramData.param)',
-        '_authKnown(statusKnown)',
         '_computeNotificationCount(notifiesData)',
         '_computeNotifyDialogHidden(notifiesData.*)',
-        '_userChanged(user)'
+        '_userChanged(user)',
+        '_setUserSettingsPath(user.uid, home)',
       ],
       _userChanged:function(user){
         var userExists = true;
@@ -1009,8 +1075,23 @@
       behaviors: [
         Polymer.shellResizeBehavior,
         Polymer.pageChangeMiddleware,
-        Polymer.accountCreateBehavior
+        Polymer.accountCreateBehavior,
+        Polymer.pushNotificationBehavior
       ],
+
+      _setUserSettingsPath: function(user, home) {
+        var that = this;
+        if(user && home) {
+          this.$.userSettingsDB.path = "/homes/" + home + "/users/" + user + "/settings";
+          this.$.userSettingsDB.ref.once("value", function(snap) {
+            var userSettingsData = snap.val();
+            if(!userSettingsData || !userSettingsData.vcActive) {
+              that.set("userSettingsData.vcActive", false);
+            }
+          })
+        };
+      },
+
       _homeRouteChanged:function(home){
         this.home=home || 'default';
       },
@@ -1025,13 +1106,17 @@
         this.param = param || '';
       },
       _homeChanged:function(home){
-        if(home!='default'){
-          this.home=this.homeData.home;
+        if(home != 'default'){
+          this.home = this.homeData.home;
+          this.$.settingsDB.path = "/homes/" + this.home + "/settings";
         };
+
+        //lockout of dev server for beta tester
         if(home === "-KRSjsbJCBdJM8et8BUe") {
           this.$.movedDialog.open();
         };
       },
+
       _catChanged:function(cat){
         //make an exception for the default category 'default' if not default track changes to cat
         if(cat!='default'){
@@ -1098,39 +1183,7 @@
       goBack:function(){
         window.history.back();
       },
-      //take in route as string and check against no auth routes
-      authRequired:function(route){
-        var noAuthRoutes=this.noAuthRoutes;
-        if(noAuthRoutes.indexOf(route)===-1){
-          return false;
-        } else {
-          return true;
-        };
-      },
-      _authKnown:function(known){
-        if(known===true){
-          if(this.user){
-            this.$.userTypeDB.getStoredValue("/homes/"+this.home+"/users/"+this.user.uid+"/role")
-              .then(function(userType){
-                this.currentUserType=userType;
-                if(userType==="admin" && !this.user.emailVerified){
-                  this.set("catData.category", "default");
-                  this.set("pageData.page", "def-verify");
-                }
-              }.bind(this));
-          }
-          if(!this.$.auth.user && !this.authRequired(this.$.location.path)){
-            window.location.href="/default/default/def-login";
-          } else {
-            if(this.user){
-              this.$.userIndexDB.getStoredValue("/userIndex/"+this.user.uid+"/home")
-                .then(function(value){
-                  this.set('homeData.home', value);
-                }.bind(this))
-            };
-          };
-        };
-      },
+
       _computeDrawerHidden:function(page){
         if(page.slice(0,3)==="def" || page.slice(0,2)==="ad"){
           return true;
@@ -1376,6 +1429,12 @@
       _initializeRecentUsers:function(){
         this.$.recentUsers.value=[];
       },
+
+      _initializeDeviceNames: function() {
+        console.log("initializing");
+        this.set("deviceNames", {});
+      },
+
       _computeUserPhoto:function(photo){
         return photo || "/images/defaultAvatar.png"
       },
@@ -1386,6 +1445,7 @@
           return name;
         };
       }
+
     });
 
   </script>

@@ -182,7 +182,7 @@
           var time = this._computeTime(this.timesData, chunk);
           this.notifyData = {
             message: this.notifyMessage,
-
+            patientID: this.notifyUrl.split("/").pop(),
             url: this.notifyUrl,
             location: this.$.notifyTargetDB.path,
             conditions: {
@@ -203,9 +203,11 @@
 
     //sets default, more simple notification using: home, notifyMessage, notifyUrl, this.$.notifyTargetDB.path, conditionType, computed dates, and setPersonInfo()
     setDefaultNotify: function() {
+      console.log("shit working???");
       var path = "homes/" + this.home + "/notifications/notifiable/" + this.notifyTarget;
       this.notifyData= {
         message: this.notifyMessage,
+        patientID: this.notifyUrl.split("/").pop(),
         url: this.notifyUrl,
         location: this.$.notifyTargetDB.path,
         conditions: {

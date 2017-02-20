@@ -36,6 +36,15 @@
             },
             "home": {
               ".validate": "newData.val()===$home"
+            },
+            "settings": {
+              ".write": "auth.uid===$user",
+              ".read": "auth.uid===$user"
+            },
+            "agreeTerms": {
+              ".write": "auth.uid===$user",
+              ".read": "auth.uid===$user",
+              ".validate": "data.val() === null && newData.val() != null"
             }
           }
         },
@@ -79,8 +88,8 @@
     },
     "userIndex": {
       "$index": {
-        ".write": "auth !=null",
-        ".read": "auth.uid===$index",
+        ".write": "auth != null",
+        ".read": "auth.uid === $index",
         ".validate": "data.val() === null && newData.val() != null"
       }
     },

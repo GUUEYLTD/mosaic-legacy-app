@@ -11,7 +11,10 @@
       is:"page-change-middleware",
 
       observers:[
-        "_middleware(page)"
+        "_middleware(page)",
+        "_userTypeReady(home, user)",
+        "_authKnown(statusKnown)",
+        "_checkVerified(user, statusKnown)"
       ],
 
       properties:{
@@ -50,15 +53,65 @@
 
       },
 
+      //take in route as string and check against no auth routes
+      authRequired:function(route){
+        var noAuthRoutes=this.noAuthRoutes;
+        if(noAuthRoutes.indexOf(route)===-1){
+          return false;
+        } else {
+          return true;
+        };
+      },
+      _authKnown:function(known){
+        if(known===true){
+          if(!this.$.auth.user && !this.authRequired(this.$.location.path)){
+            window.location.href="/default/default/def-login";
+          } else {
+            if(this.user){
+              this.$.userIndexDB.getStoredValue("/userIndex/"+this.user.uid+"/home")
+                .then(function(value){
+                  this.set('homeData.home', value);
+                }.bind(this))
+            };
+          };
+        };
+      },
+
+      _checkVerified: function(user, statusKnown) {
+        if(statusKnown) {
+          if(this.user && !this.user.emailVerified) {
+            this.set("catData.category", "default");
+            this.set("pageData.page", "def-verify");
+          };
+        };
+      },
+
       pageAllowed: function(page) {
         return this.allowedPages.indexOf(page) !== -1;
       },
 
+      _userTypeReady: function(home, user) {
+        if(user && user.uid) {
+          this.$.userTypeDB.path = "/homes/" + home + "/users/" + user.uid + "/role";
+          this.$.userTypeDB.ref.on("value", function(snap) {
+            this.currentUserType = snap.val();
+            this.checkAdmin();
+          }.bind(this));
+        };
+      },
+
       checkAdmin: function() {
-        if(this.currentUserType != "admin" && this.currentUserType != "manager" && this.catData.category === "admin" && !this.pageAllowed(this.page)){
-          this.set("catData.category", "default");
-          this.set("pageData.page", "def-home");
-          this.fire("openToast", {toastText: "That page is for admins only. Returned to default page."});
+        if(this.catData.category === "admin" && !this.pageAllowed(this.page)) {
+          if(this.currentUserType === "admin" || this.currentUserType === "manager") {
+            return;
+          } else {
+            var userType = this.currentUserType;
+            var cat = this.catData.category;
+            var page = this.page;
+            this.set("catData.category", "default");
+            this.set("pageData.page", "def-home");
+            this.fire("openToast", {toastText: "That page is for admins only. Returned to default page."});
+          }
         };
       },
 
@@ -67,13 +120,6 @@
           this.rightMenuSelect = "home";
         } else {
           this.rightMenuSelect = null;
-        };
-      },
-
-      verifyReroute: function() {
-        if(this.statusKnown && !this.user.emailVerified && this.currentUserType === "admin") {
-          this.set("catData.category", "default");
-          this.set("pageData.page", "def-verify");
         };
       },
 
@@ -202,9 +248,9 @@
 
       _middleware: function(page) {
         if(this.user) {
+          this._checkVerified(this.user, this.statusKnown);
           this.checkAdmin();
           this.paymentReroute();
-          this.verifyReroute();
         };
         this.setRightMenuSelect();
         this.toggleLoadingDisplay(this.page);

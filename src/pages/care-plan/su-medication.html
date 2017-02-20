@@ -41,6 +41,13 @@
     </media-queries>
 
     <firebase-document
+      id="usersDB"
+      app-name="main"
+      path="/homes/[[home]]/users"
+      data="{{usersData}}">
+    </firebase-document>
+
+    <firebase-document
       id="medDB"
       app-name="main">
     </firebase-document>
@@ -183,6 +190,18 @@
         float:left;
       }
 
+      .rowArchived {
+        background-color: rgba(191, 63, 63, 0.49) !important;
+      }
+
+      .rowNewest {
+        background-color: rgba(63, 191, 63, 0.49) !important;
+      }
+
+      .rowInterim {
+        background-color: rgba(191, 191, 63, 0.49) !important;
+      }
+
     </style>
 
     <paper-dialog
@@ -320,6 +339,42 @@
 
     </paper-dialog>
 
+    <paper-dialog id="medPointModal">
+      <h2>Entry as of [[_computeTimeOfChange(newMedHistory.log.time)]]</h2>
+      <h3>Change Details</h3>
+      <p>
+        Changed by [[_computeUserDisplay(newMedHistory.log, usersData)]] on [[_computeTimeOfChange(newMedHistory.log.time)]]
+      </p>
+
+      <h3>Medication Details</h3>
+      <p>
+        [[newMedHistory.medicine]]
+        <br />
+        [[newMedHistory.method]]
+        <br />
+        [[newMedHistory.dosage]]
+        <br />
+        [[newMedHistory.comments]]
+      </p>
+
+      <p>
+        Times of Day to Take:
+        <template is="dom-repeat" items="[[newMedHistory.timeChunk]]" as="chunk">
+          <br />
+          [[chunk]]
+        </template>
+      </p>
+
+      <p>
+        Weekdays to Take:
+        <template is="dom-repeat" items="[[newMedHistory.weekdays]]" as="day">
+          <br />
+          [[day]]
+        </template>
+      </p>
+
+    </paper-dialog>
+
     <paper-card class="pageCard">
       <su-header
       page="Medication Outline"
@@ -360,27 +415,40 @@
                     Medication
                   </th>
                   <th>
-                    Method
+                    Route
                   </th>
                   <th>
                     Dosage
                   </th>
-                  <th>
+                  <th hidden$="[[userSettingsData.vcActive]]">
                     Comment
                   </th>
-                  <th>
+                  <th hidden$="[[userSettingsData.vcActive]]">
                     Edit
+                  </th>
+                  <th hidden$="[[!userSettingsData.vcActive]]">
+                    Time
+                  </th>
+                  <th hidden$="[[!userSettingsData.vcActive]]">
+                    User
+                  </th>
+                  <th hidden$="[[!userSettingsData.vcActive]]">
+                    More
+                  </th>
+                  <th hidden$="[[!userSettingsData.vcActive]]">
+                    Differences
                   </th>
                 </tr>
               </thead>
               <tbody>
                 <template
                   is="dom-repeat"
-                  items="{{_computeMedList(medsData)}}"
+                  items="{{_computeMedList(medsData, userSettingsData.vcActive)}}"
                   as="med"
                   filter="_filterMorning"
-                  observe="timeChunk">
-                  <tr>
+                  observe="timeChunk"
+                  sort="_sortMeds">
+                  <tr class$="[[_computeRowClass(med, userSettingsData.vcActive)]]">
                     <td>
                       [[med.medicine]]
                     </td>
@@ -390,7 +458,7 @@
                     <td>
                       [[med.dosage]]
                     </td>
-                    <td>
+                    <td hidden$="[[userSettingsData.vcActive]]">
                       <span hidden="[[!med.comment]]">
                         <paper-icon-button
                           class="commentButton"
@@ -399,8 +467,20 @@
                         </paper-icon-button>
                       </span>
                     </td>
-                    <td>
+                    <td hidden$="[[userSettingsData.vcActive]]">
                       <paper-icon-button on-tap="editMed" icon="editor:editor:mode-edit"></paper-icon-button>
+                    </td>
+                    <td hidden$="[[!userSettingsData.vcActive]]">
+                      [[_computeDateOfChange(med.log.time)]]
+                    </td>
+                    <td hidden$="[[!userSettingsData.vcActive]]">
+                      [[_computeUserDisplay(med.log, usersData)]]
+                    </td>
+                    <td hidden$="[[!userSettingsData.vcActive]]">
+                      <paper-icon-button on-tap="viewChanges" icon="icons:folder-open"></paper-icon-button>
+                    </td>
+                    <td hidden$="[[!userSettingsData.vcActive]]">
+                      [[_computeDifferences(med.differences)]]
                     </td>
                   </tr>
 
@@ -442,22 +522,35 @@
                   <th>
                     Dosage
                   </th>
-                  <th>
+                  <th hidden$="[[userSettingsData.vcActive]]">
                     Comment
                   </th>
-                  <th>
+                  <th hidden$="[[userSettingsData.vcActive]]">
                     Edit
+                  </th>
+                  <th hidden$="[[!userSettingsData.vcActive]]">
+                    Time
+                  </th>
+                  <th hidden$="[[!userSettingsData.vcActive]]">
+                    User
+                  </th>
+                  <th hidden$="[[!userSettingsData.vcActive]]">
+                    More
+                  </th>
+                  <th hidden$="[[!userSettingsData.vcActive]]">
+                    Differences
                   </th>
                 </tr>
               </thead>
               <tbody>
                 <template
                   is="dom-repeat"
-                  items="{{_computeMedList(medsData)}}"
+                  items="{{_computeMedList(medsData, userSettingsData.vcActive)}}"
                   as="med"
-                  filter="_filterAfternoon"
-                  observe="timeChunk">
-                  <tr>
+                  filter="_filterMorning"
+                  observe="timeChunk"
+                  sort="_sortMeds">
+                  <tr class$="[[_computeRowClass(med, userSettingsData.vcActive)]]">
                     <td>
                       [[med.medicine]]
                     </td>
@@ -467,7 +560,7 @@
                     <td>
                       [[med.dosage]]
                     </td>
-                    <td>
+                    <td hidden$="[[userSettingsData.vcActive]]">
                       <span hidden="[[!med.comment]]">
                         <paper-icon-button
                           class="commentButton"
@@ -476,8 +569,20 @@
                         </paper-icon-button>
                       </span>
                     </td>
-                    <td>
+                    <td hidden$="[[userSettingsData.vcActive]]">
                       <paper-icon-button on-tap="editMed" icon="editor:editor:mode-edit"></paper-icon-button>
+                    </td>
+                    <td hidden$="[[!userSettingsData.vcActive]]">
+                      [[_computeDateOfChange(med.log.time)]]
+                    </td>
+                    <td hidden$="[[!userSettingsData.vcActive]]">
+                      [[_computeUserDisplay(med.log, usersData)]]
+                    </td>
+                    <td hidden$="[[!userSettingsData.vcActive]]">
+                      <paper-icon-button on-tap="viewChanges" icon="icons:folder-open"></paper-icon-button>
+                    </td>
+                    <td hidden$="[[!userSettingsData.vcActive]]">
+                      [[_computeDifferences(med.differences)]]
                     </td>
                   </tr>
 
@@ -519,22 +624,35 @@
                   <th>
                     Dosage
                   </th>
-                  <th>
+                  <th hidden$="[[userSettingsData.vcActive]]">
                     Comment
                   </th>
-                  <th>
+                  <th hidden$="[[userSettingsData.vcActive]]">
                     Edit
+                  </th>
+                  <th hidden$="[[!userSettingsData.vcActive]]">
+                    Time
+                  </th>
+                  <th hidden$="[[!userSettingsData.vcActive]]">
+                    User
+                  </th>
+                  <th hidden$="[[!userSettingsData.vcActive]]">
+                    More
+                  </th>
+                  <th hidden$="[[!userSettingsData.vcActive]]">
+                    Differences
                   </th>
                 </tr>
               </thead>
               <tbody>
                 <template
                   is="dom-repeat"
-                  items="{{_computeMedList(medsData)}}"
+                  items="{{_computeMedList(medsData, userSettingsData.vcActive)}}"
                   as="med"
-                  filter="_filterEvening"
-                  observe="timeChunk">
-                  <tr>
+                  filter="_filterMorning"
+                  observe="timeChunk"
+                  sort="_sortMeds">
+                  <tr class$="[[_computeRowClass(med, userSettingsData.vcActive)]]">
                     <td>
                       [[med.medicine]]
                     </td>
@@ -544,7 +662,7 @@
                     <td>
                       [[med.dosage]]
                     </td>
-                    <td>
+                    <td hidden$="[[userSettingsData.vcActive]]">
                       <span hidden="[[!med.comment]]">
                         <paper-icon-button
                           class="commentButton"
@@ -553,8 +671,20 @@
                         </paper-icon-button>
                       </span>
                     </td>
-                    <td>
+                    <td hidden$="[[userSettingsData.vcActive]]">
                       <paper-icon-button on-tap="editMed" icon="editor:editor:mode-edit"></paper-icon-button>
+                    </td>
+                    <td hidden$="[[!userSettingsData.vcActive]]">
+                      [[_computeDateOfChange(med.log.time)]]
+                    </td>
+                    <td hidden$="[[!userSettingsData.vcActive]]">
+                      [[_computeUserDisplay(med.log, usersData)]]
+                    </td>
+                    <td hidden$="[[!userSettingsData.vcActive]]">
+                      <paper-icon-button on-tap="viewChanges" icon="icons:folder-open"></paper-icon-button>
+                    </td>
+                    <td hidden$="[[!userSettingsData.vcActive]]">
+                      [[_computeDifferences(med.differences)]]
                     </td>
                   </tr>
 
@@ -596,22 +726,35 @@
                   <th>
                     Dosage
                   </th>
-                  <th>
+                  <th hidden$="[[userSettingsData.vcActive]]">
                     Comment
                   </th>
-                  <th>
+                  <th hidden$="[[userSettingsData.vcActive]]">
                     Edit
+                  </th>
+                  <th hidden$="[[!userSettingsData.vcActive]]">
+                    Time
+                  </th>
+                  <th hidden$="[[!userSettingsData.vcActive]]">
+                    User
+                  </th>
+                  <th hidden$="[[!userSettingsData.vcActive]]">
+                    More
+                  </th>
+                  <th hidden$="[[!userSettingsData.vcActive]]">
+                    Differences
                   </th>
                 </tr>
               </thead>
               <tbody>
                 <template
                   is="dom-repeat"
-                  items="{{_computeMedList(medsData)}}"
+                  items="{{_computeMedList(medsData, userSettingsData.vcActive)}}"
                   as="med"
-                  filter="_filterNight"
-                  observe="timeChunk">
-                  <tr>
+                  filter="_filterMorning"
+                  observe="timeChunk"
+                  sort="_sortMeds">
+                  <tr class$="[[_computeRowClass(med, userSettingsData.vcActive)]]">
                     <td>
                       [[med.medicine]]
                     </td>
@@ -621,7 +764,7 @@
                     <td>
                       [[med.dosage]]
                     </td>
-                    <td>
+                    <td hidden$="[[userSettingsData.vcActive]]">
                       <span hidden="[[!med.comment]]">
                         <paper-icon-button
                           class="commentButton"
@@ -630,8 +773,20 @@
                         </paper-icon-button>
                       </span>
                     </td>
-                    <td>
+                    <td hidden$="[[userSettingsData.vcActive]]">
                       <paper-icon-button on-tap="editMed" icon="editor:editor:mode-edit"></paper-icon-button>
+                    </td>
+                    <td hidden$="[[!userSettingsData.vcActive]]">
+                      [[_computeDateOfChange(med.log.time)]]
+                    </td>
+                    <td hidden$="[[!userSettingsData.vcActive]]">
+                      [[_computeUserDisplay(med.log, usersData)]]
+                    </td>
+                    <td hidden$="[[!userSettingsData.vcActive]]">
+                      <paper-icon-button on-tap="viewChanges" icon="icons:folder-open"></paper-icon-button>
+                    </td>
+                    <td hidden$="[[!userSettingsData.vcActive]]">
+                      [[_computeDifferences(med.differences)]]
                     </td>
                   </tr>
 
@@ -680,8 +835,20 @@
           type: String,
         },
 
+        user: {
+          type: Object
+        },
+
+        usersData: {
+          type: Object
+        },
+
         timesData: {
           type: Object
+        },
+
+        newTime: {
+
         },
 
         medsData: {
@@ -712,20 +879,33 @@
             ]
           }
         },
-      },
 
-      timeTarget: {
-        type: Object
-      },
+        newMedHistory: {
+          type: Object,
+          value:{}
+        },
 
-      defaultTimeChunkTimes: {
-        type: Object,
-        value: {
-          morning: "09:00",
-          afternoon: "13:00",
-          evening: "19:00",
-          night: "01:00"
+        timeTarget: {
+          type: Object
+        },
+
+        defaultTimeChunkTimes: {
+          type: Object,
+          value: {
+            morning: "09:00",
+            afternoon: "13:00",
+            evening: "19:00",
+            night: "01:00"
+          }
+        },
+
+        userSettingsData: {
+          type: Object,
+          value: {
+            vcActive: false
+          }
         }
+
       },
 
       behaviors: [
@@ -769,6 +949,11 @@
         };
       },
 
+      viewChanges: function(e) {
+        this.newMedHistory = e.model.med;
+        this.$.medPointModal.toggle();
+      },
+
       editMed: function(e) {
         this.newMedEdit = e.model.med;
         this.$.editMedModal.toggle();
@@ -777,7 +962,11 @@
       saveEditMed: function() {
         this.$.medDB.path = null;
         var editPath = this.newMedEdit.parent;
+        console.log(editPath);
+        console.log(this.newMedEdit);
         this.newMedEdit.parent = null;
+        this.newMedEdit.newest = null;
+        this.newMedEdit.differences = null;
         this.$.medDB.data.med = this.newMedEdit;
         this.$.medDB.data.log = {};
         this.$.medDB.data.log.user = this.user.uid;
@@ -841,7 +1030,7 @@
       },
 
       _filterMorning: function(item) {
-        if(item.archived) {
+        if(item.archived && !this.userSettingsData.vcActive) {
           return false;
         } else {
           return item.timeChunk.indexOf("morning") != -1;
@@ -849,7 +1038,7 @@
       },
 
       _filterAfternoon: function(item) {
-        if(item.archived) {
+        if(item.archived && !this.userSettingsData.vcActive) {
           return false;
         } else {
           return item.timeChunk.indexOf("afternoon") != -1;
@@ -857,7 +1046,7 @@
       },
 
       _filterEvening: function(item) {
-        if(item.archived) {
+        if(item.archived && !this.userSettingsData.vcActive) {
           return false;
         } else {
           return item.timeChunk.indexOf("evening") != -1;
@@ -865,14 +1054,26 @@
       },
 
       _filterNight: function(item) {
-        if(item.archived){
+        if(item.archived && !this.userSettingsData.vcActive){
           return false;
         } else {
           return item.timeChunk.indexOf("night") != -1;
         };
       },
 
-      _computeMedList: function(meds) {
+      _sortMeds: function(a, b) {
+        if (a.parent === b.parent) {
+          if (a.log.time === b.log.time) {
+            return 0;
+          } else {
+            return a.log.time > b.log.time ? -1 : 1;
+          };
+        } else {
+          return a.parent > b.parent ? -1 : 1;
+        };
+      },
+
+      getCurrentMeds: function(meds) {
         //return the most recent sub doc from medication docs
         var currentMedList = [];
         var now = Date.now();
@@ -896,9 +1097,148 @@
             medCandidate = medCandidate.med;
             medCandidate.parent = x;
             currentMedList.push(medCandidate);
-          }
+          };
         };
         return currentMedList;
+      },
+
+      getMedHistory: function(meds) {
+        //return the most recent sub doc from medication docs
+        var medListHistory = [];
+        var now = Date.now();
+        for(x in meds) {
+          var medHistory = meds[x];
+          var medCandidate = null;
+          var newestKey;
+
+          for(y in medHistory) {
+            var med = medHistory[y];
+            if(med.log) {
+              var medTime = med.log.time;
+              if(medCandidate === null) {
+                medCandidate = med;
+                newestKey = y;
+              } else if(medCandidate.log.time < medTime) {
+                  medCandidate = med;
+                  newestKey = y;
+                };
+            };
+          };
+
+          var prevMed = null;
+
+          for(y in medHistory) {
+            var pushMed = {};
+            var med = medHistory[y]["med"];
+            var differences = [];
+            for(z in med) {
+              if(!prevMed) {
+                differences = ["First Entry"];
+              } else if((med[z] != prevMed[z]) && (z != 'differences' && z != 'newest')) {
+                var subDifferences = false;
+                if(typeof med[z] === 'object') {
+                  for(a in z) {
+                    if(prevMed[z][a] != med[z][a]) {
+                      subDifferences = true;
+                    };
+                  };
+                  if(subDifferences) {
+                    differences.push(z);
+                  }
+                } else {
+                  differences.push(z);
+                };
+              };
+            };
+
+            prevMed = med;
+            pushMed = med;
+            pushMed.log = medHistory[y]["log"];
+            pushMed.parent = x;
+            pushMed.differences = differences;
+            if(y === newestKey) {
+              pushMed.newest = true;
+            };
+            medListHistory.push(pushMed);
+          };
+        };
+        return medListHistory;
+      },
+
+      _computeRowClass: function(med, vcActive) {
+        if(vcActive){
+          if(med.archived) {
+            return 'rowArchived';
+          } else if(med.newest) {
+            return 'rowNewest';
+          } else {
+            return 'rowInterim';
+          };
+        } else {
+          return '';
+        };
+
+      },
+
+      _computeDifferences: function(diffs) {
+        if(!diffs || diffs.length < 1) {
+          return 'No Differences';
+        } else {
+          return readableDiffs = diffs.map(function(prop) {
+            var readableProp = this._convertPropToName(prop);
+            return readableProp;
+          }.bind(this)).join(', ');
+        };
+      },
+
+      _convertPropToName: function(prop) {
+        switch(prop) {
+          case 'medicine':
+            return 'Medicine Name';
+            break;
+          case 'method':
+            return 'Route';
+            break;
+          case 'timeChunk':
+            return 'Time Of Day Administered';
+            break;
+          default:
+            return this._deCamelCase(prop);
+            break;
+        };
+      },
+
+      _deCamelCase: function(text) {
+        var result = text.replace(' ','').replace( /([A-Z])/g, " $1" );
+        var finalResult = result.charAt(0).toUpperCase() + result.slice(1);
+        return finalResult;
+      },
+
+      _computeTimeOfChange: function(time) {
+        var date = new Date(time);
+        return date.toString();
+      },
+
+      _computeDateOfChange: function(time) {
+        var date = new Date(time);
+        return date.toLocaleDateString();
+      },
+
+      _computeUserDisplay: function(log, usersData) {
+        var userObj = usersData[log.user];
+        if(userObj.displayName && userObj.displayName != "undefined undefined") {
+          return userObj.displayName;
+        } else {
+          return userObj.email ? userObj.email : userObj.user;
+        };
+      },
+
+      _computeMedList: function(meds, vcActive) {
+        if(!vcActive) {
+          return this.getCurrentMeds(meds);
+        } else {
+          return this.getMedHistory(meds);
+        };
       },
 
       _computeTime: function(timeData, timeChunk) {
@@ -934,7 +1274,7 @@
         this.$.timeDB.data = {
           log: {
             user: this.user.uid,
-            time: now
+            time: now,
           },
           time: this.newTime
         };
