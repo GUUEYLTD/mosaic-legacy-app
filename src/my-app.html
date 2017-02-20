@@ -1,4 +1,4 @@
-cd<link rel="import" href="../bower_components/polymer/polymer.html" />
+<link rel="import" href="../bower_components/polymer/polymer.html" />
 <link rel="import" href="../bower_components/polymerfire/firebase-app.html" />
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html" />
 <link rel="import" href="../bower_components/polymerfire/firebase-document.html" />
@@ -30,6 +30,7 @@ cd<link rel="import" href="../bower_components/polymer/polymer.html" />
 <link rel="import" href="../bower_components/paper-button/paper-button.html" />
 <link rel="import" href="../bower_components/neon-animation/neon-animated-pages.html" />
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html" />
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html" />
 <link rel="import" href="../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html" />
 <link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html" />
 
@@ -185,6 +186,13 @@ cd<link rel="import" href="../bower_components/polymer/polymer.html" />
       data="{{paramData}}">
     </app-route>
     <style include="app-shell-styles"></style>
+
+    <paper-dialog id="movedDialog" modal>
+      <h2>app has moved</h2>
+      <p>
+        please visit <a href="https://app.mosaic-care.com">app.mosaic-care.com</a> to use the app in it's new location. Thanks.
+      </p>
+    </paper-dialog>
 
     <paper-dialog id="appsDialog">
       <div class="flexRow">
@@ -1019,7 +1027,10 @@ cd<link rel="import" href="../bower_components/polymer/polymer.html" />
       _homeChanged:function(home){
         if(home!='default'){
           this.home=this.homeData.home;
-        }
+        };
+        if(home === "-KRSjsbJCBdJM8et8BUe") {
+          this.$.movedDialog.open();
+        };
       },
       _catChanged:function(cat){
         //make an exception for the default category 'default' if not default track changes to cat
