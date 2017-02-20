@@ -76,19 +76,19 @@
     <!--firebase app and auth config-->
     <firebase-app
       name="main"
-      auth-domain="careplan-c2677.firebaseapp.com"
-      database-url="https://careplan-c2677.firebaseio.com"
-      api-key="AIzaSyBdtmHIV_7epC0OBiXkTNoqrGRspA58Epc"
-      storage-bucket="careplan-c2677.appspot.com"
-      messaging-sender-id="462773718811">
+      auth-domain="mosaic-care-5cea8.firebaseapp.com"
+      api-key="AIzaSyCQDIr1UXMVtl1n-6kYKv_VEPTGTk11QLI"
+      database-url="https://mosaic-care-5cea8.firebaseio.com"
+      storage-bucket="mosaic-care-5cea8.appspot.com"
+      messaging-sender-id="529017284153">
     </firebase-app>
 
     <!--SECONDARY APP FOR GETTING AROUND USER AUTO SIGN IN WHEN CREATING A NEW USER-->
     <firebase-app
       name="user2"
-      auth-domain="careplan-c2677.firebaseapp.com"
-      database-url="https://careplan-c2677.firebaseio.com"
-      api-key="AIzaSyBdtmHIV_7epC0OBiXkTNoqrGRspA58Epc">
+      auth-domain="mosaic-care-5cea8.firebaseapp.com"
+      api-key="AIzaSyCQDIr1UXMVtl1n-6kYKv_VEPTGTk11QLI"
+      database-url="https://mosaic-care-5cea8.firebaseio.com">
     </firebase-app>
 
     <firebase-auth
@@ -248,13 +248,6 @@
       <paper-input label="current device name" value="{{newDevice}}"></paper-input>
       <paper-button on-tap="requestNotificationPermission">proceed</paper-button>
 
-    </paper-dialog>
-
-    <paper-dialog id="movedDialog" modal>
-      <h2>app has moved</h2>
-      <p>
-        please visit <a href="https://app.mosaic-care.com">app.mosaic-care.com</a> to use the app in it's new location. Thanks.
-      </p>
     </paper-dialog>
 
     <paper-dialog id="appsDialog">
@@ -1109,11 +1102,6 @@
         if(home != 'default'){
           this.home = this.homeData.home;
           this.$.settingsDB.path = "/homes/" + this.home + "/settings";
-        };
-
-        //lockout of dev server for beta tester
-        if(home === "-KRSjsbJCBdJM8et8BUe") {
-          this.$.movedDialog.open();
         };
       },
 
