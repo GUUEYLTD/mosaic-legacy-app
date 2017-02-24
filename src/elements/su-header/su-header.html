@@ -19,26 +19,38 @@
 <dom-module id="su-header">
 
   <template>
+
+    <app-indexeddb-mirror
+      id="settingsMirror"
+      session="[[userUid]]"
+      key="settingsDB"
+      data="{{settingsDataLive}}"
+      persisted-data="{{settingsData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
     <firebase-document
       id="settingsDB"
       app-name="main"
       path="/homes/[[home]]/settings"
-      data="{{settingsData}}">
+      data="{{settingsDataLive}}">
     </firebase-document>
 
+    <app-indexeddb-mirror
+      id="suIndexEntryMirror"
+      session="[[userUid]]"
+      key="suIndexEntryDB|[[patient]]"
+      data="{{suIndexDataLive}}"
+      persisted-data="{{suIndexData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
     <firebase-document
-      id="suIndexDB"
+      id="suIndexEntryDB"
       app-name="main"
       path="/homes/[[home]]/patients/suIndex/[[patient]]"
       data="{{suIndexDataLive}}">
     </firebase-document>
-
-    <app-indexeddb-mirror
-      key="suHeader|[[patient]]"
-      data="{{suIndexDataLive}}"
-      persisted-data="{{suIndexData}}"
-      worker-url="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
-    </app-indexeddb-mirror>
 
     <iron-media-query
       query="(max-width:1600px)"
@@ -266,7 +278,7 @@
       is: 'su-header',
 
       ready: function() {
-        this.$.suIndexDB.ref.once("value", function() {
+        this.$.suIndexEntryDB.ref.once("value", function() {
           this.fire("suIndexLoaded");
         }.bind(this));
       },
