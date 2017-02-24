@@ -40,6 +40,15 @@
       dimensions="{{dimensions}}">
     </media-queries>
 
+    <app-indexeddb-mirror
+      id="goalsMirror"
+      session="[[userUid]]"
+      key="goalsDB|[[patient]]"
+      data="{{goalsDataLive}}"
+      persisted-data="{{goalsData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
     <!-- db query to find all goals for a patient-->
     <firebase-query
       id="goalsDB"
@@ -49,18 +58,29 @@
     </firebase-query>
 
     <app-indexeddb-mirror
-      key="goalsDB|[[patient]]"
-      data="{{goalsDataLive}}"
-      persisted-data="{{goalsData}}"
-      worker-url="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+      id="goalMirror"
+      session="[[userUid]]"
+      key="goalDB|[[goalId]]|[[patient]]"
+      data="{{goalDataLive}}"
+      persisted-data="{{goalData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
     </app-indexeddb-mirror>
 
     <!--db to create new goal for a patient-->
     <firebase-document
       id="goalDB"
       app-name="main"
-      data="{{goalData}}">
+      data="{{goalDataLive}}">
     </firebase-document>
+
+    <app-indexeddb-mirror
+      id="stepsMirror"
+      session="[[userUid]]"
+      key="stepsDB|[[patient]]"
+      data="{{stepsDataLive}}"
+      persisted-data="{{stepsData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
 
     <firebase-query
       id="stepsDB"
@@ -69,23 +89,34 @@
     </firebase-query>
 
     <app-indexeddb-mirror
-      key="stepsDB|[[patient]]"
-      data="{{stepsDataLive}}"
-      persisted-data="{{stepsData}}"
-      worker-url="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+      id="risksMirror"
+      session="[[userUid]]"
+      key="stepDB|new|[[patient]]"
+      data="{{stepDataLive}}"
+      persisted-data="{{stepData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
     </app-indexeddb-mirror>
 
     <firebase-document
       id="stepDB"
       app-name="main"
-      data="{{stepData}}">
+      data="{{stepDataLive}}">
     </firebase-document>
+
+    <app-indexeddb-mirror
+      id="usersMirror"
+      session="[[userUid]]"
+      key="usersDB"
+      data="{{usersDataLive}}"
+      persisted-data="{{usersData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
 
     <firebase-query
       id="usersDB"
       app-name="main"
       path="homes/[[home]]/users"
-      data="{{usersData}}">
+      data="{{usersDataLive}}">
     </firebase-query>
 
     <guuey-notify

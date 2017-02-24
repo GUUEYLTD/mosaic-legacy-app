@@ -25,12 +25,30 @@
       dimensions="{{dimensions}}">
     </media-queries>
 
+    <app-indexeddb-mirror
+      id="settingsMirror"
+      session="[[userUid]]"
+      key="settingsDB"
+      data="{{settingsDataLive}}"
+      persisted-data="{{settingsData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
     <firebase-document
       id="settingsDB"
       app-name="main"
       path="/homes/[[home]]/settings"
-      data="{{settingsData}}">
+      data="{{settingsDataLive}}">
     </firebase-document>
+
+    <app-indexeddb-mirror
+      id="suIndexMirror"
+      session="[[userUid]]"
+      key="suIndexDB"
+      data="{{patientListLive}}"
+      persisted-data="{{patientList}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
 
     <firebase-query
       id="suIndexDB"
@@ -38,13 +56,7 @@
       data="{{patientListLive}}"
       app-name="main">
     </firebase-query>
-    <app-indexeddb-mirror
-      id="suIndexDBIndex"
-      key="suIndexDB"
-      data="{{patientListLive}}"
-      persisted-data="{{patientList}}"
-      worker-url="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
-    </app-indexeddb-mirror>
+
     <firebase-document
       id="fireDoc"
       app-name="main">
@@ -328,6 +340,11 @@
         patientList: {
           type:Object
         },
+
+        //current user uid used as key for local storage session, when changed local db is wiped
+        userUid: {
+          type: String
+        }
 
       },
 

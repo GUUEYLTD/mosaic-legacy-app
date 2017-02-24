@@ -26,6 +26,15 @@
       dimensions="{{dimensions}}">
     </media-queries>
 
+    <app-indexeddb-mirror
+      id="assmtMirror"
+      session="[[userUid]]"
+      key="assmtDB|[[patient]]"
+      data="{{assmtDataLive}}"
+      persisted-data="{{assmtData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
     <firebase-document
       id="assmtDB"
       path="/homes/[[home]]/patients/[[patient]]/preAdmissionAssessment"
@@ -34,10 +43,12 @@
     </firebase-document>
 
     <app-indexeddb-mirror
-      key="assmtDB|[[patient]]"
-      data="{{assmtDataLive}}"
-      persisted-data="{{assmtData}}"
-      worker-url="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+      id="assmtCustomMirror"
+      session="[[userUid]]"
+      key="assmtCustomDB|[[patient]]"
+      data="{{customDataQueryLive}}"
+      persisted-data="{{customDataQuery}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
     </app-indexeddb-mirror>
 
     <!--query for custom fields-->
@@ -47,13 +58,6 @@
       data="{{customDataQueryLive}}"
       app-name="main">
     </firebase-query>
-
-    <app-indexeddb-mirror
-      key="assmtCustomDB|[[page]]|[[patient]]"
-      data="{{customDataQueryLive}}"
-      persisted-data="{{customDataQuery}}"
-      worker-url="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
-    </app-indexeddb-mirror>
 
     <!--connection to set new fields in custom section-->
     <firebase-document

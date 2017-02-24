@@ -40,11 +40,52 @@
       dimensions="{{dimensions}}">
     </media-queries>
 
+    <app-indexeddb-mirror
+      id="assmtMirror"
+      session="[[userUid]]"
+      key="assmtDB|[[patient]]"
+      data="{{assmtDataLive}}"
+      persisted-data="{{assmtData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
     <firebase-document
       id="usersDB"
       app-name="main"
       path="/homes/[[home]]/users"
       data="{{usersData}}">
+    </firebase-document>
+
+    <app-indexeddb-mirror
+      id="timesMirror"
+      session="[[userUid]]"
+      key="timesDB|[[patient]]"
+      data="{{timesDataLive}}"
+      persisted-data="{{timesData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
+    <firebase-document
+      id="timesDB"
+      app-name="main"
+      path="homes/[[home]]/patients/[[patient]]/medicationOutline/timeChunks"
+      data="{{timesDataLive}}">
+    </firebase-document>
+
+    <app-indexeddb-mirror
+      id="medsMirror"
+      session="[[userUid]]"
+      key="medsDB|[[patient]]"
+      data="{{medsDataLive}}"
+      persisted-data="{{medsData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
+    <firebase-document
+      id="medsDB"
+      path="homes/[[home]]/patients/[[patient]]/medicationOutline/medications"
+      data="{{medsDataLive}}"
+      app-name="main">
     </firebase-document>
 
     <firebase-document
@@ -56,27 +97,6 @@
       id="timeDB"
       app-name="main">
     </firebase-document>
-
-    <firebase-document
-      id="timesDB"
-      app-name="main"
-      path="homes/[[home]]/patients/[[patient]]/medicationOutline/timeChunks"
-      data="{{timesData}}">
-    </firebase-document>
-
-    <firebase-document
-      id="medsDB"
-      path="homes/[[home]]/patients/[[patient]]/medicationOutline/medications"
-      data="{{medsDataLive}}"
-      app-name="main">
-    </firebase-document>
-
-    <app-indexeddb-mirror
-      key="medsDB|[[patient]]"
-      data="{{medsDataLive}}"
-      persisted-data="{{medsData}}"
-      worker-url="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
-    </app-indexeddb-mirror>
 
     <guuey-notify
       id="dailyMedNotify"

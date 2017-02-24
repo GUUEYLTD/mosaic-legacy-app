@@ -8,6 +8,7 @@
 <link rel="import" href="../../../bower_components/polymerfire/firebase-document.html" />
 <link rel="import" href="../../../bower_components/polymerfire/firebase-query.html" />
 <link rel="import" href="../../../bower_components/paper-toggle-button/paper-toggle-button.html" />
+<link rel="import" href="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror.html" />
 
 <link rel="import" href="../../elements/firebase-storage/firebase-storage.html" />
 <link rel="import" href="../../elements/account-header/account-header.html" />
@@ -29,9 +30,9 @@
     <firebase-auth
       id="auth"
       app-name="main"
-      user="{{user}}"
       signed-in="{{signedIn}}"
       status-known="{{statusKnown}}"
+      user="{{tempUser}}"
       on-error="handleError">
     </firebase-auth>
 
@@ -39,22 +40,40 @@
       id="storage"
       app-name="main"
       set-name="false"
-      path="uploads/[[home]]/[[user.uid]]"
+      path="uploads/[[home]]/[[tempUser.uid]]"
       use64="true">
     </firebase-storage>
+
+    <app-indexeddb-mirror
+      id="userMirror"
+      session="[[userUid]]"
+      key="userDB"
+      data="{{userDataLive}}"
+      persisted-data="{{userData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
 
     <firebase-document
       id="userDB"
       app-name="main"
-      path="/homes/[[home]]/users/[[user.uid]]"
-      data="{{userData}}">
+      path="/homes/[[home]]/users/[[tempUser.uid]]"
+      data="{{userDataLive}}">
     </firebase-document>
+
+    <app-indexeddb-mirror
+      id="notificationSourcesMirror"
+      session="[[userUid]]"
+      key="notificationSourcesDB"
+      data="{{notificationsSourcesDataLive}}"
+      persisted-data="{{notificationsSourcesData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
 
     <firebase-query
       id="notificationSourcesDB"
       app-name="main"
-      path="/homes/[[home]]/users/[[user.uid]]/settings/notificationSources"
-      data="{{notificationsSourcesData}}">
+      path="/homes/[[home]]/users/[[tempUser.uid]]/settings/notificationSources"
+      data="{{notificationsSourcesDataLive}}">
     </firebase-query>
 
     <style include="common-styles">
@@ -75,9 +94,9 @@
     <paper-card class="pageCard">
 
       <account-header
-        name="[[user.displayName]]"
-        email="[[user.email]]"
-        photo="[[user.photoURL]]">
+        name="[[tempUser.displayName]]"
+        email="[[tempUser.email]]"
+        photo="[[tempUser.photoURL]]">
       </account-header>
 
       <div class="pageInnerCont padded">
@@ -118,7 +137,7 @@
         properties: {
 
           //the user object from auth
-          user: {
+          tempUser: {
             type: Object
           },
 
@@ -164,8 +183,18 @@
           //from password confirm field. used to compare both password entries match
           securePassConfirm: {
             type: String
+          },
+
+          //current user uid used as key for local storage session, when changed local db is wiped
+          userUid: {
+            type: String,
+            observer: "uidchanged"
           }
 
+        },
+
+        uidchanged: function(uid) {
+          console.log(uid)
         },
 
         //fire event when user object ready

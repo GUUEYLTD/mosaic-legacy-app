@@ -28,11 +28,20 @@
       dimensions="{{dimensions}}">
     </media-queries>
 
+    <app-indexeddb-mirror
+      id="dailyRepMirror"
+      session="[[userUid]]"
+      key="dailyRepDB|[[patient]]"
+      data="{{dailyRepDataLive}}"
+      persisted-data="{{dailyRepData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
     <firebase-document
       id="dailyRepDB"
       app-name="main"
       path="homes/[[home]]/patients/[[patient]]/dailyReports/[[currentDate]]/[[lowerCase(selectedChunk)]]"
-      data="{{dailyRepData}}">
+      data="{{dailyRepDataLive}}">
     </firebase-document>
 
     <style include="common-styles">

@@ -29,14 +29,32 @@
 <dom-module id="su-care">
 
   <template>
-    <!--db for agreement section-->
 
+    <app-indexeddb-mirror
+      id="careMirror"
+      session="[[userUid]]"
+      key="careDB|[[patient]]"
+      data="{{careDataLive}}"
+      persisted-data="{{careData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
+    <!--db for agreement section-->
     <firebase-document
-      id="careDB"
+      id="careMirror"
       app-name="main"
-      data="{{careData}}"
+      data="{{careDataLive}}"
       path="/homes/[[home]]/patients/[[patient]]/carePlan">
     </firebase-document>
+
+    <app-indexeddb-mirror
+      id="agreeMirror"
+      session="[[userUid]]"
+      key="agreeDB|[[patient]]"
+      data="{{agreeDataLive}}"
+      persisted-data="{{agreeData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
 
     <firebase-document
       id="agreeDB"
@@ -47,10 +65,12 @@
     </firebase-document>
 
     <app-indexeddb-mirror
-      key="agreeDB|[[patient]]"
-      data="{{agreeDataLive}}"
-      persisted-data="{{agreeData}}"
-      worker-url="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+      id="assmtCustomMirror"
+      session="[[userUid]]"
+      key="assmtCustomDB|[[patient]]"
+      data="{{customDataQueryLive}}"
+      persisted-data="{{customDataQuery}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
     </app-indexeddb-mirror>
 
     <!--query for custom fields-->
@@ -62,11 +82,37 @@
     </firebase-query>
 
     <app-indexeddb-mirror
-      key="assmtCustomDB|[[page]]|[[patient]]"
-      data="{{customDataQueryLive}}"
-      persisted-data="{{customDataQuery}}"
-      worker-url="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+      id="usersMirror"
+      session="[[userUid]]"
+      key="usersDB|[[patient]]"
+      data="{{usersDataLive}}"
+      persisted-data="{{usersData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
     </app-indexeddb-mirror>
+
+    <firebase-query
+      id="usersDB"
+      app-name="main"
+      path="homes/[[home]]/users"
+      data="{{usersDataLive}}">
+    </firebase-query>
+
+    <app-indexeddb-mirror
+      id="printMirror"
+      session="[[userUid]]"
+      key="printDB|[[page]]|[[patient]]"
+      data="{{printDataLive}}"
+      persisted-data="{{printData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
+    <!--db connection to get all care plan info for printing-->
+    <firebase-document
+      id="printDB"
+      path="/homes/[[home]]/patients/[[patient]]/carePlan"
+      app-name="main"
+      data="{{printDataLive}}">
+    </firebase-document>
 
     <!--connection to set new fields in custom section-->
     <firebase-document
@@ -77,20 +123,6 @@
 
     <firebase-document
       id="formDB"
-      app-name="main">
-    </firebase-document>
-
-    <firebase-query
-      id="usersDB"
-      app-name="main"
-      path="homes/[[home]]/users"
-      data="{{usersData}}">
-    </firebase-query>
-
-    <!--db connection to get all care plan info for printing-->
-    <firebase-document
-      id="printDB"
-      path="/homes/[[home]]/patients/[[patient]]/carePlan"
       app-name="main">
     </firebase-document>
 

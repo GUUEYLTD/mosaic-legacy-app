@@ -36,6 +36,15 @@
       dimensions="{{dimensions}}">
     </media-queries>
 
+    <app-indexeddb-mirror
+      id="risksMirror"
+      session="[[userUid]]"
+      key="risksDB|[[patient]]"
+      data="{{risksDataLive}}"
+      persisted-data="{{risksData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
     <!--firebase query to get all of the risk assessments-->
     <firebase-query
       id="risksDB"
@@ -45,16 +54,18 @@
     </firebase-query>
 
     <app-indexeddb-mirror
-      key="risksDB|[[patient]]"
-      data="{{risksDataLive}}"
-      persisted-data="{{risksData}}"
-      worker-url="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+      id="riskMirror"
+      session="[[userUid]]"
+      key="riskDB|[[riskId]]|[[patient]]"
+      data="{{riskDataLive}}"
+      persisted-data="{{riskData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
     </app-indexeddb-mirror>
 
     <!--db to edit single document that has been selected-->
     <firebase-document
       id="riskDB"
-      data="{{riskData}}"
+      data="{{riskDataLive}}"
       app-name="main">
     </firebase-document>
 

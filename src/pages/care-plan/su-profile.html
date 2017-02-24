@@ -28,6 +28,15 @@
       dimensions="{{dimensions}}">
     </media-queries>
 
+    <app-indexeddb-mirror
+      id="profileMirror"
+      session="[[userUid]]"
+      key="profileDB|[[patient]]"
+      data="{{profileDataLive}}"
+      persisted-data="{{profileData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
     <firebase-document
       id="profileDB"
       path="/homes/[[home]]/patients/[[patient]]/personalProfile"
@@ -36,10 +45,12 @@
     </firebase-document>
 
     <app-indexeddb-mirror
-      key="profileDB|[[patient]]"
-      data="{{profileDataLive}}"
-      persisted-data="{{profileData}}"
-      worker-url="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+      id="contactsQueryMirror"
+      session="[[userUid]]"
+      key="contactsQuery|[[patient]]"
+      data="{{contactsDataLive}}"
+      persisted-data="{{contactsData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
     </app-indexeddb-mirror>
 
     <firebase-document
@@ -48,13 +59,6 @@
       data="{{contactsDataLive}}"
       app-name="main">
     </firebase-document>
-
-    <app-indexeddb-mirror
-      key="contactsQuery|[[patient]]"
-      data="{{contactsDataLive}}"
-      persisted-data="{{contactsData}}"
-      worker-url="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
-    </app-indexeddb-mirror>
 
     <style include="common-styles">
       :host{

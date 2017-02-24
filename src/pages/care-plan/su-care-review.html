@@ -26,6 +26,16 @@
     <media-queries
       dimensions="{{dimensions}}">
     </media-queries>
+
+    <app-indexeddb-mirror
+      id="reviewsMirror"
+      session="[[userUid]]"
+      key="reviewsDB|[[patient]]"
+      data="{{reviewsDataLive}}"
+      persisted-data="{{reviewsData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
     <!--db query for reviews-->
     <firebase-query
       id="reviewsDB"
@@ -35,10 +45,12 @@
     </firebase-query>
 
     <app-indexeddb-mirror
-      key="reviewsDB|[[patient]]"
-      data="{{reviewsDataLive}}"
-      persisted-data="{{reviewsData}}"
-      worker-url="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+      id="reviewMirror"
+      session="[[userUid]]"
+      key="reviewDB|[[[[reviewId]]]|][[patient]]"
+      data="{{reviewDataLive}}"
+      persisted-data="{{reviewData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
     </app-indexeddb-mirror>
 
     <!--db for agreement section-->
@@ -47,13 +59,6 @@
       app-name="main"
       data="{{reviewDataLive}}">
     </firebase-document>
-
-    <app-indexeddb-mirror
-      key="reviewDB|[[patient]]"
-      data="{{reviewDataLive}}"
-      persisted-data="{{reviewData}}"
-      worker-url="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
-    </app-indexeddb-mirror>
 
     <guuey-notify
       id="dateNotify"

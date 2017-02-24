@@ -28,11 +28,20 @@
       dimensions="{{dimensions}}">
     </media-queries>
 
+    <app-indexeddb-mirror
+      id="monthlyRepMirror"
+      session="[[userUid]]"
+      key="monthlyRepDB|[[patient]]"
+      data="{{monthlyRepDataLive}}"
+      persisted-data="{{monthlyRepData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
     <firebase-document
       id="monthlyRepDB"
       app-name="main"
       path="homes/[[home]]/patients/[[patient]]/monthlyReports/[[selectedMonth]]"
-      data="{{monthlyRepData}}">
+      data="{{monthlyRepDataLive}}">
     </firebase-document>
 
     <style include="common-styles">

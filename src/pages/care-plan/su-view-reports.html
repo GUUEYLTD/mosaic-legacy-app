@@ -32,10 +32,19 @@
       dimensions="{{dimensions}}">
     </media-queries>
 
+    <app-indexeddb-mirror
+      id="reportsMirror"
+      session="[[userUid]]"
+      key="reportsDB|[[patient]]"
+      data="{{reportsDataLive}}"
+      persisted-data="{{reportsData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
     <firebase-query
       id="reportsDB"
       app-name="main"
-      data="{{reportsData}}">
+      data="{{reportsDataLive}}">
     </firebase-query>
 
     <style include="common-styles">
