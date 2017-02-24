@@ -29,26 +29,54 @@
       dimensions="{{dimensions}}">
     </media-queries>
 
-    <!--query to get a list of curent users-->
-  <firebase-query
-    id="usersDB"
-    path="/homes/{{home}}/users"
-    data="{{usersData}}"
-    app-name="main">
-  </firebase-query>
-  <!--user db for updating a user-->
-  <firebase-document
-    id="userDB"
-    app-name="main"
-    data="{{userData}}">
-  </firebase-document>
-  <!--query to get list of service users to attach to care workers-->
-  <firebase-query
-    id="suUsersDB"
-    path="/homes/{{home}}/patients"
-    data="{{susData}}"
-    app-name="main">
-  </firebase-query>
+    <app-indexeddb-mirror
+      id="usersMirror"
+      session="[[userUid]]"
+      key="usersDB"
+      data="{{usersDataLive}}"
+      persisted-data="{{usersData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
+      <!--query to get a list of curent users-->
+    <firebase-query
+      id="usersDB"
+      path="/homes/{{home}}/users"
+      data="{{usersDataLive}}"
+      app-name="main">
+    </firebase-query>
+
+    <app-indexeddb-mirror
+      id="userMirror"
+      session="[[userUid]]"
+      key="userDB"
+      data="{{userDataLive}}"
+      persisted-data="{{userData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
+    <!--user db for updating a user-->
+    <firebase-document
+      id="userDB"
+      app-name="main"
+      data="{{userDataLive}}">
+    </firebase-document>
+
+    <app-indexeddb-mirror
+      id="suIndexMirror"
+      session="[[userUid]]"
+      key="suIndexDB"
+      data="{{susDataLive}}"
+      persisted-data="{{susData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
+    <firebase-query
+      id="suIndexDB"
+      path="/homes/[[home]]/patients/suIndex"
+      data="{{susDataLive}}"
+      app-name="main">
+    </firebase-query>
 
     <style include="common-styles">
       #userDialog{
@@ -171,7 +199,7 @@
         <paper-dropdown-menu label="Service Users Supervised" class="dialogHalf">
           <paper-listbox multi attr-for-selected="value" selected-values="{{userData.patients}}" class="dropdown-content">
             <template is="dom-repeat" items="{{susData}}" as="serviceUser">
-              <paper-item value="{{serviceUser.$key}}">{{serviceUser.personalProfile.lName}}, {{serviceUser.personalProfile.fName}}</paper-item>
+              <paper-item value="{{serviceUser.$key}}">{{serviceUser.lName}}, {{serviceUser.fName}}</paper-item>
             </template>
           </paper-listbox>
         </paper-dropdown-menu>

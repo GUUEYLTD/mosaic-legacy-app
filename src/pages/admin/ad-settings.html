@@ -17,11 +17,20 @@
 
   <template>
 
+    <app-indexeddb-mirror
+      id="settingsMirror"
+      session="[[userUid]]"
+      key="settingsDB"
+      data="{{settingsDataLive}}"
+      persisted-data="{{settingsData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
     <firebase-document
       id="settingsDB"
       app-name="main"
       path="/homes/[[home]]/settings"
-      data="{{settingsData}}">
+      data="{{settingsDataLive}}">
     </firebase-document>
 
     <media-queries

@@ -30,18 +30,36 @@
       dimensions="{{dimensions}}">
     </media-queries>
 
+    <app-indexeddb-mirror
+      id="suIndexMirror"
+      session="[[userUid]]"
+      key="suIndexDB"
+      data="{{suIndexDataLive}}"
+      persisted-data="{{suIndexData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
     <firebase-query
-      id="suListDB"
+      id="suIndexDB"
       app-name="main"
       path="/homes/[[home]]/patients/suIndex"
-      data="{{suListData}}">
+      data="{{suIndexDataLive}}">
     </firebase-query>
+
+    <app-indexeddb-mirror
+      id="reportMirror"
+      session="[[userUid]]"
+      key="reportDB|[[reportType]]|[[reportKey]]"
+      data="{{reportDataLive}}"
+      persisted-data="{{reportData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
 
     <firebase-document
       id="reportDB"
       app-name="main"
       path="/homes/[[home]]/reports/[[reportType]]/[[reportKey]]"
-      data="{{reportData}}">
+      data="{{reportDataLive}}">
     </firebase-document>
 
     <style include="common-styles">
@@ -90,19 +108,19 @@
           exit-animation="scale-down-animation">
 
           <monthly-manager-report
-            su-list-data="[[suListData]]"
+            su-list-data="[[suIndexData]]"
             name="monthlyManagerReport"
             value="{{reportData}}">
           </monthly-manager-report>
 
           <quarterly-manager-report
-            su-list-data="[[suListData]]"
+            su-list-data="[[suIndexData]]"
             name="quarterlyManagerReport"
             value="{{reportData}}">
           </quarterly-manager-report>
 
           <annual-manager-report
-            su-list-data="[[suListData]]"
+            su-list-data="[[suIndexData]]"
             name="annualManagerReport"
             value="{{reportData}}">
           </annual-manager-report>

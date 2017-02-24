@@ -24,10 +24,19 @@
       dimensions="{{dimensions}}">
     </media-queries>
 
+    <app-indexeddb-mirror
+      id="careHomeProfileMirror"
+      session="[[userUid]]"
+      key="careHomeProfileDB"
+      data="{{careHomeProfileLive}}"
+      persisted-data="{{careHomeProfile}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
     <firebase-document
       id="careHomeProfileDB"
       path="/homes/{{home}}/details"
-      data="{{careHomeProfile}}"
+      data="{{careHomeProfileLive}}"
       app-name="main">
     </firebase-document>
 
@@ -252,7 +261,7 @@
           return false;
         };
       }
-      
+
     });
 
   </script>

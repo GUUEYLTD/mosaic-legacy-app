@@ -31,17 +31,36 @@
       dimensions="{{dimensions}}">
     </media-queries>
 
+    <app-indexeddb-mirror
+      id="suIndexMirror"
+      session="[[userUid]]"
+      key="suIndexDB"
+      data="{{suIndexDataLive}}"
+      persisted-data="{{suIndexData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
     <firebase-query
       id="suIndexDB"
       path="/homes/[[home]]/patients/suIndex"
+      data="{{suIndexDataLive}}"
       app-name="main">
     </firebase-query>
+
+    <app-indexeddb-mirror
+      id="customerMirror"
+      session="[[userUid]]"
+      key="customerDB"
+      data="{{customerLive}}"
+      persisted-data="{{customer}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
 
     <firebase-document
       app-name="main"
       id="customerDB"
       path="/homes/[[home]]/details"
-      data="{{customer}}">
+      data="{{customerLive}}">
     </firebase-document>
 
     <iron-ajax
