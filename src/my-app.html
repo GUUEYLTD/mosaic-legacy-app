@@ -34,6 +34,7 @@
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html" />
 <link rel="import" href="../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html" />
 <link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html" />
+<link rel="import" href="../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror.html" />
 
 <link rel="import" href="elements/admin-drawer/admin-drawer.html" />
 <link rel="import" href="elements/firebase-storage/firebase-storage.html" />
@@ -127,10 +128,19 @@
       app-name="main">
     </firebase-document>
 
+    <app-indexeddb-mirror
+      id="userSettingsMirror"
+      key="homeDetailsDB"
+      data="{{careHomeProfileLive}}"
+      persisted-data="{{careHomeProfile}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
     <!--SAME AS ABOVE MOVE LATER USED TO GET PROFILE INFO FOR SIDEBAR-->
     <firebase-document
+      id="homeDetailsDB"
       path="/homes/[[home]]/details"
-      data="{{careHomeProfile}}"
+      data="{{careHomeProfileLive}}"
       app-name="main">
     </firebase-document>
 
@@ -155,36 +165,81 @@
       app-name="main">
     </firebase-document>
 
+    <app-indexeddb-mirror
+      id="userSettingsMirror"
+      session="[[userUid]]"
+      key="settingsDB"
+      data="{{settingsDataLive}}"
+      persisted-data="{{settingsData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
     <firebase-document
       id="settingsDB"
       app-name="main"
-      data="{{settingsData}}">
+      data="{{settingsDataLive}}">
     </firebase-document>
+
+    <app-indexeddb-mirror
+      id="userSettingsMirror"
+      session="[[userUid]]"
+      key="userSettingsDB"
+      data="{{userSettingsDataLive}}"
+      persisted-data="{{userSettingsData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
 
     <firebase-document
       id="userSettingsDB"
       app-name="main"
-      data="{{userSettingsData}}">
+      data="{{userSettingsDataLive}}">
     </firebase-document>
+
+    <app-indexeddb-mirror
+      id="paymentsMirror"
+      session="[[userUid]]"
+      key="paymentsDB"
+      data="{{paymentsLive}}"
+      persisted-data="{{payments}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
 
     <firebase-query
       id="paymentsDB"
       app-name="main"
       path="/payments/[[home]]"
-      data="{{payments}}">
+      data="{{paymentsLive}}">
     </firebase-query>
+
+    <app-indexeddb-mirror
+      id="notifyMirror"
+      session="[[userUid]]"
+      key="notifyDB"
+      data="{{notifiesDataLive}}"
+      persisted-data="{{notifiesData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
 
     <firebase-query
       id="notifyDB"
       path="/homes/[[home]]/notifications/notify"
-      data="{{notifiesData}}"
+      data="{{notifiesDataLive}}"
       app-name="main">
     </firebase-query>
+
+    <app-indexeddb-mirror
+      id="suIndexMirror"
+      session="[[userUid]]"
+      key="suIndexDB"
+      data="{{suListLive}}"
+      persisted-data="{{suList}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
 
     <firebase-query
       id="suIndexDB"
       path="/homes/[[home]]/patients/suIndex"
-      data="{{suList}}"
+      data="{{suListLive}}"
       app-name="main">
     </firebase-query>
 
@@ -538,6 +593,7 @@
           <!--page selected style only shows when the drawer item has been clicked twice need to fix this..-->
           <!--login page-->
           <def-login
+            user-uid="[[userUid]]"
             current-page="[[currentPage]]"
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
@@ -546,6 +602,7 @@
           </def-login>
           <!--default page-->
           <def-home
+            user-uid="[[userUid]]"
             current-page="[[currentPage]]"
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
@@ -557,6 +614,7 @@
           </def-home>
           <!--default page if not verified-->
           <def-verify
+            user-uid="[[userUid]]"
             current-page="[[currentPage]]"
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
@@ -565,6 +623,7 @@
             name="def-verify">
           </def-verify>
           <def-account
+            user-uid="[[userUid]]"
             current-page="[[currentPage]]"
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
@@ -574,6 +633,7 @@
           </def-account>
 
           <def-terms
+            user-uid="[[userUid]]"
             current-page="[[currentPage]]"
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
@@ -583,6 +643,7 @@
           </def-terms>
           <!--error 404 page-->
           <def-error
+            user-uid="[[userUid]]"
             current-page="[[currentPage]]"
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
@@ -590,6 +651,7 @@
           </def-error>
           <!--other pages for care plan-->
           <su-home
+            user-uid="[[userUid]]"
             current-page="[[currentPage]]"
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
@@ -599,6 +661,7 @@
             name="su-home">
           </su-home>
           <su-profile
+            user-uid="[[userUid]]"
             current-page="[[currentPage]]"
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
@@ -608,6 +671,7 @@
             name="su-profile">
           </su-profile>
           <su-care
+            user-uid="[[userUid]]"
             current-page="[[currentPage]]"
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
@@ -617,6 +681,7 @@
             name="su-care">
           </su-care>
           <su-goals
+            user-uid="[[userUid]]"
             current-page="[[currentPage]]"
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
@@ -627,6 +692,7 @@
         </su-goals>
           <!--add in user in order to log the uid for version control and logging-->
           <su-medical
+            user-uid="[[userUid]]"
             current-page="[[currentPage]]"
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
@@ -638,6 +704,7 @@
           </su-medical>
           <!--add in user in order to log the uid for version control and logging-->
           <su-medication
+            user-uid="[[userUid]]"
             current-page="[[currentPage]]"
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
@@ -649,6 +716,7 @@
             user-settings-data="[[userSettingsData]]">
           </su-medication>
           <su-pre
+            user-uid="[[userUid]]"
             current-page="[[currentPage]]"
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
@@ -658,6 +726,7 @@
             name="su-pre">
           </su-pre>
           <su-profile
+            user-uid="[[userUid]]"
             current-page="[[currentPage]]"
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
@@ -668,6 +737,7 @@
           </su-profile>
           <!--add in user in order to log the uid for version control and logging-->
           <su-risk
+            user-uid="[[userUid]]"
             current-page="[[currentPage]]"
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
@@ -678,6 +748,7 @@
             name="su-risk">
           </su-risk>
           <su-create
+            user-uid="[[userUid]]"
             current-page="[[currentPage]]"
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
@@ -687,6 +758,7 @@
             name="su-create">
           </su-create>
           <su-care-review
+            user-uid="[[userUid]]"
             current-page="[[currentPage]]"
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
@@ -696,6 +768,7 @@
             name="su-care-review">
           </su-care-review>
           <su-reports
+            user-uid="[[userUid]]"
             current-page="[[currentPage]]"
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
@@ -705,6 +778,7 @@
             name="su-reports">
           </su-reports>
           <su-monthly-reports
+            user-uid="[[userUid]]"
             current-page="[[currentPage]]"
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
@@ -714,6 +788,7 @@
             name="su-monthly-reports">
           </su-monthly-reports>
           <su-view-reports
+            user-uid="[[userUid]]"
             current-page="[[currentPage]]"
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
@@ -724,6 +799,7 @@
           </su-view-reports>
           <!--pages for admin-->
           <ad-dash
+            user-uid="[[userUid]]"
             current-page="[[currentPage]]"
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
@@ -733,6 +809,7 @@
             name="ad-dash">
           </ad-dash>
           <ad-profile
+            user-uid="[[userUid]]"
             current-page="[[currentPage]]"
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
@@ -742,6 +819,7 @@
             name="ad-profile">
           </ad-profile>
           <ad-payment
+            user-uid="[[userUid]]"
             current-page="[[currentPage]]"
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
@@ -751,6 +829,7 @@
             name="ad-payment">
           </ad-payment>
           <ad-users
+            user-uid="[[userUid]]"
             current-page="[[currentPage]]"
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
@@ -761,6 +840,7 @@
             name="ad-users">
           </ad-users>
           <ad-user
+            user-uid="[[userUid]]"
             current-page="[[currentPage]]"
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
@@ -771,6 +851,7 @@
             name="ad-user">
           </ad-user>
           <ad-settings
+            user-uid="[[userUid]]"
             current-page="[[currentPage]]"
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
@@ -780,6 +861,7 @@
             name="ad-settings">
           </ad-settings>
           <ad-support
+            user-uid="[[userUid]]"
             current-page="[[currentPage]]"
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
@@ -789,6 +871,7 @@
             name="ad-support">
           </ad-support>
           <ad-reports
+            user-uid="[[userUid]]"
             current-page="[[currentPage]]"
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
@@ -799,6 +882,7 @@
           </ad-reports>
           <!--test page for whatever-->
           <test-test
+            user-uid="[[userUid]]"
             current-page="[[currentPage]]"
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
@@ -952,6 +1036,12 @@
           return text;
       },
       properties:{
+
+        userUid: {
+          type: String,
+          computed: "_getSessionId(user, statusKnown)"
+        },
+
         rightMenuSelect:{
           type:String,
           value:"home"
@@ -1055,21 +1145,24 @@
         '_userChanged(user)',
         '_setUserSettingsPath(user.uid, home)',
       ],
+
       _userChanged:function(user){
-        var userExists = true;
-        if(this.$.recentUsers.value){
-          var userExists = this.$.recentUsers.value.some(function(existingUser){
-            return existingUser.email === user.email ? true : false;
-          });
-        };
-        if(user && !userExists){
-          var newRecentUser = {
-            displayName:user.displayName,
-            email:user.email,
-            photoURL:user.photoURL
+        if(user) {
+          var userExists = true;
+          if(this.$.recentUsers.value){
+            var userExists = this.$.recentUsers.value.some(function(existingUser){
+              return existingUser.email === user.email ? true : false;
+            });
           };
-          this.$.recentUsers.value.push(newRecentUser);
-          this.$.recentUsers.save();
+          if(user && !userExists){
+            var newRecentUser = {
+              displayName:user.displayName,
+              email:user.email,
+              photoURL:user.photoURL
+            };
+            this.$.recentUsers.value.push(newRecentUser);
+            this.$.recentUsers.save();
+          };
         };
       },
       behaviors: [
@@ -1442,6 +1535,14 @@
           return "click here to set display name.";
         } else {
           return name;
+        };
+      },
+
+      _getSessionId: function(user, statusKnown) {
+        if(statusKnown) {
+          return user && user.uid && statusKnown ? user.uid : 'not-set';
+        } else {
+          return this.$.userSettingsMirror.session;
         };
       }
 
