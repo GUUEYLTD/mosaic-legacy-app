@@ -50,13 +50,13 @@
         if(newDevice) {
           return newDevice;
         } else {
-          return deviceNames[this.user.uid] ? deviceNames[this.user.uid] : null;
+          return deviceNames && deviceNames[this.user.uid] ? deviceNames[this.user.uid] : null;
         };
       },
 
       _currentDeviceChanged: function(device) {
         if(device) {
-          this.$.messagingTokenDB.disabled = false;
+          console.log(device)
         };
       },
 
@@ -79,13 +79,15 @@
       requestNotificationPermission: function() {
         var that = this;
         this.$.messaging.requestPermission()
-          .then(function() {
+          .then(function(token) {
+            that.$.messagingTokenDB.setStoredValue(that.$.messagingTokenDB.path, that.$.messaging.token);
             that.fire("openToast", {toastText: "Push notifications have been setup! You will now receive push notifications."})
             var path = "/homes/" + that.home + "/users/" + that.user.uid + "/settings/notificationSources/" + that.currentDevice;
             that.$.userSettingsDB.setStoredValue(path, true);
             that.$.requestNotificationModal.close();
           })
           .catch(function(err) {
+            console.log(err);
             that.fire("openToast", {toastText: "You must accept in order to get push notifications."});
             var path = "/homes/" + that.home + "/users/" + that.user.uid + "/settings/notificationSources/" + that.currentDevice;
             that.$.userSettingsDB.setStoredValue(path, false);
