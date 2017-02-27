@@ -87,13 +87,14 @@
     <!--SECONDARY APP FOR GETTING AROUND USER AUTO SIGN IN WHEN CREATING A NEW USER-->
     <firebase-app
       name="user2"
-      auth-domain="mosaic-care-5cea8.firebaseapp.com"
-      api-key="AIzaSyCQDIr1UXMVtl1n-6kYKv_VEPTGTk11QLI"
-      database-url="https://mosaic-care-5cea8.firebaseio.com">
+      auth-domain="careplan-c2677.firebaseapp.com"
+      api-key="AIzaSyBdtmHIV_7epC0OBiXkTNoqrGRspA58Epc"
+      database-url="https://careplan-c2677.firebaseio.com">
     </firebase-app>
 
     <firebase-auth
       id="auth"
+      online="{{online}}"
       app-name="main"
       user="{{user}}"
       signed-in="{{signedIn}}"
@@ -1037,6 +1038,11 @@
       },
       properties:{
 
+        online: {
+          type: Boolean,
+          observer: "_onlineChanged"
+        },
+
         userUid: {
           type: String,
           computed: "_getSessionId(user, statusKnown)"
@@ -1145,6 +1151,15 @@
         '_userChanged(user)',
         '_setUserSettingsPath(user.uid, home)',
       ],
+
+      _onlineChanged: function(online) {
+        if(online) {
+          this.customStyle["--app-dynamic-primary-color"] = '#3d4ba8';
+        } else {
+          this.customStyle["--app-dynamic-primary-color"] = 'grey';
+        };
+        this.updateStyles();
+      },
 
       _userChanged:function(user){
         if(user) {
