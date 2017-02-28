@@ -1251,6 +1251,7 @@
                 this.set("catData.category", "default");
                 this.set("pageData.page", "def-home");
                 this.fromLogin = true;
+                this.setDeviceLoggedIn(true);
                 //window.location="/"+value+"/default/def-home";
               }.bind(this))
             //this.fire('signInRedirect');
@@ -1261,8 +1262,18 @@
           }.bind(this));
       },
       logout:function(){
-        this.$.auth.signOut();
-        window.location="/default/default/def-login";
+        this.setDeviceLoggedIn(false)
+          .then(function(res) {
+            console.log(res);
+            this.$.auth.signOut();
+            window.location="/default/default/def-login";
+          })
+          .catch(function(err) {
+            console.log(err);
+            this.$.auth.signOut();
+            window.location="/default/default/def-login";
+          });
+
       },
       cancelLogout:function(){
         this.$.logoutDialog.close();
