@@ -94,8 +94,8 @@
       },
 
       setDeviceLoggedIn: function(active) {
-        var path = "/homes/" + that.home + "/users/" + that.user.uid + "/settings/notificationSources/" + that.currentDevice + "/deviceLoggedIn";
-        return that.$.userSettingsDB.setStoredValue(path, active);
+        var path = "/homes/" + this.home + "/users/" + this.user.uid + "/settings/notificationSources/" + this.currentDevice + "/deviceLoggedIn";
+        return this.$.userSettingsDB.setStoredValue(path, active);
       },
 
       _handleMessage: function(e) {

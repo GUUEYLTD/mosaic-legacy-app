@@ -1262,15 +1262,16 @@
           }.bind(this));
       },
       logout:function(){
+        var that = this;
         this.setDeviceLoggedIn(false)
           .then(function(res) {
             console.log(res);
-            this.$.auth.signOut();
+            that.$.auth.signOut();
             window.location="/default/default/def-login";
           })
           .catch(function(err) {
             console.log(err);
-            this.$.auth.signOut();
+            that.$.auth.signOut();
             window.location="/default/default/def-login";
           });
 
