@@ -39,15 +39,6 @@
           app-name="main">
         </firebase-document>
 
-        <iron-ajax
-          id="trialSetCall"
-          handle-as="json"
-          on-response="_handleTrialSetCall"
-          debounce-duration="300"
-          method="POST"
-          content-type="application/json">
-        </iron-ajax>
-
         <style include="common-styles">
             .pageCard{
               min-height:600px;
@@ -834,9 +825,11 @@
                   //email address verified
                   this.verifyResponse = resp;
                   this.verifySuccess = true;
-                  this.startTrial();
                   this.$.verifyToast.text = "Email verified and agremeents have been agreed to. You will be taken to the logout page in 5 seconds.";
                   this.$.verifyToast.open();
+                  setTimeout(function() {
+                    that.logout();
+                  },5000);
                 }.bind(this))
                 .catch(function(error) {
                   this.verifyErrorMessage = error;
@@ -865,31 +858,6 @@
                     this.$.verifyToast.open();
                   }.bind(this));
               };
-            },
-
-            startTrial: function() {
-              this.$.userIndexDB.getStoredValue("/userIndex/" + this.user.uid + "/home")
-                .then(function(home){
-                  this.$.trialSetCall.body = {
-                    home:home
-                  };
-                  this.$.trialSetCall.url = "https://glacial-tor-36526.herokuapp.com/trial/starttrial";
-                  this.$.trialSetCall.generateRequest();
-                }.bind(this))
-                .catch(function(err) {
-                  console.log(err);
-                  this.$.verifyToast.text = "Oops.. something went wrong. contact technical support please.";
-                  this.$.verifyToast.open();
-                }.bind(this));
-            },
-
-            _handleTrialSetCall: function(res) {
-              console.log(res);
-              var that = this;
-              setTimeout(function() {
-                that.logout();
-              });
-
             },
 
             keepDialogOpen: function(agreeOpen, agreeStatus) {

@@ -14,6 +14,7 @@
 
 <link rel="import" href="../../behaviors/animations/default-pages-animation.html" />
 <link rel="import" href="../../behaviors/default-resize-behavior.html" />
+<link rel="import" href="../../behaviors/trial-restriction-behavior.html" />
 
 <link rel="import" href="../../styles/common-styles.html" />
 
@@ -24,6 +25,22 @@
     <media-queries
       dimensions="{{dimensions}}">
     </media-queries>
+
+    <app-indexeddb-mirror
+      id="paymentsMirror"
+      session="[[userUid]]"
+      key="paymentsDB"
+      data="{{paymentsLive}}"
+      persisted-data="{{payments}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
+    <firebase-query
+      id="paymentsDB"
+      app-name="main"
+      path="/payments/[[home]]"
+      data="{{paymentsLive}}">
+    </firebase-query>
 
     <app-indexeddb-mirror
       id="settingsMirror"
@@ -179,6 +196,11 @@
 
       #suspendedDialog {
         margin:0;
+      }
+
+      #mainFab {
+        background-color:var(--create-patient-fab-color);
+        transition: background-color 1s linear;
       }
 
     </style>
@@ -355,24 +377,29 @@
 
       behaviors: [
         Polymer.defPagesAnimation,
-        Polymer.defaultResizeBehavior
+        Polymer.defaultResizeBehavior,
+        Polymer.trailRestrictionBehavior
       ],
 
       //create new patient set as archived. changed to active when all fields are filled out on following su-create page
       createNewPatient: function() {
-        this.$.fireDoc.path = null;
-        this.$.fireDoc.data = {
-          home: this.home,
-          currentStatus: "archived"
-        };
+        if(this.corePlan) {
+          this.$.fireDoc.path = null;
+          this.$.fireDoc.data = {
+            home: this.home,
+            currentStatus: "archived"
+          };
 
-        this.$.fireDoc.save('/homes/'+this.home+'/patients', null)
-          .then(function() {
-            var patientPath = '/homes/' + this.home + '/patients';
-            this.patient = this.$.fireDoc.path.slice(patientPath.length + 1);
-            this.fire("newPatientCreated", {uid: this.patient});
-            window.location.href = "/" + this.home + "/care-plan/su-create/" + this.patient;
-          }.bind(this));
+          this.$.fireDoc.save('/homes/'+this.home+'/patients', null)
+            .then(function() {
+              var patientPath = '/homes/' + this.home + '/patients';
+              this.patient = this.$.fireDoc.path.slice(patientPath.length + 1);
+              this.fire("newPatientCreated", {uid: this.patient});
+              window.location.href = "/" + this.home + "/care-plan/su-create/" + this.patient;
+            }.bind(this));
+        } else {
+          this.fire("openToast", {toastText: "You have reached the maximum amount of free service users with the free plan. In order to add more service users, subscribe to a payment plan." });
+        };
       },
 
       //open menu for editing an active service user

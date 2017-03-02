@@ -1,0 +1,110 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html" />
+
+<script>
+
+  (function(){
+    "use-strict";
+    /*
+    @polymerBehavior Polymer.simpleViewResizeBehavior
+    */
+    Polymer.trailRestrictionBehavior={
+      is:"trial-restriction-behavior",
+
+      properties: {
+        patientCount: {
+          type: Number,
+          value: 0,
+          observer: "_patientCountChanged"
+        },
+
+        corePlan: {
+          type: Object,
+          value: null,
+          observer: "_corePlanChanged"
+        }
+
+      },
+
+      ready: function() {
+        this.listenForPatientCount();
+        this.checkPaid();
+      },
+
+      listenForPatientCount: function() {
+        var that = this;
+        this.$.suIndexDB.query.on("value", function(snap) {
+          that.set("patientCount", that.patientList.length)
+          console.log(that.patientCount);
+        },
+        function(err) {
+          console.log(err);
+        });
+      },
+
+      _patientCountChanged: function(count) {
+        switch(true) {
+          case (count < 7):
+            console.log("less than 7 users");
+            break;
+          case (count === 7):
+            console.log("3 patients left");
+            this.notifyPatientsRemaining(count);
+            break;
+          case (count === 8):
+            console.log("2 patients left");
+            this.notifyPatientsRemaining(count);
+            break;
+          case (count === 9):
+            console.log("1 patient left");
+            this.notifyPatientsRemaining(count);
+            break;
+          case (count > 9):
+            console.log("no patients left");
+            break;
+          default:
+            console.log("something went wrong");
+            break;
+        }
+      },
+
+      notifyPatientsRemaining: function(count) {
+        var remainingPatients = 10 - count;
+        var remainingString = remainingPatients > 1 ? "There are only " + count +  " free remaining service users." : "There is only " + count +  " free remaining service user."
+        this.fire("openToast", {toastText: remainingString + "No more than 10 service users can be added on the free plan." });
+      },
+
+      noMoreFreePatients: function() {
+        if(!this.corePlan) {
+          this.fire("openToast", {toastText: "You have reached the maximum amount of free service users with the free plan. In order to add more service users, subscribe to a payment plan." });
+        };
+      },
+
+      checkPaid: function() {
+        var that = this;
+        this.$.paymentsDB.ref.on("value", function(snapshot) {
+          var payments = snapshot.val();
+          for(x in payments) {
+            if(payments[x].id === "core1"){
+              that.set("corePlan", payments[x]);
+              console.log(that.corePlan)
+            };
+          };
+          that.noMoreFreePatients();
+        });
+      },
+
+      _corePlanChanged: function(corePlan) {
+        console.log(corePlan);
+        if(corePlan) {
+          this.customStyle["--create-patient-fab-color"] = "#ff4081";
+        } else {
+          this.customStyle["--create-patient-fab-color"] = "#d1d1e0";
+        };
+        this.updateStyles();
+      }
+
+    };
+
+  })();
+
+</script>

@@ -197,22 +197,6 @@
     </firebase-document>
 
     <app-indexeddb-mirror
-      id="paymentsMirror"
-      session="[[userUid]]"
-      key="paymentsDB"
-      data="{{paymentsLive}}"
-      persisted-data="{{payments}}"
-      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
-    </app-indexeddb-mirror>
-
-    <firebase-query
-      id="paymentsDB"
-      app-name="main"
-      path="/payments/[[home]]"
-      data="{{paymentsLive}}">
-    </firebase-query>
-
-    <app-indexeddb-mirror
       id="notifyMirror"
       session="[[userUid]]"
       key="notifyDB"

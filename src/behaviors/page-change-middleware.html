@@ -19,31 +19,6 @@
 
       properties:{
 
-        adTrialOver: {
-          type: String,
-          value: "Trial Period is over please update payment info to continue service usage."
-        },
-
-        swTrialOver: {
-          type: String,
-          value: "Trial Period is over please inform your supervisor that payment information must be updated in order to continue."
-        },
-
-        adNoPayment: {
-          type: String,
-          value: "Due to no payment, your accounts have been locked. Please update payment information in order to continue."
-        },
-
-        swNoPayment: {
-          type: String,
-          value: "Due to no payment, your account has been locked. Please inform your supervisor that valid payment information must be updated in order to continue."
-        },
-
-        noCoreText: {
-          type: String,
-          value: "It looks like your main service plan has been removed. If you feel this is in error, please contact support."
-        },
-
         allowedPages: {
           type: Array,
           value: [
@@ -121,55 +96,6 @@
         } else {
           this.rightMenuSelect = null;
         };
-      },
-
-      paymentReroute: function() {
-        this.$.paymentsDB.ref.once("value", function(snapshot) {
-          var payments = snapshot.val();
-          var core1 = false;
-          for(x in payments) {
-            if(payments[x].id === "core1"){
-              core1 = payments[x];
-            };
-          };
-          if(this.currentUserType) {
-            //set restriction text for admins, managers, and others
-            if(payments && payments.trial) {
-              if(payments.trial.status === "canceled") {
-                this.restrictToastText = this.adTrialOver;
-                this.restrictDialogText = this.swTrialOver;
-              };
-            } else if(core1) {
-              if(core1.status === "canceled") {
-                this.restrictToastText = this.adNoPayment;
-                this.restrictDialogText = this.swNoPayment;
-              };
-            } else {
-              this.restrictDialogText = this.noCoreText;
-              this.restrictToastText = this.noCoreText;
-            };
-            //handle restrictions for admins, managers, and others
-            if(payments && payments.trial && payments.trial.status === "canceled" && (this.currentUserType === "admin" || this.currentUserType === "manager")) {
-              this.set("catData.category", "admin");
-              this.set("pageData.page", "ad-payment");
-              this.fire("openToast", {toastText: this.restrictToastText});
-            } else if(payments && payments.trial && payments.trial.status === "canceled") {
-              this.$.lockedDialog.open();
-            } else if(core1 && core1.status === "canceled" && (this.currentUserType === "admin" || this.currentUserType === "manager")) {
-              this.set("catData.category", "admin");
-              this.set("pageData.page", "ad-payment");
-              this.fire("openToast", {toastText: this.restrictToastText});
-            } else if(core1 && core1.status === "canceled"){
-              this.$.lockedDialog.open();
-            } else if(!core1 && (this.currentUserType === "admin" || this.currentUserType === "manager")) {
-              this.set("catData.category", "admin");
-              this.set("pageData.page", "ad-payment");
-              this.fire("openToast", {toastText: this.restrictToastText});
-            } else if(!core1) {
-              this.$.lockedDialog.open();
-            };
-          };
-        }.bind(this));
       },
 
       toggleLoadingDisplay: function(page) {
@@ -250,7 +176,6 @@
         if(this.user) {
           this._checkVerified(this.user, this.statusKnown);
           this.checkAdmin();
-          this.paymentReroute();
         };
         this.setRightMenuSelect();
         this.toggleLoadingDisplay(this.page);
