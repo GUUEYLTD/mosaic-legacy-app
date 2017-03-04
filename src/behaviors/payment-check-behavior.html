@@ -1,0 +1,50 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html" />
+
+<script>
+
+  (function(){
+    "use-strict";
+    /*
+    @polymerBehavior Polymer.paymentCheckBehavior
+    */
+    Polymer.paymentCheckBehavior = {
+
+      is: "payment-check-behavior",
+
+      observers: [
+        "_paymentsChanged(payments.*)",
+        "lockAccount(noPayment, currentUserType, page)"
+      ],
+
+      _paymentsChanged: function(paymentsDeep) {
+        var payments = paymentsDeep.base;
+        var coreCancelled = payments.find(function(payment) {
+          return payment.id === 'core1' && payment.status === 'canceled';
+        });
+
+        if(coreCancelled) {
+          this.noPayment = true;
+        } else {
+          this.noPayment = false;
+        };
+      },
+
+      lockAccount: function(noPayment, currentUserType, page) {
+        if(noPayment && page != 'ad-payment') {
+          this.restrictToastText = 'Due to non payment, your accounts have been locked. Please update payment information in order to continue using Mosaic.'
+          this.restrictDialogText = 'Due to non payment, your account has been locked. Please inform your supervisor that valid payment information is needed in order to continue usage of mosaic.';
+          if(currentUserType === 'admin' || currentUserType === 'manager') {
+            this.set('catData.category', 'admin');
+            this.set("pageData.page", 'ad-payment');
+            this.fire('openToast', {toastText: this.restrictToastText});
+          } else {
+            this.$.lockedDialog.open();
+          };
+        };
+      }
+
+    };
+
+  })();
+
+</script>

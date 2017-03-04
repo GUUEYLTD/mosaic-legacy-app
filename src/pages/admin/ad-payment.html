@@ -359,13 +359,14 @@
                       [[plan.quantity]]
                     </td>
                     <td>
-                      [[_computeSubMonthlyPrice(plan.plan.amount, plan.plan.currency, plan.quantity)]]
-                    </td>
-                    <td>
-                      [[_computePlanStatus(plan.status)]]
+                      [[plan.planId]]
+                      [[_computeSubMonthlyPrice(plan.plan.id, plan.plan.amount, plan.plan.currency, plan.quantity)]]
                     </td>
                     <td>
                       [[_computeDate(plan.current_period_end)]]
+                    </td>
+                    <td>
+                      [[_computePlanStatus(plan.status)]]
                     </td>
                     <td>
                       <paper-button class="guuey-button" on-tap="deletePlan">Remove Plan</paper-button>
@@ -405,7 +406,7 @@
                     [[userCount]]
                   </td>
                   <td>
-                    [[_computeSubMonthlyPrice(availablePlan.amount, availablePlan.currency, userCount)]]
+                    [[_computeSubMonthlyPrice(availablePlan.id, availablePlan.amount, availablePlan.currency, userCount)]]
                   </td>
                   <td>
                     <paper-button class="guuey-button" on-tap="addPlan">add Subscription</paper-button>
@@ -557,10 +558,17 @@
           var moneyAmount = amount / 100;
           return unit + moneyAmount;
         },
-        _computeSubMonthlyPrice:function(amount, currency, users){
+        _computeSubMonthlyPrice:function(id, amount, currency, users){
           var unit = currency === "gbp" ? "£" : "€";
-          var moneyAmount = (amount / 100) * users
+          var moneyAmount = (amount / 100) * users;
+          if(id === "core1") {
+            var moneyAmount = (amount / 100) * (users - 10);
+            console.log(moneyAmount);
+          } else {
+            var moneyAmount = (amount /100) * users;
+          };
           return unit + moneyAmount;
+
         },
         _computeDate:function(created){
           var date = new Date(0);
@@ -629,6 +637,7 @@
           this.$.addCardDialog.open();
         },
         initialSub:function(){
+          this.$.payButton.disabled = true;
           if(this.checkValid() && !this.customer.customerID){
             var params={
               cardNumber:this.cardNumber,
@@ -675,6 +684,7 @@
         },
         handleInitialSubCall:function(status, res){
           if(res.error){
+            this.$.payButton.disabled = false;
             this.fire("openToast",{toastText:"Your payment could not be processed for the following reason: "+res.error.message});
           } else {
             this.$.initSubCall.url="http://localhost:3000/payments/initialsub";
@@ -810,9 +820,9 @@
         },
         //handle api calls
         _handleInitialSubResponse:function(e){
-
           this.clearCardInputs();
           this._getCustomerInfo();
+          this.$.payButton.disabled = false;
         },
         _handleAddCardCall:function(e){
           if(e.detail.response.statusCode === 402){

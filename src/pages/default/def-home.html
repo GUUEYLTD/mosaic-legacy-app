@@ -11,6 +11,7 @@
 <link rel="import" href="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror.html" />
 
 <link rel="import" href="../../elements/media-queries/media-queries.html" />
+<link rel="import" href="../../elements/guuey-notify/guuey-notify.html" />
 
 <link rel="import" href="../../behaviors/animations/default-pages-animation.html" />
 <link rel="import" href="../../behaviors/default-resize-behavior.html" />
@@ -78,6 +79,12 @@
       id="fireDoc"
       app-name="main">
     </firebase-document>
+
+    <guuey-notify
+      id="trialNotifier"
+      home="[[home]]"
+      message="[[notifyMessage]]">
+    </guuey-notify>
 
     <style include="app-grid-style">
 
@@ -360,12 +367,28 @@
 
         //list of patients from firebase suIndex
         patientList: {
-          type:Object
+          type:Array,
+          value: []
         },
 
         //current user uid used as key for local storage session, when changed local db is wiped
         userUid: {
           type: String
+        },
+
+        payments: {
+          type: Array,
+          value: []
+        },
+
+        modulePayments: {
+          type: Object,
+          value: {}
+        },
+
+        patientCount: {
+          type: Number,
+          value: 0
         }
 
       },
@@ -378,12 +401,12 @@
       behaviors: [
         Polymer.defPagesAnimation,
         Polymer.defaultResizeBehavior,
-        Polymer.trailRestrictionBehavior
+        Polymer.trialRestrictionBehavior
       ],
 
       //create new patient set as archived. changed to active when all fields are filled out on following su-create page
       createNewPatient: function() {
-        if(this.corePlan) {
+        if(((this.modulePayments.core1 != 'canceled' && this.modulePayments.core1 != 'free') || this.patientCount < 10)) {
           this.$.fireDoc.path = null;
           this.$.fireDoc.data = {
             home: this.home,

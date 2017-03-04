@@ -38,7 +38,6 @@
         currentDevice: {
           type: String,
           computed: "_computeCurrentDevice(user.uid, deviceNames, newDevice)",
-          observer: "_currentDeviceChanged"
         }
       },
 
@@ -51,12 +50,6 @@
           return newDevice;
         } else {
           return deviceNames && deviceNames[this.user.uid] ? deviceNames[this.user.uid] : null;
-        };
-      },
-
-      _currentDeviceChanged: function(device) {
-        if(device) {
-          console.log(device)
         };
       },
 

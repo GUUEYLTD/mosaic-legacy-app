@@ -20,6 +20,16 @@
     </firebase-document>
 
     <firebase-document
+      id="notifyDB"
+      app-name="main">
+    </firebase-document>
+
+    <firebase-document
+      id="notifiedDB"
+      app-name="main">
+    </firebase-document>
+
+    <firebase-document
       id="deNotifiableDB"
       app-name="main">
     </firebase-document>
@@ -203,7 +213,6 @@
 
     //sets default, more simple notification using: home, notifyMessage, notifyUrl, this.$.notifyTargetDB.path, conditionType, computed dates, and setPersonInfo()
     setDefaultNotify: function() {
-      console.log("shit working???");
       var path = "homes/" + this.home + "/notifications/notifiable/" + this.notifyTarget;
       this.notifyData= {
         message: this.notifyMessage,
@@ -265,6 +274,78 @@
       } else {
         this.$.deNotifiableDB.setStoredValue(notifiableRoute, null);
         this.$.deNotifiableDB.setStoredValue(notifyRoute, null);
+      };
+    },
+
+    //use to send a simple notification. no need to set any properties or initialize. when using key checks in notify and notified for previous messages. doesnt notify if they have been notified before.
+    setSimpleNotification: function(home, message, key) {
+      var path = "homes/" + this.home + "/notifications/notifiable/";
+      var today = new Date();
+      today = today.getTime();
+      this.$.notifiableDB.data = {
+        conditions: {
+          type: "simple",
+          condition: true
+        },
+
+        history: {
+          notifiable: today
+        },
+
+        fName: "System",
+        lName: "Admin",
+        message: message,
+        url :"/"
+      };
+
+      if(key) {
+        var that = this;
+        return new Promise(function(resolve, reject) {
+          var notifiable;
+          var notify;
+          var notified;
+          that.$.notifiableDB.getStoredValue('homes/' + home + '/notifications/notifiable/' + key)
+            .then(function(notification) {
+              if(notification.message && notification.message === message){
+                reject('message has already been sent.');
+              };
+              notifiable = true;
+              if(notifiable && notify && notified) {
+                return that.$.notifiableDB.save(path, key);
+              };
+            })
+            .catch(function(err) {
+              reject(err);
+            });
+          that.$.notifyDB.getStoredValue('homes/' + home + '/notifications/notify/' + key)
+            .then(function(notification) {
+              if(notification.message && notification.message === message){
+                reject('message has already been sent.');
+              };
+              notify = true;
+              if(notifiable && notify && notified) {
+                return that.$.notifiableDB.save(path, key);
+              };
+            })
+            .catch(function(err) {
+              reject(err);
+            });
+          that.$.notifiedDB.getStoredValue('homes/' + home + '/notifications/notified/' + key)
+            .then(function(notification) {
+              if(notification.message && notification.message === message){
+                reject('message has already been sent.');
+              };
+              notified = true;
+              if(notifiable && notify && notified) {
+                return that.$.notifiableDB.save(path, key);
+              };
+            })
+            .catch(function(err) {
+              reject(err);
+            });
+        });
+      } else {
+        return this.$.notifiableDB.save(path, null);
       };
     }
 

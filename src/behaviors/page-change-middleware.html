@@ -37,6 +37,7 @@
           return true;
         };
       },
+
       _authKnown:function(known){
         if(known===true){
           if(!this.$.auth.user && !this.authRequired(this.$.location.path)){

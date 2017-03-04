@@ -47,6 +47,7 @@
 <link rel="import" href="behaviors/page-change-middleware.html" />
 <link rel="import" href="behaviors/account-create-behavior.html" />
 <link rel="import" href="behaviors/push-notification-behavior.html" />
+<link rel="import" href="behaviors/payment-check-behavior.html" />
 
 <link rel="import" href="styles/app-shell-styles.html" />
 
@@ -226,6 +227,22 @@
       path="/homes/[[home]]/patients/suIndex"
       data="{{suListLive}}"
       app-name="main">
+    </firebase-query>
+
+    <app-indexeddb-mirror
+      id="paymentsMirror"
+      session="[[userUid]]"
+      key="paymentsDB"
+      data="{{paymentsLive}}"
+      persisted-data="{{payments}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
+    <firebase-query
+      id="paymentsDB"
+      app-name="main"
+      path="/payments/[[home]]"
+      data="{{paymentsLive}}">
     </firebase-query>
 
     <firebase-document
@@ -1032,37 +1049,43 @@
           computed: "_getSessionId(user, statusKnown)"
         },
 
-        rightMenuSelect:{
-          type:String,
-          value:"home"
+        rightMenuSelect: {
+          type: String,
+          value: "home"
         },
-        home:{
-          type:String,
-          reflectToAttribute:true,
-          observer:'_homeChanged',
-          value:'default',
+
+        home: {
+          type: String,
+          reflectToAttribute: true,
+          observer: '_homeChanged',
+          value: 'default',
         },
-        intendedCat:{
-          type:String,
-          value:'default'
+
+        intendedCat: {
+          type: String,
+          value: 'default'
         },
-        category:{
-          type:String,
-          reflectToAttribute:true,
-          observer:'_catChanged',
-          value:'default',
+
+        category: {
+          type: String,
+          reflectToAttribute: true,
+          observer: '_catChanged',
+          value: 'default',
         },
-        page:{
-          type:String,
-          reflectToAttribute:true,
+
+        page: {
+          type: String,
+          reflectToAttribute: true,
         },
-        param:{
-          type:String,
-          reflectToAttribute:true,
-          observer:'_paramChanged'
+
+        param: {
+          type: String,
+          reflectToAttribute: true,
+          observer: '_paramChanged'
         },
-        login:{
-          type:Object,
+
+        login: {
+          type: Object,
         },
 
         fromLogin: {
@@ -1070,13 +1093,20 @@
           value: false
         },
 
-        payments:{
-          type:Object,
+        payments: {
+          type: Array,
+          value: []
         },
+
+        noPayment: {
+          type: Boolean,
+          value: false
+        },
+
         //routes that do not get overriden by not being logged in
-        noAuthRoutes:{
-          type:Array,
-          value:[
+        noAuthRoutes: {
+          type: Array,
+          value: [
             "/default/default/def-verify",
             "/default/default/def-login"
             ]
@@ -1168,7 +1198,8 @@
         Polymer.shellResizeBehavior,
         Polymer.pageChangeMiddleware,
         Polymer.accountCreateBehavior,
-        Polymer.pushNotificationBehavior
+        Polymer.pushNotificationBehavior,
+        Polymer.paymentCheckBehavior
       ],
 
       _setUserSettingsPath: function(user, home) {
