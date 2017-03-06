@@ -15,7 +15,9 @@
     <paper-card class="main">
 
       <div class="pageInnerCont padded">
-
+        <button on-tap="startLogin">login</button>
+        <button on-tap="openVerify">verify</button>
+        <button on-tap="testLocation">change loc</button>
       </div>
 
     </paper-card>
@@ -26,11 +28,25 @@
 
       Polymer({
         is: 'test-test',
+
         ready:function(){
           this.fire("pageLoaded", this.page);
         },
+
         properties:{
 
+        },
+
+        startLogin: function() {
+          this.fire("openLogin");
+        },
+
+        openVerify: function() {
+          this.fire('openVerify');
+        },
+
+        testLocation: function() {
+          location.href = 'http://localhost:8080/-KTBXzZw3-qoZz4c7nY7/test/test-test?mode=resetPassword&oobCode=dicks';
         }
 
       });

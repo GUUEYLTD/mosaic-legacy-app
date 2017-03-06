@@ -36,18 +36,24 @@
 <link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html" />
 <link rel="import" href="../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror.html" />
 
+<link rel="import" href="../bower_components/neon-animation/animations/fade-in-animation.html">
+<link rel="import" href="../bower_components/neon-animation/animations/fade-out-animation.html">
+
 <link rel="import" href="elements/admin-drawer/admin-drawer.html" />
 <link rel="import" href="elements/firebase-storage/firebase-storage.html" />
 <link rel="import" href="elements/guuey-bug-report/guuey-bug-report.html" />
 <link rel="import" href="elements/media-queries/media-queries.html" />
 <link rel="import" href="elements/guuey-notification/guuey-notification.html" />
 <link rel="import" href="elements/guuey-account-display/guuey-account-display.html" />
+<link rel="import" href="elements/guuey-login/guuey-login.html" />
+<link rel="import" href="elements/guuey-verify/guuey-verify.html" />
 
 <link rel="import" href="behaviors/shell-resize-behavior.html" />
 <link rel="import" href="behaviors/page-change-middleware.html" />
 <link rel="import" href="behaviors/account-create-behavior.html" />
 <link rel="import" href="behaviors/push-notification-behavior.html" />
 <link rel="import" href="behaviors/payment-check-behavior.html" />
+<link rel="import" href="behaviors/sign-in-behavior.html" />
 
 <link rel="import" href="styles/app-shell-styles.html" />
 
@@ -295,7 +301,23 @@
       data="{{paramData}}">
     </app-route>
 
-    <style include="app-shell-styles"></style>
+    <style include="app-shell-styles">
+
+    </style>
+
+    <guuey-login
+      id="loginDialog"
+      modal
+      entry-animation="fade-in-animation"
+      exit-animation="fade-out-animation">
+    </guuey-login>
+
+    <guuey-verify
+      id="verifyDialog"
+      modal
+      entry-animation="fade-in-animation"
+      exit-animation="fade-out-animation">
+    </guuey-verify>
 
     <paper-dialog id="requestNotificationModal" modal>
       <h2>Permission Needed</h2>
@@ -593,15 +615,6 @@
           attr-for-selected="name">
           <!--custom pages built for the app names attached in order to know which to display according to route-->
           <!--page selected style only shows when the drawer item has been clicked twice need to fix this..-->
-          <!--login page-->
-          <def-login
-            user-uid="[[userUid]]"
-            current-page="[[currentPage]]"
-            current-cat="[[currentCat]]"
-            intended-cat="[[intendedCat]]"
-            page="[[page]]"
-            name="def-login">
-          </def-login>
           <!--default page-->
           <def-home
             user-uid="[[userUid]]"
@@ -914,130 +927,13 @@
     Polymer({
 
       is:'my-app',
-      getElement:function(name){
-        return this.$$(name);
-      },
-      //event listener for user creation
-      ready:function(){
-        this.addEventListener('createNewUser', this.createNewUser);
-        this.addEventListener('saveNewUser', this.saveNewUser);
-        this.addEventListener('createNewAccount', this.createNewAccount);
-        this.addEventListener('signInRedirect', this.signInRedirect);
-        this.addEventListener('addUserToHomeIndex', this.addUserToHomeIndex);
-        this.addEventListener('addUserToIndex', this.addUserToIndex);
-        this.addEventListener('emailSignIn',this.emailSignIn);
-        this.addEventListener('openToast', this.openToast);
-        this.addEventListener('openDrawer', this.openDrawer);
-        this.addEventListener('dbLoading', this.enableDBLoading);
-        this.addEventListener('dbLoaded', this.disableDBLoading);
-        this.addEventListener('pageLoading', this.enablePageLoading);
-        this.addEventListener('pageLoaded', this.disablePageLoading);
-        this.addEventListener('dismissNotification',this.dismissNotification);
-        this.addEventListener('checkNotification', this.checkNotification);
-        this.addEventListener('app-drawer-transitioned', this.resizeDrawerImage);
-        this.addEventListener('logout', this.logout);
-        this.addEventListener('cancelLogout', this.cancelLogout);
-        this.fire("pageLoaded",{page:this.page});
-        this.addEventListener("resize", this.resizeElements);
-        this.$.storage._downloadFile(this.$.storage.path);
-      },
-      attached:function(){
-        this.resizeElements();
-      },
-      resizeElements:function(){
-        var neonOffsetTop=this.$.neonPages.offsetTop;
-        var screenHeight=window.innerHeight;
-        var headerHeight=this.$.appHeader.offsetHeight;
-        this.customStyle["--neon-pages-height"]=screenHeight-headerHeight+"px";
-        if(this.page==="def-login"){
-          this.customStyle["--login-overlay-display"]="inline-block";
-          this.customStyle["--login-overlay-height"]=headerHeight+"px";
-        } else {
-          this.customStyle["--login-overlay-display"]="none";
-          this.customStyle["--login-overlay-height"]="0px";
-        };
-        this.updateStyles();
-      },
-      //create new service user for an already existing home
-      createNewUser:function(e){
-        var password=this.makePass();
-        this.$.createUser.createUserWithEmailAndPassword(e.detail.username, password)
-          .then(function(user){
-            user.updateProfile({
-              displayName: e.detail.fName+" "+e.detail.lName
-            }).then(function() {
-              this.fire("openToast",{toastText: "New User display name updated."});
-            }.bind(this), function(error) {
-              this.fire("openToast",{toastText: error});
-            }.bind(this));
-            var userEntry={
-              userUID:user.uid,
-              username:user.email,
-              displayName:e.detail.fName+" "+e.detail.lName,
-              role:e.detail.role,
-              home:this.home,
-            };
-            //patients and role
-            if(e.detail.patients){
-              userEntry.patients=e.detail.patients;
-            };
-            this.fire("saveNewUser", userEntry);
-          }.bind(this))
-          .catch(function(error){
-            this.fire("openToast", {toastText:error});
-          }.bind(this));
-      },
-      //save the new user to the db... probably should put into other function.... (createNewSU)
-      saveNewUser:function(e){
-        this.$.userDB.path=null;
-        this.$.userDB.data={
-          email: e.detail.username,
-          role: e.detail.role,
-          home: e.detail.home,
-          displayName:e.detail.displayName
-        };
-        if(e.detail.patients){
-          this.$.userDB.data.patients=e.detail.patients;
-        };
-        this.$.userDB.save('/homes/'+this.home+'/users', e.detail.userUID)
-          .then(function(){
-            var indexData={
-              home:e.detail.home,
-              userUID:e.detail.userUID
-            };
-            this.fire('addUserToIndex',indexData);
-          }.bind(this))
-          .catch(function(error){
-            this.fire("openToast",{toastText:error});
-          });
-      },
-      //add the user to the admin user index in the home
-      addUserToIndex:function(e){
-        this.$.userIndexDB.path=null;
-        this.$.userIndexDB.data.home=e.detail.home;
-        this.$.userIndexDB.save('/userIndex', e.detail.userUID);
-        var userEmail=this.$.userDB.data.email;
-        this.$.createUser.auth.sendPasswordResetEmail(userEmail)
-          .then(function() {
-          this.fire("openToast",{toastText:"Verification email sent to new user with email address: "+userEmail+"."});
-          }.bind(this), function(error) {
-          this.fire("openToast",{toastText:error});
-          console.log(error);
-          }.bind(this));
-        this.$.createUser.signOut();
-        this.$.userDB.path=null;
-        this.$.userDB.data={};
-      },
-      makePass:function(){
-          var text = "";
-          var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@$?%^&*()";
 
-          for( var i=0; i < 10; i++ )
-              text += possible.charAt(Math.floor(Math.random() * possible.length));
-
-          return text;
-      },
       properties:{
+
+        signedIn: {
+          type: Boolean,
+          observer: "_signedInChanged"
+        },
 
         online: {
           type: Boolean,
@@ -1103,15 +999,6 @@
           value: false
         },
 
-        //routes that do not get overriden by not being logged in
-        noAuthRoutes: {
-          type: Array,
-          value: [
-            "/default/default/def-verify",
-            "/default/default/def-login"
-            ]
-        },
-
         appModules:{
           type:Object,
           value:{
@@ -1166,6 +1053,80 @@
         '_setUserSettingsPath(user.uid, home)',
       ],
 
+      behaviors: [
+        Polymer.shellResizeBehavior,
+        Polymer.pageChangeMiddleware,
+        Polymer.accountCreateBehavior,
+        Polymer.pushNotificationBehavior,
+        Polymer.paymentCheckBehavior,
+        Polymer.signInBehavior
+      ],
+
+      created: function() {
+
+      },
+
+      ready:function(){
+        this.addEventListener('createNewUser', this.createNewUser);
+        this.addEventListener('saveNewUser', this.saveNewUser);
+        this.addEventListener('createNewAccount', this.createNewAccount);
+        this.addEventListener('signInRedirect', this.signInRedirect);
+        this.addEventListener('addUserToHomeIndex', this.addUserToHomeIndex);
+        this.addEventListener('addUserToIndex', this.addUserToIndex);
+        this.addEventListener('openToast', this.openToast);
+        this.addEventListener('openDrawer', this.openDrawer);
+        this.addEventListener('dbLoading', this.enableDBLoading);
+        this.addEventListener('dbLoaded', this.disableDBLoading);
+        this.addEventListener('pageLoading', this.enablePageLoading);
+        this.addEventListener('pageLoaded', this.disablePageLoading);
+        this.addEventListener('dismissNotification',this.dismissNotification);
+        this.addEventListener('checkNotification', this.checkNotification);
+        this.addEventListener('app-drawer-transitioned', this.resizeDrawerImage);
+        this.addEventListener("resize", this.resizeElements);
+        this.fire("pageLoaded",{page:this.page});
+        this.checkForAccountFunctions();
+        this.$.storage._downloadFile(this.$.storage.path);
+
+        //temp
+        this.addEventListener('openLogin', this.openLogin);
+        this.addEventListener('openVerify', this.openVerify);
+      },
+
+      openLogin: function() {
+        this.$.loginDialog.open();
+      },
+
+      attached:function(){
+        this.resizeElements();
+      },
+
+      getParameterByName: function(name, url) {
+        if (!url) url = window.location.href;
+        name = name.replace(/[\[\]]/g, "\\$&");
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
+      },
+
+      checkForAccountFunctions: function() {
+        var mode = this.getParameterByName("mode");
+        var actionCode = this.getParameterByName("oobCode");
+        var apiKey = this.getParameterByName("apiKey");
+        if(mode || actionCode || apiKey) {
+          this.openVerify();
+        };
+      },
+
+      resizeElements:function(){
+        var neonOffsetTop=this.$.neonPages.offsetTop;
+        var screenHeight=window.innerHeight;
+        var headerHeight=this.$.appHeader.offsetHeight;
+        this.customStyle["--neon-pages-height"]=screenHeight-headerHeight+"px";
+        this.updateStyles();
+      },
+
       _onlineChanged: function(online) {
         if(online) {
           this.customStyle["--app-dynamic-primary-color"] = '#3d4ba8';
@@ -1173,46 +1134,6 @@
           this.customStyle["--app-dynamic-primary-color"] = 'grey';
         };
         this.updateStyles();
-      },
-
-      _userChanged:function(user){
-        if(user) {
-          var userExists = true;
-          if(this.$.recentUsers.value){
-            var userExists = this.$.recentUsers.value.some(function(existingUser){
-              return existingUser.email === user.email ? true : false;
-            });
-          };
-          if(user && !userExists){
-            var newRecentUser = {
-              displayName:user.displayName,
-              email:user.email,
-              photoURL:user.photoURL
-            };
-            this.$.recentUsers.value.push(newRecentUser);
-            this.$.recentUsers.save();
-          };
-        };
-      },
-      behaviors: [
-        Polymer.shellResizeBehavior,
-        Polymer.pageChangeMiddleware,
-        Polymer.accountCreateBehavior,
-        Polymer.pushNotificationBehavior,
-        Polymer.paymentCheckBehavior
-      ],
-
-      _setUserSettingsPath: function(user, home) {
-        var that = this;
-        if(user && home) {
-          this.$.userSettingsDB.path = "/homes/" + home + "/users/" + user + "/settings";
-          this.$.userSettingsDB.ref.once("value", function(snap) {
-            var userSettingsData = snap.val();
-            if(!userSettingsData || !userSettingsData.vcActive) {
-              that.set("userSettingsData.vcActive", false);
-            }
-          })
-        };
       },
 
       _homeRouteChanged:function(home){
@@ -1256,57 +1177,16 @@
       toggleRightDrawer:function(){
         this.$.suDrawer.toggle();
       },
-      //sign in that redirects based on user uid and user index with homes attached
-      emailSignIn:function(e){
-        this.$.auth.signInWithEmailAndPassword(e.detail.username, e.detail.password)
-          .then(function(user){
-            this.$.userIndexDB.getStoredValue("/userIndex/"+user.uid+"/home")
-              .then(function(value){
-                this.set("homeData.home", value);
-                this.set("catData.category", "default");
-                this.set("pageData.page", "def-home");
-                this.fromLogin = true;
-                this.setDeviceLoggedIn(true);
-                //window.location="/"+value+"/default/def-home";
-              }.bind(this))
-            //this.fire('signInRedirect');
-          }.bind(this))
-          .catch(function(error){
-            this.$.mainToast.text=error;
-            this.$.mainToast.open()
-          }.bind(this));
-      },
-      logout:function(){
-        var that = this;
-        this.setDeviceLoggedIn(false)
-          .then(function(res) {
-            console.log(res);
-            that.$.auth.signOut();
-            window.location="/default/default/def-login";
-          })
-          .catch(function(err) {
-            console.log(err);
-            that.$.auth.signOut();
-            window.location="/default/default/def-login";
-          });
 
-      },
-      cancelLogout:function(){
-        this.$.logoutDialog.close();
-      },
       //other stuff
       handleError:function(error){
+
       },
       _patientSelected:function(category, param){
         if((this.category==="care-plan" || "test") && this.param){
           return true;
         } else {
           return false;
-        };
-      },
-      loginPageInactive:function(page){
-        if(page!="def-login"){
-          return true;
         };
       },
       goHome:function(){
@@ -1529,37 +1409,7 @@
       checkNotification:function(){
         this.$.notifyDialog.close();
       },
-      openLogout:function(e){
-        var isMobile = Polymer.dom(e.currentTarget).parentNode.classList.contains("mobileTab");
-        var isDesktop = e.currentTarget.classList.contains("desktopTab");
-        // hypotenuse of 45 degree rotated square that is before the dialog... meaning the width in relative terms
-        var beforeWidth = Math.sqrt(Math.pow(20, 2) + Math.pow(20, 2));
-        if(isMobile){
-          this.$.logoutDialog.positionTarget = e.currentTarget;
-          this.$.logoutDialog.verticalAlign = "top";
-          this.$.logoutDialog.horizontalAlign = "right";
-          this.$.logoutDialog.noOverlap = true;
-          this.$.logoutDialog.classList.remove("dialogPointer");
-          this.$.logoutDialog.horizontalOffset = -e.currentTarget.offsetLeft -12;
-          this.$.logoutDialog.style="width:100%;";
-        }
-        if(isDesktop){
-          this.$.logoutDialog.positionTarget = e.currentTarget;
-          this.$.logoutDialog.verticalAlign = "top";
-          this.$.logoutDialog.horizontalAlign = "right";
-          this.$.logoutDialog.noOverlap = true;
-          this.$.logoutDialog.classList.add("dialogPointer");
-          this.$.logoutDialog.horizontalOffset = e.currentTarget.offsetWidth / 2 -beforeWidth;
-          this.$.logoutDialog.style="";
-        };
 
-        this.$.notifyDialog.close();
-        this.$.appsDialog.close();
-        this.$.logoutDialog.toggle();
-      },
-      closeLogout:function(){
-        this.$.logoutDialog.close();
-      },
       _initializeRecentUsers:function(){
         this.$.recentUsers.value=[];
       },
@@ -1577,14 +1427,6 @@
           return "click here to set display name.";
         } else {
           return name;
-        };
-      },
-
-      _getSessionId: function(user, statusKnown) {
-        if(statusKnown) {
-          return user && user.uid && statusKnown ? user.uid : 'not-set';
-        } else {
-          return this.$.userSettingsMirror.session;
         };
       }
 

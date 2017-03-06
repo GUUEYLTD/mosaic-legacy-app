@@ -13,8 +13,7 @@
       observers:[
         "_middleware(page)",
         "_userTypeReady(home, user)",
-        "_authKnown(statusKnown)",
-        "_checkVerified(user, statusKnown)"
+        "_authKnown(statusKnown, signedIn)",
       ],
 
       properties:{
@@ -24,7 +23,15 @@
           value: [
             "ad-support"
           ]
-        }
+        },
+
+        //routes that do not get overriden by not being logged in
+        noAuthRoutes: {
+          type: Array,
+          value: [
+            "/default/default/def-verify",
+            ]
+        },
 
       },
 
@@ -38,26 +45,18 @@
         };
       },
 
-      _authKnown:function(known){
-        if(known===true){
-          if(!this.$.auth.user && !this.authRequired(this.$.location.path)){
-            window.location.href="/default/default/def-login";
+      _authKnown:function(known, signedIn){
+        if(known) {
+          if(!signedIn && !this.authRequired(this.$.location.path)){
+            this.$.loginDialog.open();
           } else {
             if(this.user){
               this.$.userIndexDB.getStoredValue("/userIndex/"+this.user.uid+"/home")
                 .then(function(value){
                   this.set('homeData.home', value);
+                  this.$.loginDialog.close();
                 }.bind(this))
             };
-          };
-        };
-      },
-
-      _checkVerified: function(user, statusKnown) {
-        if(statusKnown) {
-          if(this.user && !this.user.emailVerified) {
-            this.set("catData.category", "default");
-            this.set("pageData.page", "def-verify");
           };
         };
       },

@@ -9,6 +9,8 @@
     */
     Polymer.accountCreateBehavior={
       is:"account-create-behavior",
+
+      //START: new home account functions
       saveHome:function(){
         this.$.homeDB.path=null;
         this.$.homeDB.data={
@@ -19,11 +21,13 @@
         };
         return this.$.homeDB.save('/homes',null);
       },
+
       saveHomeIndex:function(){
         var homePath = '/homes';
         this.homeUID = this.$.homeDB.path.slice(homePath.length+1);
         return this.$.homeIndexDB.setStoredValue("/homeIndex/"+this.homeUID, this.homeUID)
       },
+
       saveHomeAdmin:function(username){
         this.$.userDB.path=null;
         this.$.userDB.data={
@@ -33,6 +37,7 @@
         };
         return this.$.userDB.save('/homes/'+this.homeUID+'/users', this.user.uid)
       },
+
       saveUserIndex:function(){
         this.$.userIndexDB.path=null;
         this.$.userIndexDB.data={
@@ -40,9 +45,11 @@
         };
         return this.$.userIndexDB.save('/userIndex', this.user.uid)
       },
+
       sendEmailVerification:function(){
         return this.user.sendEmailVerification();
       },
+
       //function to create new user for new home
       createNewAccount:function(e){
         //create new user for new home
@@ -62,7 +69,7 @@
                   that.sendEmailVerification()
                   .then(function(ver) {
                     that.fire("openToast",{toastText:"Verification Email sent."});
-                    window.location="/"+that.homeUID+"/default/def-verify";
+                    that.$.verifyDialog.open();
                   })
                 })
               })
@@ -73,6 +80,90 @@
           that.fire("openToast",{toastText:error});
         })
       },
+
+      //END: new home account functions
+
+      //START: new account functions (home already exists)
+      //create new service user for an already existing home
+      createNewUser:function(e){
+        var password=this.makePass();
+        this.$.createUser.createUserWithEmailAndPassword(e.detail.username, password)
+          .then(function(user){
+            user.updateProfile({
+              displayName: e.detail.fName+" "+e.detail.lName
+            }).then(function() {
+              this.fire("openToast",{toastText: "New User display name updated."});
+            }.bind(this), function(error) {
+              this.fire("openToast",{toastText: error});
+            }.bind(this));
+            var userEntry={
+              userUID:user.uid,
+              username:user.email,
+              displayName:e.detail.fName+" "+e.detail.lName,
+              role:e.detail.role,
+              home:this.home,
+            };
+            //patients and role
+            if(e.detail.patients){
+              userEntry.patients=e.detail.patients;
+            };
+            this.fire("saveNewUser", userEntry);
+          }.bind(this))
+          .catch(function(error){
+            this.fire("openToast", {toastText:error});
+          }.bind(this));
+      },
+
+      saveNewUser:function(e){
+        this.$.userDB.path=null;
+        this.$.userDB.data={
+          email: e.detail.username,
+          role: e.detail.role,
+          home: e.detail.home,
+          displayName:e.detail.displayName
+        };
+        if(e.detail.patients){
+          this.$.userDB.data.patients=e.detail.patients;
+        };
+        this.$.userDB.save('/homes/'+this.home+'/users', e.detail.userUID)
+          .then(function(){
+            var indexData={
+              home:e.detail.home,
+              userUID:e.detail.userUID
+            };
+            this.fire('addUserToIndex',indexData);
+          }.bind(this))
+          .catch(function(error){
+            this.fire("openToast",{toastText:error});
+          });
+      },
+      //add the user to the admin user index in the home
+      addUserToIndex:function(e){
+        this.$.userIndexDB.path=null;
+        this.$.userIndexDB.data.home=e.detail.home;
+        this.$.userIndexDB.save('/userIndex', e.detail.userUID);
+        var userEmail=this.$.userDB.data.email;
+        this.$.createUser.auth.sendPasswordResetEmail(userEmail)
+          .then(function() {
+          this.fire("openToast",{toastText:"Verification email sent to new user with email address: "+userEmail+"."});
+          }.bind(this), function(error) {
+          this.fire("openToast",{toastText:error});
+          console.log(error);
+          }.bind(this));
+        this.$.createUser.signOut();
+        this.$.userDB.path=null;
+        this.$.userDB.data={};
+      },
+      makePass:function(){
+          var text = "";
+          var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@$?%^&*()";
+
+          for( var i=0; i < 10; i++ )
+              text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+          return text;
+      },
+      //END: new account functions (home already exists)
     };
 
   })();

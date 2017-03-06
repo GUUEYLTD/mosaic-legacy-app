@@ -64,7 +64,8 @@
     "iron-fit-behavior": "PolymerElements/iron-fit-behavior#^1.2.5",
     "paper-dialog-scrollable": "PolymerElements/paper-dialog-scrollable#^1.1.5",
     "iron-component-page": "PolymerElements/iron-component-page#^1.1.7",
-    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^1.2.5"
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^1.2.5",
+    "iron-form": "PolymerElements/iron-form#^1.1.4"
   },
   "devDependencies": {
     "web-component-tester": "^4.0.0",
