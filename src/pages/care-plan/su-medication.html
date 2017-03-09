@@ -151,6 +151,10 @@
         };
       }
 
+      .timeChunkBar:hover {
+        cursor:pointer;
+      }
+
       .timeChunkLabel {
         flex-grow:2;
         text-transform:uppercase;
@@ -160,10 +164,6 @@
         font-weight:500;
         font-size:var(--time-chunk-label-font-size, 24px);
         margin-right:5px;
-      }
-
-      .timeChunkLabel:hover {
-        cursor:pointer;
       }
 
       .timeChunkTime {
@@ -178,6 +178,7 @@
 
       .timeChunkButton {
         margin:calc(var(--time-chunk-bar-background-position) - 5);
+        z-index:2;
       }
 
       #timeChunkModal {
@@ -411,8 +412,8 @@
           on-tap="startNewMed">
         </paper-fab>
 
-        <paper-item class="timeChunkBar timeChunkMorning">
-          <P class="timeChunkLabel" on-tap="toggleMorning">
+        <paper-item class="timeChunkBar timeChunkMorning" on-tap="toggleMorning">
+          <P class="timeChunkLabel">
             morning
           </P>
           <p class="timeChunkTime">
@@ -512,8 +513,8 @@
 
         </iron-collapse>
 
-        <paper-item class="timeChunkBar timeChunkAfternoon">
-          <P class="timeChunkLabel" on-tap="toggleAfternoon">
+        <paper-item class="timeChunkBar timeChunkAfternoon" on-tap="toggleAfternoon">
+          <P class="timeChunkLabel">
             afternoon
           </P>
           <p class="timeChunkTime">
@@ -614,8 +615,8 @@
 
         </iron-collapse>
 
-        <paper-item class="timeChunkBar timeChunkEvening">
-          <P class="timeChunkLabel" on-tap="toggleEvening">
+        <paper-item class="timeChunkBar timeChunkEvening" on-tap="toggleEvening">
+          <P class="timeChunkLabel">
             evening
           </P>
           <p class="timeChunkTime">
@@ -716,8 +717,8 @@
 
         </iron-collapse>
 
-        <paper-item class="timeChunkBar timeChunkNight">
-          <P class="timeChunkLabel" on-tap="toggleNight">
+        <paper-item class="timeChunkBar timeChunkNight" on-tap="toggleNight">
+          <P class="timeChunkLabel">
             night
           </P>
           <p class="timeChunkTime">
@@ -1027,6 +1028,7 @@
       },
 
       openTimeChunkOptions: function(e) {
+        e.stopPropagation();
         var timeChunk = e.target.getAttribute("time-chunk");
         this.timeChunkTarget = timeChunk;
         this.$.timeChunkModal.positionTarget = e.target;
