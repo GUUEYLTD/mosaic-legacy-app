@@ -35,6 +35,12 @@
 
       },
 
+      ready: function() {
+        this.addEventListener('dbLoading', this.enableDBLoading);
+        this.addEventListener('dbLoaded', this.disableDBLoading);
+        this.addEventListener('pageLoaded', this.pageFirstLoad);
+      },
+
       //take in route as string and check against no auth routes
       authRequired:function(route){
         var noAuthRoutes=this.noAuthRoutes;
@@ -128,32 +134,28 @@
         this.updateStyles();
       },
 
-      disablePageLoading: function(e) {
+      pageFirstLoad: function(e) {
         if(e) {
           var page = e.detail.page
           this[e.detail.page] = true;
         };
         this.customStyle["--page-loading-active-color"] = "transparent";
         this.updateStyles();
+        this.selected = this.page;
+        this.ensureLayout(e.detail.page);
+      },
+
+      pageLoaded: function(page) {
+        this.customStyle["--page-loading-active-color"] = "transparent";
+        this.updateStyles();
+        this.selected = this.page;
+        this.ensureLayout(page);
       },
 
       lazyLoadPage: function(page) {
         // load page import on demand.
-        this.importHref (
-          this.resolveUrl ('pages/' + this.category + '/' + page + '.html'),
-          function() {
-            if(!this.currentCat) {
-              this.currentCat = this.category;
-            } else {
-              this.currentCat = this.intendedCat;
-              this.intendedCat = this.category;
-            };
-            this.selected = this.page;
-            this.ensureLayout(page);
-          },
-          function(){
-            this.errorRedirect();
-          }, false);
+        var resolvedUrl = this.resolveUrl('pages/' + this.category + '/' + page + '.html');
+        this.importHref (resolvedUrl, this.pageSuccess.apply(this, [page]), this.errorRedirect, true);
       },
 
       ensureLayout: function(page) {
@@ -167,9 +169,30 @@
         };
       },
 
+      pageSuccess: function(page) {
+        if(!this.currentCat) {
+          this.currentCat = this.category;
+        } else {
+          this.currentCat = this.intendedCat;
+          this.intendedCat = this.category;
+        };
+        //page loads are handled by even listener in pageFirstLoad() this handles subsequent loads...
+        if(this[page]) {
+          this.pageLoaded(page);
+        };
+      },
+
+      resizeElements:function(){
+        var neonOffsetTop=this.$.neonPages.offsetTop;
+        var screenHeight=window.innerHeight;
+        var headerHeight=this.$.appHeader.offsetHeight;
+        this.customStyle["--neon-pages-height"]=screenHeight-headerHeight+"px";
+        this.updateStyles();
+      },
+
       errorRedirect: function() {
-        this.set("catData.category", "default");
-        this.set("pageData.page", "def-error");
+        this.set("category", "default");
+        this.set("page", "def-error");
       },
 
       _middleware: function(page) {
@@ -177,10 +200,11 @@
           this._checkVerified(this.user, this.statusKnown);
           this.checkAdmin();
         };
+        this.enablePageLoading();
         this.setRightMenuSelect();
-        this.toggleLoadingDisplay(this.page);
+        //this.toggleLoadingDisplay(this.page);
         this.lazyLoadPage(this.page);
-        this.resizeElements();
+        //this.resizeElements();
       },
     };
 
