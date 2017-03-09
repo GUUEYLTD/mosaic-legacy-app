@@ -33,86 +33,86 @@
       observers:[
         "catChanged(currentCat, intendedCat, currentPage)"
       ],
-      catChanged:function(curCat, intCat, currentPage){
-        //special case
-        if(curCat==="default" && intCat==="care-plan" && this.currentPage==="def-home"){
-          this.animationConfig={};
-          this.animationConfig.entry=[
-            {
-              name:"hero-animation",
-              id: "hero",
-              toPage: this,
-              timing:{duration:500}
-            }
-          ];
-          this.sharedElements={
-            "hero": this.$.mainCard
-          };
-        } else if(curCat==="default" && intCat==="care-plan"){
 
-          this.animationConfig={};
-          this.animationConfig.entry=[
-            {
-              name:"slide-from-right-animation",
-              node:this,
-              timing:{duration:500}
-            },
-          ];
-        };
-        if(curCat==="care-plan" && intCat==="care-plan"){
-          this.animationConfig={};
-          this.animationConfig.exit=[
+      catChanged:function(curCat, intCat, currentPage){
+
+        switch(true) {
+          case (curCat==="default" && intCat==="care-plan" && this.currentPage==="def-home"):
+            this.animationConfig={};
+            this.animationConfig.entry=[
               {
-                name: 'slide-down-exit-animation',
+                name:"hero-animation",
+                id: "hero",
+                toPage: this,
+                timing:{duration:500}
+              }
+            ];
+            this.sharedElements={
+              "hero": this.$.mainCard
+            };
+            break;
+
+          case (curCat==="default" && intCat==="care-plan"):
+            this.animationConfig={};
+            this.animationConfig.entry=[
+              {
+                name:"slide-from-right-animation",
+                node:this,
+                timing:{duration:500}
+              },
+            ];
+            break;
+
+          case (curCat==="care-plan" && intCat==="care-plan"):
+            this.animationConfig={};
+            this.animationConfig.exit=[
+                {
+                  name: 'slide-down-exit-animation',
+                  node: this,
+                  timing: {duration:500}
+                },
+              ];
+            this.animationConfig.entry=[
+              {
+                name: 'slide-down-entry-animation',
                 node: this,
                 timing: {duration:500}
               },
             ];
-          this.animationConfig.entry=[
-            {
-              name: 'slide-down-entry-animation',
-              node: this,
-              timing: {duration:500}
-            },
-          ];
+            break;
+
+          case (curCat==="care-plan" && intCat==="default"):
+            this.animationConfig={};
+            this.animationConfig.exit=[
+              {
+                name:"slide-right-animation",
+                node:this,
+                timing:{duration:500}
+              },
+            ];
+            break;
+
+          case (curCat==="care-plan" && intCat==="admin"):
+            this.animationConfig={};
+            this.animationConfig.exit=[
+              {
+                name:"slide-right-animation",
+                node:this,
+                timing:{duration:500}
+              },
+            ];
+            break;
+          case (curCat==="admin" && intCat==="care-plan"):
+          this.animationConfig={};
+            this.animationConfig.entry=[
+              {
+                name:"slide-from-right-animation",
+                node:this,
+                timing:{duration:500}
+              },
+            ];
+            break;
         };
-        if(curCat==="care-plan" && intCat==="default"){
-
-          this.animationConfig={};
-          this.animationConfig.exit=[
-            {
-              name:"slide-right-animation",
-              node:this,
-              timing:{duration:500}
-            },
-          ];
-        }
-        if(curCat==="care-plan" && intCat==="admin"){
-
-          this.animationConfig={};
-          this.animationConfig.exit=[
-            {
-              name:"slide-right-animation",
-              node:this,
-              timing:{duration:500}
-            },
-          ];
-        };
-        if(curCat==="admin" && intCat==="care-plan"){
-
-          this.animationConfig={};
-          this.animationConfig.entry=[
-            {
-              name:"slide-from-right-animation",
-              node:this,
-              timing:{duration:500}
-            },
-          ];
-        }
-
-      },
-      attached:function(){
-
       }
     }
     /*
