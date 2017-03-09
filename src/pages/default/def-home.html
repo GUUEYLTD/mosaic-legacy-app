@@ -317,6 +317,7 @@
 
       ready: function() {
         this.fire("dbLoaded", {page: "def-home"});
+        this.fire("pageLoaded",{page:this.page});
       },
 
       attached: function() {
