@@ -41,30 +41,24 @@
       },
 
       notifyRemainingPatients: function(modulePayments, count) {
-        console.log(modulePayments.core1, count);
         if(modulePayments.core1 === 'free') {
           switch(true) {
             case (count < 7):
-              console.log('less than 7');
               break;
             case (count === 7):
-              console.log('7 remaining');
               this.notifyPatientsRemaining(count);
               break;
             case (count === 8):
-              console.log('8 remaining');
               this.notifyPatientsRemaining(count);
               break;
             case (count === 9):
-              console.log('9 remaining');
               this.notifyPatientsRemaining(count);
               break;
             case (count > 9):
-              console.log('more than 9');
               this.noMoreFreePatients();
               break;
             default:
-              console.log("something went wrong");
+              console.log("something went wrong with trial restriction behavior.");
               break;
           };
         };
