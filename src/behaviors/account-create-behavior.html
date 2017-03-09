@@ -10,6 +10,14 @@
     Polymer.accountCreateBehavior={
       is:"account-create-behavior",
 
+      ready: function() {
+        this.addEventListener('createNewUser', this.createNewUser);
+        this.addEventListener('saveNewUser', this.saveNewUser);
+        this.addEventListener('createNewAccount', this.createNewAccount);
+        this.addEventListener('addUserToHomeIndex', this.addUserToHomeIndex);
+        this.addEventListener('addUserToIndex', this.addUserToIndex);
+      },
+
       //START: new home account functions
       saveHome:function(){
         this.$.homeDB.path=null;
