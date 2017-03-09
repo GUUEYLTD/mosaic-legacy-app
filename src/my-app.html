@@ -54,6 +54,7 @@
 <link rel="import" href="behaviors/push-notification-behavior.html" />
 <link rel="import" href="behaviors/payment-check-behavior.html" />
 <link rel="import" href="behaviors/sign-in-behavior.html" />
+<link rel="import" href="behaviors/notification-behavior.html" />
 
 <link rel="import" href="styles/app-shell-styles.html" />
 
@@ -509,7 +510,7 @@
               <paper-tab class="mobileTab" on-tap="openNotifications" name="notify">
 
                 <iron-icon class="dropdown-trigger" icon="social:notifications"></iron-icon>
-                <span id="notifyCount" class="notifyCount" hidden="{{computeNotifyHidden(notifyCount)}}">
+                <span id="notifyCount" class="notifyCount" hidden="{{_computeNotifyHidden(notifyCount)}}">
                   <span class="notifyContent">
                   [[notifyCount]]
                   </span>
@@ -1047,8 +1048,6 @@
         '_catRouteChanged(catData.category)',
         '_pageRouteChanged(pageData.page)',
         '_paramRouteChanged(paramData.param)',
-        '_computeNotificationCount(notifiesData)',
-        '_computeNotifyDialogHidden(notifiesData.*)',
         '_userChanged(user)',
         '_setUserSettingsPath(user.uid, home)',
       ],
@@ -1067,64 +1066,16 @@
       },
 
       ready:function(){
-        this.addEventListener('createNewUser', this.createNewUser);
-        this.addEventListener('saveNewUser', this.saveNewUser);
-        this.addEventListener('createNewAccount', this.createNewAccount);
-        this.addEventListener('signInRedirect', this.signInRedirect);
-        this.addEventListener('addUserToHomeIndex', this.addUserToHomeIndex);
-        this.addEventListener('addUserToIndex', this.addUserToIndex);
         this.addEventListener('openToast', this.openToast);
         this.addEventListener('openDrawer', this.openDrawer);
-        this.addEventListener('dbLoading', this.enableDBLoading);
-        this.addEventListener('dbLoaded', this.disableDBLoading);
-        this.addEventListener('pageLoading', this.enablePageLoading);
-        this.addEventListener('pageLoaded', this.disablePageLoading);
-        this.addEventListener('dismissNotification',this.dismissNotification);
-        this.addEventListener('checkNotification', this.checkNotification);
         this.addEventListener('app-drawer-transitioned', this.resizeDrawerImage);
         this.addEventListener("resize", this.resizeElements);
-        this.fire("pageLoaded",{page:this.page});
         this.checkForAccountFunctions();
         this.$.storage._downloadFile(this.$.storage.path);
-
-        //temp
-        this.addEventListener('openLogin', this.openLogin);
-        this.addEventListener('openVerify', this.openVerify);
-      },
-
-      openLogin: function() {
-        this.$.loginDialog.open();
       },
 
       attached:function(){
         this.resizeElements();
-      },
-
-      getParameterByName: function(name, url) {
-        if (!url) url = window.location.href;
-        name = name.replace(/[\[\]]/g, "\\$&");
-        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-            results = regex.exec(url);
-        if (!results) return null;
-        if (!results[2]) return '';
-        return decodeURIComponent(results[2].replace(/\+/g, " "));
-      },
-
-      checkForAccountFunctions: function() {
-        var mode = this.getParameterByName("mode");
-        var actionCode = this.getParameterByName("oobCode");
-        var apiKey = this.getParameterByName("apiKey");
-        if(mode || actionCode || apiKey) {
-          this.openVerify();
-        };
-      },
-
-      resizeElements:function(){
-        var neonOffsetTop=this.$.neonPages.offsetTop;
-        var screenHeight=window.innerHeight;
-        var headerHeight=this.$.appHeader.offsetHeight;
-        this.customStyle["--neon-pages-height"]=screenHeight-headerHeight+"px";
-        this.updateStyles();
       },
 
       _onlineChanged: function(online) {
@@ -1139,16 +1090,20 @@
       _homeRouteChanged:function(home){
         this.home=home || 'default';
       },
+
       _catRouteChanged:function(category){
         this.category = category || 'default';
       },
+
       _pageRouteChanged:function(page) {
-          this.currentPage=this.page;
-          this.page=page || 'def-home';
+          this.currentPage = this.selected;
+          this.page = page || 'def-home';
       },
+
       _paramRouteChanged:function(param){
         this.param = param || '';
       },
+
       _homeChanged:function(home){
         if(home != 'default'){
           this.home = this.homeData.home;
@@ -1166,14 +1121,16 @@
           this.category=this.catData.category;
         }
       },
+
       _paramChanged:function(param){
         this.param=this.paramData.param || '';
         this.searchVal="";
       },
-      //workaround for toggle-drawer bug
+
       toggleDrawer:function(){
         this.$.adminDrawer.opened=!this.$.adminDrawer.opened;
       },
+
       toggleRightDrawer:function(){
         this.$.suDrawer.toggle();
       },
@@ -1182,6 +1139,7 @@
       handleError:function(error){
 
       },
+
       _patientSelected:function(category, param){
         if((this.category==="care-plan" || "test") && this.param){
           return true;
@@ -1189,11 +1147,13 @@
           return false;
         };
       },
+
       goHome:function(){
         this.set("catData.category", "default");
         this.set("pageData.page", "def-home");
         //window.location="/"+this.home+"/default/def-home";
       },
+
       goBack:function(){
         window.history.back();
       },
@@ -1205,6 +1165,7 @@
           return false;
         }
       },
+
       openToast:function(e){
         this.$.mainToast.text=e.detail.toastText;
         if(e.detail.terms) {
@@ -1214,56 +1175,21 @@
         }
         this.$.mainToast.open();
       },
+
       _closeToast:function(){
         this.$.mainToast.close();
       },
+
       openDrawer:function(){
         this.$.suDrawer.open();
       },
+
       closeDrawer:function(){
         if(this.dimensions.query1023){
           this.$.suDrawer.close();
         };
       },
-      _computeNotificationCount:function(notifiesData){
-        var count;
-        this.$.notifyDB.query
-          .on("value",function(snapshot){
-            count=snapshot.numChildren();
-            this.notifyCount=count;
-          }.bind(this));
-      },
-      _computeNotifyDialogHidden:function(count){
-        if(count.base.length<1){
-          this.$.notifyDialog.close();
-          this.$.notifyCount.style="opacity:0;";
-        } else {
-          this.$.notifyCount.style="opacity:1;";
-        };
-      },
-      dismissNotification:function(e){
-        var key = e.detail.data.$key;
-        var data = e.detail.data;
-        var index = e.detail.index;
-        delete data.$key;
-        this.$.notifiableDB.path=null;
-        this.$.notifiableDB.data=data;
-        this.$.notifiableDB.save("/homes/"+this.home+"/notifications/notified", key)
-          .then(function(){
-            this.$.notifiableDB.path="/homes/"+this.home+"/notifications/notify/"+key;
-            this.$.notifiableDB.destroy()
-              .then(function(){
-                this.notifyPath("notifiesData");
-              }.bind(this));
-          }.bind(this));
-      },
-      computeNotifyHidden:function(count){
-        if(count<1){
-          return true;
-        } else {
-          return false;
-        }
-      },
+
       searchFilter:function(val){
         if(val.length<3){
           this.$.searchDropdown.hide();
@@ -1279,6 +1205,7 @@
           };
         };
       },
+
       mobileSearchFilter:function(val){
         if(val.length<3){
           this.$.mobileSearchDropdown.hide();
@@ -1294,21 +1221,27 @@
           };
         };
       },
+
       clearSearch:function(){
         this.searchVal="";
       },
+
       hideSearch:function(){
         this.$.searchDropdown.hide();
       },
+
       showNotifications:function(){
         this.$.notificationDropdown.toggle();
       },
+
       showMobileNotifications:function(){
         this.$.mobileNotificationDropdown.toggle();
       },
+
       toggleMobileSearch:function(){
         this.$.mobileSearch.toggle();
       },
+
       openApps:function(e){
         // hypotenuse of 45 degree rotated square that is before the dialog... meaning the width in relative terms
         var isMobile = e.currentTarget.classList.contains("mobileTab");
@@ -1338,6 +1271,7 @@
         this.$.notifyDialog.close();
         this.$.appsDialog.toggle();
       },
+
       openApp:function(e){
         console.log(e);
         console.log(e.currentTarget.getAttribute("data-name"));
@@ -1351,6 +1285,7 @@
           this.$.appPromoDialog.open();
         };
       },
+
       convertCamel:function(camelCase){
         if (camelCase == null || camelCase == "") {
           return camelCase;
@@ -1373,6 +1308,7 @@
         }
         return newText;
       },
+
       openNotifications:function(e){
         // hypotenuse of 45 degree rotated square that is before the dialog... meaning the width in relative terms
         var isMobile = e.currentTarget.classList.contains("mobileTab");
@@ -1406,6 +1342,7 @@
         this.$.logoutDialog.close();
         this.$.notifyDialog.toggle();
       },
+
       checkNotification:function(){
         this.$.notifyDialog.close();
       },
