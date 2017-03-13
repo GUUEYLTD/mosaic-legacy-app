@@ -44,7 +44,7 @@
 
       dismissNotification:function(e){
         var key = e.detail.data.$key;
-        var data = e.detail.data;
+        var data = JSON.parse(JSON.stringify(e.detail.data));
         var index = e.detail.index;
         delete data.$key;
         this.$.notifiableDB.path=null;
@@ -54,7 +54,7 @@
             this.$.notifiableDB.path="/homes/"+this.home+"/notifications/notify/"+key;
             this.$.notifiableDB.destroy()
               .then(function(){
-                this.notifyPath("notifiesData");
+                this.notifyPath("notifiesData." + key);
               }.bind(this));
           }.bind(this));
       },
@@ -65,6 +65,42 @@
         } else {
           return false;
         }
+      },
+
+      //leave for now just in case...
+      createTestNotification: function() {
+        if(!this.testCount) {
+          this.testCount = 1;
+        } else {
+          this.testCount++;
+        };
+
+        this.$.notifiableDB.path = null;
+        this.$.notifiableDB.data = {};
+        var rand = Math.random().toString(36).substring(7);
+        var path = 'homes/' + this.home + '/notifications/notify/' + rand;
+        var testNotification = {
+          conditions: {
+            condition: 1488880146000,
+            type: 'guuey-date'
+          },
+          date: 1488880178983,
+          fName: 'test',
+          lName: 'notify',
+          location: "homes/-KTBXzZw3-qoZz4c7nY7/patients/-KTBYUmNSGo4W8c29cME/personalGoals/-KbiZiNNmEUJTKp4v52T/finishDate",
+          message: 'test notification message' + this.testCount,
+          patientID: "-KTBYUmNSGo4W8c29cME",
+          url: "/-KTBXzZw3-qoZz4c7nY7/care-plan/su-goals/-KTBYUmNSGo4W8c29cME"
+        };
+
+        this.$.notifiableDB.path = path;
+        this.$.notifiableDB.setStoredValue(path, testNotification)
+          .then(function() {
+            console.log('saved data');
+          })
+          .catch(function(err) {
+            console.log(err);
+          });
       },
 
     };

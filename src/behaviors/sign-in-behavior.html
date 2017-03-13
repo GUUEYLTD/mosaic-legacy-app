@@ -12,16 +12,55 @@
 
       properties: {
 
+        signedIn: {
+          type: Boolean,
+          observer: "_signedInChanged"
+        },
+
+        userUid: {
+          type: String,
+          computed: "_getSessionId(user, statusKnown)"
+        },
+
       },
 
       observers: [
-        "_checkVerified(user, statusKnown)"
+        //"_checkVerified(user, statusKnown)",
+        '_processUserAccountTasks(mode, userInfoData, currentDevice, user)',
+        '_userChanged(user)',
+        '_setUserSettingsPath(user.uid, home)',
       ],
 
       ready: function() {
         this.addEventListener('emailSignIn',this.emailSignIn);
         this.addEventListener('logout', this.logout);
         this.addEventListener('cancelLogout', this.closeLogout);
+        this.addEventListener('resetDialogOverlay', this.resetDialogOverlay);
+        this.checkForAccountFunctions();
+      },
+
+      _processUserAccountTasks: function(mode, userInfoData, currentDevice, user) {
+            console.log(mode, userInfoData, currentDevice, user.emailVerified);
+            if(mode) {
+              console.log('mode has been set.. running account functions...');
+              this.setDialogOverlay();
+              this.$.verifyDialog.open();
+            } else if(user && (!this.$.userInfoDB.valueIsEmpty(userInfoData) && !userInfoData.agreeTerms)) {
+              console.log('open termsDialog');
+              this.setDialogOverlay();
+              this.$.termsDialog.open();
+            } else if(user && !currentDevice) {
+              console.log('setting device for notifications...');
+              this.setDialogOverlay();
+              this.$.requestNotificationModal.open();
+            } else if(user && !user.emailVerified) {
+              console.log('verifying email');
+              this.setDialogOverlay();
+              this.$.verifyDialog.open();
+            } else {
+              console.log('no tasks needed');
+            };
+
       },
 
       _signedInChanged: function(signedIn) {
@@ -77,8 +116,8 @@
             this.$.userIndexDB.getStoredValue("/userIndex/"+user.uid+"/home")
               .then(function(value){
                 this.set("homeData.home", value);
-                this.$.loginDialog.close();
                 this.setDeviceLoggedIn(true);
+                this.$.loginDialog.close();
               }.bind(this))
           }.bind(this))
           .catch(function(error){
@@ -144,20 +183,20 @@
         this.$.logoutDialog.close();
       },
 
-      openVerify: function() {
+      setDialogOverlay: function() {
+        console.log('SETTING green overlay');
         Polymer.updateStyles({
           '--iron-overlay-backdrop-background-color': '#2fc19e',
           '--iron-overlay-backdrop-opacity': '1'
         });
-        this.$.verifyDialog.open();
       },
 
-      _checkVerified: function(user, statusKnown) {
-        if(statusKnown) {
-          if(this.user && !this.user.emailVerified) {
-            this.openVerify();
-          };
-        };
+      resetDialogOverlay: function() {
+        console.log('UNSETTING green overlay')
+        Polymer.updateStyles({
+          '--iron-overlay-backdrop-background-color': '#000',
+          '--iron-overlay-backdrop-opacity': '.6'
+        });
       },
 
       getParameterByName: function(name, url) {
@@ -171,12 +210,7 @@
       },
 
       checkForAccountFunctions: function() {
-        var mode = this.getParameterByName("mode");
-        var actionCode = this.getParameterByName("oobCode");
-        var apiKey = this.getParameterByName("apiKey");
-        if(mode || actionCode || apiKey) {
-          this.openVerify();
-        };
+        this.mode = this.getParameterByName("mode");
       }
 
     };

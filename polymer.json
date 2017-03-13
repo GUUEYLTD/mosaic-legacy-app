@@ -41,6 +41,20 @@
     "bower_components/webcomponentsjs/webcomponents-lite.min.js",
     "bower_components/app-storage//app-indexeddb-mirror/app-indexeddb-mirror-worker.js",
     "bower_components/app-storage/app-indexeddb-mirror/common-worker-scope.js",
+    "bower_components/gold-cc-cvc-input/hero.svg",
+    "bower_components/gold-cc-expiration-input/hero.svg",
+    "bower_components/gold-cc-input/hero.svg",
+    "bower_components/gold-email-input/hero.svg",
+    "bower_components/gold-phone-input/hero.svg",
+    "bower_components/gold-zip-input/hero.svg",
+    "bower_components/gold-cc-cvc-input/cvc_hint.png",
+    "bower_components/gold-cc-cvc-input/cvc_hint_amex.png",
+    "bower_components/gold-cc-input/images/amex.png",
+    "bower_components/gold-cc-input/images/diners_club.png",
+    "bower_components/gold-cc-input/images/discover.png",
+    "bower_components/gold-cc-input/images/jcb.png",
+    "bower_components/gold-cc-input/images/mastercard.png",
+    "bower_components/gold-cc-input/images/visa.png",
     "firebase-messaging-sw.js"
   ]
 }

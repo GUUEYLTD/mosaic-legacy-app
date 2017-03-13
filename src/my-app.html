@@ -45,8 +45,10 @@
 <link rel="import" href="elements/media-queries/media-queries.html" />
 <link rel="import" href="elements/guuey-notification/guuey-notification.html" />
 <link rel="import" href="elements/guuey-account-display/guuey-account-display.html" />
+<!--account function dialogs-->
 <link rel="import" href="elements/guuey-login/guuey-login.html" />
 <link rel="import" href="elements/guuey-verify/guuey-verify.html" />
+<link rel="import" href="elements/guuey-agree-terms/guuey-agree-terms.html" />
 
 <link rel="import" href="behaviors/shell-resize-behavior.html" />
 <link rel="import" href="behaviors/page-change-middleware.html" />
@@ -65,6 +67,7 @@
 <dom-module id="my-app">
 
   <template>
+
     <media-queries
       dimensions="{{dimensions}}">
     </media-queries>
@@ -92,14 +95,6 @@
       messaging-sender-id="462773718811">
     </firebase-app>
 
-    <!--SECONDARY APP FOR GETTING AROUND USER AUTO SIGN IN WHEN CREATING A NEW USER-->
-    <firebase-app
-      name="user2"
-      auth-domain="careplan-c2677.firebaseapp.com"
-      api-key="AIzaSyBdtmHIV_7epC0OBiXkTNoqrGRspA58Epc"
-      database-url="https://careplan-c2677.firebaseio.com">
-    </firebase-app>
-
     <firebase-auth
       id="auth"
       online="{{online}}"
@@ -108,13 +103,6 @@
       signed-in="{{signedIn}}"
       status-known="{{statusKnown}}"
       on-error="handleError">
-    </firebase-auth>
-
-    <!--NEED TO PUT THIS SOMEWHERE ELSE LATER ONLY USED TO CREATE NEW USERS-->
-    <firebase-auth
-      id="createUser"
-      app-name="user2"
-      user="{{newUser}}">
     </firebase-auth>
 
     <firebase-storage
@@ -126,20 +114,10 @@
       url="{{homeImage}}">
     </firebase-storage>
 
-    <!--MOVE THIS WHEN REFACTORING CODE DOES NOT BELONG HERE!-->
-    <firebase-document
-      id="userDB"
-      app-name="main">
-    </firebase-document>
-
-    <firebase-document
-      id="userTypeDB"
-      app-name="main">
-    </firebase-document>
-
     <app-indexeddb-mirror
       id="userSettingsMirror"
       key="homeDetailsDB"
+      session="[[userUid]]"
       data="{{careHomeProfileLive}}"
       persisted-data="{{careHomeProfile}}"
       worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
@@ -153,24 +131,19 @@
       app-name="main">
     </firebase-document>
 
-    <!--firebase doc to create new home... NEEDS TO GO ELSEWHERE LATER!-->
-    <firebase-document
-      id="homeDB"
-      app-name="main">
-    </firebase-document>
+    <app-indexeddb-mirror
+      id="userInfoMirror"
+      session="[[userUid]]"
+      key="userInfoDB"
+      data="{{userInfoDataLive}}"
+      persisted-data="{{userInfoData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
 
     <firebase-document
-      id="userIndexDB"
-      app-name="main">
-    </firebase-document>
-
-    <firebase-document
-      id="homeIndexDB"
-      app-name="main">
-    </firebase-document>
-
-    <firebase-document
-      id="notifiableDB"
+      id="userInfoDB"
+      path="/homes/[[home]]/users/[[user.uid]]"
+      data="{{userInfoDataLive}}"
       app-name="main">
     </firebase-document>
 
@@ -252,6 +225,38 @@
       data="{{paymentsLive}}">
     </firebase-query>
 
+    <!--firebase doc to create new home... NEEDS TO GO ELSEWHERE LATER!-->
+    <firebase-document
+      id="homeDB"
+      app-name="main">
+    </firebase-document>
+
+    <firebase-document
+      id="userIndexDB"
+      app-name="main">
+    </firebase-document>
+
+    <firebase-document
+      id="homeIndexDB"
+      app-name="main">
+    </firebase-document>
+
+    <firebase-document
+      id="notifiableDB"
+      app-name="main">
+    </firebase-document>
+
+    <!--MOVE THIS WHEN REFACTORING CODE DOES NOT BELONG HERE!-->
+    <firebase-document
+      id="userDB"
+      app-name="main">
+    </firebase-document>
+
+    <firebase-document
+      id="userTypeDB"
+      app-name="main">
+    </firebase-document>
+
     <firebase-document
       id="messagingTokenDB"
       path="/homes/[[home]]/users/[[user.uid]]/messagingTokens/[[currentDevice]]"
@@ -316,16 +321,28 @@
     <guuey-verify
       id="verifyDialog"
       modal
+      home="[[home]]"
+      user="[[user]]"
       entry-animation="fade-in-animation"
       exit-animation="fade-out-animation">
     </guuey-verify>
+
+    <guuey-agree-terms
+      id="termsDialog"
+      modal
+      home="[[home]]"
+      user="[[user]]"
+      user-info-data="{{userInfoData}}"
+      entry-animation="fade-in-animation"
+      exit-animation="fade-out-animation">
+    </guuey-agree-terms>
 
     <paper-dialog id="requestNotificationModal" modal>
       <h2>Permission Needed</h2>
       <p>
         We need your permission to send push notifications to your current device. Click Proceed to continue.
       </p>
-      <paper-input label="current device name" value="{{newDevice}}"></paper-input>
+      <paper-input label="current device name" required value="{{newDevice}}"></paper-input>
       <paper-button on-tap="requestNotificationPermission">proceed</paper-button>
 
     </paper-dialog>
@@ -579,7 +596,7 @@
                 <paper-tab  class="desktopTab" id="notifyButton" name="notify" on-tap="openNotifications">
 
                   <iron-icon icon="social:notifications"></iron-icon>
-                  <span id="notifyCount" class="notifyCount" hidden="{{computeNotifyHidden(notifyCount)}}">
+                  <span id="notifyCount" class="notifyCount" hidden="{{_computeNotifyHidden(notifyCount)}}">
                     <span class="notifyContent">
                     [[notifyCount]]
                     </span>
@@ -929,21 +946,21 @@
 
       is:'my-app',
 
-      properties:{
+      properties: {
 
-        signedIn: {
+        agreeData: {
           type: Boolean,
-          observer: "_signedInChanged"
+          value: false
+        },
+
+        mode: {
+          type: String,
+          value: null
         },
 
         online: {
           type: Boolean,
           observer: "_onlineChanged"
-        },
-
-        userUid: {
-          type: String,
-          computed: "_getSessionId(user, statusKnown)"
         },
 
         rightMenuSelect: {
@@ -1048,8 +1065,6 @@
         '_catRouteChanged(catData.category)',
         '_pageRouteChanged(pageData.page)',
         '_paramRouteChanged(paramData.param)',
-        '_userChanged(user)',
-        '_setUserSettingsPath(user.uid, home)',
       ],
 
       behaviors: [
@@ -1058,19 +1073,15 @@
         Polymer.accountCreateBehavior,
         Polymer.pushNotificationBehavior,
         Polymer.paymentCheckBehavior,
-        Polymer.signInBehavior
+        Polymer.signInBehavior,
+        Polymer.notificationBehavior
       ],
-
-      created: function() {
-
-      },
 
       ready:function(){
         this.addEventListener('openToast', this.openToast);
         this.addEventListener('openDrawer', this.openDrawer);
         this.addEventListener('app-drawer-transitioned', this.resizeDrawerImage);
         this.addEventListener("resize", this.resizeElements);
-        this.checkForAccountFunctions();
         this.$.storage._downloadFile(this.$.storage.path);
       },
 
@@ -1273,8 +1284,6 @@
       },
 
       openApp:function(e){
-        console.log(e);
-        console.log(e.currentTarget.getAttribute("data-name"));
         var appModule = e.currentTarget.getAttribute("data-name");
         if(this.appModules[appModule].active){
           //implement module changes later on when we have another module to show...
@@ -1352,13 +1361,14 @@
       },
 
       _initializeDeviceNames: function() {
-        console.log("initializing");
+        console.log("initializing device names");
         this.set("deviceNames", {});
       },
 
       _computeUserPhoto:function(photo){
         return photo || "/images/defaultAvatar.png"
       },
+
       _computeDisplayName:function(name){
         if(name === "undefined undefined"){
           return "click here to set display name.";

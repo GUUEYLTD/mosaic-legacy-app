@@ -1,0 +1,77 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html" />
+<link rel="import" href="../../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html" />
+<link rel="import" href="../../../bower_components/paper-dialog-behavior/paper-dialog-behavior.html" />
+<link rel="import" href="../../../bower_components/paper-dialog-behavior/paper-dialog-shared-styles.html" />
+<link rel="import" href="../../../bower_components/paper-checkbox/paper-checkbox.html" />
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html" />
+<link rel="import" href="../guuey-agreement/guuey-agreement.html" />
+<!--
+`guuey-agree-terms`
+element dialog that requires agreement to terms of the app
+
+@demo demo/index.html
+-->
+
+<dom-module id="guuey-agree-terms">
+  <template>
+
+    <style include="paper-dialog-shared-styles">
+
+    </style>
+
+    <paper-dialog-scrollable id="scrollable">
+
+      <guuey-agreement></guuey-agreement>
+
+      <paper-checkbox checked="{{agreeStatus}}">I Agree</paper-checkbox>
+      <paper-button on-tap="agreeToTerms">Proceed</paper-button>
+    </paper-dialog-scrollable>
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'guuey-agree-terms',
+
+      properties: {
+
+        home: {
+          type: String
+        },
+
+        user: {
+          type: Object
+        },
+
+        agreeStatus: {
+          type: Boolean,
+          value: false
+        },
+
+        userInfoData: {
+          type: Boolean,
+          notify: true
+        }
+      },
+
+      behaviors: [
+          Polymer.PaperDialogBehavior
+      ],
+
+      ready: function() {
+        this.$.scrollable.dialogElement = this;
+      },
+
+      agreeToTerms: function() {
+        if(!this.agreeStatus) {
+          this.fire("openToast", {toastText: "You must agree to the terms before proceeding."});
+        } else {
+          this.set("userInfoData.agreeTerms", true);
+          this.fire('resetDialogOverlay');
+          this.close();
+        };
+      }
+
+    });
+  </script>
+</dom-module>

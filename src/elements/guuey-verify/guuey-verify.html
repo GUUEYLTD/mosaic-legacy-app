@@ -11,20 +11,14 @@
 <link rel="import" href="../../../bower_components/paper-toast/paper-toast.html" />
 
 <link rel="import" href="../media-queries/media-queries.html" />
-<link rel="import" href="../guuey-agreement/guuey-agreement.html" />
 
 <link rel="import" href="../../behaviors/animations/default-pages-animation.html" />
-<link rel="import" href="../../behaviors/default-resize-behavior.html" />
 
 <link rel="import" href="../../styles/common-styles.html" />
 
 <dom-module id="guuey-verify">
 
     <template>
-
-        <media-queries
-          dimensions="{{dimensions}}">
-        </media-queries>
 
         <firebase-auth
           id="auth"
@@ -45,16 +39,6 @@
               min-height:600px;
             }
         </style>
-
-        <paper-dialog opened="{{agreeOpen}}" id="agreeDialog" vertical-offset="100">
-          <paper-dialog-scrollable>
-
-              <guuey-agreement></guuey-agreement>
-
-            <paper-checkbox checked="{{agreeStatus}}">I Agree</paper-checkbox>
-            <paper-button on-tap="agreeTerms">Proceed</paper-button>
-          </paper-dialog-scrollable>
-        </paper-dialog>
 
         <span hidden$="[[!verifyReminderDisplay]]">
 
@@ -195,16 +179,6 @@
                 value: false
               },
 
-              agreeOpen: {
-                type: Boolean,
-                value: false
-              },
-
-              agreeStatus: {
-                type: Boolean,
-                value: false
-              },
-
               newPassword: {
                 type: String
               },
@@ -277,7 +251,6 @@
             },
 
             observers: [
-              "keepDialogOpen(agreeOpen, agreeStatus)",
               "userReady(user)"
             ],
 
@@ -390,17 +363,18 @@
                 }.bind(this));
             },
 
-            verifyEmail: function() {
+            handleVerifyEmail: function() {
               this.showVerifyEmailForm = true;
               this.$.auth.auth.applyActionCode(this.actionCode)
                 .then(function(resp) {
                   //email address verified
                   this.verifyResponse = resp;
                   this.verifySuccess = true;
-                  this.$.verifyToast.text = "Email verified and agremeents have been agreed to. You will be taken to the home screen shortly.";
+                  this.$.verifyToast.text = "Email verified. You will be taken to the home screen shortly.";
                   this.$.verifyToast.open();
+                  var that = this;
                   setTimeout(function() {
-                    this.goHome();
+                    that.goHome();
                   },5000);
                 }.bind(this))
                 .catch(function(error) {
@@ -409,33 +383,6 @@
                   this.$.verifyToast.text = "Oops.. something went wrong. contact technical support please.";
                   this.$.verifyToast.open();
                 }.bind(this));
-            },
-
-            handleVerifyEmail: function(actionCode) {
-              this.$.agreeDialog.open();
-            },
-
-            agreeTerms: function() {
-              if(!this.agreeStatus) {
-                this.$.verifyToast.text = "You must agree to the terms before proceeding.";
-                this.$.verifyToast.open();
-              } else {
-                this.$.userIndexDB.setStoredValue("/homes/" + this.home + "/users/" + this.user.uid + "/agreeTerms", true)
-                  .then(function() {
-                    this.verifyEmail();
-                  }.bind(this))
-                  .catch(function(err) {
-                    console.log(err);
-                    this.$.verifyToast.text = "Oops.. something went wrong. contact technical support please.";
-                    this.$.verifyToast.open();
-                  }.bind(this));
-              };
-            },
-
-            keepDialogOpen: function(agreeOpen, agreeStatus) {
-              if(!agreeStatus && !agreeOpen && this.mode === "verifyEmail") {
-                this.$.agreeDialog.open();
-              };
             },
 
             goHome:function(){

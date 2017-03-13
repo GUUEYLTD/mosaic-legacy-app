@@ -135,14 +135,12 @@
       },
 
       pageFirstLoad: function(e) {
-        if(e) {
-          var page = e.detail.page
-          this[e.detail.page] = true;
-        };
+        var page = e.detail.page;
+        this[page] = true;
         this.customStyle["--page-loading-active-color"] = "transparent";
         this.updateStyles();
         this.selected = this.page;
-        this.ensureLayout(e.detail.page);
+        this.ensureLayout(page);
       },
 
       pageLoaded: function(page) {
@@ -197,7 +195,6 @@
 
       _middleware: function(page) {
         if(this.user) {
-          this._checkVerified(this.user, this.statusKnown);
           this.checkAdmin();
         };
         this.enablePageLoading();

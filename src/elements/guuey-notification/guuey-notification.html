@@ -134,9 +134,7 @@ it allows you to either dismiss the notification or go to the location that the 
 
         //the notification data that is passed into the element observer distributes info to properties
         info: {
-          type: Object,
-          notify: true,
-          observer: "_infoChanged"
+          type: Object
         },
 
         //the index at which this element exists in the list of notifications. used for notification dismissal
@@ -183,6 +181,10 @@ it allows you to either dismiss the notification or go to the location that the 
 
       },
 
+      observers: [
+        '_infoChanged(info.*)'
+      ],
+
       //return first name and last name combined with a space
       _computeName: function(fName, lName) {
         return fName + " " + lName;
@@ -195,7 +197,8 @@ it allows you to either dismiss the notification or go to the location that the 
 
       info property names must match
       */
-      _infoChanged: function(info) {
+      _infoChanged: function(infoDeep) {
+        var info = infoDeep.base;
         this.fName = info.fName ? info.fName : "First";
         this.lName = info.lName ? info.lName : "Last";
         this.time = info.date ? this._computeDate(info.date) : "Time Not Set";

@@ -11,10 +11,6 @@
 
       is:"push-notification-behavior",
 
-      observers:[
-        '_setmessagingTokenPath(user.uid, home, currentDevice)'
-      ],
-
       properties: {
         messagingToken: {
           type: String
@@ -59,16 +55,6 @@
         };
       },
 
-      _setmessagingTokenPath: function(uid, home, currentDevice) {
-        if(uid && home !="default" && !currentDevice) {
-          this.openRequestNotificationModal();
-        };
-      },
-
-      openRequestNotificationModal: function() {
-        this.$.requestNotificationModal.open();
-      },
-
       requestNotificationPermission: function() {
         var that = this;
         this.$.messaging.requestPermission()
@@ -78,11 +64,13 @@
             var path = "/homes/" + that.home + "/users/" + that.user.uid + "/settings/notificationSources/" + that.currentDevice;
             that.$.userSettingsDB.setStoredValue(path, {deviceLoggedIn: true, active: true});
             that.$.requestNotificationModal.close();
+            that.fire('resetDialogOverlay');
           })
           .catch(function(err) {
             console.log(err);
             that.fire("openToast", {toastText: "You must accept in order to get push notifications."});
             that.$.requestNotificationModal.close();
+            that.fire('resetDialogOverlay');
           });
       },
 

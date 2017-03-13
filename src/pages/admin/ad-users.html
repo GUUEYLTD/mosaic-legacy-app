@@ -1,6 +1,8 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html" />
 <link rel="import" href="../../../bower_components/polymerfire/firebase-document.html" />
 <link rel="import" href="../../../bower_components/polymerfire/firebase-query.html" />
+<link rel="import" href="../../../bower_components/polymerfire/firebase-app.html" />
+<link rel="import" href="../../../bower_components/polymerfire/firebase-auth.html" />
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html" />
 <link rel="import" href="../../../bower_components/paper-fab/paper-fab.html" />
 <link rel="import" href="../../../bower_components/paper-dialog/paper-dialog.html" />
@@ -28,6 +30,19 @@
     <media-queries
       dimensions="{{dimensions}}">
     </media-queries>
+
+    <firebase-app
+      name="user2"
+      auth-domain="careplan-c2677.firebaseapp.com"
+      api-key="AIzaSyBdtmHIV_7epC0OBiXkTNoqrGRspA58Epc"
+      database-url="https://careplan-c2677.firebaseio.com">
+    </firebase-app>
+
+    <firebase-auth
+      id="createUser"
+      app-name="user2"
+      user="{{newUser}}">
+    </firebase-auth>
 
     <app-indexeddb-mirror
       id="usersMirror"
@@ -77,6 +92,11 @@
       data="{{susDataLive}}"
       app-name="main">
     </firebase-query>
+
+    <firebase-document
+      id="userIndexDB"
+      app-name="main">
+    </firebase-document>
 
     <style include="common-styles">
       #userDialog{
@@ -135,7 +155,7 @@
           value="{{newAccount.username}}"
           required
           auto-validate
-          pattern="[a-zA-Z0-9_\.\+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-\.]+"
+          type="email"
           error-message="Please enter a valid email address as the username.">
         </paper-input>
 
@@ -146,10 +166,10 @@
           </paper-listbox>
         </paper-dropdown-menu>
 
-        <paper-dropdown-menu label="Service Users Supervised" class="dialogHalf">
+        <paper-dropdown-menu label="Service Users Supervised">
           <paper-listbox multi attr-for-selected="value" selected-values="{{newAccount.patients}}" class="dropdown-content">
             <template is="dom-repeat" items="{{susData}}">
-              <paper-item value="{{item.$key}}">{{item.personalProfile.lName}}, {{item.personalProfile.fName}}</paper-item>
+              <paper-item value="{{item.$key}}">{{item.lName}}, {{item.fName}}</paper-item>
             </template>
           </paper-listbox>
         </paper-dropdown-menu>
@@ -308,62 +328,152 @@
     Polymer({
 
       is: 'ad-users',
+
       ready:function(){
         this.fire("pageLoaded", {page:this.page});
       },
+
       properties:{
-        newAccount:{
-          type:Object,
-          value:{
-            username:"",
-            password:"",
-            role:"",
+        newAccount: {
+          type: Object,
+          value: {
+            username: "",
+            password: "",
+            role: "",
           }
         },
-        user:{
-          type:Object,
+
+        user: {
+          type: Object,
         },
-        home:{
-          type:Object,
+
+        home: {
+          type: Object,
         }
+
       },
-      observers:[
+
+      observers: [
 
       ],
-      behaviors:[
+
+      behaviors: [
         Polymer.adminPagesAnimation,
         Polymer.adminResizeBehavior
       ],
-      createNewUser:function(){
-        this.fire("createNewUser", this.newAccount);
-        this.newAccount={};
-      },
-      userOptions:function(e){
-        this.$.userDB.path="/homes/"+this.home+"/users/"+e.model.user.$key;
+
+      userOptions: function(e) {
+        this.$.userDB.path = "/homes/" + this.home + "/users/" + e.model.user.$key;
         this.$.userDialog.positionTarget = e.target;
         this.$.userDialog.toggle();
       },
-      addUser:function(){
+
+      addUser:function() {
         this.$.addUserDialog.toggle();
       },
-      editUser:function(){
+
+      editUser: function() {
         this.$.editUserDialog.toggle();
         this.$.userDialog.toggle();
       },
-      _inputChanged:function(e){
-        var reader= new FileReader();
-        var file=e.target.files[0];
+
+      _inputChanged: function(e) {
+        var reader = new FileReader();
+        var file = e.target.files[0];
         reader.readAsDataURL(file);
         reader.addEventListener("load", function () {
           this.$.userDB.setStoredValue("/homes/"+this.home+"/users/"+this.userID+"/image", reader.result);
         }.bind(this), false);
       },
+
       _onAddFilesClick: function(e) {
-        this.userID=e.model.user.$key;
+        this.userID = e.model.user.$key;
         if (document.createEvent) {
           this.$.imageInput.value = '';
           this.$.imageInput.click();
         }
+      },
+
+      createNewUser: function() {
+        var password = this.makePass();
+        var that = this;
+        this.$.createUser.createUserWithEmailAndPassword(that.newAccount.username, password)
+          .then(function(user) {
+            user.updateProfile({
+              displayName: that.newAccount.fName + " " + that.newAccount.lName
+            }).then(function() {
+              that.fire("openToast",{toastText: "New User display name updated."});
+            }, function(error) {
+              that.fire("openToast",{toastText: error});
+            });
+            var userEntry = {
+              userUID: user.uid,
+              username: user.email,
+              displayName: that.newAccount.fName + " " + that.newAccount.lName,
+              role: that.newAccount.role,
+              home: that.home,
+            };
+            //patients and role
+            if(that.newAccount.patients){
+              userEntry.patients = that.newAccount.patients;
+            };
+            that.saveNewUser(userEntry).bind(that);
+          })
+          .catch(function(error) {
+            that.fire("openToast", {toastText: error});
+          });
+      },
+
+      saveNewUser:function(userEntry) {
+        this.$.userDB.path = null;
+        this.$.userDB.data = {
+          email: userEntry.username,
+          role: userEntry.role,
+          home: userEntry.home,
+          displayName:userEntry.displayName
+        };
+        if(userEntry.patients) {
+          this.$.userDB.data.patients = userEntry.patients;
+        };
+        var that = this;
+        this.$.userDB.save('/homes/' + this.home + '/users', userEntry.userUID)
+          .then(function() {
+            var indexData = {
+              home: userEntry.home,
+              userUID: userEntry.userUID
+            };
+            that.addUserToIndex(indexData).bind(that);
+          })
+          .catch(function(error) {
+            that.fire("openToast" ,{toastText: error});
+          });
+      },
+
+      addUserToIndex:function(indexData) {
+        this.$.userIndexDB.path = null;
+        this.$.userIndexDB.data.home = indexData.home;
+        this.$.userIndexDB.save('/userIndex', indexData.userUID);
+        var userEmail = this.$.userDB.data.email;
+        var that = this;
+        this.$.createUser.auth.sendPasswordResetEmail(userEmail)
+          .then(function() {
+          that.fire("openToast", {toastText: "Verification email sent to new user with email address: " + userEmail + "."});
+          }, function(error) {
+          that.fire("openToast", {toastText: error});
+          console.log(error);
+          });
+        this.$.createUser.signOut();
+        this.$.userDB.path = null;
+        this.$.userDB.data = {};
+      },
+      makePass:function(){
+          var text = "";
+          var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@$?%^&*()";
+
+          for( var i=0; i < 10; i++ )
+              text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+          return text;
       }
     });
 
