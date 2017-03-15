@@ -17,27 +17,19 @@
         box-sizing: border-box;
       }
 
-      #timeChunks {
+      .timeChunks {
         display:flex;
         flex-direction:row;
-      }
-
-      paper-item:first-child {
-        margin-left:0px;
-      }
-
-      paper-item:last-child {
-        margin-right:0px;
+        flex-wrap: wrap;
       }
 
       paper-item {
-        display:inline-block;
-        flex-grow:1;
-        text-transform:uppercase;
+        width: 150px;
         text-align: center;
+        text-transform: uppercase;
         margin:5px;
         --paper-item-selected: {
-          border:2px solid #009688;
+          border:1px solid #009688;
           color:#FFFFFF;
           background-color:#009688;
         }
@@ -51,7 +43,7 @@
 
       paper-item:hover {
         cursor:pointer;
-        border:2px solid #009688;
+        border:1px solid #009688;
         color:grey;
       }
 
@@ -73,7 +65,7 @@
     </p>
 
     <iron-selector
-      id="timeChunks"
+      class="timeChunks"
       multi
       attr-for-selected="value"
       selected-values="{{value}}">

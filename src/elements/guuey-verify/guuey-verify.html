@@ -3,16 +3,11 @@
 <link rel="import" href="../../../bower_components/paper-button/paper-button.html" />
 <link rel="import" href="../../../bower_components/polymerfire/firebase-auth.html" />
 <link rel="import" href="../../../bower_components/polymerfire/firebase-document.html" />
+<link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html" />
 <link rel="import" href="../../../bower_components/paper-input/paper-input.html" />
-<link rel="import" href="../../../bower_components/paper-dialog/paper-dialog.html" />
-<link rel="import" href="../../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html" />
 <link rel="import" href="../../../bower_components/paper-dialog-behavior/paper-dialog-behavior.html" />
 <link rel="import" href="../../../bower_components/paper-checkbox/paper-checkbox.html" />
 <link rel="import" href="../../../bower_components/paper-toast/paper-toast.html" />
-
-<link rel="import" href="../media-queries/media-queries.html" />
-
-<link rel="import" href="../../behaviors/animations/default-pages-animation.html" />
 
 <link rel="import" href="../../styles/common-styles.html" />
 
@@ -33,6 +28,15 @@
           id="userIndexDB"
           app-name="main">
         </firebase-document>
+
+        <iron-ajax
+          id="verifyEmailCall"
+          handle-as="json"
+          on-response="_handleVerifyEmailResponse"
+          debounce-duration="300"
+          method="POST"
+          content-type="application/json">
+        </iron-ajax>
 
         <style include="common-styles">
             .pageCard{
@@ -331,6 +335,7 @@
                   console.log("password reset code verified");
                   this.passwordSet = true;
                   this.accountEmail = email;
+                  this.changePasswordVerifyEmail(email);
                 }.bind(this))
                 .catch(function(error) {
                   console.log("password reset code verify error :"+error);
@@ -361,6 +366,18 @@
                   this.resetVerifyError = true;
                   this.resetVerifyMessage = error;
                 }.bind(this));
+            },
+
+            changePasswordVerifyEmail: function(email) {
+              this.$.verifyEmailCall.url="http://localhost:3000/payments/initialsub";
+              this.$.verifyEmailCall.body={
+                email: email
+              };
+              this.$.verifyEmailCall.generateRequest();
+            },
+
+            _handleVerifyEmailResponse: function(res) {
+              console.log(res.body);
             },
 
             handleVerifyEmail: function() {

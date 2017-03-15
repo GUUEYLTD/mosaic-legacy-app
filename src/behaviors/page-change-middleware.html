@@ -13,7 +13,6 @@
       observers:[
         "_middleware(page)",
         "_userTypeReady(home, user)",
-        "_authKnown(statusKnown, signedIn)",
       ],
 
       properties:{
@@ -48,22 +47,6 @@
           return false;
         } else {
           return true;
-        };
-      },
-
-      _authKnown:function(known, signedIn){
-        if(known) {
-          if(!signedIn && !this.authRequired(this.$.location.path)){
-            this.$.loginDialog.open();
-          } else {
-            if(this.user){
-              this.$.userIndexDB.getStoredValue("/userIndex/"+this.user.uid+"/home")
-                .then(function(value){
-                  this.set('homeData.home', value);
-                  this.$.loginDialog.close();
-                }.bind(this))
-            };
-          };
         };
       },
 

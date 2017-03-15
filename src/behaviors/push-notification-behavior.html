@@ -28,12 +28,12 @@
 
         newDevice: {
           type: String,
-          observer: "_newDeviceChanged"
+          value: null
         },
 
         currentDevice: {
           type: String,
-          computed: "_computeCurrentDevice(user.uid, deviceNames, newDevice)",
+          computed: "_computeCurrentDevice(user.uid, deviceNames)",
         }
       },
 
@@ -41,12 +41,8 @@
 
       },
 
-      _computeCurrentDevice: function(uid, deviceNames, newDevice) {
-        if(newDevice) {
-          return newDevice;
-        } else {
-          return deviceNames && deviceNames[this.user.uid] ? deviceNames[this.user.uid] : null;
-        };
+      _computeCurrentDevice: function(uid, deviceNames) {
+        return deviceNames && uid && deviceNames[uid] ? deviceNames[uid] : null;
       },
 
       _newDeviceChanged: function(device) {
@@ -57,6 +53,7 @@
 
       requestNotificationPermission: function() {
         var that = this;
+        this.set("deviceNames." + this.user.uid, this.newDevice);
         this.$.messaging.requestPermission()
           .then(function(token) {
             that.$.messagingTokenDB.setStoredValue(that.$.messagingTokenDB.path, that.$.messaging.token);

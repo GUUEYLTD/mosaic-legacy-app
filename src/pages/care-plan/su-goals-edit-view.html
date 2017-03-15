@@ -24,6 +24,7 @@
 
 <link rel="import" href="../../behaviors/edit-view-resize-behavior.html" />
 <link rel="import" href="../../behaviors/multi-edit-animation-behavior.html" />
+<link rel="import" href="../../behaviors/guuey-dialog-resize-behavior.html" />
 
 <dom-module id="su-goals-edit-view">
 
@@ -353,7 +354,8 @@
 
       behaviors: [
         Polymer.editViewResizeBehavior,
-        Polymer.multiEditAnimationBehavior
+        Polymer.multiEditAnimationBehavior,
+        Polymer.guueyDialogResizeBehavior
       ],
 
       addStep: function() {

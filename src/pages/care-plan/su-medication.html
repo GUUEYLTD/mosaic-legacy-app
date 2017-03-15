@@ -28,6 +28,7 @@
 <link rel="import" href="../../behaviors/animations/care-plan-animation.html" />
 <link rel="import" href="../../behaviors/su-print-behavior.html" />
 <link rel="import" href="../../behaviors/su-resize-behavior.html" />
+<link rel="import" href="../../behaviors/guuey-dialog-resize-behavior.html" />
 
 <link rel="import" href="../../styles/common-styles.html" />
 
@@ -836,6 +837,11 @@
         this.$.timesDB.ref.on("value", function(snapshot){
           this.timeChunkTimeCheck(snapshot);
         }.bind(this));
+
+      },
+
+      attached: function() {
+
       },
 
       properties: {
@@ -932,8 +938,14 @@
       behaviors: [
         Polymer.carePlanAnimation,
         Polymer.suPrintBehavior,
-        Polymer.suResizeBehavior
+        Polymer.suResizeBehavior,
+        Polymer.guueyDialogResizeBehavior
       ],
+
+      _returnThis: function() {
+        console.log(this.offsetHeight);
+        return this;
+      },
 
       startNewMed: function() {
         this.$.medModal.toggle();

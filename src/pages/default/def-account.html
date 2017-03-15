@@ -16,6 +16,7 @@
 
 <link rel="import" href="../../behaviors/animations/default-pages-animation.html" />
 <link rel="import" href="../../behaviors/default-resize-behavior.html" />
+<link rel="import" href="../../behaviors/guuey-dialog-resize-behavior.html" />
 
 <link rel="import" href="../../styles/common-styles.html" />
 
@@ -73,7 +74,8 @@
       id="notificationSourcesDB"
       app-name="main"
       path="/homes/[[home]]/users/[[tempUser.uid]]/settings/notificationSources"
-      data="{{notificationsSourcesDataLive}}">
+      data="{{notificationsSourcesDataLive}}"
+      disabled>
     </firebase-query>
 
     <style include="common-styles">
@@ -111,7 +113,7 @@
         <h2>Notifications Settings</h2>
         <template is="dom-repeat" items="{{notificationsSourcesData}}" as="token">
 
-          [[token.$key]] <paper-toggle-button checked="{{token.$val}}"></paper-toggle-button>
+          [[token.$key]] <paper-toggle-button checked="{{token.active}}"></paper-toggle-button>
 
         </template>
       </div>
@@ -132,13 +134,15 @@
         },
         behaviors:[
           Polymer.defPagesAnimation,
-          Polymer.defaultResizeBehavior
+          Polymer.defaultResizeBehavior,
+          Polymer.guueyDialogResizeBehavior
         ],
         properties: {
 
           //the user object from auth
           tempUser: {
-            type: Object
+            type: Object,
+            observer: '_tempUserChanged'
           },
 
           //boolean from firebase auth indicating if signed in or not
@@ -188,13 +192,23 @@
           //current user uid used as key for local storage session, when changed local db is wiped
           userUid: {
             type: String,
-            observer: "uidchanged"
+          },
+
+          notificationsSourcesData: {
+            type: Array
+          },
+
+          userData: {
+            type: Object
           }
 
         },
 
-        uidchanged: function(uid) {
-          console.log(uid)
+        _tempUserChanged: function(user) {
+          if(user && user.uid) {
+            console.log('user active');
+            this.$.notificationSourcesDB.disabled = false;
+          };
         },
 
         //fire event when user object ready
@@ -227,14 +241,6 @@
             }, function(err){
               that.fire("openToast", {toastText: "There was an error updating your account: " + err});
             });
-        },
-
-        _savePassword: function() {
-
-        },
-
-        _saveEmail: function () {
-
         },
 
         saveSecureUpdate: function() {
