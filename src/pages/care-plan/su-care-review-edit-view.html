@@ -1,7 +1,4 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html" />
-<link rel="import" href="../../../bower_components/paper-card/paper-card.html" />
-
-<!--temp animations till hero animations work-->
 <link rel="import" href="../../../bower_components/neon-animation/animations/scale-up-animation.html" />
 <link rel="import" href="../../../bower_components/neon-animation/animations/scale-down-animation.html" />
 <link rel="import" href="../../../bower_components/paper-input/paper-input.html" />
@@ -16,6 +13,8 @@
 
 <link rel="import" href="../../behaviors/multi-edit-animation-behavior.html" />
 <link rel="import" href="../../behaviors/edit-view-resize-behavior.html" />
+<link rel="import" href="../../behaviors/guuey-form-validation-behavior.html" />
+<link rel="import" href="../../behaviors/guuey-form-validation-behavior.html" />
 
 <link rel="import" href="../../styles/common-styles.html" />
 
@@ -164,9 +163,10 @@
         value="{{reviewData.reviewSummary}}">
       </guuey-text-input>
 
-      <div class="container app-grid">
+      <div class="container app-grid guuey-input-validation">
 
         <paper-input
+          required
           class="agreement"
           label="Service User's Name"
           value="{{reviewData.suName}}"
@@ -174,11 +174,12 @@
         </paper-input>
 
         <guuey-date-input
+          required
           value="{{reviewData.suDate}}"
           label="Service User Agreement Date">
         </guuey-date-input>
 
-        <div class="buttonContainer">
+        <div class="buttonContainer guuey-input-validation">
 
           <guuey-signature value="{{reviewData.suAgree}}" label="tap for service user agreement"></guuey-signature>
 
@@ -195,6 +196,7 @@
         </paper-input>
 
         <guuey-date-input
+          required
           value="{{reviewData.swDate}}"
           label="Service Worker Agreement Date">
         </guuey-date-input>
@@ -209,6 +211,7 @@
         </paper-input>
 
         <guuey-date-input
+          required
           value="{{reviewData.agreementGivenDate}}"
           label="Date Agreement Given">
         </guuey-date-input>
@@ -222,11 +225,12 @@
         </paper-input>
 
         <guuey-date-input
+          required
           value="{{reviewData.nextReviewDate}}"
           label="Next Review Date">
         </guuey-date-input>
 
-        <div class="buttonContainer">
+        <div class="buttonContainer guuey-input-validation">
 
           <guuey-signature value="{{reviewData.swAgree}}" label="tap for service worker agreement"></guuey-signature>
 
@@ -262,7 +266,7 @@
         },
 
         reviewId: {
-          type: String,
+          type: String
         },
 
         //table inputs need to be declared here
@@ -313,13 +317,15 @@
       },
 
       observers: [
-        "requirementsMet(reviewData)"
+        //"requirementsMet(reviewData)"
       ],
 
       behaviors: [
         Polymer.editViewResizeBehavior,
         //Polymer.multiEditAnimationBehavior
+        Polymer.guueyFormValidationBehavior
       ],
+
       suConfirm:function() {
         this.set("reviewData.suAgree", "true");
       },

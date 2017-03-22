@@ -2,13 +2,12 @@
 <link rel="import" href="../../../bower_components/polymerfire/firebase-document.html" />
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html" />
 <link rel="import" href="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror.html" />
-<link rel="import" href="../../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html" />
-<link rel="import" href="../../../bower_components/paper-item/paper-item.html" />
-<link rel="import" href="../../../bower_components/paper-listbox/paper-listbox.html" />
 <link rel="import" href="../../../bower_components/paper-input/paper-textarea.html" />
 <link rel="import" href="../../../bower_components/paper-slider/paper-slider.html" />
 <link rel="import" href="../../../bower_components/iron-icon/iron-icon.html" />
 <link rel="import" href="../../../bower_components/iron-icons/iron-icons.html" />
+<link rel="import" href="../../../bower_components/paper-tabs/paper-tabs.html" />
+<link rel="import" href="../../../bower_components/paper-tabs/paper-tab.html" />
 
 <link rel="import" href="../../elements/su-header/su-header.html" />
 <link rel="import" href="../../elements/media-queries/media-queries.html" />
@@ -103,17 +102,17 @@
       </su-header>
 
       <div class="pageInnerCont padded">
-        <paper-dropdown-menu
-          id="chunkSelector"
-          label="Reports for Months">
-          <paper-listbox class="dropdown-content" attr-for-selected="date-string" selected="{{selectedMonth}}">
-            <template is="dom-repeat" items="[[altMonths]]" as="month">
 
-              <paper-item date-string="[[_computeLabel(month)]]" label="[[month]]">[[month]]</paper-item>
+        <paper-tabs
+          attr-for-selected="date-string"
+          selected="{{selectedMonth}}"
+          scrollable>
+          <template is="dom-repeat" items="[[altMonths]]" as="month">
 
-            </template>
-          </paper-listbox>
-        </paper-dropdown-menu>
+            <paper-tab date-string="[[_computeLabel(month)]]" label="[[month]]">[[month]] Report</paper-tab>
+
+          </template>
+        </paper-tabs>
 
         <div class="app-grid">
           <paper-card elevation="3" class="padded">

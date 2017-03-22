@@ -103,11 +103,37 @@
         //the value to be returned
         value: {
           type: String,
-          value: "",
+          value: null,
           notify: true
+        },
+
+        name: {
+          type: String,
+          value: ''
+        },
+
+        required: {
+          type: Boolean,
+          value: false
+        },
+
+        invalid: {
+          type: Boolean,
+          computed: '_computeInvalid(required, value.*)',
+          notify: true,
+          reflectToAttribute: true
         }
 
-      }
+      },
+
+      _computeInvalid: function(required, valueDeep) {
+        var value = valueDeep.base;
+        if(required && !value || value.length === 0) {
+          return true;
+        } else {
+          return false;
+        };
+      },
 
     });
 

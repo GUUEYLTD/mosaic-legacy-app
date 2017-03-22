@@ -29,6 +29,7 @@
 <link rel="import" href="../../behaviors/su-print-behavior.html" />
 <link rel="import" href="../../behaviors/su-resize-behavior.html" />
 <link rel="import" href="../../behaviors/guuey-dialog-resize-behavior.html" />
+<link rel="import" href="../../behaviors/guuey-form-validation-behavior.html" />
 
 <link rel="import" href="../../styles/common-styles.html" />
 
@@ -241,49 +242,55 @@
 
       <h2>Add Medication</h2>
 
-      <paper-input
-        class="left-partial"
-        label="Medication Name"
-        value="{{newMed.medicine}}"
-        required
-        auto-validate
-        pattern="[a-zA-Z\s]*"
-        error-message="Please enter a valid medicine name.">
-      </paper-input>
+      <span id="formField">
+        <paper-input
+          class="left-partial"
+          label="Medication Name"
+          value="{{newMed.medicine}}"
+          required
+          auto-validate
+          pattern="[a-zA-Z\s]*"
+          error-message="Please enter a valid medicine name.">
+        </paper-input>
 
-      <vaadin-combo-box
-        class="dialogHalf"
-        allow-custom-status
-        label="Method"
-        value="{{newMed.method}}"
-        items="[[medMethods]]"
-        required
-        auto-validate
-        error-message="Please select a method.">
-      </vaadin-combo-box>
-      <!--need units of meds-->
-      <paper-input
-        class="dialogHalf"
-        label="dosage"
-        value="{{newMed.dosage}}"
-        required
-        auto-validate
-        pattern="\d{1,4}[a-zA-Z\s]*"
-        error-message="Please enter in the following format: (number) (units).">
-      </paper-input>
+        <vaadin-combo-box
+          class="dialogHalf"
+          allow-custom-status
+          label="Method"
+          value="{{newMed.method}}"
+          items="[[medMethods]]"
+          required
+          auto-validate
+          error-message="Please select a method.">
+        </vaadin-combo-box>
+        <!--need units of meds-->
+        <paper-input
+          class="dialogHalf"
+          label="Dosage"
+          value="{{newMed.dosage}}"
+          required
+          auto-validate
+          pattern="\d{1,4}[a-zA-Z\s]*"
+          error-message="Please enter in the following format: (number) (units).">
+        </paper-input>
 
-      <paper-textarea
-        label="Comments"
-        value="{{newMed.comment}}">
-      </paper-textarea>
+        <paper-textarea
+          label="Comments"
+          value="{{newMed.comment}}">
+        </paper-textarea>
 
-      <guuey-time-chunk-selector
-        value="{{newMed.timeChunk}}">
-      </guuey-time-chunk-selector>
+        <guuey-time-chunk-selector
+          required
+          name="Time of Day"
+          value="{{newMed.timeChunk}}">
+        </guuey-time-chunk-selector>
 
-      <guuey-weekday-selector
-        value="{{newMed.weekdays}}">
-      </guuey-weekday-selector>
+        <guuey-weekday-selector
+          required
+          name="Weedays Taken"
+          value="{{newMed.weekdays}}">
+        </guuey-weekday-selector>
+      </span>
 
       <div class="modal-button-container">
         <paper-button class="cancel-button" dialog-dismiss>Cancel</paper-button>
@@ -296,48 +303,54 @@
 
       <h2>Edit/View Medication</h2>
 
-      <paper-input
-        label="Medication Name"
-        value="{{newMedEdit.medicine}}"
-        required
-        auto-validate
-        pattern="[a-zA-Z\s]*"
-        error-message="Please enter a valid medicine name.">
-      </paper-input>
+      <span id="formField2">
+        <paper-input
+          label="Medication Name"
+          value="{{newMedEdit.medicine}}"
+          required
+          auto-validate
+          pattern="[a-zA-Z\s]*"
+          error-message="Please enter a valid medicine name.">
+        </paper-input>
 
-      <vaadin-combo-box
-        class="dialogHalf"
-        allow-custom-status
-        label="Method"
-        value="{{newMedEdit.method}}"
-        items="[[medMethods]]"
-        required
-        auto-validate
-        error-message="Please select a method.">
-      </vaadin-combo-box>
-      <!--need units of meds-->
-      <paper-input
-        class="dialogHalf"
-        label="dosage"
-        value="{{newMedEdit.dosage}}"
-        required
-        auto-validate
-        pattern="\d{1,4}[a-zA-Z\s]*"
-        error-message="Please enter in the following format: (number) (units).">
-      </paper-input>
+        <vaadin-combo-box
+          class="dialogHalf"
+          allow-custom-status
+          label="Method"
+          value="{{newMedEdit.method}}"
+          items="[[medMethods]]"
+          required
+          auto-validate
+          error-message="Please select a method.">
+        </vaadin-combo-box>
+        <!--need units of meds-->
+        <paper-input
+          class="dialogHalf"
+          label="dosage"
+          value="{{newMedEdit.dosage}}"
+          required
+          auto-validate
+          pattern="\d{1,4}[a-zA-Z\s]*"
+          error-message="Please enter in the following format: (number) (units).">
+        </paper-input>
 
-      <paper-textarea
-        label="Comments"
-        value="{{newMedEdit.comment}}">
-      </paper-textarea>
+        <paper-textarea
+          label="Comments"
+          value="{{newMedEdit.comment}}">
+        </paper-textarea>
 
-      <guuey-time-chunk-selector
-        value="{{newMedEdit.timeChunk}}">
-      </guuey-time-chunk-selector>
+        <guuey-time-chunk-selector
+          required
+          name="Time of Day"
+          value="{{newMedEdit.timeChunk}}">
+        </guuey-time-chunk-selector>
 
-      <guuey-weekday-selector
-        value="{{newMedEdit.weekdays}}">
-      </guuey-weekday-selector>
+        <guuey-weekday-selector
+          required
+          name="Weedays Taken"
+          value="{{newMedEdit.weekdays}}">
+        </guuey-weekday-selector>
+      </span>
 
       <div class="modal-button-container">
         <paper-icon-button class="delete-button" icon="icons:delete-forever" on-tap="deleteMed"></paper-icon-button>
@@ -939,7 +952,8 @@
         Polymer.carePlanAnimation,
         Polymer.suPrintBehavior,
         Polymer.suResizeBehavior,
-        Polymer.guueyDialogResizeBehavior
+        Polymer.guueyDialogResizeBehavior,
+        Polymer.guueyFormValidationBehavior
       ],
 
       _returnThis: function() {
@@ -952,33 +966,38 @@
       },
 
       saveMed: function() {
-        this.$.medDB.path = null;
-        this.$.medDB.data = {};
-        if(this.newMed.timeChunk && this.newMed.medicine) {
-          var medPath = "homes/" + this.home + "/patients/" + this.patient + "/medicationOutline/medications";
-          this.$.medDB.save(medPath, null)
-            .then(function() {
-              var medId = this.$.medDB.path.split("/").pop();
-              var notifyTarget = this.$.medDB.path.slice(medPath.length + 1);
-              this.$.medDB.data.med = this.newMed;
-              this.$.medDB.data.log = {};
-              this.$.medDB.data.log.user = this.user.uid;
-              this.$.medDB.data.log.time = Date.now();
-              this.$.medDB.save(this.$.medDB.path, null)
-                .then(function() {
-                  var medItemId = this.$.medDB.path.split("/").pop();
-                  this.fire("newMedSaved", {medId: medId, medItemId: medItemId});
-                  this.newMed = {};
-                  //guuey-notify goes here
-                  this.$.dailyMedNotify.notifyRoute = this.$.medDB.path;
-                  this.$.dailyMedNotify.notifyMessage = this.suBasicInfo.fName + " has medication that is ready to be taken within the hour.";
-                  this.$.dailyMedNotify.notifyTarget = notifyTarget;
-                  this.$.dailyMedNotify.initialize();
-                }.bind(this));
-            }.bind(this));
-          this.$.medModal.toggle();
+        var validation = this.validateInputs(this.$.formField);
+        if(validation.invalid) {
+          this.fire("openToast", {toastText: "The following items are missing or invalid: " + validation.invalidInputs});
         } else {
-          this.fire("openToast",{toastText: "Please make sure that you have set a name and a time of day (morning, afternoon etc) for this new medication."});
+          this.$.medDB.path = null;
+          this.$.medDB.data = {};
+          if(this.newMed.timeChunk && this.newMed.medicine) {
+            var medPath = "homes/" + this.home + "/patients/" + this.patient + "/medicationOutline/medications";
+            this.$.medDB.save(medPath, null)
+              .then(function() {
+                var medId = this.$.medDB.path.split("/").pop();
+                var notifyTarget = this.$.medDB.path.slice(medPath.length + 1);
+                this.$.medDB.data.med = this.newMed;
+                this.$.medDB.data.log = {};
+                this.$.medDB.data.log.user = this.user.uid;
+                this.$.medDB.data.log.time = Date.now();
+                this.$.medDB.save(this.$.medDB.path, null)
+                  .then(function() {
+                    var medItemId = this.$.medDB.path.split("/").pop();
+                    this.fire("newMedSaved", {medId: medId, medItemId: medItemId});
+                    this.newMed = {};
+                    //guuey-notify goes here
+                    this.$.dailyMedNotify.notifyRoute = this.$.medDB.path;
+                    this.$.dailyMedNotify.notifyMessage = this.suBasicInfo.fName + " has medication that is ready to be taken within the hour.";
+                    this.$.dailyMedNotify.notifyTarget = notifyTarget;
+                    this.$.dailyMedNotify.initialize();
+                  }.bind(this));
+              }.bind(this));
+            this.$.medModal.toggle();
+          } else {
+            this.fire("openToast",{toastText: "Please make sure that you have set a name and a time of day (morning, afternoon etc) for this new medication."});
+          };
         };
       },
 
@@ -993,29 +1012,36 @@
       },
 
       saveEditMed: function() {
-        this.$.medDB.path = null;
-        var editPath = this.newMedEdit.parent;
-        console.log(editPath);
-        console.log(this.newMedEdit);
-        this.newMedEdit.parent = null;
-        this.newMedEdit.newest = null;
-        this.newMedEdit.differences = null;
-        this.$.medDB.data.med = this.newMedEdit;
-        this.$.medDB.data.log = {};
-        this.$.medDB.data.log.user = this.user.uid;
-        this.$.medDB.data.log.time = Date.now();
-        this.$.medDB.save("homes/" + this.home + "/patients/" + this.patient + "/medicationOutline/medications/" + editPath, null)
-          .then(function(med) {
-            var medItemId = this.$.medDB.path.split("/").pop();
-            this.fire("medEditSaved", {medId: editPath, medItemId: medItemId});
-            //guuey notify goes here
-            this.$.dailyMedNotify.notifyRoute = this.$.medDB.path;
-            this.$.dailyMedNotify.notifyMessage = this.suBasicInfo.fName+" has medication that is ready to be taken within the hour.";
-            this.$.dailyMedNotify.notifyTarget = editPath;
-            this.$.dailyMedNotify.initialize();
-          }.bind(this));
-        this.$.editMedModal.toggle();
-        this.newMedEdit = {};
+
+        var validation = this.validateInputs(this.$.formField2);
+        if(validation.invalid) {
+          this.fire("openToast", {toastText: "The following items are missing or invalid: " + validation.invalidInputs});
+        } else {
+          this.$.medDB.path = null;
+          var editPath = this.newMedEdit.parent;
+          console.log(editPath);
+          console.log(this.newMedEdit);
+          this.newMedEdit.parent = null;
+          this.newMedEdit.newest = null;
+          this.newMedEdit.differences = null;
+          this.$.medDB.data.med = this.newMedEdit;
+          this.$.medDB.data.log = {};
+          this.$.medDB.data.log.user = this.user.uid;
+          this.$.medDB.data.log.time = Date.now();
+          this.$.medDB.save("homes/" + this.home + "/patients/" + this.patient + "/medicationOutline/medications/" + editPath, null)
+            .then(function(med) {
+              var medItemId = this.$.medDB.path.split("/").pop();
+              this.fire("medEditSaved", {medId: editPath, medItemId: medItemId});
+              //guuey notify goes here
+              this.$.dailyMedNotify.notifyRoute = this.$.medDB.path;
+              this.$.dailyMedNotify.notifyMessage = this.suBasicInfo.fName+" has medication that is ready to be taken within the hour.";
+              this.$.dailyMedNotify.notifyTarget = editPath;
+              this.$.dailyMedNotify.initialize();
+            }.bind(this));
+          this.$.editMedModal.toggle();
+          this.newMedEdit = {};
+          this.clearValidation(this.$.formField2);
+        };
       },
 
       deleteMed: function() {

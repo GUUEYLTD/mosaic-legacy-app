@@ -73,8 +73,10 @@
     <!--dialogue that works to add labels for custom text input area-->
     <paper-dialog id="customSectionModal" class="guuey-modal guuey-add-modal">
       <h2>Add a New Section</h2>
-      <paper-textarea maxlength="75" label="Name the New Section" value="{{customData.label}}"></paper-textarea>
-      <paper-textarea label="Describe the New Section" value="{{customData.label2}}"></paper-textarea>
+      <span id="formField">
+        <paper-textarea required maxlength="75" label="Name the New Section" value="{{customData.label}}"></paper-textarea>
+        <paper-textarea required label="Describe the New Section" value="{{customData.label2}}"></paper-textarea>
+      </span>
       <div class="modal-button-container">
         <paper-button class="cancel-button" on-tap="cancelNewSection">cancel</paper-button>
         <paper-button class="confirm-button" on-tap="saveNewSection">save</paper-button>
@@ -237,14 +239,20 @@
       },
 
       saveNewSection: function() {
-        var path = "/homes/" + this.home + "/patients/" + this.patient + "/preAdmissionAssessment/custom";
-        this.$.customInput.save(path, null)
-          .then(function() {
-            this.$.customSectionModal.close();
-            this.fire("openToast", {toastText: "New custom section saved."});
-            var key = this.$.customInput.path.split("/").pop();
-            this.fire("customSectionCreated", {key: key});
-          }.bind(this));
+        var validation = this.validateInputs(this.$.formField);
+        if(validation.invalid) {
+          this.fire("openToast", {toastText: "The following items are missing or invalid: " + validation.invalidInputs});
+        } else {
+          var path = "/homes/" + this.home + "/patients/" + this.patient + "/preAdmissionAssessment/custom";
+          this.$.customInput.save(path, null)
+            .then(function() {
+              this.$.customSectionModal.close();
+              this.fire("openToast", {toastText: "New custom section saved."});
+              var key = this.$.customInput.path.split("/").pop();
+              this.fire("customSectionCreated", {key: key});
+              this.clearValidation(this.$.formField);
+            }.bind(this));
+        };
       },
 
       cancelNewSection: function() {

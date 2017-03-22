@@ -92,7 +92,6 @@
         value: {
           notify: true,
           type:Array,
-          observer: "_valueChanged",
           value: [
             "mo",
             "tu",
@@ -102,9 +101,40 @@
             "sa",
             "so"
           ]
+        },
+
+        name: {
+          type: String,
+          value: ''
+        },
+
+        required: {
+          type: Boolean,
+          value: false
+        },
+
+        invalid: {
+          type: Boolean,
+          computed: '_computeInvalid(required, value.*)',
+          notify: true,
+          reflectToAttribute: true
         }
 
       },
+
+      observers: [
+        '_valueChanged(value.*)'
+      ],
+
+      _computeInvalid: function(required, valueDeep) {
+        var value = valueDeep.base;
+        if(required && !value || value.length === 0) {
+          return true;
+        } else {
+          return false;
+        };
+      },
+
       //cehck if weekday is selected in the checkbox based on value
       _computechecked: function(weekdays, weekday) {
         if(weekdays.indexOf(weekday) != -1) {
@@ -115,9 +145,11 @@
       },
 
       //initialize the value to all weekdays selected if no value.
-      _valueChanged: function(value) {
-        if(value === undefined || null) {
-          this.value=this.weekdays;
+      _valueChanged: function(valueDeep) {
+        var value = valueDeep.base;
+        console.log(value);
+        if(value === undefined || null || value.length === 0) {
+          this.value = this.weekdays;
         };
       }
 

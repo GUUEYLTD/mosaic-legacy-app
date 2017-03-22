@@ -24,6 +24,7 @@
 <link rel="import" href="../../behaviors/su-print-behavior.html" />
 <link rel="import" href="../../behaviors/su-resize-behavior.html" />
 <link rel="import" href="../../behaviors/guuey-dialog-resize-behavior.html" />
+<link rel="import" href="../../behaviors/guuey-form-validation-behavior.html" />
 
 <link rel="import" href="../../styles/common-styles.html" />
 
@@ -165,15 +166,19 @@
     <!--dialogue that works to add labels for custom text input area-->
     <paper-dialog id="customSectionModal" class="guuey-modal guuey-add-modal">
       <h2>Add a New Section</h2>
-      <paper-textarea
-        label="Name the New Section"
-        value="{{customData.label}}"
-        maxlength="75">
-      </paper-textarea>
-      <paper-textarea
-        label="Describe the New Section"
-        value="{{customData.label2}}">
-      </paper-textarea>
+      <span id="formField">
+        <paper-textarea
+          required
+          label="Name the New Section"
+          value="{{customData.label}}"
+          maxlength="75">
+        </paper-textarea>
+        <paper-textarea
+          required
+          label="Describe the New Section"
+          value="{{customData.label2}}">
+        </paper-textarea>
+      </span>
       <div class="modal-button-container">
         <paper-button class="cancel-button" on-tap="cancelNewSection">cancel</paper-button>
         <paper-button class="confirm-button" on-tap="saveNewSection">save</paper-button>
@@ -243,8 +248,9 @@
 
               I agree to the care and support described in this document.
             </p>
-            <div class="app-grid">
+            <div class="app-grid guuey-input-validation">
               <paper-input
+                required
                 class="agreement"
                 label="Service User's Name"
                 value="{{agreeData.suName}}"
@@ -252,18 +258,19 @@
               </paper-input>
 
               <guuey-date-input
+                required
                 value="{{agreeData.suDate}}"
                 label="date of service user agreement">
               </guuey-date-input>
 
-              <div class="agreeButtons">
+              <div class="agreeButtons guuey-input-validation">
 
-                <guuey-signature value="{{agreeData.suAgree}}" label="tap for service user agreement"></guuey-signature>
+                <guuey-signature name="Service User Signature" value="{{agreeData.suAgree}}" label="tap for service user agreement"></guuey-signature>
 
               </div>
             </div>
 
-            <div class="app-grid">
+            <div class="app-grid guuey-input-validation">
 
               <vaadin-combo-box
                 class="dropdown"
@@ -277,13 +284,14 @@
               </vaadin-combo-box>
 
               <guuey-date-input
+                required
                 value="{{agreeData.swDate}}"
                 label="date of service worker agreement">
               </guuey-date-input>
 
-              <div class="agreeButtons">
+              <div class="agreeButtons guuey-input-validation">
 
-                <guuey-signature value="{{agreeData.swAgree}}" label="tap for service worker agreement"></guuey-signature>
+                <guuey-signature name="Service Worker Signature" value="{{agreeData.swAgree}}" label="tap for service worker agreement"></guuey-signature>
 
               </div>
             </div>
@@ -461,7 +469,7 @@
       },
 
       observers: [
-        "_requirementsMet(agreeData)",
+        //"_requirementsMet(agreeData)",
         '_checkServiceUser(suBasicInfo, agreeData, agreeReady)'
       ],
 
@@ -469,7 +477,8 @@
         Polymer.carePlanAnimation,
         Polymer.suPrintBehavior,
         Polymer.suResizeBehavior,
-        Polymer.guueyDialogResizeBehavior
+        Polymer.guueyDialogResizeBehavior,
+        Polymer.guueyFormValidationBehavior
       ],
 
       updateUsers: function(snapshot) {
@@ -535,18 +544,24 @@
       },
 
       saveNewSection: function() {
-        var path = "/homes/" + this.home + "/patients/" + this.patient + "/carePlan/custom"
-        this.$.customInput.save(path, null)
-          .then(function() {
-            this.$.customSectionModal.close();
-            this.fire("openToast", {toastText: "New custom section saved."});
-            var key = this.$.customInput.path.split("/").pop();
-            this.fire("customSectionCreated", {key: key});
-          }.bind(this))
-          .catch(function(error) {
-            this.$.customSectionModal.close();
-            this.fire("openToast", {toastText :"There was an error saving your custom section: " + error});
-          });
+        var validation = this.validateInputs(this.$.formField);
+        if(validation.invalid) {
+          this.fire("openToast", {toastText: "The following items are missing or invalid: " + validation.invalidInputs});
+        } else {
+          var path = "/homes/" + this.home + "/patients/" + this.patient + "/carePlan/custom"
+          this.$.customInput.save(path, null)
+            .then(function() {
+              this.$.customSectionModal.close();
+              this.fire("openToast", {toastText: "New custom section saved."});
+              var key = this.$.customInput.path.split("/").pop();
+              this.clearValidation(this.$.formField);
+              this.fire("customSectionCreated", {key: key});
+            }.bind(this))
+            .catch(function(error) {
+              this.$.customSectionModal.close();
+              this.fire("openToast", {toastText :"There was an error saving your custom section: " + error});
+            });
+        };
       },
 
       cancelNewSection: function() {

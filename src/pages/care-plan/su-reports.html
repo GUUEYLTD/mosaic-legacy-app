@@ -2,13 +2,12 @@
 <link rel="import" href="../../../bower_components/polymerfire/firebase-document.html" />
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html" />
 <link rel="import" href="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror.html" />
-<link rel="import" href="../../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html" />
-<link rel="import" href="../../../bower_components/paper-item/paper-item.html" />
-<link rel="import" href="../../../bower_components/paper-listbox/paper-listbox.html" />
 <link rel="import" href="../../../bower_components/paper-input/paper-textarea.html" />
 <link rel="import" href="../../../bower_components/paper-slider/paper-slider.html" />
 <link rel="import" href="../../../bower_components/iron-icon/iron-icon.html" />
 <link rel="import" href="../../../bower_components/iron-icons/iron-icons.html" />
+<link rel="import" href="../../../bower_components/paper-tabs/paper-tabs.html" />
+<link rel="import" href="../../../bower_components/paper-tabs/paper-tab.html" />
 
 <link rel="import" href="../../elements/su-header/su-header.html" />
 <link rel="import" href="../../elements/media-queries/media-queries.html" />
@@ -16,6 +15,7 @@
 <link rel="import" href="../../behaviors/animations/care-plan-animation.html" />
 <link rel="import" href="../../behaviors/su-print-behavior.html" />
 <link rel="import" href="../../behaviors/su-resize-behavior.html" />
+<link rel="import" href="../../behaviors/guuey-form-validation-behavior.html" />
 
 <link rel="import" href="../../styles/common-styles.html" />
 
@@ -103,20 +103,17 @@
       </su-header>
 
       <div class="pageInnerCont padded">
-        <paper-dropdown-menu
-          id="chunkSelector"
-          label="Reports for different times of day">
-          <paper-listbox class="dropdown-content" attr-for-selected="label" selected="{{selectedChunk}}">
-            <template is="dom-repeat" items="[[chunkList]]" as="chunk">
+        <paper-tabs
+          attr-for-selected="label"
+          selected="{{selectedChunk}}"
+          scrollable>
+          <template is="dom-repeat" items="[[chunkList]]" as="chunk">
+            <paper-tab label="[[chunk]]">[[chunk]] Report</paper-tab>
+          </template>
+        </paper-tabs>
 
-              <paper-item label="[[chunk]]">[[chunk]]</paper-item>
-
-            </template>
-          </paper-listbox>
-        </paper-dropdown-menu>
-
-        <div class="app-grid">
-          <paper-card elevation="3" class="padded">
+        <div class="app-grid guuey-input-validation">
+          <paper-card elevation="3" class="padded guuey-input-validation">
             <p class="attrCardLabel">
               mood
             </p>
@@ -128,16 +125,16 @@
               Please select a value out of 100 for [[suIndexData.fName]]'s overall mood.
             </p>
 
-            <div class="sliderRow">
+            <div class="sliderRow guuey-input-validation">
               <iron-icon id="iconBad" icon="icons:thumb-down"></iron-icon>
-              <paper-slider id="moodSlider" class$="[[_computeProgressColor(dailyRepData.mood)]]" pin value="{{dailyRepData.mood}}"></paper-slider>
+              <paper-slider required id="moodSlider" name="Mood Slider" class$="[[_computeProgressColor(dailyRepData.mood)]]" pin value="{{dailyRepData.mood}}"></paper-slider>
               <iron-icon id="iconGood" icon="icons:thumb-up"></iron-icon>
             </div>
 
-            <paper-textarea label="Comments on Mood" value="{{dailyRepData.moodComments}}"></paper-textarea>
+            <paper-textarea auto-validate required label="Comments on Mood" value="{{dailyRepData.moodComments}}" error-message="Comments on Mood is required."></paper-textarea>
           </paper-card>
 
-          <paper-card elevation="3" class="padded">
+          <paper-card elevation="3" class="padded guuey-input-validation">
             <p class="attrCardLabel">
               health
             </p>
@@ -148,21 +145,21 @@
               Please select a value out of 100 for [[suIndexData.fName]]'s overall health.
             </p>
 
-            <div class="sliderRow">
+            <div class="sliderRow guuey-input-validation">
               <iron-icon id="iconBad" icon="icons:thumb-down"></iron-icon>
-              <paper-slider id="healthSlider" class$="[[_computeProgressColor(dailyRepData.health)]]" pin value="{{dailyRepData.health}}"></paper-slider>
+              <paper-slider required id="healthSlider" name="Health Slider" class$="[[_computeProgressColor(dailyRepData.health)]]" pin value="{{dailyRepData.health}}"></paper-slider>
               <iron-icon id="iconGood" icon="icons:thumb-up"></iron-icon>
             </div>
 
-            <paper-textarea label="Comments on Health" value="{{dailyRepData.healthComments}}"></paper-textarea>
+            <paper-textarea auto-validate required label="Comments on Health" value="{{dailyRepData.healthComments}}" error-message="Comments on Health is required."></paper-textarea>
           </paper-card>
 
           <div class="divider full"></div>
 
-          <paper-textarea class="full" label="activities" value="{{dailyRepData.activities}}"></paper-textarea>
-          <paper-textarea class="full" label="locations" value="{{dailyRepData.locations}}"></paper-textarea>
-          <paper-textarea class="full" label="incidents" value="{{dailyRepData.incidents}}"></paper-textarea>
-          <paper-textarea class="full" label="summary of shift" value="{{dailyRepData.summaryOfChunk}}"></paper-textarea>
+          <paper-textarea auto-validate required class="full" label="activities" value="{{dailyRepData.activities}}" error-message="Activties is reqiured."></paper-textarea>
+          <paper-textarea auto-validate required class="full" label="locations" value="{{dailyRepData.locations}}" error-message="Locations is required."></paper-textarea>
+          <paper-textarea auto-validate required class="full" label="incidents" value="{{dailyRepData.incidents}}" error-message="Incidents is required."></paper-textarea>
+          <paper-textarea auto-validate required class="full" label="summary of shift" value="{{dailyRepData.summaryOfChunk}}" error-message="Summary of Shift is required."></paper-textarea>
         </div>
 
       </div>
@@ -243,7 +240,8 @@
       behaviors: [
         Polymer.carePlanAnimation,
         Polymer.suPrintBehavior,
-        Polymer.suResizeBehavior
+        Polymer.suResizeBehavior,
+        Polymer.guueyFormValidationBehavior
       ],
 
       updateTime: function() {

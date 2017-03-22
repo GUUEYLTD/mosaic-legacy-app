@@ -9,7 +9,7 @@
     */
     Polymer.guueyFormValidationBehavior = {
 
-      is:"guuey-form-validation-behavior",
+      is: "guuey-form-validation-behavior",
 
       properties: {
 
@@ -26,23 +26,19 @@
         autoValidateValid: {
           type: Boolean,
           value: false
+        },
+
+        waitForAutoValidate: {
+          type: Boolean,
+          value: false,
+          observer: '_waitForAutoValidateChanged'
         }
 
       },
 
       observers: [
-        '_pageChanged(page)'
+        '_pageChanged(page, waitForAutoValidate)'
       ],
-
-      _pageChanged: function(page) {
-        if(page != this.localName) {
-          this.validateableInputs.forEach(function(input) {
-            this.unsetInvalidListener(input);
-          }.bind(this));
-        } else {
-          this.startWatchingInputs();
-        };
-      },
 
       attached: function() {
         var forms = Polymer.dom(this.root).querySelectorAll('.guuey-input-validation');
@@ -53,12 +49,71 @@
             this.setDefaultContent(input);
           }.bind(this));
         }.bind(this));
-        this.startWatchingInputs();
+        if(!this.waitForAutoValidate) {
+          this.startWatchingInputs();
+          this.autoValidateInputs();
+        };
+      },
+
+      startAutoValidate: function() {
+        this.set('waitForAutoValidate', false);
+      },
+
+      stopAutoValidate: function() {
+        this.set('waitForAutoValidate', true);
+      },
+
+      _waitForAutoValidateChanged: function(wait) {
+        if(wait) {
+          this.validateableInputs.forEach(function(input) {
+            this.unsetInvalidListener(input);
+            this.unsetValueListener(input);
+          }.bind(this));
+        } else {
+          this.startWatchingInputs();
+          this.autoValidateInputs();
+        };
+
+      },
+
+      _pageChanged: function(page, waitForAutoValidate) {
+        if(page != this.localName || waitForAutoValidate) {
+          this.validateableInputs.forEach(function(input) {
+            this.unsetInvalidListener(input);
+            this.unsetValueListener(input);
+          }.bind(this));
+        } else if(!waitForAutoValidate) {
+          this.startWatchingInputs();
+          this.autoValidateInputs();
+        };
+      },
+
+
+      _selectListenerType: function(type, input) {
+        switch(type) {
+          case 'paper-slider':
+            this.setValueListener(input);
+            break;
+
+          case 'guuey-signature':
+            this.setValueListener(input);
+            break;
+          case 'guuey-weekday-selector':
+            this.setValueListener(input);
+            break;
+          case 'guuey-time-chunk-selector':
+            this.setValueListener(input);
+            break;
+
+          default:
+            this.setInvalidListener(input);
+        };
       },
 
       startWatchingInputs: function() {
         this.validateableInputs.forEach(function(input) {
-          this.setInvalidListener(input);
+          var type = input.tagName.toLowerCase();
+          this._selectListenerType(type, input);
         }.bind(this));
       },
 
@@ -66,33 +121,61 @@
           input.value = input.name || input.label;
       },
 
+      setValueListener: function(input) {
+        input.addEventListener('value-changed', function(e) {
+          if(e.currentTarget === input) {
+            this.autoValidateInputs();
+          };
+        }.bind(this));
+      },
+
+      unsetValueListener: function(input) {
+        input.removeEventListener('value-changed', function(e) {
+          if(e.currentTarget === input) {
+            this.autoValidateInputs();
+          };
+        }.bind(this));
+      },
+
       setInvalidListener: function(input) {
         input.addEventListener('invalid-changed', function(e) {
-          this.autoValidateInputs();
+          if(e.currentTarget === input) {
+            this.autoValidateInputs();
+          };
         }.bind(this));
       },
 
       unsetInvalidListener: function(input) {
         input.removeEventListener('invalid-changed', function(e) {
-          this.autoValidateInputs();
+          if(e.currentTarget === input) {
+            this.autoValidateInputs();
+          };
         }.bind(this));
       },
 
-      autoValidateInputs: function(e) {
-        this.invalidInputs = [];
-        this.validateableInputs.forEach(function(input) {
-          if(input.invalid) {
-            this.invalidInputs.push(input.name || input.label);
-          };
-        }.bind(this));
+      autoValidateInputs: function() {
+        if(!this.waitForAutoValidate) {
+          this.invalidInputs = [];
+          this.validateableInputs.forEach(function(input) {
+            var tagName = input.tagName.toLowerCase();
+            var isAltInput = (
+              tagName === 'guuey-signature' ||
+              tagName === 'paper-slider' ||
+              tagName === 'guuey-time-chunk-selector' ||
+              tagName === 'guuey-weekday-selector');
+            if(input.invalid || (isAltInput && !input.value)) {
+              this.invalidInputs.push(input.name || input.label);
+            };
+          }.bind(this));
 
-        if(this.invalidInputs.length > 0) {
-          var toastMessage = 'The following inputs are still missing: ' + this.invalidInputs.join(', ');
-          this.fire('openToast', {toastText: toastMessage});
-        } else {
-          this.fire('closeToast');
-          this.autoValidateValid = true;
-        };
+          if(this.invalidInputs.length > 0) {
+            var toastMessage = 'The following inputs are still missing: ' + this.invalidInputs.join(', ');
+            this.fire('openToast', {toastText: toastMessage});
+          } else {
+            this.fire('closeToast');
+            this.autoValidateValid = true;
+          };
+        }
       },
 
       //used to manually validate inputs
@@ -101,8 +184,10 @@
         var invalid = false;
         var invalidInputs = [];
         inputs.forEach(function(input) {
-          input.validate();
-          if(input.invalid) {
+          if(input.validate) {
+            input.validate();
+          };
+          if(input.invalid || (input.required && !input.value)) {
             invalid = true;
             invalidInputs.push(input.name || input.label);
           };
