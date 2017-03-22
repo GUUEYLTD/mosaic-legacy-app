@@ -269,6 +269,12 @@ login element to be used on app or elsewhere
       .recent-users-visible{
         top:50%;
       }
+
+      .successHeader {
+        color: #2fc19e;
+        text-transform: uppercase;
+      }
+      
     </style>
 
     <div id="recentUsers" class="recent-users">
@@ -306,8 +312,12 @@ login element to be used on app or elsewhere
             </iron-collapse>
 
             <iron-collapse id="forgotSuccess">
-
-                Success! Your password reset email has been sent to [[forgotEmail]]. Please allow 5 minutes before trying to send the password email again.
+                <p class="successHeader">
+                  Success!
+                </p>
+                <p>
+                  Your password reset email has been sent to [[forgotEmail]]. Please allow 5 minutes before trying to send the password email again.
+                </p>
 
             </iron-collapse>
 

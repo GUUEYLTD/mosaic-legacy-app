@@ -17,6 +17,7 @@
 <link rel="import" href="../../behaviors/animations/care-plan-animation.html" />
 <link rel="import" href="../../behaviors/su-print-behavior.html" />
 <link rel="import" href="../../behaviors/su-resize-behavior.html" />
+<link rel="import" href="../../behaviors/guuey-form-validation-behavior.html" />
 
 <link rel="import" href="../../styles/common-styles.html" />
 
@@ -100,9 +101,10 @@
         <div class="sectionContainer">
           <iron-icon icon="social:person-outline"></iron-icon>
 
-          <div class="inputContainer app-grid">
+          <div class="inputContainer app-grid guuey-input-validation">
 
             <paper-input
+              name="First"
               label="First Name"
               value="{{suIndexData.fName}}"
               tabindex="1"
@@ -113,6 +115,7 @@
             </paper-input>
 
             <paper-input
+              name="Last"
               label="Last Name"
               value="{{suIndexData.lName}}"
               tabindex="2"
@@ -126,8 +129,6 @@
               value="{{profileData.dob}}"
               label="Date of Birth"
               tabindex="3"
-              required
-              auto-validate
               error-message="Please enter a date by clicking on tapping/clicking on this field.">
             </guuey-date-input>
 
@@ -159,6 +160,21 @@
               error-message="Please enter the location of service user assessment.">
             </paper-input>
 
+            <paper-input
+              label="Email"
+              value="{{profileData.email}}"
+              type="email"
+              auto-validate
+              error-message="Please enter a valid email address.">
+            </paper-input>
+
+            <paper-input
+              label="Phone Number"
+              value="{{profileData.phone}}"
+              auto-validate
+              error-message="Please enter a valid phone number.">
+            </paper-input>
+
           </div>
         </div>
 
@@ -168,7 +184,7 @@
 
           <iron-icon icon="icons:assignment"></iron-icon>
 
-          <div class="inputContainer app-grid">
+          <div class="inputContainer app-grid guuey-input-validation">
             <vaadin-combo-box
               allow-custom-value
               label="Partership Status"
@@ -216,6 +232,24 @@
               error-message="Please enter a nationality without special characters."
               tabindex="10">
             </vaadin-combo-box>
+
+            <vaadin-combo-box
+              allow-custom-value
+              label="Gender"
+              items="[[genders]]"
+              value="{{profileData.gender}}"
+              required
+              auto-validate
+              pattern="[a-zA-Z\s]*"
+              error-message="Please enter a gender without special characters."
+              tabindex="10">
+            </vaadin-combo-box>
+
+            <paper-input
+              label="Room Number"
+              value="{{profileData.roomNumber}}">
+            </paper-input>
+
           </div>
         </div>
 
@@ -225,7 +259,7 @@
 
           <iron-icon icon="communication:phone"></iron-icon>
 
-          <div class="inputContainer app-grid">
+          <div class="inputContainer app-grid guuey-input-validation">
 
             <paper-input
               label="Next of Kin"
@@ -267,6 +301,20 @@
               auto-validate
               pattern="\+?\(?\d{2,4}\)?[\d\s-]{3,}"
               error-message="Please enter a valid phone Number.">
+            </paper-input>
+
+            <paper-input
+              label="Email"
+              value="{{contactsData.email}}"
+              type="email"
+              auto-validate
+              error-message="Please enter a valid email address.">
+            </paper-input>
+
+            <paper-input
+              label="Phone Number"
+              value="{{contactsData.otherComments}}"
+              auto-validate>
             </paper-input>
 
           </div>
@@ -318,6 +366,20 @@
               error-message="Please enter a valid phone Number.">
             </paper-input>
 
+            <paper-input
+              label="Email"
+              value="{{contactsData.secondContactEmail}}"
+              type="email"
+              auto-validate
+              error-message="Please enter a valid email address.">
+            </paper-input>
+
+            <paper-input
+              label="Phone Number"
+              value="{{contactsData.secondContactOther}}"
+              auto-validate>
+            </paper-input>
+
           </div>
         </div>
 
@@ -354,6 +416,14 @@
               auto-validate
               pattern="\+?\(?\d{2,4}\)?[\d\s-]{3,}"
               error-message="Please enter a valid phone Number.">
+            </paper-input>
+
+            <paper-input
+              label="Email"
+              value="{{contactsData.consultantPsychiatristEmail}}"
+              type="email"
+              auto-validate
+              error-message="Please enter a valid email address.">
             </paper-input>
 
           </div>
@@ -394,6 +464,14 @@
               error-message="Please enter a valid phone Number.">
             </paper-input>
 
+            <paper-input
+              label="Email"
+              value="{{contactsData.generalPractitionerEmail}}"
+              type="email"
+              auto-validate
+              error-message="Please enter a valid email address.">
+            </paper-input>
+
           </div>
         </div>
 
@@ -432,6 +510,14 @@
               error-message="Please enter a valid phone Number.">
             </paper-input>
 
+            <paper-input
+              label="Email"
+              value="{{contactsData.socialWorkerReferrerEmail}}"
+              type="email"
+              auto-validate
+              error-message="Please enter a valid email address.">
+            </paper-input>
+
           </div>
         </div>
 
@@ -468,6 +554,14 @@
               auto-validate
               pattern="\+?\(?\d{2,4}\)?[\d\s-]{3,}"
               error-message="Please enter a valid phone Number.">
+            </paper-input>
+
+            <paper-input
+              label="Email"
+              value="{{contactsData.cpnEmail}}"
+              type="email"
+              auto-validate
+              error-message="Please enter a valid email address.">
             </paper-input>
 
           </div>
@@ -509,6 +603,14 @@
               error-message="Please enter a valid phone Number.">
             </paper-input>
 
+            <paper-input
+              label="Email"
+              value="{{contactsData.ministerOfReligionEmail}}"
+              type="email"
+              auto-validate
+              error-message="Please enter a valid email address.">
+            </paper-input>
+
           </div>
         </div>
 
@@ -527,9 +629,19 @@
       ready: function() {
         this.addEventListener("print", this.print);
         this.fire("pageLoaded",{page: this.page});
+        this.dbs = [this.$.profileDB, this.$.contactsQuery];
+        this.inputs = Polymer.dom(this.root).querySelectorAll('paper-input');
       },
 
       properties: {
+
+        suIndexData: {
+          type: Object,
+          value: {
+            fName: 'First',
+            lName: 'Last'
+          }
+        },
 
         page: {
           type: String,
@@ -582,99 +694,31 @@
           ]
         },
 
+        genders: {
+          type: Array,
+          value: [
+            'Male',
+            'Female',
+            'Other'
+          ]
+        },
+
         ethnicities: {
           type: Array,
           value: [
-            'Albanian',
-            'Arab',
-            'Armenian',
-            'Assyrian',
-            'Azerbaijani',
-            'Balochi',
-            'Bamar',
-            'Basque',
-            'Bengali',
-            'Berber',
-            'Bihari',
-            'Bosniak',
-            'Brahui',
-            'Bulgarian',
-            'Catalan',
-            'Chuvash',
-            'Circassian',
-            'Congolese',
-            'Croat',
-            'Czech',
-            'Dane',
-            'Dutch',
-            'English',
-            'Estonian',
-            'Faroese',
-            'Finn',
-            'French',
-            'Gagauz',
-            'Galician',
-            'German',
-            'Greek',
-            'Georgian',
-            'Gujarati',
-            'Han Chinese',
-            'Hindustani',
-            'Hui',
-            'Hungarian',
-            'Icelander',
-            'Irish',
-            'Italian',
-            'Japanese',
-            'Javanese',
-            'Jew',
-            'Lebanese',
-            'Macedonian',
-            'Malayali',
-            'Kannada',
-            'Kazakh',
-            'Korean',
-            'Kurd',
-            'Kyrgyz',
-            'Malay',
-            'Marathi',
-            'Norwegian',
-            'Laz',
-            'Manchu',
-            'Moldovan',
-            'Mongol',
-            'Nepali',
-            'Pashtun',
-            'Oromo',
-            'Persian',
-            'Pole',
-            'Portuguese',
-            'Punjabi',
-            'Romanian',
-            'Romani',
-            'Russian',
-            'Scottish',
-            'Serb',
-            'Sindhi',
-            'Sinhalese',
-            'Slovak',
-            'Slovene',
-            'Spaniard',
-            'Sundanese',
-            'Swede',
-            'Tamil',
-            'Telugu',
-            'Thai',
-            'Tibetan',
-            'Tuareg',
-            'Turk',
-            'Turkmen',
-            'Ukrainian',
-            'Uyghur',
-            'Vietnamese',
-            'Volga Tatar',
-            'Welsh',
-            'Zhuang',
+            'White English',
+            'White European',
+            'White Other',
+            'Gypsy/Traveller',
+            'Asian or Asian British: Indian',
+            'Asian or Asian British: Pakistani',
+            'Asian or Asian British: Bangladeshi',
+            'Asian or Asian British: Chinese',
+            'Asian or Asian British: Other Asian',
+            'Black or Black British: Caribbean',
+            'Black or Black British: African',
+            'Black Other',
+            'Mixed Race'
           ]
         },
 
@@ -906,47 +950,12 @@
         }
       },
 
-      observers: [
-        "_requirementsMet(profileData)"
-      ],
-
       behaviors: [
         Polymer.carePlanAnimation,
         Polymer.suPrintBehavior,
-        Polymer.suResizeBehavior
-      ],
-
-      _requirementsMet: function(data) {
-        if(Object.keys(data).length === 0 && data.constructor === Object && this.guueyDOB != "loading" && this.guueyDOA != "loading") {
-        } else {
-          if(!data.fName) {
-            this.fire("openToast", {toastText: "First name is required before saving the new service user."});
-            return;
-          } else if(!data.lName) {
-            this.fire("openToast", {toastText: "Last name is required before saving the new service user."});
-            return;
-          } else if(!data.dob) {
-            this.fire("openToast", {toastText: "Date of birth is required before saving the new service user."});
-            return;
-          } else if(!data.dateAssessed) {
-            this.fire("openToast", {toastText: "Date of assessment is required before saving the new service user."});
-            return;
-          } else if(!data.partnership) {
-            this.fire("openToast", {toastText: "Partnership status is required before saving the new service user."});
-            return;
-          } else if(!data.whereAssessed) {
-            this.fire("openToast", {toastText: "Where assessed is required before saving the new service user."});
-          } else if(!data.religion) {
-            this.fire("openToast", {toastText: "Religion is required before saving the new service user."});
-          } else if(!data.ethnicity) {
-            this.fire("openToast", {toastText: "Ethnicity is required before saving the new service user."});
-          } else if(!data.nationality) {
-            this.fire("openToast", {toastText: "Nationality is required before saving the new service user."});
-          } else {
-            return true;
-          };
-        };
-      }
+        Polymer.suResizeBehavior,
+        Polymer.guueyFormValidationBehavior
+      ]
 
     });
 

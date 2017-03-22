@@ -1,4 +1,8 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html" />
+<link rel="import" href="../../../bower_components/paper-input/paper-input.html" />
+<link rel="import" href="../../../bower_components/iron-form/iron-form.html" />
+<link rel="import" href="../../../bower_components/vaadin-combo-box/vaadin-combo-box.html" />
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html" />
 
 <dom-module id="test-test">
   <template>
@@ -14,11 +18,23 @@
 
     <paper-card class="main">
 
-      <div class="pageInnerCont padded">
-        <button on-tap="startLogin">login</button>
-        <button on-tap="openVerify">verify</button>
-        <button on-tap="testLocation">change loc</button>
-      </div>
+      <form is="iron-form" id="mainForm">
+        <paper-input
+          label="name"
+          value="{{testData.name}}"
+          required
+          error-message="pick a name dumbass..."></paper-input>
+        <vaadin-combo-box
+          allow-custom-value
+          label="age"
+          items="[[ages]]"
+          value="{{testData.age}}"
+          required
+          auto-validate
+          error-message="Please enter a number">
+        </vaadin-combo-box>
+        <paper-button on-tap="validate">validate</paper-button>
+      </form>
 
     </paper-card>
 
@@ -33,20 +49,44 @@
           this.fire("pageLoaded",{page: this.page});
         },
 
+        attributeChanged: function(name, type) {
+          console.log(this.localName + '#' + this.id + ' attribute ' + name +
+            ' was changed to ' + this.getAttribute(name));
+        },
+        
         properties:{
-
+          testData: {
+            type: Object,
+            value: {}
+          },
+          ages: {
+            type: Array,
+            value: [
+              '1',
+              '2',
+              '3',
+              '4',
+              '5',
+              '6',
+              '7',
+              '8',
+              '9'
+            ]
+          }
         },
 
-        startLogin: function() {
-          this.fire("openLogin");
+        observers: [
+          '_testDataChanged(testData.*)'
+        ],
+
+        _testDataChanged: function(dataDeep) {
+          var data = dataDeep.base;
+          console.log(data);
         },
 
-        openVerify: function() {
-          this.fire('openVerify');
-        },
-
-        testLocation: function() {
-          location.href = 'http://localhost:8080/-KTBXzZw3-qoZz4c7nY7/test/test-test?mode=resetPassword&oobCode=whatever';
+        validate: function() {
+          var valid = this.$.mainForm.validate();
+          console.log(valid);
         }
 
       });

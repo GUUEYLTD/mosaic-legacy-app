@@ -72,9 +72,9 @@
       </div>
     </paper-dialog>
 
-    <paper-button id="signButton" hidden$="[[_computeHidden(value)]]" on-tap="sign">[[label]]</paper-button>
+    <paper-button id="signButton" hidden$="[[!valueMissing]]" on-tap="sign">[[label]]</paper-button>
 
-    <span hidden$="[[!_computeHidden(value)]]">
+    <span hidden$="[[valueMissing]]">
 
       <iron-image
         id="signature"
@@ -109,7 +109,13 @@
         value: {
           type: String,
           notify: true,
-          value: null
+          value: null,
+          observer: '_valueChanged'
+        },
+
+        valueMissing: {
+          type: Boolean,
+          value: true
         },
 
         //the label for the signature area
@@ -118,6 +124,14 @@
           value: "tap to sign"
         }
 
+      },
+
+      _valueChanged: function(value) {
+        if(value) {
+          this.valueMissing = false;
+        } else {
+          this.valueMissing = true;
+        };
       },
 
       //creates new instance of signaturePad on the canvas
@@ -165,6 +179,7 @@
 
       //hides sign button if signature already exists
       _computeHidden: function(value) {
+        console.log(value);
         if(value) {
           return true;
         } else {

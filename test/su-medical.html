@@ -14,13 +14,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
-    <title>su-medical</title>
+    <title>su-uploads</title>
 
     <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
     <script src="../bower_components/web-component-tester/browser.js"></script>
 
     <!-- Import the element to test -->
-    <link rel="import" href="../src/pages/care-plan/su-medical.html">
+    <link rel="import" href="../src/pages/care-plan/su-uploads.html">
     <link rel="import" href="../bower_components/polymerfire/firebase-app.html" />
     <link rel="import" href="../bower_components/polymerfire/firebase-auth.html" />
 
@@ -52,20 +52,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <test-fixture id="basic">
       <template>
-        <su-medical
-          current-page="su-medical"
+        <su-uploads
+          current-page="su-uploads"
           current-cat="care-plan"
           intended-cat="care-plan"
-          page="su-medical"
+          page="su-uploads"
           patient="-TESTTESTTESTTEST123"
           home="-KTBXzZw3-qoZz4c7nY7"
-          name="su-medical">
-        </su-medical>
+          name="su-uploads">
+        </su-uploads>
       </template>
     </test-fixture>
 
     <script>
-      suite('su-medical tests', function() {
+      suite('su-uploads tests', function() {
         var page;
         var auth;
         var firebaseApp = fixture('firebaseApp');
@@ -100,11 +100,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         });
 
         test('instantiating the element works', function() {
-          assert.equal(page.is, 'su-medical');
+          assert.equal(page.is, 'su-uploads');
         });
 
         test('care-plan to care-plan animations are correct', function() {
-          page.currentPage = "su-medical";
+          page.currentPage = "su-uploads";
           page.currentCat = "care-plan";
           page.intendedCat = "care-plan";
 
@@ -113,7 +113,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         });
 
         test('care-plan to default animations are correct', function() {
-          page.currentPage = "su-medical";
+          page.currentPage = "su-uploads";
           page.currentCat = "care-plan";
           page.intendedCat = "default";
 
@@ -121,7 +121,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         });
 
         test('care-plan to admin animations are correct', function() {
-          page.currentPage = "su-medical";
+          page.currentPage = "su-uploads";
           page.currentCat = "care-plan";
           page.intendedCat = "admin";
 

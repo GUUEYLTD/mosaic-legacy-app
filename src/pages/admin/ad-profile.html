@@ -5,6 +5,8 @@
 <link rel="import" href="../../../bower_components/iron-image/iron-image.html" />
 <link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html" />
 <link rel="import" href="../../../bower_components/app-layout/app-grid/app-grid-style.html" />
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html" />
+<link rel="import" href="../../../bower_components/iron-icons/image-icons.html" />
 
 <link rel="import" href="../../elements/admin-header/admin-header.html" />
 <link rel="import" href="../../elements/firebase-storage/firebase-storage.html" />
@@ -85,6 +87,13 @@
 
     </style>
 
+    <guuey-photo-editor
+      id="photoEditor"
+      crop-width="241"
+      crop-height="160"
+      value="{{homePhoto}}">
+    </guuey-photo-editor>
+
     <paper-card class="pageCard">
       <admin-header
         page="Care Home Profile"
@@ -104,12 +113,11 @@
             hidden>
           </iron-image>
 
-          <guuey-photo-editor
-            crop-width="241"
-            crop-height="160"
+          <paper-icon-button
             class="imageButton"
-            value="{{homePhoto}}">
-          </guuey-photo-editor>
+            icon="image:add-a-photo"
+            on-tap="openGuueyDialog">
+          </paper-icon-button>
 
         </div>
 
@@ -234,6 +242,10 @@
         Polymer.adminPagesAnimation,
         Polymer.adminResizeBehavior
       ],
+
+      openGuueyDialog: function() {
+        this.$.photoEditor.open();
+      },
 
       _inputChanged: function(image) {
         this.$.storage._uploadFile(image)

@@ -18,7 +18,7 @@
 
 
 
-<dom-module id="su-medical">
+<dom-module id="su-uploads">
 
   <template>
 
@@ -152,7 +152,7 @@
 
     Polymer({
 
-      is: 'su-medical',
+      is: 'su-uploads',
 
       ready:  function() {
         this.fire("pageLoaded", {page: this.page});
@@ -214,7 +214,7 @@
       openFile:function(e) {
         window.open(e.model.upload.location);
       }
-      
+
     });
 
   </script>

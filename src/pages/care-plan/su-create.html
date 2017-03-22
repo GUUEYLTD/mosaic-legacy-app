@@ -14,6 +14,7 @@
 
 <link rel="import" href="../../behaviors/animations/care-plan-animation.html" />
 <link rel="import" href="../../behaviors/su-resize-behavior.html" />
+<link rel="import" href="../../behaviors/guuey-form-validation-behavior.html" />
 
 <link rel="import" href="../../styles/common-styles.html" />
 
@@ -77,9 +78,10 @@
         home="{{home}}"
         lastname="{{newPatientData.lName}}"
         firstname="{{newPatientData.fName}}"
+        su-index-data="{{suIndexData}}"
         setimage>
       </su-header>
-      <div class="pageInnerCont app-grid">
+      <div class="pageInnerCont app-grid guuey-input-validation">
         <h4>
           Fill in this Information to Start
         </h4>
@@ -255,96 +257,19 @@
         ethnicities: {
           type: Array,
           value: [
-            'Albanian',
-            'Arab',
-            'Armenian',
-            'Assyrian',
-            'Azerbaijani',
-            'Balochi',
-            'Bamar',
-            'Basque',
-            'Bengali',
-            'Berber',
-            'Bihari',
-            'Bosniak',
-            'Brahui',
-            'Bulgarian',
-            'Catalan',
-            'Chuvash',
-            'Circassian',
-            'Congolese',
-            'Croat',
-            'Czech',
-            'Dane',
-            'Dutch',
-            'English',
-            'Estonian',
-            'Faroese',
-            'Finn',
-            'French',
-            'Gagauz',
-            'Galician',
-            'German',
-            'Greek',
-            'Georgian',
-            'Gujarati',
-            'Han Chinese',
-            'Hindustani',
-            'Hui',
-            'Hungarian',
-            'Icelander',
-            'Irish',
-            'Italian',
-            'Japanese',
-            'Javanese',
-            'Jew',
-            'Lebanese',
-            'Macedonian',
-            'Malayali',
-            'Kannada',
-            'Kazakh',
-            'Korean',
-            'Kurd',
-            'Kyrgyz',
-            'Malay',
-            'Marathi',
-            'Norwegian',
-            'Laz',
-            'Manchu',
-            'Moldovan',
-            'Mongol',
-            'Nepali',
-            'Pashtun',
-            'Oromo',
-            'Persian',
-            'Pole',
-            'Portuguese',
-            'Punjabi',
-            'Romanian',
-            'Romani',
-            'Russian',
-            'Scottish',
-            'Serb',
-            'Sindhi',
-            'Sinhalese',
-            'Slovak',
-            'Slovene',
-            'Spaniard',
-            'Sundanese',
-            'Swede',
-            'Tamil',
-            'Telugu',
-            'Thai',
-            'Tibetan',
-            'Tuareg',
-            'Turk',
-            'Turkmen',
-            'Ukrainian',
-            'Uyghur',
-            'Vietnamese',
-            'Volga Tatar',
-            'Welsh',
-            'Zhuang',
+            'White English',
+            'White European',
+            'White Other',
+            'Gypsy/Traveller',
+            'Asian or Asian British: Indian',
+            'Asian or Asian British: Pakistani',
+            'Asian or Asian British: Bangladeshi',
+            'Asian or Asian British: Chinese',
+            'Asian or Asian British: Other Asian',
+            'Black or Black British: Caribbean',
+            'Black or Black British: African',
+            'Black Other',
+            'Mixed Race'
           ]
         },
 
@@ -577,13 +502,21 @@
       },
 
       observers: [
-        "_requirementsMet(newPatientData)"
+        '_inputsAreValid(autoValidateValid)'
+        //"_requirementsMet(newPatientData)"
       ],
 
       behaviors: [
         Polymer.carePlanAnimation,
-        Polymer.suResizeBehavior
+        Polymer.suResizeBehavior,
+        Polymer.guueyFormValidationBehavior
       ],
+
+      _inputsAreValid: function(autoValidateValid) {
+        if(autoValidateValid) {
+          this._createNewPatient();
+        }
+      },
 
       _createNewPatient: function() {
         var path = "/homes/" + this.home + "/patients/" + this.patient + "/currentStatus";
@@ -591,6 +524,9 @@
         var now = date.getTime();
         this.$.newPatientDB.setStoredValue(path, "active")
           .then(function(val) {
+            if(this.suIndexData.image) {
+              this.$.suIndexDB.data.image = this.suIndexData.image;
+            };
             this.$.suIndexDB.data.fName = this.newPatientData.fName;
             this.$.suIndexDB.data.lName = this.newPatientData.lName;
             this.$.suIndexDB.data.currentStatus = "active";
@@ -630,7 +566,7 @@
           } else if(!data.nationality) {
             this.fire("openToast", {toastText: "Nationality is required before saving the new service user."});
           } else {
-            this._createNewPatient();
+
           };
         };
       }

@@ -5,7 +5,8 @@
 <link rel="import" href="../../../bower_components/iron-icons/iron-icons.html" />
 <link rel="import" href="../../../bower_components/paper-dialog/paper-dialog.html" />
 <link rel="import" href="../../../bower_components/paper-tooltip/paper-tooltip.html" />
-<link rel="import" href="dialog-no-style.html" />
+<link rel="import" href="../../../bower_components/paper-dialog-behavior/paper-dialog-behavior.html">
+
 <!--
 `guuey-photo-editor`
 element that returns edited images as base64 for use in applications.
@@ -25,7 +26,7 @@ optional cropHeight and cropWidth properties to set the crop dimensions
         padding:0;
       }
 
-      #editDialog {
+      :host {
         z-index:998;
         position:fixed;
         padding:var(--edit-dialog-padding, 100px);
@@ -190,7 +191,6 @@ optional cropHeight and cropWidth properties to set the crop dimensions
           background-color:rgba(240, 240, 240, 0.8);
       }
     </style>
-    <paper-icon-button id="startEditButton" icon="image:add-a-photo" on-tap="_startEdit"></paper-icon-button>
 
     <input
       id="imageInput"
@@ -199,39 +199,36 @@ optional cropHeight and cropWidth properties to set the crop dimensions
       hidden>
     </input>
 
-    <dialog-no-style id="editDialog">
-      <div id="imageContainer">
-        <span id="nw" class="resize-handle resize-handle-nw"></span>
-        <span id="ne" class="resize-handle resize-handle-ne"></span>
-        <img id="image" src="images/demo.jpg"/>
-        <span id="se" class="resize-handle resize-handle-se"></span>
-        <span id="sw" class="resize-handle resize-handle-sw"></span>
-      </div>
+    <div id="imageContainer">
+      <span id="nw" class="resize-handle resize-handle-nw"></span>
+      <span id="ne" class="resize-handle resize-handle-ne"></span>
+      <img id="image" src="images/demo.jpg"/>
+      <span id="se" class="resize-handle resize-handle-se"></span>
+      <span id="sw" class="resize-handle resize-handle-sw"></span>
+    </div>
 
-      <div class="toolbar">
-        <paper-icon-button id="addImageButton" class="edit-button" icon="image:add-a-photo" on-tap="change"></paper-icon-button>
-        <paper-icon-button id="rotateLeftButton" class="edit-button" icon="image:rotate-left" on-tap="rotateLeft"></paper-icon-button>
-        <paper-icon-button id="rotateRightButton" class="edit-button" icon="image:rotate-right" on-tap="rotateRight"></paper-icon-button>
-        <paper-icon-button id="cropImageButton" class="edit-button" icon="image:crop" on-tap="crop"></paper-icon-button>
-        <paper-icon-button id="saveImageButton" class="edit-button" icon="icons:save" on-tap="save"></paper-icon-button>
-        <paper-icon-button id="resetImageButton" class="edit-button" icon="av:fast-rewind" on-tap="reset"></paper-icon-button>
-        <paper-icon-button id="cancelEditButton" class="edit-button" icon="icons:cancel" on-tap="cancel"></paper-icon-button>
-        <paper-tooltip for="addImageButton">add image</paper-tooltip>
-        <paper-tooltip for="rotateLeftButton">rotate image left 90 degrees</paper-tooltip>
-        <paper-tooltip for="rotateRightButton">rotate image right 90 degrees</paper-tooltip>
-        <paper-tooltip for="cropImageButton">crop image</paper-tooltip>
-        <paper-tooltip for="saveImageButton">save image</paper-tooltip>
-        <paper-tooltip for="resetImageButton">revert to original image</paper-tooltip>
-        <paper-tooltip for="cancelEditButton">cancel edits and close</paper-tooltip>
-      </div>
+    <div class="toolbar">
+      <paper-icon-button id="addImageButton" class="edit-button" icon="image:add-a-photo" on-tap="change"></paper-icon-button>
+      <paper-icon-button id="rotateLeftButton" class="edit-button" icon="image:rotate-left" on-tap="rotateLeft"></paper-icon-button>
+      <paper-icon-button id="rotateRightButton" class="edit-button" icon="image:rotate-right" on-tap="rotateRight"></paper-icon-button>
+      <paper-icon-button id="cropImageButton" class="edit-button" icon="image:crop" on-tap="crop"></paper-icon-button>
+      <paper-icon-button id="saveImageButton" class="edit-button" icon="icons:save" on-tap="save"></paper-icon-button>
+      <paper-icon-button id="resetImageButton" class="edit-button" icon="av:fast-rewind" on-tap="reset"></paper-icon-button>
+      <paper-icon-button id="cancelEditButton" class="edit-button" icon="icons:cancel" on-tap="cancel"></paper-icon-button>
+      <paper-tooltip for="addImageButton">add image</paper-tooltip>
+      <paper-tooltip for="rotateLeftButton">rotate image left 90 degrees</paper-tooltip>
+      <paper-tooltip for="rotateRightButton">rotate image right 90 degrees</paper-tooltip>
+      <paper-tooltip for="cropImageButton">crop image</paper-tooltip>
+      <paper-tooltip for="saveImageButton">save image</paper-tooltip>
+      <paper-tooltip for="resetImageButton">revert to original image</paper-tooltip>
+      <paper-tooltip for="cancelEditButton">cancel edits and close</paper-tooltip>
+    </div>
 
-      <div id="overlay" class="overlay">
-        <div class="overlay-inner">
-          <!--overlay used for cropping positioned in css -->
-        </div>
+    <div id="overlay" class="overlay">
+      <div class="overlay-inner">
+        <!--overlay used for cropping positioned in css -->
       </div>
-
-    </dialog-no-style>
+    </div>
 
   </template>
   <script>
@@ -309,6 +306,10 @@ optional cropHeight and cropWidth properties to set the crop dimensions
         }
       },
 
+      behaviors:[
+        Polymer.PaperDialogBehavior
+      ],
+
       ready:function() {
         //update display for images with min/max values
         this.setMinMax();
@@ -321,8 +322,8 @@ optional cropHeight and cropWidth properties to set the crop dimensions
         this.ctx = this.canvas.getContext("2d");
 
         //listener to move the dialog around
-        this.listen(this.$.editDialog, "mousedown", "_startDialogMoving");
-        this.listen(this.$.editDialog, "touchstart", "_startDialogMoving");
+        this.listen(this, "mousedown", "_startDialogMoving");
+        this.listen(this, "touchstart", "_startDialogMoving");
 
         //set listener on resize pointers for when mouse held down
         this.listen(this.$.se, "mousedown", "_startResize");
@@ -337,6 +338,21 @@ optional cropHeight and cropWidth properties to set the crop dimensions
         //set listener on image to start moving
         this.listen(this.$.image, "mousedown", "_startImageMoving");
         this.listen(this.$.image, "touchstart", "_startImageMoving");
+      },
+
+      //overwrite _modalChanged from Polymer.paperDialogBehavior
+      _modalChanged: function(modal, readied) {
+        // modal implies noCancelOnOutsideClick, noCancelOnEscKey and withBackdrop.
+        // We need to wait for the element to be ready before we can read the
+        // properties values.
+        if (!readied) {
+          return;
+        };
+
+        this.__prevNoCancelOnOutsideClick = this.noCancelOnOutsideClick;
+        this.__prevNoCancelOnEscKey = this.noCancelOnEscKey;
+        this.noCancelOnOutsideClick = true;
+        this.noCancelOnEscKey = true;
       },
 
       //set min/max width/height for images based on properties set
@@ -361,10 +377,6 @@ optional cropHeight and cropWidth properties to set the crop dimensions
         this.customStyle["--editor-overlay-width"] = cropWidth + "px";
         this.customStyle["--editor-overlay-height"] = cropHeight + "px";
         this.updateStyles();
-      },
-
-      _startEdit:function(e) {
-        this.$.editDialog.open();
       },
 
       _valueChanged:function(value) {
@@ -473,8 +485,8 @@ optional cropHeight and cropWidth properties to set the crop dimensions
         var isNW = this.checkElementClass(this.eventState.currentTarget,"resize-handle-nw");
         var mouse = {};
         var offset = this.getElementOffset(this.$.imageContainer);
-        mouse.x = (e.clientX || e.pageX || e.touches[0].clientX) - this.$.editDialog.offsetLeft;
-        mouse.y = (e.clientY || e.pageY || e.touches[0].clientY) - this.$.editDialog.offsetTop;
+        mouse.x = (e.clientX || e.pageX || e.touches[0].clientX) - this.offsetLeft;
+        mouse.y = (e.clientY || e.pageY || e.touches[0].clientY) - this.offsetTop;
         var width;
         var height;
         var left;
@@ -483,8 +495,8 @@ optional cropHeight and cropWidth properties to set the crop dimensions
         if(isSE) {
           width = mouse.x - this.eventState.containerLeft;
           height = mouse.y - this.eventState.containerTop;
-          left = this.eventState.containerLeft - this.$.editDialog.offsetWidth;
-          top = this.eventState.containerTop - this.$.editDialog.offsetHeight;
+          left = this.eventState.containerLeft - this.offsetWidth;
+          top = this.eventState.containerTop - this.offsetHeight;
 
         } else if(isSW) {
           width = this.eventState.containerWidth - (mouse.x - this.eventState.containerLeft);
@@ -620,8 +632,8 @@ optional cropHeight and cropWidth properties to set the crop dimensions
         this.ctx.drawImage(this.$.image, left, top, width, height, 0, 0, width, height);
         this.$.image.src = this.canvas.toDataURL("image/png");
         this.alt.src = this.$.image.src;
-        var x = (this.$.editDialog.offsetWidth / 2 - this.$.imageContainer.offsetWidth / 2) - this.dialogPadding;
-        var y = (this.$.editDialog.offsetHeight / 2 - this.$.imageContainer.offsetHeight /2 ) - this.dialogPadding;
+        var x = (this.offsetWidth / 2 - this.$.imageContainer.offsetWidth / 2) - this.dialogPadding;
+        var y = (this.offsetHeight / 2 - this.$.imageContainer.offsetHeight /2 ) - this.dialogPadding;
         Polymer.dom(this.$.imageContainer).setAttribute("style", "left: " + x + "px; top: " + y + "px;");
         this.cropped=true;
       },
@@ -634,7 +646,7 @@ optional cropHeight and cropWidth properties to set the crop dimensions
 
       //cloes the modal without saving anything
       cancel:function() {
-        this.$.editDialog.close();
+        this.close();
       },
       //reset to original source... undoes all changes
       reset:function() {
@@ -647,7 +659,7 @@ optional cropHeight and cropWidth properties to set the crop dimensions
       //save changes from editor and return result as `value`
       save:function(){
         this.value = this.canvas.toDataURL("image/png");
-        this.$.editDialog.close();
+        this.close();
       },
 
       _startDialogMoving:function(e) {
@@ -661,10 +673,10 @@ optional cropHeight and cropWidth properties to set the crop dimensions
       },
 
       _saveDialogEventState:function(e) {
-        this.dialogEventState.containerWidth = this.$.editDialog.offsetWidth;
-        this.dialogEventState.containerHeight = this.$.editDialog.offsetHeight;
-        this.dialogEventState.containerLeft = this.$.editDialog.offsetLeft;
-        this.dialogEventState.containerTop = this.$.editDialog.offsetTop;
+        this.dialogEventState.containerWidth = this.offsetWidth;
+        this.dialogEventState.containerHeight = this.offsetHeight;
+        this.dialogEventState.containerLeft = this.offsetLeft;
+        this.dialogEventState.containerTop = this.offsetTop;
         this.dialogEventState.mouseX = (e.clientX || e.pageX || e.touches[0].clientX) + window.scrollX;
         this.dialogEventState.mouseY = (e.clientY || e.pageY || e.touches[0].clientY) + window.scrollY;
         this.dialogEventState.currentTarget = e.currentTarget;
@@ -684,7 +696,7 @@ optional cropHeight and cropWidth properties to set the crop dimensions
         var offsetLeft = mouse.x - (this.dialogEventState.mouseX - this.dialogEventState.containerLeft);
         var offsetTop = mouse.y - (this.dialogEventState.mouseY - this.dialogEventState.containerTop);
 
-        Polymer.dom(this.$.editDialog).setAttribute("style","top: " + offsetTop + "px; left: " + offsetLeft + "px;");
+        Polymer.dom(this).setAttribute("style","top: " + offsetTop + "px; left: " + offsetLeft + "px;");
         Polymer.dom.flush();
       },
 

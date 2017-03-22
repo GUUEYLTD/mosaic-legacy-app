@@ -278,7 +278,7 @@
 
     <!--route to declare which home is being accessed-->
     <app-route
-      route="{{route}}"
+      route="[[route]]"
       pattern="/:home"
       data="{{homeData}}"
       tail="{{catRoute}}">
@@ -286,7 +286,7 @@
 
     <!--route for page dir (category of page)-->
     <app-route
-      route="{{catRoute}}"
+      route="[[catRoute]]"
       pattern="/:category"
       data="{{catData}}"
       tail="{{pageRoute}}">
@@ -294,7 +294,7 @@
 
     <!--route for page name-->
     <app-route
-      route="{{pageRoute}}"
+      route="[[pageRoute]]"
       pattern="/:page"
       data="{{pageData}}"
       tail="{{paramRoute}}">
@@ -302,7 +302,7 @@
 
     <!--final param for multi use (patientid, careworkerid etc...)-->
     <app-route
-      route="{{paramRoute}}"
+      route="[[paramRoute]]"
       pattern="/:param"
       data="{{paramData}}">
     </app-route>
@@ -469,6 +469,7 @@
         id="adminDrawer"
         home="[[home]]"
         admin="[[param]]"
+        image="[[user.photoURL]]"
         email="[[user.email]]"
         user-type="[[currentUserType]]"
         opened="{{opened}}"
@@ -503,7 +504,7 @@
           <a on-tap="closeDrawer" name="su-pre" href="/[[home]]/care-plan/su-pre/[[param]]">Pre-Admission Assessment</a>
           <a on-tap="closeDrawer" name="su-care" href="/[[home]]/care-plan/su-care/[[param]]">Care Plan</a>
           <a on-tap="closeDrawer" name="su-care-review" href="/[[home]]/care-plan/su-care-review/[[param]]">Care Plan Review</a>
-          <a on-tap="closeDrawer" name="su-medical" href="/[[home]]/care-plan/su-medical/[[param]]">Medical Assessment</a>
+          <a on-tap="closeDrawer" name="su-uploads" href="/[[home]]/care-plan/su-uploads/[[param]]">File Uploads</a>
           <a on-tap="closeDrawer" name="su-medication" href="/[[home]]/care-plan/su-medication/[[param]]">Medication Outline</a>
           <a on-tap="closeDrawer" name="su-risk" href="/[[home]]/care-plan/su-risk/[[param]]">Risk Assessment</a>
           <a on-tap="closeDrawer" name="su-goals" href="/[[home]]/care-plan/su-goals/[[param]]">Personal Goals</a>
@@ -618,7 +619,12 @@
                 observe="fName lName"
                 initial-count="10">
                   <a class="dropdownLinks" href="/[[home]]/care-plan/su-profile/[[search.$key]]" on-tap="hideSearch">
-                    <paper-item class="dropdownItem">[[search.fName]] [[search.lName]]</paper-item>
+                    <paper-item class="dropdownItem">
+                      <iron-image sizing="contain" src="[[search.image]]" class="searchImage" item-icon></iron-image>
+                      <p class="searchName">
+                        [[search.fName]] [[search.lName]]
+                      </p>
+                    </paper-item>
                   </a>
               </template>
 
@@ -724,7 +730,7 @@
             name="su-goals">
         </su-goals>
           <!--add in user in order to log the uid for version control and logging-->
-          <su-medical
+          <su-uploads
             user-uid="[[userUid]]"
             current-page="[[currentPage]]"
             current-cat="[[currentCat]]"
@@ -733,8 +739,8 @@
             patient="[[param]]"
             home="[[home]]"
             user="{{user}}"
-            name="su-medical">
-          </su-medical>
+            name="su-uploads">
+          </su-uploads>
           <!--add in user in order to log the uid for version control and logging-->
           <su-medication
             user-uid="[[userUid]]"
@@ -758,16 +764,6 @@
             home="[[home]]"
             name="su-pre">
           </su-pre>
-          <su-profile
-            user-uid="[[userUid]]"
-            current-page="[[currentPage]]"
-            current-cat="[[currentCat]]"
-            intended-cat="[[intendedCat]]"
-            page="[[page]]"
-            patient="[[param]]"
-            home="[[home]]"
-            name="su-profile">
-          </su-profile>
           <!--add in user in order to log the uid for version control and logging-->
           <su-risk
             user-uid="[[userUid]]"
@@ -935,7 +931,7 @@
       class="fit-bottom"
       duration="15000">
       <a style="color:yellow;" hidden$=[[termsHidden]] href="/[[home]]/default/def-terms">See Terms</a>
-      <paper-button on-tap="_closeToast">close</paper-button>
+      <paper-button on-tap="closeToast">close</paper-button>
     </paper-toast>
 
   </template>
@@ -1069,6 +1065,7 @@
 
       ready:function(){
         this.addEventListener('openToast', this.openToast);
+        this.addEventListener('closeToast', this.closeToast);
         this.addEventListener('openDrawer', this.openDrawer);
         this.addEventListener('app-drawer-transitioned', this.resizeDrawerImage);
         this.addEventListener("resize", this.resizeElements);
@@ -1177,7 +1174,7 @@
         this.$.mainToast.open();
       },
 
-      _closeToast:function(){
+      closeToast:function(){
         this.$.mainToast.close();
       },
 
@@ -1196,13 +1193,19 @@
           this.$.searchDropdown.hide();
           return null;
         } else {
-          var val=val.toLowerCase();
+          var val = val.toLowerCase();
           this.$.searchDropdown.show();
           return function(search){
-            var fName=search.fName.toLowerCase();
-            var lName=search.lName.toLowerCase();
-            return fName.indexOf(val) != -1 ||
-            lName.indexOf(val) != -1;
+            if(search.fName && search.lName) {
+              var fName = search.fName.toLowerCase();
+              var lName = search.lName.toLowerCase();
+              var fullName = fName + ' ' + lName;
+              var fNameMatches = fName.indexOf(val) != -1;
+              var lNameMatches = lName.indexOf(val) != -1;
+              var fullNameMatches = fullName.indexOf(val) != -1;
+              var notArchived = search.currentStatus != 'archived';
+              return (fNameMatches || lNameMatches || fullNameMatches) && notArchived;
+            };
           };
         };
       },
@@ -1215,10 +1218,16 @@
           var val=val.toLowerCase();
           this.$.mobileSearchDropdown.show();
           return function(search){
-            var fName=search.fName.toLowerCase();
-            var lName=search.lName.toLowerCase();
-            return fName.indexOf(val) != -1 ||
-            lName.indexOf(val) != -1;
+            if(search.fName && search.lName) {
+              var fName = search.fName.toLowerCase();
+              var lName = search.lName.toLowerCase();
+              var fullName = fName + ' ' + lName;
+              var fNameMatches = fName.indexOf(val) != -1;
+              var lNameMatches = lName.indexOf(val) != -1;
+              var fullNameMatches = fullName.indexOf(val) != -1;
+              var notArchived = search.currentStatus != 'archived';
+              return (fNameMatches || lNameMatches || fullNameMatches) && notArchived;
+            };
           };
         };
       },

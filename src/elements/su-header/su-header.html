@@ -8,6 +8,8 @@
 <link rel="import" href="../../../bower_components/app-layout/app-grid/app-grid-style.html" />
 <link rel="import" href="../../../bower_components/iron-media-query/iron-media-query.html" />
 <link rel="import" href="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror.html" />
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html" />
+<link rel="import" href="../../../bower_components/iron-icons/image-icons.html">
 
 <link rel="import" href="../guuey-photo-editor/guuey-photo-editor.html" />
 
@@ -211,6 +213,11 @@
 
     </style>
 
+    <guuey-photo-editor
+      id="photoEditor"
+      value="{{suIndexData.image}}">
+    </guuey-photo-editor>
+
     <div class="pageHeader">
       <div class="headerAvatar">
 
@@ -223,10 +230,11 @@
           src="[[suIndexData.image]]">
         </iron-image>
 
-        <guuey-photo-editor
+        <paper-icon-button
           class="imageButton"
-          value="{{suIndexData.image}}">
-        </guuey-photo-editor>
+          icon="image:add-a-photo"
+          on-tap="openGuueyDialog">
+        </paper-icon-button>
 
       </div>
 
@@ -365,6 +373,10 @@
         "editQuery(query1600, query1400, query1200, query1000, query800, query600)",
         "_suSettingsChanged(settingsData.*)"
       ],
+
+      openGuueyDialog: function() {
+        this.$.photoEditor.open();
+      },
 
       //compute first and last name to be displayed. has two modes depending on privacy mode
       _computeHeaderName: function(privacyNameEnabled, fName, lName) {

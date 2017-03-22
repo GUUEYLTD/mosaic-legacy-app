@@ -1,0 +1,127 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html" />
+
+<script>
+
+  (function(){
+    "use-strict";
+    /*
+    @polymerBehavior Polymer.guueyFormValidationBehavior
+    */
+    Polymer.guueyFormValidationBehavior = {
+
+      is:"guuey-form-validation-behavior",
+
+      properties: {
+
+        validateableInputs: {
+          type: Array,
+          value: []
+        },
+
+        invalidInputs: {
+          type: Array,
+          value: []
+        },
+
+        autoValidateValid: {
+          type: Boolean,
+          value: false
+        }
+
+      },
+
+      observers: [
+        '_pageChanged(page)'
+      ],
+
+      _pageChanged: function(page) {
+        if(page != this.localName) {
+          this.validateableInputs.forEach(function(input) {
+            this.unsetInvalidListener(input);
+          }.bind(this));
+        } else {
+          this.startWatchingInputs();
+        };
+      },
+
+      attached: function() {
+        var forms = Polymer.dom(this.root).querySelectorAll('.guuey-input-validation');
+        forms.forEach(function(form) {
+          var inputs = Polymer.dom(form).children;
+          inputs.forEach(function(input) {
+            this.push('validateableInputs', input);
+            this.setDefaultContent(input);
+          }.bind(this));
+        }.bind(this));
+        this.startWatchingInputs();
+      },
+
+      startWatchingInputs: function() {
+        this.validateableInputs.forEach(function(input) {
+          this.setInvalidListener(input);
+        }.bind(this));
+      },
+
+      setDefaultContent: function(input) {
+          input.value = input.name || input.label;
+      },
+
+      setInvalidListener: function(input) {
+        input.addEventListener('invalid-changed', function(e) {
+          this.autoValidateInputs();
+        }.bind(this));
+      },
+
+      unsetInvalidListener: function(input) {
+        input.removeEventListener('invalid-changed', function(e) {
+          this.autoValidateInputs();
+        }.bind(this));
+      },
+
+      autoValidateInputs: function(e) {
+        this.invalidInputs = [];
+        this.validateableInputs.forEach(function(input) {
+          if(input.invalid) {
+            this.invalidInputs.push(input.name || input.label);
+          };
+        }.bind(this));
+
+        if(this.invalidInputs.length > 0) {
+          var toastMessage = 'The following inputs are still missing: ' + this.invalidInputs.join(', ');
+          this.fire('openToast', {toastText: toastMessage});
+        } else {
+          this.fire('closeToast');
+          this.autoValidateValid = true;
+        };
+      },
+
+      //used to manually validate inputs
+      validateInputs: function(inputField) {
+        var inputs = Polymer.dom(inputField).children;
+        var invalid = false;
+        var invalidInputs = [];
+        inputs.forEach(function(input) {
+          input.validate();
+          if(input.invalid) {
+            invalid = true;
+            invalidInputs.push(input.name || input.label);
+          };
+        });
+        return {
+          invalid: invalid,
+          invalidInputs: invalidInputs.join(', ')
+        };
+      },
+
+      clearValidation: function(inputField) {
+        var inputs = Polymer.dom(inputField).children;
+        inputs.forEach(function(input) {
+          input.invalid = false;
+        }.bind(this));
+      }
+
+    };
+
+  })();
+
+</script>

@@ -19,11 +19,13 @@
         display:block;
       }
 
-      paper-button {
-        background-color:#41847d;
+      .confirm-button {
         color:#FFFFFF;
-        font-weight:bold;
-        margin:0;
+        background-color:#009688;
+      }
+
+      .cancel-button {
+        color: #212121;
       }
 
       .label {
@@ -71,13 +73,13 @@
       <paper-dialog id="dateDialog" class="paper-date-picker-dialog">
         <paper-date-picker id="paperDate" date={{date}}></paper-date-picker>
         <div class="buttons">
-          <paper-button on-tap="cancelDate">Cancel</paper-button>
-          <paper-button on-tap="saveDate">Save</paper-button>
+          <paper-button class="cancel-button" on-tap="cancelDate">Cancel</paper-button>
+          <paper-button class="confirm-button" on-tap="saveDate">Save</paper-button>
         </div>
       </paper-dialog>
 
         <div on-tap="openDialog" class="buttonWrapper">
-          <paper-input label="[[label]]" value="{{_computeDate(value)}}" disabled></paper-input>
+          <paper-input required auto-validate invalid="{{invalid}}" label="[[label]]" value="{{_computeDate(value)}}" disabled></paper-input>
         </div>
       </div>
 
@@ -90,7 +92,7 @@
       is: 'guuey-date-input',
 
       properties: {
-        
+
         //the value to be returned from this element once when saveDate() is called.
         value: {
           type:String,
@@ -104,6 +106,12 @@
         //the date returned from the contained paper-date-picker element
         date: {
           type:Object
+        },
+
+        //invalid property taken from paper-input and passed on to element... used for validation in parent elements
+        invalid: {
+          type: Boolean,
+          value: false,
         }
 
       },
@@ -118,7 +126,7 @@
         if(value) {
           return value.slice(3,15);
         } else {
-          return "Date not set";
+          return '';
         };
       },
 

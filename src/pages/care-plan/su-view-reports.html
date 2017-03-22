@@ -13,6 +13,7 @@
 <link rel="import" href="../../../bower_components/paper-progress/paper-progress.html" />
 <link rel="import" href="../../../bower_components/google-chart/google-chart.html" />
 <link rel="import" href="../../../bower_components/paper-tabs/paper-tabs.html" />
+<link rel="import" href="../../../bower_components/iron-resizable-behavior/iron-resizable-behavior.html" />
 
 <link rel="import" href="../../elements/su-header/su-header.html" />
 <link rel="import" href="../../elements/media-queries/media-queries.html" />
@@ -455,6 +456,7 @@
         this.viewThisDay();
         this.setDateRangeDisplay();
       },
+
       properties: {
 
         dimensions: {
@@ -466,7 +468,8 @@
         },
 
         patient: {
-          type: String
+          type: String,
+          observer: '_patientChanged'
         },
 
         home: {
@@ -529,11 +532,30 @@
         "_selectChanged(selectDate.*)"
       ],
 
+      listeners: {
+        'iron-resize': '_onIronResize'
+      },
+
       behaviors: [
         Polymer.carePlanAnimation,
         Polymer.suPrintBehavior,
-        Polymer.suResizeBehavior
+        Polymer.suResizeBehavior,
+        Polymer.IronResizableBehavior
       ],
+
+      _onIronResize: function() {
+        // Ensure every chart is redrawn on resize for full responsiveness
+        this.$.healthGraph.redraw();
+      },
+
+      _patientChanged: function(patient) {
+        if(this.$.reportsDB.path) {
+          var path = this.$.reportsDB.path.split('/');
+          path[3] = patient;
+          var newPath = path.join('/');
+          this.$.reportsDB.path = newPath;
+        };
+      },
 
       _computeReadableDate: function(data) {
         var date = new Date(parseInt(data));
@@ -627,9 +649,9 @@
             nightHealth = data.base[x].night.health;
             nightMood = data.base[x].night.mood;
           };
-          var morning = [date, mornHealth, mornMood];
-          var afternoon = [date, afterHealth, afterMood];
-          var night = [date, nightHealth, nightMood];
+          var morning = [date + ' Morning', mornHealth, mornMood];
+          var afternoon = [date + ' Afternoon', afterHealth, afterMood];
+          var night = [date + ' Night', nightHealth, nightMood];
           rowArr.push(morning, afternoon, night);
         };
         this.graphRows = rowArr;

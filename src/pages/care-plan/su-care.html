@@ -135,7 +135,7 @@
       :host{
         --app-grid-columns:5;
         --app-grid-expandible-item-columns:2;
-        --app-grid-item-height:100px;
+
       }
       .agreement{
         width:50%;
@@ -398,6 +398,21 @@
           type: String,
         },
 
+        suBasicInfo: {
+          type: Object,
+          value: {}
+        },
+
+        agreeData: {
+          type: Object,
+          value: {}
+        },
+
+        agreeReady: {
+          type: Boolean,
+          value: false
+        },
+
         //table inputs need to be declared here
         wellBeingQuestionnaireInputs: {
           type: Array,
@@ -446,7 +461,8 @@
       },
 
       observers: [
-        "_requirementsMet(agreeData)"
+        "_requirementsMet(agreeData)",
+        '_checkServiceUser(suBasicInfo, agreeData, agreeReady)'
       ],
 
       behaviors: [
@@ -472,10 +488,19 @@
       },
 
       _checkServiceUser: function(suBasicInfo) {
-        var fullName = suBasicInfo.fName + " " + suBasicInfo.lName;
-        if(!this.agreeData.suName) {
-          this.agreeData.suName = fullName;
-          this.set("agreeData.suName", fullName);
+        if(suBasicInfo.fName && suBasicInfo.lName) {
+          var that = this;
+          var path = '/homes/' + this.home + '/patients/' + this.patient + '/carePlan/statementOfServiceUser/suName';
+          var fullName = suBasicInfo.fName + " " + suBasicInfo.lName;
+          this.$.agreeDB.getStoredValue(path)
+            .then(function(suName) {
+              if(that.$.agreeDB.valueIsEmpty(suName)) {
+                console.log('setting name');
+                that.$.agreeDB.setStoredValue(path, fullName);
+              } else {
+                console.log('name exists');
+              }
+            });
         };
       },
 

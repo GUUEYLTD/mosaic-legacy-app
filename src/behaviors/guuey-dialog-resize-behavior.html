@@ -1,5 +1,4 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html" />
-<link rel="import" href="../../bower_components/iron-scroll-target-behavior/iron-scroll-target-behavior.html" />
 
 <script>
 
@@ -8,67 +7,29 @@
     /*
     @polymerBehavior Polymer.guueyDialogResizeBehavior
     */
-    Polymer.guueyDialogResizeBehaviorImp = {
-      
+    Polymer.guueyDialogResizeBehavior = {
+
       is:"guuey-dialog-resize-behavior",
-
-      properties: {
-        xScrollTop: {
-          type: Number,
-          readOnly: true,
-          value: 0,
-        }
-      },
-
 
       attached: function() {
         this._fitDialogs();
-        this._scrollHandler();
       },
-
-      _scrollHandler: function() {
-        this._setXScrollTop(this._scrollTop);
-      },
-
-      observers: [
-        '_fitDialogs(xScrollTop)'
-      ],
 
       _fitDialogs: function(xScroll) {
-          if(xScroll < 64 || xScroll === undefined) {
-            var that = this;
+        var that = this;
 
-            var dialogs = Polymer.dom(this.root).querySelectorAll('paper-dialog');
-            dialogs.forEach(function(dialog) {
-              dialog.fitInto = that;
-            });
-
-            var others = Polymer.dom(this.root).querySelectorAll('guuey-new-goal-modal');
-            others.forEach(function(dialog) {
-              dialog.fitInto = that;
-            });
-
-          } else {
-            var that = this;
-
-            var dialogs = Polymer.dom(this.root).querySelectorAll('paper-dialog');
-            dialogs.forEach(function(dialog) {
-              dialog.fitInto = window;
-            });
-
-            var others = Polymer.dom(this.root).querySelectorAll('guuey-new-goal-modal');
-            others.forEach(function(dialog) {
-              dialog.fitInto = window;
-            });
-
-          };
+        var dialogs = Polymer.dom(this.root).querySelectorAll('.guuey-modal', '#addGoalModal');
+          dialogs.forEach(function(dialog) {
+            dialog.fitInto = window;
+            var right = window.innerWidth - that.offsetWidth;
+            var top = window.innerHeight - that.offsetHeight;
+            that.customStyle['--guuey-modal-right'] = right + 'px';
+            that.customStyle['--guuey-modal-top'] = top + 'px';
+            that.updateStyles();
+          });
       }
 
     };
-    /*
-    @polymerBehavior Polymer.guueyDialogResizeBehavior
-    */
-    Polymer.guueyDialogResizeBehavior = [Polymer.IronScrollTargetBehavior, Polymer.guueyDialogResizeBehaviorImp];
 
   })();
 

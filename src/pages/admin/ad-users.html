@@ -20,6 +20,7 @@
 <link rel="import" href="../../behaviors/animations/admin-pages-animation.html" />
 <link rel="import" href="../../behaviors/admin-resize-behavior.html" />
 <link rel="import" href="../../behaviors/guuey-dialog-resize-behavior.html" />
+<link rel="import" href="../../behaviors/guuey-form-validation-behavior.html" />
 
 <link rel="import" href="../../styles/common-styles.html" />
 
@@ -133,47 +134,50 @@
     <paper-dialog id="addUserDialog" class="guuey-modal guuey-add-modal">
 
         <h2>Add A Care Worker or Manager</h2>
-        <paper-input
-          label="Name"
-          value="{{newAccount.fName}}"
-          required
-          auto-validate
-          pattern="[a-zA-Z\s]*"
-          error-message="Please enter a valid name with no special characters.">
-        </paper-input>
+        <span id="formField">
+          <paper-input
+            label="Name"
+            value="{{newAccount.fName}}"
+            required
+            pattern="[a-zA-Z\s]*"
+            error-message="Please enter a valid name with no special characters.">
+          </paper-input>
 
-        <paper-input
-          label="Surname"
-          value="{{newAccount.lName}}"
-          required
-          auto-validate
-          pattern="[a-zA-Z\s]*"
-          error-message="Please enter a valid surname with no special characters.">
-        </paper-input>
+          <paper-input
+            label="Surname"
+            value="{{newAccount.lName}}"
+            required
+            pattern="[a-zA-Z\s]*"
+            error-message="Please enter a valid surname with no special characters.">
+          </paper-input>
 
-        <paper-input
-          label="Username/Email"
-          value="{{newAccount.username}}"
-          required
-          auto-validate
-          type="email"
-          error-message="Please enter a valid email address as the username.">
-        </paper-input>
+          <paper-input
+            label="Username/Email"
+            value="{{newAccount.username}}"
+            required
+            type="email"
+            error-message="Please enter a valid email address as the username.">
+          </paper-input>
 
-        <paper-dropdown-menu label="Role" class="dialogHalf">
-          <paper-listbox attr-for-selected="value" selected="{{newAccount.role}}" class="dropdown-content">
-            <paper-item value="manager">Manager</paper-item>
-            <paper-item value="careWorker">Care Worker</paper-item>
-          </paper-listbox>
-        </paper-dropdown-menu>
+          <paper-dropdown-menu
+            label="Role"
+            class="dialogHalf"
+            required>
+            <paper-listbox attr-for-selected="value" selected="{{newAccount.role}}" class="dropdown-content">
+              <paper-item value="manager">Manager</paper-item>
+              <paper-item value="careWorker">Care Worker</paper-item>
+            </paper-listbox>
+          </paper-dropdown-menu>
 
-        <paper-dropdown-menu label="Service Users Supervised">
-          <paper-listbox multi attr-for-selected="value" selected-values="{{newAccount.patients}}" class="dropdown-content">
-            <template is="dom-repeat" items="{{susData}}">
-              <paper-item value="{{item.$key}}">{{item.lName}}, {{item.fName}}</paper-item>
-            </template>
-          </paper-listbox>
-        </paper-dropdown-menu>
+          <paper-dropdown-menu
+            label="Service Users Supervised">
+            <paper-listbox multi attr-for-selected="value" selected-values="{{newAccount.patients}}" class="dropdown-content">
+              <template is="dom-repeat" items="{{susData}}">
+                <paper-item value="{{item.$key}}">{{item.lName}}, {{item.fName}}</paper-item>
+              </template>
+            </paper-listbox>
+          </paper-dropdown-menu>
+        </span>
         <div class="modal-button-container">
           <paper-button dialog-dismiss>Cancel</paper-button>
           <paper-button on-tap="createNewUser">Create</paper-button>
@@ -361,7 +365,8 @@
       behaviors: [
         Polymer.adminPagesAnimation,
         Polymer.adminResizeBehavior,
-        Polymer.guueyDialogResizeBehavior
+        Polymer.guueyDialogResizeBehavior,
+        Polymer.guueyFormValidationBehavior
       ],
 
       userOptions: function(e) {
@@ -397,33 +402,39 @@
       },
 
       createNewUser: function() {
-        var password = this.makePass();
-        var that = this;
-        this.$.createUser.createUserWithEmailAndPassword(that.newAccount.username, password)
-          .then(function(user) {
-            user.updateProfile({
-              displayName: that.newAccount.fName + " " + that.newAccount.lName
-            }).then(function() {
-              that.fire("openToast",{toastText: "New User display name updated."});
-            }, function(error) {
-              that.fire("openToast",{toastText: error});
+        var validation = this.validateInputs(this.$.formField);
+        if(validation.invalid) {
+          this.fire("openToast", {toastText: "The following items are missing or invalid: " + validation.invalidInputs})
+        } else {
+          var password = this.makePass();
+          var that = this;
+          this.$.createUser.createUserWithEmailAndPassword(that.newAccount.username, password)
+            .then(function(user) {
+              user.updateProfile({
+                displayName: that.newAccount.fName + " " + that.newAccount.lName
+              }).then(function() {
+                that.fire("openToast",{toastText: "New User display name updated."});
+              }, function(error) {
+                that.fire("openToast",{toastText: error});
+              });
+              var userEntry = {
+                userUID: user.uid,
+                username: user.email,
+                displayName: that.newAccount.fName + " " + that.newAccount.lName,
+                role: that.newAccount.role,
+                home: that.home,
+              };
+              //patients and role
+              if(that.newAccount.patients){
+                userEntry.patients = that.newAccount.patients;
+              };
+              that.saveNewUser(userEntry).bind(that);
+            })
+            .catch(function(error) {
+              that.fire("openToast", {toastText: error});
             });
-            var userEntry = {
-              userUID: user.uid,
-              username: user.email,
-              displayName: that.newAccount.fName + " " + that.newAccount.lName,
-              role: that.newAccount.role,
-              home: that.home,
-            };
-            //patients and role
-            if(that.newAccount.patients){
-              userEntry.patients = that.newAccount.patients;
-            };
-            that.saveNewUser(userEntry).bind(that);
-          })
-          .catch(function(error) {
-            that.fire("openToast", {toastText: error});
-          });
+        }
+
       },
 
       saveNewUser:function(userEntry) {
@@ -467,6 +478,8 @@
         this.$.createUser.signOut();
         this.$.userDB.path = null;
         this.$.userDB.data = {};
+        this.$.addUserDialog.close();
+        this.clearValidation(this.$.formField);
       },
       makePass:function(){
           var text = "";
