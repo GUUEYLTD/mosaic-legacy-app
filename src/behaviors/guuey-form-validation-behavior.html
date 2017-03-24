@@ -162,9 +162,10 @@
               tagName === 'guuey-signature' ||
               tagName === 'paper-slider' ||
               tagName === 'guuey-time-chunk-selector' ||
-              tagName === 'guuey-weekday-selector');
+              tagName === 'guuey-weekday-selector' ||
+              tagName === 'guuey-date-input');
             if(input.invalid || (isAltInput && !input.value)) {
-              this.invalidInputs.push(input.name || input.label);
+              this.push('invalidInputs', (input.name || input.label));
             };
           }.bind(this));
 

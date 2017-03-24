@@ -16,17 +16,11 @@
       },
 
       _fitDialogs: function(xScroll) {
-        var that = this;
-
         var dialogs = Polymer.dom(this.root).querySelectorAll('.guuey-modal', '#addGoalModal');
           dialogs.forEach(function(dialog) {
             dialog.fitInto = window;
-            var right = window.innerWidth - that.offsetWidth;
-            var top = window.innerHeight - that.offsetHeight;
-            that.customStyle['--guuey-modal-right'] = right + 'px';
-            that.customStyle['--guuey-modal-top'] = top + 'px';
-            that.updateStyles();
-          });
+            dialog.positionTarget = this;
+          }.bind(this));
       }
 
     };

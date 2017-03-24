@@ -13,6 +13,7 @@
 
 <link rel="import" href="../../behaviors/multi-edit-animation-behavior.html" />
 <link rel="import" href="../../behaviors/edit-view-resize-behavior.html" />
+<link rel="import" href="../../behaviors/guuey-form-validation-behavior.html" />
 
 <link rel="import" href="../../styles/common-styles.html" />
 
@@ -84,47 +85,67 @@
     <paper-card class="editViewCard padded">
 
       <paper-card image="[[_computeGoalImage(riskData.category)]]" heading="[[riskData.category]]" elevation="3" class="topEditCard">
-        <div class="flexRow">
+        <div class="flexRow guuey-input-validation">
           <guuey-date-input
+            required
+            auto-validate
             value="{{riskData.date}}"
             label="Date of risk assessment">
           </guuey-date-input>
 
           <guuey-slider
+            auto-validate
+            required
             hide-value
+            label="Risk Level"
             value="{{riskData.riskLevel}}">
           </guuey-slider>
         </div>
       </paper-card>
 
-      <guuey-text-input
-        value="{{riskData.backgroundOfRisk}}"
-        label="Background of Risk">
-      </guuey-text-input>
+      <span class="guuey-input-validation">
 
-      <guuey-text-input
-        value="{{riskData.riskIdentified}}"
-        label="Risk Identified">
-      </guuey-text-input>
+        <guuey-text-input
+          auto-validate
+          required
+          value="{{riskData.backgroundOfRisk}}"
+          label="Background of Risk">
+        </guuey-text-input>
 
-      <guuey-text-input
-        value="{{riskData.crisisPlan}}"
-        label="crisis Plan"
-        label2="How to Address">
-      </guuey-text-input>
+        <guuey-text-input
+          auto-validate
+          required
+          value="{{riskData.riskIdentified}}"
+          label="Risk Identified">
+        </guuey-text-input>
 
-      <vaadin-combo-box
-        class="guttered"
-        label="Agreed Frequencey of Evaluation"
-        items="[[evalFreq]]"
-        value="{{riskData.agreedFrequencyOfEvaluation}}">
-      </vaadin-combo-box>
+        <guuey-text-input
+          auto-validate
+          required
+          value="{{riskData.crisisPlan}}"
+          label="crisis Plan"
+          label2="How to Address">
+        </guuey-text-input>
 
-      <guuey-date-input
-        class="guttered"
-        value="{{riskData.evaluation}}"
-        label="Date of risk evaluation">
-      </guuey-date-input>
+        <vaadin-combo-box
+          auto-validate
+          required
+          class="guttered"
+          label="Agreed Frequencey of Evaluation"
+          items="[[evalFreq]]"
+          value="{{riskData.agreedFrequencyOfEvaluation}}">
+        </vaadin-combo-box>
+
+        <guuey-date-input
+          auto-validate
+          required
+          class="guttered"
+          value="{{riskData.evaluation}}"
+          label="Date of risk evaluation">
+        </guuey-date-input>
+
+      </span>
+
 
     </paper-card>
 
@@ -187,6 +208,7 @@
       behaviors: [
         Polymer.editViewResizeBehavior,
         //Polymer.multiEditAnimationBehavior
+        Polymer.guueyFormValidationBehavior
       ],
 
       observers: [

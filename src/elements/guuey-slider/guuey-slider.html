@@ -106,14 +106,41 @@
         //the value to be returned from 1 to 3
         value: {
           type: Number,
-          notify: true
+          notify: true,
+          value: null
         },
+
+        invalid: {
+          type: Boolean,
+          computed: '_computeInvalid(value, required)',
+          notify: true,
+          reflectToAttribute: true
+        },
+
+        required: {
+          type: Boolean,
+          value: false
+        },
+
+        autoValidate: {
+          type: Boolean,
+          value: false
+        },
+
+        label: {
+          type: String,
+          value: ''
+        }
 
       },
 
       observers:[
         "slidercolorChange(value)"
       ],
+
+      _computeInvalid: function(value, required) {
+        return required && (!value || typeof value != 'number') ? true : false;
+      },
 
       updateSliderColor: function() {
         switch(this.$.slider.immediateValue) {

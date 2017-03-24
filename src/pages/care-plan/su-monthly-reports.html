@@ -15,6 +15,7 @@
 <link rel="import" href="../../behaviors/animations/care-plan-animation.html" />
 <link rel="import" href="../../behaviors/su-print-behavior.html" />
 <link rel="import" href="../../behaviors/su-resize-behavior.html" />
+<link rel="import" href="../../behaviors/guuey-form-validation-behavior.html" />
 
 <link rel="import" href="../../styles/common-styles.html" />
 
@@ -114,8 +115,8 @@
           </template>
         </paper-tabs>
 
-        <div class="app-grid">
-          <paper-card elevation="3" class="padded">
+        <div class="app-grid guuey-input-validation">
+          <paper-card elevation="3" class="padded guuey-input-validation">
 
             <p class="attrCardLabel">
               mood
@@ -128,16 +129,16 @@
               Please select a value out of 100 for [[suIndexData.fName]]'s overall mood.
             </p>
 
-            <div class="sliderRow">
+            <div class="sliderRow guuey-input-validation">
               <iron-icon id="iconBad" icon="icons:thumb-down"></iron-icon>
-              <paper-slider id="moodSlider" class$="[[_computeProgressColor(monthlyRepData.mood)]]" pin value="{{monthlyRepData.mood}}"></paper-slider>
+              <paper-slider required auto-validate id="moodSlider" name="Mood Slider" class$="[[_computeProgressColor(monthlyRepData.mood)]]" pin value="{{monthlyRepData.mood}}"></paper-slider>
               <iron-icon id="iconGood" icon="icons:thumb-up"></iron-icon>
             </div>
 
-            <paper-textarea label="Comments on Mood" value="{{monthlyRepData.moodComments}}"></paper-textarea>
+            <paper-textarea required auto-validate label="Comments on Mood" value="{{monthlyRepData.moodComments}}"></paper-textarea>
           </paper-card>
 
-          <paper-card elevation="3" class="padded">
+          <paper-card elevation="3" class="padded guuey-input-validation">
 
             <p class="attrCardLabel">
               health
@@ -150,21 +151,21 @@
               Please select a value out of 100 for [[suIndexData.fName]]'s overall health.
             </p>
 
-            <div class="sliderRow">
+            <div class="sliderRow guuey-input-validation">
               <iron-icon id="iconBad" icon="icons:thumb-down"></iron-icon>
-              <paper-slider id="healthSlider" class$="[[_computeProgressColor(monthlyRepData.health)]]" pin value="{{monthlyRepData.health}}"></paper-slider>
+              <paper-slider required auto-validate id="healthSlider" name="Health Slider" class$="[[_computeProgressColor(monthlyRepData.health)]]" pin value="{{monthlyRepData.health}}"></paper-slider>
               <iron-icon id="iconGood" icon="icons:thumb-up"></iron-icon>
             </div>
 
-            <paper-textarea label="Comments on Health" value="{{monthlyRepData.healthComments}}"></paper-textarea>
+            <paper-textarea required auto-validate label="Comments on Health" value="{{monthlyRepData.healthComments}}"></paper-textarea>
           </paper-card>
 
           <div class="divider full"></div>
 
-          <paper-textarea class="full" label="activities" value="{{monthlyRepData.activities}}"></paper-textarea>
-          <paper-textarea class="full" label="locations" value="{{monthlyRepData.locations}}"></paper-textarea>
-          <paper-textarea class="full" label="incidents" value="{{monthlyRepData.incidents}}"></paper-textarea>
-          <paper-textarea class="full" label="Summary of Month" value="{{monthlyRepData.summaryOfChunk}}"></paper-textarea>
+          <paper-textarea required auto-validate class="full" label="activities" value="{{monthlyRepData.activities}}"></paper-textarea>
+          <paper-textarea required auto-validate class="full" label="locations" value="{{monthlyRepData.locations}}"></paper-textarea>
+          <paper-textarea required auto-validate class="full" label="incidents" value="{{monthlyRepData.incidents}}"></paper-textarea>
+          <paper-textarea required auto-validate class="full" label="Summary of Month" value="{{monthlyRepData.summaryOfChunk}}"></paper-textarea>
         </div>
 
       </div>
@@ -248,7 +249,8 @@
       behaviors: [
         Polymer.carePlanAnimation,
         Polymer.suPrintBehavior,
-        Polymer.suResizeBehavior
+        Polymer.suResizeBehavior,
+        Polymer.guueyFormValidationBehavior
       ],
 
       //get date and compute altMonths array as well as set current month. all in human readable format

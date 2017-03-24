@@ -79,7 +79,7 @@
       </paper-dialog>
 
         <div on-tap="openDialog" class="buttonWrapper">
-          <paper-input required auto-validate invalid="{{invalid}}" label="[[label]]" value="{{_computeDate(value)}}" disabled></paper-input>
+          <paper-input id="inputField" required="[[required]]" auto-validate="[[autoValidate]]" invalid="{{invalid}}" label="[[label]]" value="{{_computeDate(value)}}" disabled></paper-input>
         </div>
       </div>
 
@@ -112,8 +112,26 @@
         invalid: {
           type: Boolean,
           value: false,
+          notify: true,
+          reflectToAttribute: true
+        },
+
+        required: {
+          type: Boolean,
+          value: false
+        },
+
+        autoValidate: {
+          type: Boolean,
+          value: false,
+          notify: true,
+          reflectToAttribute: true
         }
 
+      },
+
+      validate: function() {
+        return this.$.inputField.validate();
       },
 
       //open the dialog to select a date

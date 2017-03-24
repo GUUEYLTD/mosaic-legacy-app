@@ -28,17 +28,14 @@
         var count;
         this.$.notifyDB.query
           .on("value",function(snapshot){
-            count=snapshot.numChildren();
-            this.notifyCount=count;
+            count = snapshot.numChildren();
+            this.set('notifyCount', count);
           }.bind(this));
       },
 
       _computeNotifyDialogHidden:function(count){
-        if(count.base.length<1){
+        if(count.base.length < 1){
           this.$.notifyDialog.close();
-          this.$.notifyCount.style="opacity:0;";
-        } else {
-          this.$.notifyCount.style="opacity:1;";
         };
       },
 

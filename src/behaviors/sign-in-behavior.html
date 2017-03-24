@@ -50,12 +50,20 @@
         currentDevice: {
           type: String,
           value: null
+        },
+
+        agreeTerms: {
+          type: Object,
+          value: {
+            ready: false,
+            agree: false
+          }
         }
 
       },
 
       observers: [
-        '_processUserAccountTasks(mode, userInfoDBReady, userInfoData, currentDevice, user, statusKnown, signedIn)',
+        '_processUserAccountTasks(mode, currentDevice, user, statusKnown, signedIn, agreeTerms.*, userInfoData.*, appInfoData)',
         '_userChanged(user)',
         '_setUserSettingsPath(user, home)',
         '_setHome(user)'
@@ -69,32 +77,48 @@
         this.checkForAccountFunctions();
       },
 
-      _processUserAccountTasks: function(mode, userInfoDBReady, userInfoData, currentDevice, user, statusKnown, signedIn) {
-          //console.log(mode, userInfoDBReady, userInfoData, currentDevice, user, statusKnown, signedIn);
-          if(mode) {
-            console.log('mode has been set.. running account functions...');
+      _processUserAccountTasks: function(mode, currentDevice, user, statusKnown, signedIn, agreeTermsDeep, userInfoDataDeep, appInfoData) {
+        var userInfoData = userInfoDataDeep.base;
+        var agreeTerms = this.$.userInfoDB.valueIsEmpty(userInfoData) ? agreeTermsDeep.base : {ready: true, agree: userInfoData.agreeTerms};
+        if(mode) {
+          console.log('mode has been set.. running account functions...');
+          this.setDialogOverlay();
+          this.$.verifyDialog.open();
+        } else if(statusKnown && !signedIn && !mode) {
+            console.log('opening login');
             this.setDialogOverlay();
-            this.$.verifyDialog.open();
-          } else if(statusKnown && !signedIn) {
-              console.log('opening login');
-              this.setDialogOverlay();
-              this.$.loginDialog.open();
-          } else if(user && userInfoDBReady && !this.$.userInfoDB.valueIsEmpty(userInfoData) && !userInfoData.agreeTerms) {
+            this.$.loginDialog.open();
+        } else if(user && user.uid && agreeTerms.ready && !agreeTerms.agree && signedIn) {
             console.log('open termsDialog');
             this.setDialogOverlay();
             this.$.termsDialog.open();
-          } else if(user && !currentDevice) {
+        } else if(user && user.uid && agreeTerms.agree && signedIn && !currentDevice) {
             console.log('setting device for notifications...');
             this.setDialogOverlay();
             this.$.requestNotificationModal.open();
-          } else if(user && !user.emailVerified) {
+        } else if(user && user.uid && agreeTerms.agree && signedIn && currentDevice && !user.emailVerified) {
             console.log('verifying email');
             this.setDialogOverlay();
             this.$.verifyDialog.open();
-          } else {
-            console.log('no tasks needed');
-          };
+        } else if(user && user.uid && agreeTerms.agree && signedIn && currentDevice && user.emailVerified && appInfoData && appInfoData.version){
+            if(this.appVersion === 'new') {
+              this.set('appVersion', appInfoData.version);
+            } else if(this.appVersion != 'new' && this.appVersion != appInfoData.version) {
+              this.notifyUpdate();
+            };
+        };
+      },
 
+      notifyUpdate: function() {
+        this.$.appUpdateDialog.open();
+        setTimeout(function() {
+          this.$.appUpdateDialog.open();
+        }.bind(this),1000 * 60 * 5);
+      },
+
+      updateApp: function() {
+        this.set('appVersion', this.appInfoData.version);
+        window.location.reload(true);
       },
 
       _setHome: function(user) {
@@ -108,22 +132,21 @@
       },
 
       _setUserSettingsPath: function(user, home) {
-        var that = this;
-        if(user && home) {
-
+        if(user && user.uid && home && home !='default') {
           this.$.userSettingsDB.path = "/homes/" + home + "/users/" + user.uid + "/settings";
           this.$.userSettingsDB.ref.once("value", function(snap) {
             var userSettingsData = snap.val();
             if(!userSettingsData || !userSettingsData.vcActive) {
-              that.set("userSettingsData.vcActive", false);
+              this.set("userSettingsData.vcActive", false);
             }
-          });
-        };
-
-        if(home && user && user.uid) {
-          this.$.userInfoDB.ref.once('value', function(snap) {
-            this.set('userInfoDBReady', true);
           }.bind(this));
+
+          var path = '/homes/' + home + '/users/' + user.uid + '/agreeTerms';
+          this.$.userDB.getStoredValue(path)
+            .then(function(val) {
+              var agreeTermsObj = this.$.userDB.valueIsEmpty(val) ? {ready: true, agree: false} : {ready: true, agree: true};
+              this.set('agreeTerms', agreeTermsObj);
+            }.bind(this));
         };
       },
 

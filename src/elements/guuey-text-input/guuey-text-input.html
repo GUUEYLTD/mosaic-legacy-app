@@ -57,7 +57,10 @@
       <div class="row">
         <div class="col s12">
           <div class="inputWrapper">
-            <paper-textarea
+            <paper-textarea id="mainInput"
+              required="[[required]]"
+              invalid="{{invalid}}"
+              auto-validate="[[autoValidate]]"
               label="Please fill in this form"
               value="{{value}}">
             </paper-textarea>
@@ -89,8 +92,29 @@
         value: {
           type: String,
           notify: true
+        },
+
+        invalid: {
+          type: Boolean,
+          value: false,
+          notify: true,
+          reflectToAttribute: true
+        },
+
+        required: {
+          type: Boolean,
+          value: false
+        },
+
+        autoValidate: {
+          type: Boolean,
+          value: false
         }
 
+      },
+
+      validate: function() {
+        return this.$.mainInput.validate();
       }
 
     });

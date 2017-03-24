@@ -1,0 +1,279 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-input/paper-input.html" />
+<link rel="import" href="../../../bower_components/iron-icon/iron-icon.html" />
+<link rel="import" href="icons.html" />
+<!--
+`guuey-register`
+registration element for use anywhere for guuey care home software.
+
+@demo demo/index.html
+-->
+
+<dom-module id="guuey-register">
+  <template>
+    <style>
+
+      :host {
+        display: block;
+      }
+
+      .form-container {
+        position: relative;
+        width: 300px;
+        height: 400px;
+        margin: auto;
+      }
+
+      .demo-button-left {
+        width:50px;
+        height: 30px;
+        background-color:#870C39;
+        color: #FFFFFF;
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        margin: 0;
+        padding: 0;
+
+        clip-path: polygon(0 0, 100% 0, 80% 100%, 0 100%);
+      }
+      .demo-button-left-inner {
+        display: flex;
+        flex-direction: row;
+        width: 40px;
+        height: 30px;
+      }
+
+      .pink-icon {
+        color: #e51561;
+        width: 20px;
+        align-self:center;
+        flex-grow:1;
+      }
+
+      .demo-button-right {
+        width:50px;
+        height: 30px;
+        background-color: #e51561;
+        color: #FFFFFF;
+        position: absolute;
+        top: 0px;
+        left: 40px;
+        margin: 0;
+        padding: 0;
+
+        clip-path: polygon(20% 0, 100% 0, 80% 100%, 0 100%);
+      }
+
+      .demo-button-right-inner {
+        width: 30px;
+        height: 30px;
+        margin: 0 10px 0 10px;
+        display: flex;
+        flex-direction: row;
+      }
+
+      .demo-button-right-inner-content {
+        flex-grow:1;
+        align-self: center;
+        text-align: center;
+        text-transform: uppercase;
+        margin: 0;
+        padding: 0;
+        font-size: 10px;
+      }
+
+      .demo-button-right-inner-content:hover {
+        cursor: pointer;
+        font-weight: bold;
+      }
+
+      .form-body {
+        width:240px;
+        height: 240px;
+        background-color: #3d4ba8;
+        color: #FFFFFF;
+        position: absolute;
+        left: 30px;
+        top: 10px;
+        margin: 0;
+        padding: 0;
+
+        clip-path: polygon(0 25px, 55px 25px, 65px 0, 100% 0, 100% 100%, 0 100%);
+      }
+
+      .form-inner {
+        position: relative;
+      }
+
+      .form-header {
+        position: absolute;
+        left: 75px;
+        top: 0px;
+        padding-top: 10px;
+        width: calc(100% - 90px);
+        text-align: right;
+      }
+
+      .header-first {
+        color: #FFFFFF;
+        font-size: 26px;
+        padding: 0;
+        margin: 0;
+      }
+
+      .header-second {
+        color: #FFFFFF;
+        font-size: 34px;
+        padding: 0;
+        margin: 0;
+        line-height: 20px;
+      }
+
+      .header-third {
+        line-height: 40px;
+        color: #FFFFFF;
+        font-size: 26px;
+        padding: 0;
+        margin: 0;
+      }
+
+      .header-free {
+        color: #FFFFFF;
+        font-size: 40px;
+        padding: 0;
+        margin: 0;
+      }
+
+      .form-area {
+        position: absolute;
+        left: 10px;
+        top: 100px;
+        padding: 10px;
+        display:flex;
+        flex-direction: column;
+        align-items: flex-end;
+      }
+
+      paper-input {
+        height: 30px;
+        --paper-input-container-color: #FFFFFF;
+      }
+
+      .register-button-left {
+        width: 30px;
+        height: 30px;
+        background-color: #870C39;
+        color: #FFFFFF;
+        position: absolute;
+        top: 255px;
+        left: 60px;
+
+        clip-path: polygon(0 0, 100% 0, 20px 100%, 0 100%);
+      }
+
+      .register-button-left-inner {
+        width: 20px;
+        height: 30px;
+        display: flex;
+        flex-direction: row;
+      }
+
+      .register-button-right {
+        width: 210px;
+        height: 30px;
+        background-color: #e51561;
+        color: #FFFFFF;
+        position: absolute;
+        left: 80px;
+        top: 255px;
+
+        clip-path: polygon(10px 0, 100% 0, 200px 100%, 0 100%);
+      }
+
+      .register-button-right-inner {
+        width: 190px;
+        height: 30px;
+        margin: 0 10px 0 10px;
+        display: flex;
+        flex-direction: row;
+      }
+
+      .register-button-right-inner-content {
+        flex-grow:1;
+        align-self: center;
+        text-align: center;
+        text-transform: uppercase;
+        margin: 0;
+        padding: 0;
+        font-size: 10px;
+      }
+
+      .register-button-right-inner-content:hover {
+        cursor: pointer;
+        font-weight: bold;
+      }
+
+    </style>
+    <div class="form-container">
+      <div class="demo-button-left">
+        <div class="demo-button-left-inner">
+          <iron-icon class="pink-icon" icon="main:play-circle-outline"></iron-icon>
+        </div>
+      </div>
+      <div class="demo-button-right">
+        <div class="demo-button-right-inner">
+          <p class="demo-button-right-inner-content">
+            demo
+          </p>
+        </div>
+      </div>
+      <div class="form-body">
+        <div class="form-inner">
+          <div class="form-header">
+            <p class="header-first">
+              Start your
+            </p>
+            <p class="header-second">
+              care plan
+            </p>
+            <p class="header-third">
+              for <span class="header-free">free!</span>
+            </p>
+          </div>
+          <div class="form-area">
+            <paper-input label="Your Email Address" value="{{email}}"></paper-input>
+            <paper-input label="Password" value="{{password}}"></paper-input>
+            <paper-input label="Confirm Password" value="{{cPassword}}"></paper-input>
+          </div>
+        </div>
+      </div>
+
+      <div class="register-button-left">
+        <iron-icon class="pink-icon" icon="main:thumb-up"></iron-icon>
+      </div>
+      <div class="register-button-right">
+        <div class="register-button-right-inner">
+          <div class="register-button-right-inner-content">
+            click here to register
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'guuey-register',
+
+      properties: {
+        prop1: {
+          type: String,
+          value: 'guuey-register',
+        },
+      },
+
+    });
+  </script>
+</dom-module>

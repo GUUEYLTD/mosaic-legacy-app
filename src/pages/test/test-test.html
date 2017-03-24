@@ -3,6 +3,7 @@
 <link rel="import" href="../../../bower_components/iron-form/iron-form.html" />
 <link rel="import" href="../../../bower_components/vaadin-combo-box/vaadin-combo-box.html" />
 <link rel="import" href="../../../bower_components/paper-button/paper-button.html" />
+<link rel="import" href="../../elements/guuey-register/guuey-register.html" />
 
 <dom-module id="test-test">
   <template>
@@ -18,23 +19,8 @@
 
     <paper-card class="main">
 
-      <form is="iron-form" id="mainForm">
-        <paper-input
-          label="name"
-          value="{{testData.name}}"
-          required
-          error-message="pick a name dumbass..."></paper-input>
-        <vaadin-combo-box
-          allow-custom-value
-          label="age"
-          items="[[ages]]"
-          value="{{testData.age}}"
-          required
-          auto-validate
-          error-message="Please enter a number">
-        </vaadin-combo-box>
-        <paper-button on-tap="validate">validate</paper-button>
-      </form>
+      <guuey-register>
+      </guuey-register>
 
     </paper-card>
 
@@ -53,7 +39,7 @@
           console.log(this.localName + '#' + this.id + ' attribute ' + name +
             ' was changed to ' + this.getAttribute(name));
         },
-        
+
         properties:{
           testData: {
             type: Object,

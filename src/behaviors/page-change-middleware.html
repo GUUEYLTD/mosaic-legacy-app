@@ -123,31 +123,18 @@
         this.customStyle["--page-loading-active-color"] = "transparent";
         this.updateStyles();
         this.selected = this.page;
-        this.ensureLayout(page);
       },
 
       pageLoaded: function(page) {
         this.customStyle["--page-loading-active-color"] = "transparent";
         this.updateStyles();
         this.selected = this.page;
-        this.ensureLayout(page);
       },
 
       lazyLoadPage: function(page) {
         // load page import on demand.
         var resolvedUrl = this.resolveUrl('pages/' + this.category + '/' + page + '.html');
         this.importHref (resolvedUrl, this.pageSuccess.apply(this, [page]), this.errorRedirect, true);
-      },
-
-      ensureLayout: function(page) {
-        if(page.slice(0,3) === "def" || page.slice(0,2) === "ad" || page === "su-create") {
-          this.$.appDrawerLayout.forceNarrow = true;
-          this.$.appHeader.notifyResize();
-          this.$.suDrawer.close();
-        } else {
-          this.$.appDrawerLayout.forceNarrow = false;
-          this.$.appHeader.notifyResize();
-        };
       },
 
       pageSuccess: function(page) {

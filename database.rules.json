@@ -1,5 +1,9 @@
 {
   "rules": {
+    "appInfo": {
+      ".read": "true",
+      ".write": "false"
+    },
     "homes": {
       ".read": "false",
       ".write": "false",

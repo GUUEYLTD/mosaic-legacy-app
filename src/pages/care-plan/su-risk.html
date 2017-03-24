@@ -25,7 +25,8 @@
 <link rel="import" href="../../behaviors/animations/care-plan-animation.html" />
 <link rel="import" href="../../behaviors/su-resize-behavior.html" />
 <link rel="import" href="../../behaviors/su-print-behavior.html" />
-<link rel="improt" href="../../behaviors/guuey-dialog-resize-behavior.html" />
+<link rel="import" href="../../behaviors/guuey-dialog-resize-behavior.html" />
+<link rel="import" href="../../behaviors/guuey-form-validation-behavior.html" />
 
 <link rel="import" href="../../styles/common-styles.html" />
 
@@ -76,51 +77,64 @@
 
       <h2>Add New Risk Assessment</h2>
 
-      <vaadin-combo-box
-        class="dialogHalf"
-        label="Category"
-        items="[[riskTypes]]"
-        value="{{riskData.category}}">
-      </vaadin-combo-box>
+      <span id="formField">
 
-      <guuey-date-input
-        class="dialogHalf"
-        value="{{riskData.date}}"
-        label="Date of risk assessment">
-      </guuey-date-input>
+        <vaadin-combo-box
+          required
+          class="dialogHalf"
+          label="Category"
+          items="[[riskTypes]]"
+          value="{{riskData.category}}">
+        </vaadin-combo-box>
 
-      <paper-textarea
-        label="Background of Risk"
-        value="{{riskData.backgroundOfRisk}}">
-      </paper-textarea>
+        <guuey-date-input
+          required
+          class="dialogHalf"
+          value="{{riskData.date}}"
+          label="Date of risk assessment">
+        </guuey-date-input>
 
-      <paper-textarea
-        label="Risk Identified"
-        value="{{riskData.riskIdentified}}">
-      </paper-textarea>
+        <paper-textarea
+          required
+          label="Background of Risk"
+          value="{{riskData.backgroundOfRisk}}">
+        </paper-textarea>
 
-      <paper-textarea
-        label="Crisis Plan"
-        value="{{riskData.crisisPlan}}">
-      </paper-textarea>
+        <paper-textarea
+          required
+          label="Risk Identified"
+          value="{{riskData.riskIdentified}}">
+        </paper-textarea>
 
-      <vaadin-combo-box
-        class="dialogHalf"
-        label="Agreed Frequencey of Evaluation"
-        items="[[evalFreq]]"
-        value="{{riskData.agreedFrequencyOfEvaluation}}">
-      </vaadin-combo-box>
+        <paper-textarea
+          required
+          label="Crisis Plan"
+          value="{{riskData.crisisPlan}}">
+        </paper-textarea>
 
-      <guuey-date-input
-        class="dialogHalf"
-        value="{{riskData.evaluation}}"
-        label="Date of risk evaluation">
-      </guuey-date-input>
+        <vaadin-combo-box
+          required
+          class="dialogHalf"
+          label="Agreed Frequencey of Evaluation"
+          items="[[evalFreq]]"
+          value="{{riskData.agreedFrequencyOfEvaluation}}">
+        </vaadin-combo-box>
 
-      <guuey-slider
-        class="dialogHalf"
-        value="{{riskData.riskLevel}}">
-      </guuey-slider>
+        <guuey-date-input
+          required
+          class="dialogHalf"
+          value="{{riskData.evaluation}}"
+          label="Date of risk evaluation">
+        </guuey-date-input>
+
+        <guuey-slider
+          required
+          class="dialogHalf"
+          value="{{riskData.riskLevel}}">
+        </guuey-slider>
+
+      </span>
+
       <div class="modal-button-container">
         <paper-button class="cancel-button" on-tap="cancelNewRisk">cancel</paper-button>
         <paper-button class="confirm-button" on-tap="saveNewRisk">save</paper-button>
@@ -165,6 +179,8 @@
           </su-risk-multi-view>
 
           <su-risk-edit-view
+            id="editView"
+            wait-for-auto-validate
             db-loaded="[[dbLoaded]]"
             name="edit-view"
             risk-data="{{riskData}}">
@@ -253,12 +269,17 @@
             "Legionella",
             "Other"
           ]
+        },
+
+        waitForAutoValidate: {
+          type: Boolean,
+          value: true
         }
 
       },
 
       observers: [
-        "requirementsMet(risksData)"
+        //"requirementsMet(risksData)"
       ],
 
       behaviors: [
@@ -266,14 +287,15 @@
         Polymer.carePlanAnimation,
         Polymer.suPrintBehavior,
         Polymer.suResizeBehavior,
-        Polymer.guueyDialogResizeBehavior
+        Polymer.guueyDialogResizeBehavior,
+        Polymer.guueyFormValidationBehavior
       ],
 
       editRisk: function(e) {
         var riskId = e.detail.riskId;
         this.$.riskDB.path = "/homes/" + this.home + "/patients/" + this.patient + "/riskAssessment/" + riskId;
-        this.animateEditViewFab();
         this.goEdit();
+        this.animateEditViewFab();
       },
 
       deleteRisk: function(e) {
@@ -287,10 +309,12 @@
 
       goEdit: function() {
         this.pageState = "edit-view";
+        this.$.editView.startAutoValidate();
       },
 
       goMulti: function() {
         this.pageState="multi-view";
+        this.$.editView.stopAutoValidate();
       },
 
       toggleEdit: function() {
@@ -304,18 +328,25 @@
       },
 
       saveNewRisk: function() {
-        var path = "/homes/" + this.home + "/patients/" + this.patient + "/riskAssessment";
-        this.$.riskDB.save(path, null)
-          .then(function(val) {
-            var riskId = this.$.riskDB.path.split("/").pop();
-            this.$.addRiskDialog.close();
-            this.fire("newRiskAssessmentSaved", {riskId: riskId});
-            this.fire("openToast",{toastText: "New risk assessment saved."});
-          }.bind(this))
-          .catch(function(error) {
-            this.$.addRiskDialog.close();
-            this.fire("openToast",{toastText: "There was an error saving the new risk: " + error});
-          }.bind(this));
+
+        var validation = this.validateInputs(this.$.formField);
+        if(validation.invalid) {
+          this.fire("openToast", {toastText: "The following items are missing or invalid: " + validation.invalidInputs});
+        } else {
+          var path = "/homes/" + this.home + "/patients/" + this.patient + "/riskAssessment";
+          this.$.riskDB.save(path, null)
+            .then(function(val) {
+              var riskId = this.$.riskDB.path.split("/").pop();
+              this.$.addRiskDialog.close();
+              this.goEdit();
+              this.fire("newRiskAssessmentSaved", {riskId: riskId});
+              this.fire("openToast",{toastText: "New risk assessment saved."});
+            }.bind(this))
+            .catch(function(error) {
+              this.$.addRiskDialog.close();
+              this.fire("openToast",{toastText: "There was an error saving the new risk: " + error});
+            }.bind(this));
+        };
       },
 
       cancelNewRisk: function() {
@@ -326,6 +357,7 @@
       finishRisk: function(e) {
         this.pageState = "multi-view";
         this.$.riskDB.path = null;
+        this.goMulti();
         this.animateMultiViewFab();
       },
 
