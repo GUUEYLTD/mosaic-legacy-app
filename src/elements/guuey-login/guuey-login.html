@@ -274,7 +274,7 @@ login element to be used on app or elsewhere
         color: #2fc19e;
         text-transform: uppercase;
       }
-      
+
     </style>
 
     <div id="recentUsers" class="recent-users">
@@ -426,7 +426,7 @@ login element to be used on app or elsewhere
               value="{{newAccount.passwordConfirm}}"
               required
               auto-validate
-              pattern="{{newAccount.password}}"
+              pattern="^(?=.*\d).{8,16}$"
               error-message="Passwords must match">
             </paper-input>
             <paper-button on-tap="createNewAccount" class="guuey-button action-button">register</paper-button>

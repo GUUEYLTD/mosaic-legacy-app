@@ -207,7 +207,7 @@
 
         //the location where table data will be saved
         path: {
-          type: String
+          type: String,
         },
 
         //media query checking whether max width is 1300. used to change styles when too small
@@ -221,6 +221,19 @@
       observers: [
         "_editQuery(query1300)"
       ],
+
+      ready: function() {
+        var dropdowns = Polymer.dom(this.root).querySelectorAll('dropdown-input');
+        var comments = Polymer.dom(this.root).querySelectorAll('comment-input');
+        this.$.tableDB.ref.on('value', function() {
+          comments.forEach(function(comment) {
+            comment.checkInputs();
+          });
+          dropdowns.forEach(function(dropdown) {
+            dropdown.checkInputs();
+          });
+        }.bind(this));
+      },
 
       //checks if smaller than 1300. if so update stylesd
       _editQuery: function(query1300) {

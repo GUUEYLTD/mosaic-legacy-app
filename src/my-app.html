@@ -363,6 +363,14 @@
       exit-animation="fade-out-animation">
     </guuey-agree-terms>
 
+    <paper-dialog id="overflowDialog">
+      <paper-listbox>
+        <paper-item class="" link name="terms"><a class="" tabindex="-1" href="/[[home]]/default/def-terms">Terms<a></paper-item>
+        <paper-item class="" link name="policies"><a class="" tabindex="-1" href="/[[home]]/default/def-terms">Policies<a></paper-item>
+        <paper-item class="" link name="incidents"><a class="" tabindex="-1" href="/[[home]]/default/def-terms">Incident Reporting<a></paper-item>
+      </paper-listbox>
+    </paper-dialog>
+
     <paper-dialog id="requestNotificationModal" modal>
       <h2>Permission Needed</h2>
       <p>
@@ -527,6 +535,8 @@
       </div>
     </paper-dialog>
 
+
+
     <div class="loadingOverlay">
       <paper-spinner-lite active></paper-spinner-lite>
       <p>
@@ -552,334 +562,333 @@
         user-settings-data="{{userSettingsData}}">
       </admin-drawer>
 
-      <app-header id="appHeader" condenses reveals effects="waterfall">
+      <app-header-layout fullbleed>
 
-        <app-toolbar id="topNav" class="top-nav">
+        <app-header id="appHeader" fixed condenses reveals effects="waterfall">
 
-          <paper-icon-button class="nav-icon-button" icon="menu" on-tap="toggleDrawer"></paper-icon-button>
+          <app-toolbar id="topNav" class="top-nav">
 
-          <div main-title>
+            <paper-icon-button class="nav-icon-button" icon="menu" on-tap="toggleDrawer"></paper-icon-button>
 
-          </div>
+            <div main-title>
 
-          <paper-tabs attr-for-selected="name" selected="{{rightMenuSelect}}">
-            <paper-tab link name="home"><a class="menu-link" href="/[[home]]/default/def-home"><iron-icon icon="icons:home"></iron-icon></a></paper-tab>
-            <paper-tab name="search" on-tap="openSearch"><iron-icon icon="icons:search"></iron-icon></paper-tab>
-            <paper-tab id="appButton" name="apps" on-tap="openApps"><iron-icon icon="icons:apps"></iron-icon></paper-tab>
-            <paper-tab  id="notifyButton" name="notify" on-tap="openNotifications">
-              <iron-icon id="notifyIcon" icon="social:notifications"></iron-icon>
-              <paper-badge label="[[notifyCount]]" for="notifyIcon" hidden$="{{_computeNotifyHidden(notifyCount)}}"></paper-badge>
-            </paper-tab>
-            <paper-tab name="logout" on-tap="openLogout"><iron-icon icon="icons:account-circle"></iron-icon></paper-tab>
-          </paper-tabs>
+            </div>
 
-        </app-toolbar>
-        <app-toolbar id="bottomNav" class="bottom-nav bottom-nav-closed">
+            <paper-tabs attr-for-selected="name" selected="{{rightMenuSelect}}">
+              <paper-tab link name="home"><a class="menu-link" href="/[[home]]/default/def-home"><iron-icon icon="icons:home"></iron-icon></a></paper-tab>
+              <paper-tab name="search" on-tap="openSearch"><iron-icon icon="icons:search"></iron-icon></paper-tab>
+              <paper-tab id="appButton" name="apps" on-tap="openApps"><iron-icon icon="icons:apps"></iron-icon></paper-tab>
+              <paper-tab  id="notifyButton" name="notify" on-tap="openNotifications">
+                <iron-icon id="notifyIcon" icon="social:notifications"></iron-icon>
+                <paper-badge label="[[notifyCount]]" for="notifyIcon" hidden$="{{_computeNotifyHidden(notifyCount)}}"></paper-badge>
+              </paper-tab>
+              <paper-tab name="logout" on-tap="openLogout"><iron-icon icon="icons:account-circle"></iron-icon></paper-tab>
+              <paper-tab name="overflow" on-tap="openOverflow"><iron-icon icon="icons:more-vert"></iron-icon></paper-tab>
+            </paper-tabs>
 
-          <paper-tabs
-            bottom-item
-            attr-for-selected="name"
-            selected="[[page]]"
-            scrollable>
-            <paper-tab class$="[[_computeSubSelected('profile', page)]]" id="profile" name="profile" on-tap="openProfileSub">PROFILE</paper-tab>
-            <paper-tab class$="[[_computeSubSelected('care', page)]]" id="care" name="care" on-tap="openProfileSub">CARE</paper-tab>
-            <paper-tab class$="[[_computeSubSelected('reports', page)]]" id="reports" name="reports" on-tap="openProfileSub">REPORTS</paper-tab>
-            <paper-tab on-tap="closeSubMenuDialog" class="nav-tabs" link name="su-medication"><a class="menu-link" tabindex="-1" href="/[[home]]/care-plan/su-medication/[[param]]">Medication Outline</a></paper-tab>
-            <paper-tab on-tap="closeSubMenuDialog" class="nav-tabs" link name="su-risk"><a class="menu-link" tabindex="-1" href="/[[home]]/care-plan/su-risk/[[param]]">Risk Assessment</a></paper-tab>
-            <paper-tab on-tap="closeSubMenuDialog" class="nav-tabs" link name="su-goals"><a class="menu-link" tabindex="-1" href="/[[home]]/care-plan/su-goals/[[param]]">Personal Goals</a></paper-tab>
-          </paper-tabs>
-          <paper-progress class="mainProgress" indeterminate></paper-progress>
-        </app-toolbar>
-      </app-header>
-      <!--page templates are loded in here inside iron pages-->
-      <neon-animated-pages id="neonPages"
-        role="main"
-        selected="[[selected]]"
-        attr-for-selected="name">
-        <!--custom pages built for the app names attached in order to know which to display according to route-->
-        <!--page selected style only shows when the drawer item has been clicked twice need to fix this..-->
-        <!--default page-->
-        <def-home
-          user-uid="[[userUid]]"
-          current-page="[[currentPage]]"
-          current-cat="[[currentCat]]"
-          intended-cat="[[intendedCat]]"
-          page="[[page]]"
-          home="[[home]]"
-          name="def-home"
-          signed-in="[[signedIn]]"
-          from-login="{{fromLogin}}">
-        </def-home>
-        <!--default page if not verified-->
-        <def-verify
-          user-uid="[[userUid]]"
-          current-page="[[currentPage]]"
-          current-cat="[[currentCat]]"
-          intended-cat="[[intendedCat]]"
-          page="[[page]]"
-          home="[[home]]"
-          name="def-verify">
-        </def-verify>
-        <def-account
-          user-uid="[[userUid]]"
-          current-page="[[currentPage]]"
-          current-cat="[[currentCat]]"
-          intended-cat="[[intendedCat]]"
-          page="[[page]]"
-          home="[[home]]"
-          name="def-account">
-        </def-account>
+          </app-toolbar>
+          <app-toolbar sticky id="bottomNav" class="bottom-nav bottom-nav-closed">
 
-        <def-terms
-          user-uid="[[userUid]]"
-          current-page="[[currentPage]]"
-          current-cat="[[currentCat]]"
-          intended-cat="[[intendedCat]]"
-          page="[[page]]"
-          home="[[home]]"
-          name="def-terms">
-        </def-terms>
-        <!--error 404 page-->
-        <def-error
-          user-uid="[[userUid]]"
-          current-page="[[currentPage]]"
-          current-cat="[[currentCat]]"
-          intended-cat="[[intendedCat]]"
-          name="def-error">
-        </def-error>
-        <!--other pages for care plan-->
-        <su-home
-          user-uid="[[userUid]]"
-          current-page="[[currentPage]]"
-          current-cat="[[currentCat]]"
-          intended-cat="[[intendedCat]]"
-          page="[[page]]"
-          patient="[[param]]"
-          home="[[home]]"
-          name="su-home">
-        </su-home>
-        <su-profile
-          user-uid="[[userUid]]"
-          current-page="[[currentPage]]"
-          current-cat="[[currentCat]]"
-          intended-cat="[[intendedCat]]"
-          page="[[page]]"
-          patient="[[param]]"
-          home="[[home]]"
-          name="su-profile">
-        </su-profile>
-        <su-care
-          user-uid="[[userUid]]"
-          current-page="[[currentPage]]"
-          current-cat="[[currentCat]]"
-          intended-cat="[[intendedCat]]"
-          page="[[page]]"
-          patient="[[param]]"
-          home="[[home]]"
-          name="su-care">
-        </su-care>
-        <su-goals
-          user-uid="[[userUid]]"
-          current-page="[[currentPage]]"
-          current-cat="[[currentCat]]"
-          intended-cat="[[intendedCat]]"
-          page="[[page]]"
-          patient="[[param]]"
-          home="[[home]]"
-          name="su-goals">
-      </su-goals>
-        <!--add in user in order to log the uid for version control and logging-->
-        <su-uploads
-          user-uid="[[userUid]]"
-          current-page="[[currentPage]]"
-          current-cat="[[currentCat]]"
-          intended-cat="[[intendedCat]]"
-          page="[[page]]"
-          patient="[[param]]"
-          home="[[home]]"
-          user="{{user}}"
-          name="su-uploads">
-        </su-uploads>
-        <!--add in user in order to log the uid for version control and logging-->
-        <su-medication
-          user-uid="[[userUid]]"
-          current-page="[[currentPage]]"
-          current-cat="[[currentCat]]"
-          intended-cat="[[intendedCat]]"
-          page="[[page]]"
-          patient="[[param]]"
-          home="[[home]]"
-          user="{{user}}"
-          name="su-medication"
-          user-settings-data="[[userSettingsData]]">
-        </su-medication>
-        <su-pre
-          user-uid="[[userUid]]"
-          current-page="[[currentPage]]"
-          current-cat="[[currentCat]]"
-          intended-cat="[[intendedCat]]"
-          page="[[page]]"
-          patient="[[param]]"
-          home="[[home]]"
-          name="su-pre">
-        </su-pre>
-        <!--add in user in order to log the uid for version control and logging-->
-        <su-risk
-          user-uid="[[userUid]]"
-          current-page="[[currentPage]]"
-          current-cat="[[currentCat]]"
-          intended-cat="[[intendedCat]]"
-          page="[[page]]"
-          patient="[[param]]"
-          home="[[home]]"
-          user="{{user}}"
-          name="su-risk">
-        </su-risk>
-        <su-create
-          user-uid="[[userUid]]"
-          current-page="[[currentPage]]"
-          current-cat="[[currentCat]]"
-          intended-cat="[[intendedCat]]"
-          page="[[page]]"
-          patient="[[param]]"
-          home="[[home]]"
-          name="su-create">
-        </su-create>
-        <su-care-review
-          user-uid="[[userUid]]"
-          current-page="[[currentPage]]"
-          current-cat="[[currentCat]]"
-          intended-cat="[[intendedCat]]"
-          page="[[page]]"
-          patient="[[param]]"
-          home="[[home]]"
-          name="su-care-review">
-        </su-care-review>
-        <su-reports
-          user-uid="[[userUid]]"
-          current-page="[[currentPage]]"
-          current-cat="[[currentCat]]"
-          intended-cat="[[intendedCat]]"
-          page="[[page]]"
-          patient="[[param]]"
-          home="[[home]]"
-          name="su-reports">
-        </su-reports>
-        <su-monthly-reports
-          user-uid="[[userUid]]"
-          current-page="[[currentPage]]"
-          current-cat="[[currentCat]]"
-          intended-cat="[[intendedCat]]"
-          page="[[page]]"
-          patient="[[param]]"
-          home="[[home]]"
-          name="su-monthly-reports">
-        </su-monthly-reports>
-        <su-view-reports
-          user-uid="[[userUid]]"
-          current-page="[[currentPage]]"
-          current-cat="[[currentCat]]"
-          intended-cat="[[intendedCat]]"
-          page="[[page]]"
-          patient="[[param]]"
-          home="[[home]]"
-          name="su-view-reports">
-        </su-view-reports>
-        <!--pages for admin-->
-        <ad-dash
-          user-uid="[[userUid]]"
-          current-page="[[currentPage]]"
-          current-cat="[[currentCat]]"
-          intended-cat="[[intendedCat]]"
-          page="[[page]]"
-          admin-id="[[param]]"
-          home="[[home]]"
-          name="ad-dash">
-        </ad-dash>
-        <ad-profile
-          user-uid="[[userUid]]"
-          current-page="[[currentPage]]"
-          current-cat="[[currentCat]]"
-          intended-cat="[[intendedCat]]"
-          page="[[page]]"
-          admin-id="[[param]]"
-          home="[[home]]"
-          name="ad-profile">
-        </ad-profile>
-        <ad-payment
-          user-uid="[[userUid]]"
-          current-page="[[currentPage]]"
-          current-cat="[[currentCat]]"
-          intended-cat="[[intendedCat]]"
-          page="[[page]]"
-          admin-id="[[param]]"
-          home="[[home]]"
-          name="ad-payment">
-        </ad-payment>
-        <ad-users
-          user-uid="[[userUid]]"
-          current-page="[[currentPage]]"
-          current-cat="[[currentCat]]"
-          intended-cat="[[intendedCat]]"
-          page="[[page]]"
-          admin-id="[[param]]"
-          user={{user}}
-          home="[[home]]"
-          name="ad-users">
-        </ad-users>
-        <ad-user
-          user-uid="[[userUid]]"
-          current-page="[[currentPage]]"
-          current-cat="[[currentCat]]"
-          intended-cat="[[intendedCat]]"
-          page="[[page]]"
-          uid="[[param]]"
-          user={{user}}
-          home="[[home]]"
-          name="ad-user">
-        </ad-user>
-        <ad-settings
-          user-uid="[[userUid]]"
-          current-page="[[currentPage]]"
-          current-cat="[[currentCat]]"
-          intended-cat="[[intendedCat]]"
-          page="[[page]]"
-          admin-id="[[param]]"
-          home="[[home]]"
-          name="ad-settings">
-        </ad-settings>
-        <ad-support
-          user-uid="[[userUid]]"
-          current-page="[[currentPage]]"
-          current-cat="[[currentCat]]"
-          intended-cat="[[intendedCat]]"
-          page="[[page]]"
-          admin-id="[[param]]"
-          home="[[home]]"
-          name="ad-support">
-        </ad-support>
-        <ad-reports
-          user-uid="[[userUid]]"
-          current-page="[[currentPage]]"
-          current-cat="[[currentCat]]"
-          intended-cat="[[intendedCat]]"
-          page="[[page]]"
-          admin-id="[[param]]"
-          home="[[home]]"
-          name="ad-reports">
-        </ad-reports>
-        <!--test page for whatever-->
-        <test-test
-          user-uid="[[userUid]]"
-          current-page="[[currentPage]]"
-          current-cat="[[currentCat]]"
-          intended-cat="[[intendedCat]]"
-          page="[[page]]"
-          patient="[[param]]"
-          home="[[home]]"
-          name="test-test">
-        </test-test>
-      </neon-animated-pages>
+            <paper-tabs
+              bottom-item
+              attr-for-selected="name"
+              selected="[[page]]"
+              scrollable>
+              <paper-tab class$="[[_computeSubSelected('profile', page)]]" id="profile" name="profile" on-tap="openProfileSub">PROFILE</paper-tab>
+              <paper-tab class$="[[_computeSubSelected('care', page)]]" id="care" name="care" on-tap="openProfileSub">CARE</paper-tab>
+              <paper-tab class$="[[_computeSubSelected('reports', page)]]" id="reports" name="reports" on-tap="openProfileSub">REPORTS</paper-tab>
+              <paper-tab on-tap="closeSubMenuDialog" class="nav-tabs" link name="su-medication"><a class="menu-link" tabindex="-1" href="/[[home]]/care-plan/su-medication/[[param]]">Medication Outline</a></paper-tab>
+              <paper-tab on-tap="closeSubMenuDialog" class="nav-tabs" link name="su-risk"><a class="menu-link" tabindex="-1" href="/[[home]]/care-plan/su-risk/[[param]]">Risk Assessment</a></paper-tab>
+              <paper-tab on-tap="closeSubMenuDialog" class="nav-tabs" link name="su-goals"><a class="menu-link" tabindex="-1" href="/[[home]]/care-plan/su-goals/[[param]]">Personal Goals</a></paper-tab>
+            </paper-tabs>
+            <paper-progress class="mainProgress" indeterminate></paper-progress>
+          </app-toolbar>
+        </app-header>
+
+        <!--page templates are loded in here inside iron pages-->
+        <neon-animated-pages
+          id="neonPages"
+          role="main"
+          selected="[[selected]]"
+          attr-for-selected="name">
+          <!--custom pages built for the app names attached in order to know which to display according to route-->
+          <!--page selected style only shows when the drawer item has been clicked twice need to fix this..-->
+          <!--default page-->
+          <def-home
+            user-uid="[[userUid]]"
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            home="[[home]]"
+            name="def-home"
+            signed-in="[[signedIn]]"
+            from-login="{{fromLogin}}">
+          </def-home>
+          <!--default page if not verified-->
+          <def-verify
+            user-uid="[[userUid]]"
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            home="[[home]]"
+            name="def-verify">
+          </def-verify>
+          <def-account
+            user-uid="[[userUid]]"
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            home="[[home]]"
+            name="def-account">
+          </def-account>
+
+          <def-terms
+            user-uid="[[userUid]]"
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            home="[[home]]"
+            name="def-terms">
+          </def-terms>
+          <!--error 404 page-->
+          <def-error
+            user-uid="[[userUid]]"
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            name="def-error">
+          </def-error>
+          <!--other pages for care plan-->
+          <su-home
+            user-uid="[[userUid]]"
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            patient="[[param]]"
+            home="[[home]]"
+            name="su-home">
+          </su-home>
+          <su-profile
+            user-uid="[[userUid]]"
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            patient="[[param]]"
+            home="[[home]]"
+            name="su-profile">
+          </su-profile>
+          <su-care
+            user-uid="[[userUid]]"
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            patient="[[param]]"
+            home="[[home]]"
+            name="su-care">
+          </su-care>
+          <su-goals
+            user-uid="[[userUid]]"
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            patient="[[param]]"
+            home="[[home]]"
+            name="su-goals">
+          </su-goals>
+          <!--add in user in order to log the uid for version control and logging-->
+          <su-uploads
+            user-uid="[[userUid]]"
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            patient="[[param]]"
+            home="[[home]]"
+            user="{{user}}"
+            name="su-uploads">
+          </su-uploads>
+          <!--add in user in order to log the uid for version control and logging-->
+          <su-medication
+            user-uid="[[userUid]]"
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            patient="[[param]]"
+            home="[[home]]"
+            user="{{user}}"
+            name="su-medication"
+            user-settings-data="[[userSettingsData]]">
+          </su-medication>
+          <su-pre
+            user-uid="[[userUid]]"
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            patient="[[param]]"
+            home="[[home]]"
+            name="su-pre">
+          </su-pre>
+          <!--add in user in order to log the uid for version control and logging-->
+          <su-risk
+            user-uid="[[userUid]]"
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            patient="[[param]]"
+            home="[[home]]"
+            user="{{user}}"
+            name="su-risk">
+          </su-risk>
+          <su-create
+            user-uid="[[userUid]]"
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            patient="[[param]]"
+            home="[[home]]"
+            name="su-create">
+          </su-create>
+          <su-care-review
+            user-uid="[[userUid]]"
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            patient="[[param]]"
+            home="[[home]]"
+            name="su-care-review">
+          </su-care-review>
+          <su-reports
+            user-uid="[[userUid]]"
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            patient="[[param]]"
+            home="[[home]]"
+            name="su-reports">
+          </su-reports>
+          <su-monthly-reports
+            user-uid="[[userUid]]"
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            patient="[[param]]"
+            home="[[home]]"
+            name="su-monthly-reports">
+          </su-monthly-reports>
+          <su-view-reports
+            user-uid="[[userUid]]"
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            patient="[[param]]"
+            home="[[home]]"
+            name="su-view-reports">
+          </su-view-reports>
+          <!--pages for admin-->
+          <ad-dash
+            user-uid="[[userUid]]"
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            admin-id="[[param]]"
+            home="[[home]]"
+            name="ad-dash">
+          </ad-dash>
+          <ad-profile
+            user-uid="[[userUid]]"
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            admin-id="[[param]]"
+            home="[[home]]"
+            name="ad-profile">
+          </ad-profile>
+          <ad-payment
+            user="[[user]]"
+            user-uid="[[userUid]]"
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            admin-id="[[param]]"
+            home="[[home]]"
+            name="ad-payment">
+          </ad-payment>
+          <ad-users
+            user="[[user]]"
+            user-uid="[[userUid]]"
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            admin-id="[[param]]"
+            user={{user}}
+            home="[[home]]"
+            name="ad-users">
+          </ad-users>
+          <ad-settings
+            user-uid="[[userUid]]"
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            admin-id="[[param]]"
+            home="[[home]]"
+            name="ad-settings">
+          </ad-settings>
+          <ad-support
+            user-uid="[[userUid]]"
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            admin-id="[[param]]"
+            home="[[home]]"
+            name="ad-support">
+          </ad-support>
+          <ad-reports
+            user-uid="[[userUid]]"
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            admin-id="[[param]]"
+            home="[[home]]"
+            name="ad-reports">
+          </ad-reports>
+          <!--test page for whatever-->
+          <test-test
+            user="[[user]]"
+            user-uid="[[userUid]]"
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            patient="[[param]]"
+            home="[[home]]"
+            name="test-test">
+          </test-test>
+        </neon-animated-pages>
+
+      </app-header-layout>
 
     </app-drawer-layout>
 
@@ -1038,6 +1047,18 @@
 
       attached:function(){
         this.resizeElements();
+      },
+
+      openOverflow: function(e) {
+        var beforeWidth = Math.sqrt(Math.pow(20, 2) + Math.pow(20, 2));
+        this.$.overflowDialog.positionTarget = e.currentTarget;
+        this.$.overflowDialog.verticalAlign = "top";
+        this.$.overflowDialog.horizontalAlign = "right";
+        this.$.overflowDialog.noOverlap = true;
+        this.$.overflowDialog.classList.add("dialogPointer");
+        this.$.overflowDialog.horizontalOffset = (e.currentTarget.offsetWidth / 2) - beforeWidth;
+        this.$.overflowDialog.style = "";
+        this.$.overflowDialog.open();
       },
 
       _computeSubSelected: function(name, page) {

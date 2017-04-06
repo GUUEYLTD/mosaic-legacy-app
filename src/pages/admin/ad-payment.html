@@ -517,6 +517,14 @@
           Polymer.adminResizeBehavior,
           Polymer.guueyDialogResizeBehavior
         ],
+
+        addAuth: function(obj) {
+          this.user.getToken()
+            .then(function(token) {
+              return obj.token = token;
+            });
+        },
+
         _initStripe: function() {
           if (!!!this.Stripe)
             this.Stripe = Stripe;
@@ -597,18 +605,27 @@
           return plan.replace("_", " ");
         },
         _getCustomerInfo:function(){
-          this.$.stripeCustomerCall.body={
-            customerId:this.customer.customerID
-          };
-          this.$.stripeCustomerCall.url="http://localhost:3000/payments/customerinfo";
-          this.$.stripeCustomerCall.generateRequest();
+          this.user.getToken()
+            .then(function(token) {
+              this.$.stripeCustomerCall.body = {
+                customerId: this.customer.customerID,
+                token: token
+              };
+
+              this.$.stripeCustomerCall.url = "http://localhost:3000/payments/customerinfo";
+              this.$.stripeCustomerCall.generateRequest();
+            }.bind(this));
         },
         _listPlans:function(){
-          this.$.listPlansCall.body={
-            request:"listPlans"
-          };
-          this.$.listPlansCall.url="http://localhost:3000/payments/listplans"
-          this.$.listPlansCall.generateRequest();
+          this.user.getToken()
+            .then(function(token) {
+              this.$.listPlansCall.body = {
+                request: "listPlans",
+                token: token
+              };
+              this.$.listPlansCall.url = "http://localhost:3000/payments/listplans"
+              this.$.listPlansCall.generateRequest();
+            }.bind(this));
         },
         _alreadyOwned:function(owned){
           return function(plan){
@@ -689,27 +706,35 @@
             this.$.payButton.disabled = false;
             this.fire("openToast",{toastText:"Your payment could not be processed for the following reason: "+res.error.message});
           } else {
-            this.$.initSubCall.url="http://localhost:3000/payments/initialsub";
-            this.$.initSubCall.body={
-              stripeToken:res.id,
-              home:this.params.home,
-              plan:this.params.plan,
-              users:this.params.users,
-              planId:"core1"
-            };
-            this.$.initSubCall.generateRequest();
+            this.user.getToken()
+              .then(function(token) {
+                this.$.initSubCall.url = "http://localhost:3000/payments/initialsub";
+                this.$.initSubCall.body = {
+                  stripeToken: res.id,
+                  home: this.params.home,
+                  plan: this.params.plan,
+                  users: this.params.users,
+                  planId: "core1",
+                  token: token
+                };
+                this.$.initSubCall.generateRequest();
+              }.bind(this));
           };
         },
         addCardCall:function(status, res){
           if(res.error){
             this.fire("openToast", {toastText:"Your card could not be added for the following reason: "+res.error.message});
           } else {
-            this.$.addCardCall.url="http://localhost:3000/payments/addcard";
-            this.$.addCardCall.body={
-              stripeToken:res.id,
-              customerId:this.customer.customerID
-            };
-            this.$.addCardCall.generateRequest();
+            this.user.getToken()
+              .then(function(token) {
+                this.$.addCardCall.url = "http://localhost:3000/payments/addcard";
+                this.$.addCardCall.body = {
+                  stripeToken: res.id,
+                  customerId: this.customer.customerID,
+                  token: token
+                };
+                this.$.addCardCall.generateRequest();
+              }.bind(this));
           };
         },
 
@@ -752,12 +777,17 @@
           this.$.confirmDialog.open();
         },
         confirmDeleteCard:function(cardId){
-          this.$.deleteCardCall.url="http://localhost:3000/payments/deletecard";
-          this.$.deleteCardCall.body={
-            customerId:this.customer.customerID,
-            cardId:cardId
-          };
-          this.$.deleteCardCall.generateRequest();
+          this.user.getToken()
+            .then(function(token){
+              this.$.deleteCardCall.url = "http://localhost:3000/payments/deletecard";
+              this.$.deleteCardCall.body = {
+                customerId: this.customer.customerID,
+                cardId: cardId,
+                token: token
+              };
+              this.$.deleteCardCall.generateRequest();
+            }.bind(this));
+
         },
         setDefaultCard:function(e){
           this.confirmAction = "setDefaultCard"
@@ -767,12 +797,17 @@
           this.$.confirmDialog.open();
         },
         confirmSetDefaultCard:function(cardId){
-          this.$.defaultCardCall.url="http://localhost:3000/payments/setdefaultcard";
-          this.$.defaultCardCall.body={
-            customerId:this.customer.customerID,
-            cardId:cardId
-          };
-          this.$.defaultCardCall.generateRequest();
+          this.user.getToken()
+            .then(function(token){
+              this.$.defaultCardCall.url = "http://localhost:3000/payments/setdefaultcard";
+              this.$.defaultCardCall.body = {
+                customerId: this.customer.customerID,
+                cardId: cardId,
+                token: token
+              };
+              this.$.defaultCardCall.generateRequest();
+            }.bind(this));
+
         },
         addPlan:function(e){
           this.confirmAction = "addPlan"
@@ -783,15 +818,20 @@
           this.$.confirmDialog.open();
         },
         confirmAddPlan:function(planId, planName){
-          this.$.addPlanCall.body={
-            home:this.home,
-            planName:planName,
-            customerId:this.customer.customerID,
-            planId:planId,
-            users:this.userCount,
-          };
-          this.$.addPlanCall.url="http://localhost:3000/payments/addplan";
-          this.$.addPlanCall.generateRequest();
+          this.user.getToken()
+            .then(function(token){
+              this.$.addPlanCall.body = {
+                home: this.home,
+                planName: planName,
+                customerId: this.customer.customerID,
+                planId: planId,
+                users: this.userCount,
+                token: token
+              };
+              this.$.addPlanCall.url = "http://localhost:3000/payments/addplan";
+              this.$.addPlanCall.generateRequest();
+            }.bind(this));
+
         },
         deletePlan:function(e){
           this.confirmAction = "deletePlan"
@@ -803,22 +843,30 @@
           this.$.confirmDialog.open();
         },
         confirmDeletePlan:function(planId, planName, subId ){
-          this.$.deletePlanCall.body={
-            home:this.home,
-            planName:planName,
-            customerId:this.customer.customerID,
-            planId:planId,
-            subId:subId
-          };
-          this.$.deletePlanCall.url="http://localhost:3000/payments/deleteplan";
-          this.$.deletePlanCall.generateRequest();
+          this.user.getToken()
+            .then(function(token) {
+              this.$.deletePlanCall.body = {
+                home: this.home,
+                planName: planName,
+                customerId: this.customer.customerID,
+                planId: planId,
+                subId: subId,
+                token: token
+              };
+              this.$.deletePlanCall.url = "http://localhost:3000/payments/deleteplan";
+              this.$.deletePlanCall.generateRequest();
+            }.bind(this));
         },
         _getCharges:function(){
-          this.$.chargesCall.body={
-            customerId:this.customer.customerID
-          };
-          this.$.chargesCall.url="http://localhost:3000/payments/getcharges";
-          this.$.chargesCall.generateRequest();
+          this.user.getToken()
+            .then(function(token) {
+              this.$.chargesCall.body={
+                customerId:this.customer.customerID,
+                token: token
+              };
+              this.$.chargesCall.url="http://localhost:3000/payments/getcharges";
+              this.$.chargesCall.generateRequest();
+            }.bind(this));
         },
         //handle api calls
         _handleInitialSubResponse:function(e){

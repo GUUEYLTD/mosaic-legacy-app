@@ -80,6 +80,10 @@
       _processUserAccountTasks: function(mode, currentDevice, user, statusKnown, signedIn, agreeTermsDeep, userInfoDataDeep, appInfoData) {
         var userInfoData = userInfoDataDeep.base;
         var agreeTerms = this.$.userInfoDB.valueIsEmpty(userInfoData) ? agreeTermsDeep.base : {ready: true, agree: userInfoData.agreeTerms};
+        //temp workaround for the fucking agreeTerms db issue
+        if(agreeTerms.agree) {
+          this.$.termsDialog.close();
+        };
         if(mode) {
           console.log('mode has been set.. running account functions...');
           this.setDialogOverlay();
@@ -93,6 +97,7 @@
             this.setDialogOverlay();
             this.$.termsDialog.open();
         } else if(user && user.uid && agreeTerms.agree && signedIn && !currentDevice) {
+            console.log(user.uid)
             console.log('setting device for notifications...');
             this.setDialogOverlay();
             this.$.requestNotificationModal.open();
@@ -170,7 +175,7 @@
         };
       },
 
-      emailSignIn:function(e) {
+      emailSignIn: function(e) {
         this.$.auth.signInWithEmailAndPassword(e.detail.username, e.detail.password)
           .then(function(user) {
             this.$.userIndexDB.getStoredValue("/userIndex/" + user.uid + "/home")
@@ -187,7 +192,7 @@
           }.bind(this));
       },
 
-      logout:function(){
+      logout: function(){
         var that = this;
         this.setDeviceLoggedIn(false)
           .then(function(res) {

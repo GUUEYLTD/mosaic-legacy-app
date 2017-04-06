@@ -1,12 +1,18 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html" />
-<link rel="import" href="../../../bower_components/paper-input/paper-input.html" />
-<link rel="import" href="../../../bower_components/iron-form/iron-form.html" />
-<link rel="import" href="../../../bower_components/vaadin-combo-box/vaadin-combo-box.html" />
 <link rel="import" href="../../../bower_components/paper-button/paper-button.html" />
-<link rel="import" href="../../elements/guuey-register/guuey-register.html" />
+<link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html" />
+
 
 <dom-module id="test-test">
   <template>
+
+    <iron-ajax
+      id="authCall"
+      handle-as="json"
+      on-response="handleAuth"
+      method="POST"
+      content-type="application/json">
+    </iron-ajax>
 
     <style include="common-styles">
       .main{
@@ -18,10 +24,7 @@
     </style>
 
     <paper-card class="main">
-
-      <guuey-register>
-      </guuey-register>
-
+      <paper-button on-tap="sendAuth">send auth</paper-button>
     </paper-card>
 
   </template>
@@ -35,44 +38,19 @@
           this.fire("pageLoaded",{page: this.page});
         },
 
-        attributeChanged: function(name, type) {
-          console.log(this.localName + '#' + this.id + ' attribute ' + name +
-            ' was changed to ' + this.getAttribute(name));
+        sendAuth: function() {
+          this.user.getToken()
+            .then(function(token) {
+              this.$.authCall.body = {
+                token: token
+              };
+              this.$.authCall.url="http://localhost:3000/verify/auth";
+              this.$.authCall.generateRequest();
+            }.bind(this));
         },
 
-        properties:{
-          testData: {
-            type: Object,
-            value: {}
-          },
-          ages: {
-            type: Array,
-            value: [
-              '1',
-              '2',
-              '3',
-              '4',
-              '5',
-              '6',
-              '7',
-              '8',
-              '9'
-            ]
-          }
-        },
-
-        observers: [
-          '_testDataChanged(testData.*)'
-        ],
-
-        _testDataChanged: function(dataDeep) {
-          var data = dataDeep.base;
-          console.log(data);
-        },
-
-        validate: function() {
-          var valid = this.$.mainForm.validate();
-          console.log(valid);
+        handleAuth: function(e) {
+          console.log(e.detail.response);
         }
 
       });

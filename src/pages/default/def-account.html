@@ -103,12 +103,25 @@
 
       <div class="pageInnerCont padded">
         <h2>Secure Account Information</h2>
+        <h3>Role: [[userData.role]]</h3>
         <h3>Account Email</h3>
         <paper-input type="email" label="update email" value="{{secureEmail}}"></paper-input>
         <paper-input type="email" label="confirm update email" value="{{secureEmailConfirm}}"></paper-input>
         <h3>Account Password</h3>
-        <paper-input type="password" label="update password" value="{{securePass}}"></paper-input>
-        <paper-input type="password" label="confrim update password" value="{{securePassConfirm}}"></paper-input>
+        <paper-input
+          type="password"
+          label="update password"
+          value="{{securePass}}"
+          pattern="^(?=.*\d).{8,16}$"
+          error-message="Password must be between 8 and 16 characters long and include at least one number.">
+        </paper-input>
+        <paper-input
+          type="password"
+          label="confrim update password"
+          value="{{securePassConfirm}}"
+          pattern="^(?=.*\d).{8,16}$"
+          error-message="Password must be between 8 and 16 characters long and include at least one number.">
+        </paper-input>
         <paper-button on-tap="saveSecureUpdate">update account</paper-button>
         <h2>Notifications Settings</h2>
         <template is="dom-repeat" items="{{notificationsSourcesData}}" as="token">
@@ -204,6 +217,55 @@
 
         },
 
+        refreshPage: function() {
+          setTimeout(function() {
+            location.reload();
+          }, 5000);
+        },
+
+        updateUserDB: function(fName, lName, displayName) {
+          return new Promise(function(resolve, reject) {
+            var basePath = '/homes/' + this.home + '/users/' + this.tempUser.uid + '/';
+            this.$.userDB.setStoredValue(basePath + 'displayName', displayName)
+              .then(function() {
+                this.$.userDB.setStoredValue(basePath + 'name', fName);
+              }.bind(this))
+              .then(function() {
+                this.$.userDB.setStoredValue(basePath + 'surname', lName)
+                resolve(displayName);
+              }.bind(this))
+              .catch(function(err) {
+                reject(err);
+              }.bind(this));
+            }.bind(this));
+        },
+
+        updateEmailDB: function(email) {
+          return new Promise(function(resolve, reject) {
+            var basePath = '/homes/' + this.home + '/users/' + this.tempUser.uid + '/';
+            this.$.userDB.setStoredValue(basePath + '/email', email)
+              .then(function() {
+                resolve(email);
+              })
+              .catch(function(err) {
+                reject(err);
+              });
+          }.bind(this));
+        },
+
+        updatePhotoDB: function(photo) {
+          return new Promise(function(resolve, reject) {
+            var basePath = '/homes/' + this.home + '/users/' + this.tempUser.uid + '/';
+            this.$.userDB.setStoredValue(basePath + '/image', photo)
+              .then(function() {
+                resolve(photo);
+              })
+              .catch(function(err) {
+                reject(err);
+              });
+          }.bind(this));
+        },
+
         _tempUserChanged: function(user) {
           if(user && user.uid) {
             console.log('user active');
@@ -221,7 +283,11 @@
           var that = this;
           this.$.auth.user.updateProfile({displayName:e.detail.name})
             .then(function(){
-              that.fire("openToast", {toastText: "Account updated, refresh pages to see changes", displayName: e.detail.name});
+              that.fire("openToast", {toastText: "Account updated, refreshing in 5 seconds to reflect changes", displayName: e.detail.name});
+              var fName = e.detail.name.split(' ')[0];
+              var lName = e.detail.name.split(' ')[1];
+              that.updateUserDB(fName, lName, e.detail.name)
+              .then(that.refreshPage)
             }, function(err){
               that.fire("openToast", {toastText: "There was an error updating your account: " + err});
             });
@@ -234,7 +300,10 @@
             .then(function(fileLoc){
               that.$.auth.user.updateProfile({photoURL:fileLoc})
                 .then(function(){
-                  that.fire("openToast", {toastText: "Account updated.", photoURL: fileLoc});
+                  that.updatePhotoDB(e.detail.photo)
+                    .then(function() {
+                      that.fire("openToast", {toastText: "Account updated.", photoURL: fileLoc});
+                    }.bind(this));
                 }, function(err){
                   that.fire("openToast", {toastText: "There was an error updating your account: " + err});
                 });
@@ -250,8 +319,13 @@
             } else {
               this.$.auth.user.updateEmail(this.secureEmail)
                 .then(function(){
-                  this.fire("openToast",{toastText:"Email Updated."});
-                  this.$.reAuthDialog.close();
+                  this.updateEmailDB(this.secureEmail)
+                    .then(function() {
+                      this.fire("openToast",{toastText:"Email Updated."});
+                      this.$.auth.user.sendEmailVerification();
+                      this.$.reAuthDialog.close();
+                    }.bind(this));
+
                 }.bind(this), function(err){
                   if(err.code === "auth/requires-recent-login"){
                     this.fire("openToast", {toastText: "You must re-authenticate in order to update your email address."});

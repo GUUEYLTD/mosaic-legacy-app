@@ -71,17 +71,18 @@
       },
 
       observers: [
-        "_dataChanged(rowInputs, input, field)"
+        "_dataChanged(rowInputs.*, input, field)"
       ],
 
       //checks for changes to inputs and saves as value
-      _dataChanged: function(rowInputs, input, field) {
-        if(rowInputs[input + field]) {
-          var value = rowInputs[input + field];
-          if(this.value !== value) {
-            this.value = value;
-          };
-        };
+      _dataChanged: function(rowInputsDeep, input, field) {
+        var rowInputs = rowInputsDeep.base;
+        this.value = rowInputs[input + field];
+      },
+
+      checkInputs: function() {
+        var rowInputs = rowInputsDeep.base;
+        this.value = this.rowInputs[this.input + this.field]
       },
 
       //compares value to already synced firebase value in order to see if changes are needed.

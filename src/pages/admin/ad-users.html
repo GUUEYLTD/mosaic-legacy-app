@@ -13,6 +13,7 @@
 <link rel="import" href="../../../bower_components/paper-button/paper-button.html" />
 <link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html" />
 <link rel="import" href="../../../bower_components/iron-image/iron-image.html" />
+<link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html" />
 
 <link rel="import" href="../../elements/admin-header/admin-header.html" />
 <link rel="import" href="../../elements/media-queries/media-queries.html" />
@@ -100,6 +101,14 @@
       app-name="main">
     </firebase-document>
 
+    <iron-ajax
+      id="userUpdateCall"
+      handle-as="json"
+      on-response="_handleUserUpdate"
+      method="POST"
+      content-type="application/json">
+    </iron-ajax>
+
     <style include="common-styles">
       #userDialog{
         margin:0;
@@ -109,9 +118,9 @@
         height:50px;
         background-color:lightgray;
         border: 1px solid grey;
-        border-radius:100%;
+        border-radius:50%;
         margin-left:5px;
-
+        z-index:999;
       }
       .userImage:hover{
         cursor: pointer;
@@ -123,13 +132,6 @@
         padding:0px;
       }
     </style>
-
-    <input
-      id="imageInput"
-      type="file"
-      on-change="_inputChanged"
-      hidden>
-    </input>
 
     <paper-dialog id="addUserDialog" class="guuey-modal guuey-add-modal">
 
@@ -190,6 +192,7 @@
         <h2>User Info</h2>
 
         <paper-input
+          disabled
           label="Name"
           value="{{userData.name}}"
           required
@@ -198,6 +201,7 @@
           error-message="Please enter a valid name with no special characters.">
         </paper-input>
         <paper-input
+          disabled
           label="Surname"
           value="{{userData.surname}}"
           required
@@ -206,6 +210,7 @@
           error-message="Please enter a valid surname with no special characters.">
         </paper-input>
         <paper-input
+          disabled
           label="Username/Email"
           value="{{userData.email}}"
           required
@@ -285,7 +290,6 @@
                   <td hidden="{{user.image}}">
                     <paper-icon-button
                       class="imageButton"
-                      on-tap="_onAddFilesClick"
                       icon="icons:account-circle"
                       hidden="[[!setimage]]">
                     </paper-icon-button>
@@ -296,8 +300,7 @@
                       sizing="cover"
                       preload
                       fade
-                      src="[[user.image]]"
-                      on-tap="_onAddFilesClick">
+                      src="[[user.image]]">
                     </iron-image>
                   </td>
                   <td>
@@ -310,7 +313,7 @@
                     [[user.role]]
                   </td>
                   <td>
-                    <paper-icon-button icon="communication:email"></paper-icon-button>
+                    <a href="mailto:[[user.email]]"><paper-icon-button style="color: #555960;" icon="communication:email"></paper-icon-button></a>
                   </td>
                   <td>
                     <paper-icon-button icon="icons:more-vert" on-tap="userOptions"></paper-icon-button>
@@ -354,6 +357,11 @@
 
         home: {
           type: Object,
+        },
+
+        //the user uid to toggle suspension or archived on...
+        actionUserUID: {
+          type: String,
         }
 
       },
@@ -370,7 +378,8 @@
       ],
 
       userOptions: function(e) {
-        this.$.userDB.path = "/homes/" + this.home + "/users/" + e.model.user.$key;
+        //this.$.userDB.path = "/homes/" + this.home + "/users/" + e.model.user.$key;
+        this.actionUserUID = e.model.user.$key;
         this.$.userDialog.positionTarget = e.target;
         this.$.userDialog.toggle();
       },
@@ -384,21 +393,57 @@
         this.$.userDialog.toggle();
       },
 
-      _inputChanged: function(e) {
-        var reader = new FileReader();
-        var file = e.target.files[0];
-        reader.readAsDataURL(file);
-        reader.addEventListener("load", function () {
-          this.$.userDB.setStoredValue("/homes/"+this.home+"/users/"+this.userID+"/image", reader.result);
-        }.bind(this), false);
+      suspendUser: function() {
+        this.user.getToken()
+          .then(function(token) {
+            this.$.userUpdateCall.body = {
+              token: token,
+              uid: this.actionUserUID
+            };
+            this.$.userUpdateCall.url="http://localhost:3000/users/suspend";
+            this.$.userUpdateCall.generateRequest();
+          }.bind(this));
       },
 
-      _onAddFilesClick: function(e) {
-        this.userID = e.model.user.$key;
-        if (document.createEvent) {
-          this.$.imageInput.value = '';
-          this.$.imageInput.click();
-        }
+      unsuspendUser: function() {
+        this.user.getToken()
+          .then(function(token) {
+            this.$.userUpdateCall.body = {
+              token: token,
+              uid: this.actionUserUID
+            };
+            this.$.userUpdateCall.url="http://localhost:3000/users/unsuspend";
+            this.$.userUpdateCall.generateRequest();
+          }.bind(this));
+      },
+
+      archiveUser: function() {
+        this.user.getToken()
+          .then(function(token) {
+            this.$.userUpdateCall.body = {
+              token: token,
+              uid: this.actionUserUID
+            };
+            this.$.userUpdateCall.url="http://localhost:3000/users/archive";
+            this.$.userUpdateCall.generateRequest();
+          }.bind(this));
+      },
+
+      unarchiveUser: function() {
+        this.user.getToken()
+          .then(function(token) {
+            this.$.userUpdateCall.body = {
+              token: token,
+              uid: this.actionUserUID
+            };
+            this.$.userUpdateCall.url="http://localhost:3000/users/unarchive";
+            this.$.userUpdateCall.generateRequest();
+          }.bind(this));
+      },
+
+      _handleUserUpdate: function(e) {
+        this.fire('openToast', {toastText: e.detail.response.message});
+        this.$.userDialog.toggle();
       },
 
       createNewUser: function() {
@@ -433,8 +478,7 @@
             .catch(function(error) {
               that.fire("openToast", {toastText: error});
             });
-        }
-
+        };
       },
 
       saveNewUser:function(userEntry) {

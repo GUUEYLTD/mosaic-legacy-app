@@ -79,10 +79,16 @@
               <span hidden$="[[!passwordSet]]">
 
                 <p>
-                  Your password must be at least 6 characters long.
+                  Your password must be between 8 and 16 characters long and include at least one number.
                 </p>
 
-                <paper-input type="password" label="New Password" value="{{newPassword}}"></paper-input>
+                <paper-input
+                  type="password"
+                  label="New Password"
+                  value="{{newPassword}}"
+                  pattern="^(?=.*\d).{8,16}$"
+                  error-message="Password must be between 8 and 16 characters long and include at least one number.">
+                </paper-input>
                 <paper-button on-tap="changePassword">change password</paper-button>
 
               </span>
@@ -369,8 +375,8 @@
             },
 
             changePasswordVerifyEmail: function(email) {
-              this.$.verifyEmailCall.url="http://localhost:3000/payments/initialsub";
-              this.$.verifyEmailCall.body={
+              this.$.verifyEmailCall.url = "http://localhost:3000/verify/verifyEmail";
+              this.$.verifyEmailCall.body = {
                 email: email
               };
               this.$.verifyEmailCall.generateRequest();

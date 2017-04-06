@@ -243,8 +243,18 @@ registration element for use anywhere for guuey care home software.
           </div>
           <div class="form-area">
             <paper-input label="Your Email Address" value="{{email}}"></paper-input>
-            <paper-input label="Password" value="{{password}}"></paper-input>
-            <paper-input label="Confirm Password" value="{{cPassword}}"></paper-input>
+            <paper-input
+              pattern="^(?=.*\d).{8,16}$"
+              error-message="Password must be between 8 and 16 characters long and include at least one number."
+              label="Password"
+              value="{{password}}">
+            </paper-input>
+            <paper-input
+              label="Confirm Password"
+              value="{{cPassword}}"
+              pattern="^(?=.*\d).{8,16}$"
+              error-message="Password must be between 8 and 16 characters long and include at least one number.">
+            </paper-input>
           </div>
         </div>
       </div>
