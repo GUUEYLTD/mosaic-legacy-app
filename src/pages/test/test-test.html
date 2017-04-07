@@ -1,18 +1,26 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html" />
 <link rel="import" href="../../../bower_components/paper-button/paper-button.html" />
-<link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html" />
-
+<link rel="import" href="../../../bower_components/polymerfire/firebase-query.html" />
+<link rel="import" href="../../../bower_components/polymerfire/firebase-document.html" />
+<link rel="import" href="../../../bower_components/paper-input/paper-input.html" />
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html" />
 
 <dom-module id="test-test">
   <template>
 
-    <iron-ajax
-      id="authCall"
-      handle-as="json"
-      on-response="handleAuth"
-      method="POST"
-      content-type="application/json">
-    </iron-ajax>
+  <firebase-query
+    id="testsDB"
+    app-name="main"
+    path="test"
+    data="{{testsData}}">
+  </firebase-query>
+
+  <firebase-document
+    id="testDB"
+    path="test/[[current]]"
+    data="{{testData}}"
+    app-name="main">
+  </firebase-document>
 
     <style include="common-styles">
       .main{
@@ -24,7 +32,18 @@
     </style>
 
     <paper-card class="main">
-      <paper-button on-tap="sendAuth">send auth</paper-button>
+      <h1>add to query area</h1>
+      <paper-input label="position" value="{{current}}"></paper-input>
+      <paper-input label="one" value="{{testData.one}}"></paper-input>
+      <paper-input label="two" value="{{testData.two}}"></paper-input>
+      <paper-button on-tap="nuke">nuke</paper-button>
+
+      <h1>repeat area</h1>
+      <template is="dom-repeat" items="{{testsData}}" as="test">
+        <p>
+          [[test.one]] : [[test.two]]
+        </p>
+      </template>
     </paper-card>
 
   </template>
@@ -34,23 +53,34 @@
       Polymer({
         is: 'test-test',
 
+        properties: {
+
+          current: {
+            type: Number,
+            value: 0
+          },
+
+          one: {
+            type: String,
+            value: ''
+          },
+
+          two: {
+            type: String,
+            value: ''
+          },
+        },
+
         ready:function(){
           this.fire("pageLoaded",{page: this.page});
         },
 
-        sendAuth: function() {
-          this.user.getToken()
-            .then(function(token) {
-              this.$.authCall.body = {
-                token: token
-              };
-              this.$.authCall.url="http://localhost:3000/verify/auth";
-              this.$.authCall.generateRequest();
-            }.bind(this));
+        addItem: function() {
+          this.push("testData", {one: this.one, two: this.two});
         },
 
-        handleAuth: function(e) {
-          console.log(e.detail.response);
+        nuke: function() {
+          this.set("testData", []);
         }
 
       });
