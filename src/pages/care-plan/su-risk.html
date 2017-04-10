@@ -295,7 +295,6 @@
         var riskId = e.detail.riskId;
         this.$.riskDB.path = "/homes/" + this.home + "/patients/" + this.patient + "/riskAssessment/" + riskId;
         this.goEdit();
-        this.animateEditViewFab();
       },
 
       deleteRisk: function(e) {
@@ -308,11 +307,13 @@
       },
 
       goEdit: function() {
+        this.animateEditViewFab();
         this.pageState = "edit-view";
         this.$.editView.startAutoValidate();
       },
 
       goMulti: function() {
+        this.animateMultiViewFab();
         this.pageState="multi-view";
         this.$.editView.stopAutoValidate();
       },
@@ -358,7 +359,7 @@
         this.pageState = "multi-view";
         this.$.riskDB.path = null;
         this.goMulti();
-        this.animateMultiViewFab();
+
       },
 
       requirementsMet: function(data) {

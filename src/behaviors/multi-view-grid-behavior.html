@@ -17,22 +17,29 @@
           });
         });
       },
+
       observers:[
-        "_checkMultiItemCount(appGridColumns, itemCount)"
+        "_checkMultiItemCount(appGridColumns, itemCount)",
       ],
+
       properties: {
         itemCount: {
-          type:Number,
-          value:0
+          type: Number,
+          value: 0
+        },
+
+        appGridColumns: {
+          type: String,
+          value: 1
         }
       },
+
       _checkMultiItemCount:function(columns, itemCount) {
         columns = parseInt(columns);
         this._removeFillers();
-        var items = this._getItemCount();
-        var remainders = itemCount <= columns ? columns - itemCount : columns - (itemCount % columns);
-        remainders === 4 ? 0 : remainders;
-        if(itemCount > 1 && remainders != 0) {
+        var items = this.itemCount;
+        var remainders = itemCount <= columns ? columns - itemCount : columns - (columns % itemCount);
+        if(itemCount > 0 && remainders != 0) {
           this._fillInColumns(remainders);
         };
       },

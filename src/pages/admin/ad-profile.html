@@ -15,6 +15,7 @@
 
 <link rel="import" href="../../behaviors/animations/admin-pages-animation.html" />
 <link rel="import" href="../../behaviors/admin-resize-behavior.html" />
+<link rel="import" href="../../behaviors/guuey-form-validation-behavior.html" />
 
 <link rel="import" href="../../styles/common-styles.html" />
 
@@ -99,27 +100,7 @@
         page="Care Home Profile"
         icon="social:location-city">
       </admin-header>
-      <div class="pageInnerCont padded app-grid">
-
-        <div class="imageWrapper">
-
-          <iron-image
-            id="homeImage"
-            class="businessImage"
-            sizing="cover"
-            preload
-            fade
-            src="[[homeImage]]"
-            hidden>
-          </iron-image>
-
-          <paper-icon-button
-            class="imageButton"
-            icon="image:add-a-photo"
-            on-tap="openGuueyDialog">
-          </paper-icon-button>
-
-        </div>
+      <div class="pageInnerCont padded app-grid guuey-input-validation">
 
         <paper-input
           label="Company Name"
@@ -214,7 +195,6 @@
 
       ready: function() {
         this.fire("pageLoaded", {page: this.page});
-        this.$.storage._downloadFile(this.$.storage.path);
       },
 
       properties: {
@@ -240,7 +220,8 @@
 
       behaviors: [
         Polymer.adminPagesAnimation,
-        Polymer.adminResizeBehavior
+        Polymer.adminResizeBehavior,
+        Polymer.guueyFormValidationBehavior
       ],
 
       openGuueyDialog: function() {

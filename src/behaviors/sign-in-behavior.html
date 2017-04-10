@@ -221,25 +221,16 @@
         var isDesktop = e.currentTarget.classList.contains("desktopTab");
         // hypotenuse of 45 degree rotated square that is before the dialog... meaning the width in relative terms
         var beforeWidth = Math.sqrt(Math.pow(20, 2) + Math.pow(20, 2));
-        if(isMobile){
-          this.$.logoutDialog.positionTarget = e.currentTarget;
-          this.$.logoutDialog.verticalAlign = "top";
-          this.$.logoutDialog.horizontalAlign = "right";
-          this.$.logoutDialog.noOverlap = true;
-          this.$.logoutDialog.classList.remove("dialogPointer");
-          this.$.logoutDialog.horizontalOffset = -e.currentTarget.offsetLeft -12;
-          this.$.logoutDialog.style="width:100%;";
-        }
-        if(isDesktop){
-          this.$.logoutDialog.positionTarget = e.currentTarget;
-          this.$.logoutDialog.verticalAlign = "top";
-          this.$.logoutDialog.horizontalAlign = "right";
-          this.$.logoutDialog.noOverlap = true;
-          this.$.logoutDialog.classList.add("dialogPointer");
-          this.$.logoutDialog.horizontalOffset = e.currentTarget.offsetWidth / 2 -beforeWidth;
-          this.$.logoutDialog.style="";
-        };
+        this.$.logoutDialog.positionTarget = e.currentTarget;
+        this.$.logoutDialog.verticalAlign = "top";
+        this.$.logoutDialog.horizontalAlign = "right";
+        this.$.logoutDialog.noOverlap = true;
+        this.$.logoutDialog.classList.add("dialogPointer");
+        this.$.logoutDialog.horizontalOffset = e.currentTarget.offsetWidth / 2 -beforeWidth;
+        this.$.logoutDialog.style="";
 
+        this.$.searchDialog.close();
+        this.$.overflowDialog.close();
         this.$.notifyDialog.close();
         this.$.appsDialog.close();
         this.$.logoutDialog.toggle();

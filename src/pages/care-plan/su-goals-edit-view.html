@@ -25,6 +25,7 @@
 <link rel="import" href="../../behaviors/edit-view-resize-behavior.html" />
 <link rel="import" href="../../behaviors/multi-edit-animation-behavior.html" />
 <link rel="import" href="../../behaviors/guuey-dialog-resize-behavior.html" />
+<link rel="import" href="../../behaviors/guuey-form-validation-behavior.html" />
 
 <dom-module id="su-goals-edit-view">
 
@@ -156,21 +157,24 @@
     <paper-card elevation="3" class="editViewCard">
 
       <paper-card image="[[_computeGoalImage(goalData.category)]]" heading="[[goalData.category]]" class="topEditCard">
-        <div class="card-content">
+        <div class="card-content guuey-input-validation">
           <guuey-date-input
             value="{{goalData.startDate}}"
-            label="Start Date">
+            label="Start Date"
+            required>
           </guuey-date-input>
 
           <guuey-date-input
             value="{{goalData.finishDate}}"
-            label="Estimated Finish Date">
+            label="Estimated Finish Date"
+            required>
           </guuey-date-input>
 
           <vaadin-combo-box
             label="coordinator"
             items="[[userList]]"
-            value="{{goalData.coordinator}}">
+            value="{{goalData.coordinator}}"
+            required>
           </vaadin-combo-box>
         </div>
 
@@ -355,7 +359,8 @@
       behaviors: [
         Polymer.editViewResizeBehavior,
         Polymer.multiEditAnimationBehavior,
-        Polymer.guueyDialogResizeBehavior
+        Polymer.guueyDialogResizeBehavior,
+        Polymer.guueyFormValidationBehavior
       ],
 
       addStep: function() {

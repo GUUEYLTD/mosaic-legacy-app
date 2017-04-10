@@ -43,7 +43,6 @@
 <link rel="import" href="../bower_components/neon-animation/animations/slide-from-left-animation.html">
 
 <link rel="import" href="elements/admin-drawer/admin-drawer.html" />
-<link rel="import" href="elements/firebase-storage/firebase-storage.html" />
 <link rel="import" href="elements/guuey-bug-report/guuey-bug-report.html" />
 <link rel="import" href="elements/media-queries/media-queries.html" />
 <link rel="import" href="elements/guuey-notification/guuey-notification.html" />
@@ -114,15 +113,6 @@
       status-known="{{statusKnown}}"
       on-error="handleError">
     </firebase-auth>
-
-    <firebase-storage
-      id="storage"
-      app-name="main"
-      set-name="false"
-      path="uploads/[[home]]/home-image.png"
-      use64="true"
-      url="{{homeImage}}">
-    </firebase-storage>
 
     <app-indexeddb-mirror
       id="userSettingsMirror"
@@ -364,10 +354,12 @@
     </guuey-agree-terms>
 
     <paper-dialog id="overflowDialog">
-      <paper-listbox>
-        <paper-item class="" link name="terms"><a class="" tabindex="-1" href="/[[home]]/default/def-terms">Terms<a></paper-item>
-        <paper-item class="" link name="policies"><a class="" tabindex="-1" href="/[[home]]/default/def-terms">Policies<a></paper-item>
-        <paper-item class="" link name="incidents"><a class="" tabindex="-1" href="/[[home]]/default/def-terms">Incident Reporting<a></paper-item>
+      <paper-listbox attr-for-selected="name" selected="[[page]]" selected-class="overflow-selected">
+        <a class="inherit" name="def-terms" style="text-decoration: none;"  href="/[[home]]/default/def-terms"><paper-item>Terms</paper-item><a>
+        <a class="inherit" name="def-policies" style="text-decoration: none;" tabindex="-1" href="/[[home]]/default/def-terms"><paper-item>Policies</paper-item><a>
+        <a class="inherit" name="su-incidents" style="text-decoration: none;" tabindex="-1" href="/[[home]]/default/def-terms"><paper-item>Incident Reporting</paper-item><a>
+        <a class="inherit" name="ad-support" style="text-decoration: none;" tabindex="-1" href="/[[home]]/admin/ad-support"><paper-item>Support</paper-item><a>
+        <guuey-bug-report home="[[home]]" page="[[page]]" patient="[[param]]" user="[[user]]"></guuey-bug-report>
       </paper-listbox>
     </paper-dialog>
 
@@ -544,8 +536,6 @@
       </p>
     </div>
     <div class="loginOverlay"></div>
-
-    <guuey-bug-report home="[[home]]" page="[[page]]" patient="[[param]]" user="[[user]]"></guuey-bug-report>
 
     <app-drawer-layout responsive-width="1023px" fullbleed id="appDrawerLayout">
 
@@ -1058,7 +1048,12 @@
         this.$.overflowDialog.classList.add("dialogPointer");
         this.$.overflowDialog.horizontalOffset = (e.currentTarget.offsetWidth / 2) - beforeWidth;
         this.$.overflowDialog.style = "";
-        this.$.overflowDialog.open();
+        
+        this.$.searchDialog.close();
+        this.$.appsDialog.close();
+        this.$.logoutDialog.close();
+        this.$.notifyDialog.close();
+        this.$.overflowDialog.toggle();
       },
 
       _computeSubSelected: function(name, page) {
@@ -1288,28 +1283,6 @@
         };
       },
 
-      mobileSearchFilter:function(val){
-        if(val.length<3){
-          this.$.mobileSearchDropdown.hide();
-          return null;
-        } else {
-          var val=val.toLowerCase();
-          this.$.mobileSearchDropdown.show();
-          return function(search){
-            if(search.fName && search.lName) {
-              var fName = search.fName.toLowerCase();
-              var lName = search.lName.toLowerCase();
-              var fullName = fName + ' ' + lName;
-              var fNameMatches = fName.indexOf(val) != -1;
-              var lNameMatches = lName.indexOf(val) != -1;
-              var fullNameMatches = fullName.indexOf(val) != -1;
-              var notArchived = search.currentStatus != 'archived';
-              return (fNameMatches || lNameMatches || fullNameMatches) && notArchived;
-            };
-          };
-        };
-      },
-
       clearSearch:function(){
         this.searchVal="";
       },
@@ -1324,31 +1297,19 @@
 
       openApps:function(e){
         // hypotenuse of 45 degree rotated square that is before the dialog... meaning the width in relative terms
-        var isMobile = e.currentTarget.classList.contains("mobileTab");
-        var isDesktop = e.currentTarget.classList.contains("desktopTab");
         var beforeWidth = Math.sqrt(Math.pow(20, 2) + Math.pow(20, 2));
         var containedIcon = Polymer.dom(e.currentTarget).children[0];
-        if(isMobile) {
-          this.$.appsDialog.positionTarget = containedIcon;
-          this.$.appsDialog.verticalAlign = "top";
-          this.$.appsDialog.horizontalAlign = "left";
-          this.$.appsDialog.noOverlap = true;
-          this.$.appsDialog.horizontalOffset = -e.currentTarget.offsetLeft - 12;
-          this.$.appsDialog.classList.remove("dialogPointer");
-          this.$.appsDialog.style = "width:100%;";
-        };
-
-        if(isDesktop) {
-          this.$.appsDialog.positionTarget = e.currentTarget;
-          this.$.appsDialog.verticalAlign = "top";
-          this.$.appsDialog.horizontalAlign = "right";
-          this.$.appsDialog.noOverlap = true;
-          this.$.appsDialog.classList.add("dialogPointer");
-          this.$.appsDialog.horizontalOffset = (e.currentTarget.offsetWidth / 2) - beforeWidth;
-          this.$.appsDialog.style = "";
-        };
+        this.$.appsDialog.positionTarget = e.currentTarget;
+        this.$.appsDialog.verticalAlign = "top";
+        this.$.appsDialog.horizontalAlign = "right";
+        this.$.appsDialog.noOverlap = true;
+        this.$.appsDialog.classList.add("dialogPointer");
+        this.$.appsDialog.horizontalOffset = (e.currentTarget.offsetWidth / 2) - beforeWidth;
+        this.$.appsDialog.style = "";
+        this.$.overflowDialog.close();
         this.$.logoutDialog.close();
         this.$.notifyDialog.close();
+        this.$.searchDialog.close();
         this.$.appsDialog.toggle();
       },
 
@@ -1389,33 +1350,22 @@
 
       openNotifications:function(e){
         // hypotenuse of 45 degree rotated square that is before the dialog... meaning the width in relative terms
-        var isMobile = e.currentTarget.classList.contains("mobileTab");
-        var isDesktop = e.currentTarget.classList.contains("desktopTab");
         var beforeWidth = Math.sqrt(Math.pow(20, 2) + Math.pow(20, 2));
         var containedIcon = Polymer.dom(e.currentTarget).children[0];
-        if(isMobile) {
-          this.$.notifyDialog.positionTarget = containedIcon;
-          this.$.notifyDialog.verticalAlign = "top";
-          this.$.notifyDialog.horizontalAlign = "left";
-          this.$.notifyDialog.noOverlap = true;
-          this.$.notifyDialog.classList.remove("dialogPointer");
-          //where is this extra 12 coming from??? should fix this later...
-          this.$.notifyDialog.horizontalOffset = -e.currentTarget.offsetLeft - 12;
-        };
 
-        if(isDesktop) {
-          this.$.notifyDialog.positionTarget = e.currentTarget;
-          this.$.notifyDialog.verticalAlign = "top";
-          this.$.notifyDialog.horizontalAlign = "right";
-          this.$.notifyDialog.noOverlap = true;
-          this.$.notifyDialog.classList.add("dialogPointer");
-          this.$.notifyDialog.horizontalOffset = (e.currentTarget.offsetWidth / 2) - beforeWidth;
-        };
+        this.$.notifyDialog.positionTarget = e.currentTarget;
+        this.$.notifyDialog.verticalAlign = "top";
+        this.$.notifyDialog.horizontalAlign = "right";
+        this.$.notifyDialog.noOverlap = true;
+        this.$.notifyDialog.classList.add("dialogPointer");
+        this.$.notifyDialog.horizontalOffset = (e.currentTarget.offsetWidth / 2) - beforeWidth;
 
         this.$.notifyDialogScroll.dialogElement = this.$.notifyDialog;
         if(this.notifiesData.length<1){
           return;
         };
+        this.$.searchDialog.close();
+        this.$.overflowDialog.close();
         this.$.appsDialog.close();
         this.$.logoutDialog.close();
         this.$.notifyDialog.toggle();

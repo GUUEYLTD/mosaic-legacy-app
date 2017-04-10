@@ -19,7 +19,6 @@
 <link rel="import" href="../../elements/guuey-date-input/guuey-date-input.html" />
 <link rel="import" href="../../elements/guuey-notify/guuey-notify.html" />
 <link rel="import" href="../../elements/su-header/su-header.html" />
-<link rel="import" href="../../elements/guuey-new-goal-modal/guuey-new-goal-modal.html" />
 <link rel="import" href="../../elements/media-queries/media-queries.html" />
 
 <link rel="import" href="../../behaviors/fab-animation-behavior.html" />
@@ -27,6 +26,7 @@
 <link rel="import" href="../../behaviors/su-print-behavior.html" />
 <link rel="import" href="../../behaviors/su-resize-behavior.html" />
 <link rel="import" href="../../behaviors/guuey-dialog-resize-behavior.html" />
+<link rel="import" href="../../behaviors/guuey-form-validation-behavior.html" />
 
 <link rel="import" href="../../styles/common-styles.html" />
 
@@ -89,7 +89,7 @@
     </firebase-query>
 
     <app-indexeddb-mirror
-      id="risksMirror"
+      id="stepMirror"
       session="[[userUid]]"
       key="stepDB|new|[[patient]]"
       data="{{stepDataLive}}"
@@ -135,11 +135,59 @@
 
     <style include="common-styles"></style>
 
-    <guuey-new-goal-modal
-      id="addGoalModal"
-      value="{{newGoal}}"
-      users="[[userList]]">
-    </guuey-new-goal-modal>
+    <paper-dialog id="addGoalModal" class="guuey-modal guuey-add-modal">
+
+      <h2>Add New Goal</h2>
+
+      <span id="formField">
+
+        <vaadin-combo-box
+          allow-custom-value
+          label="Category"
+          items="[[goalTypes]]"
+          value="{{goalData.category}}"
+          class="detailBarInput"
+          required
+          error-message="Please select a category for this goal.">
+        </vaadin-combo-box>
+
+        <guuey-date-input
+          value="{{goalData.startDate}}"
+          label="Start Date"
+          required>
+        </guuey-date-input>
+
+        <guuey-date-input
+          value="{{goalData.finishDate}}"
+          label="Estimated Finish Date"
+          required>
+        </guuey-date-input>
+
+        <vaadin-combo-box
+          label="Coordinator"
+          items="[[userList]]"
+          value="{{goalData.coordinator}}"
+          required
+          error-message="Please select a coordinator for this goal.">
+        </vaadin-combo-box>
+
+        <paper-input
+          label="Goal Description"
+          value="{{goalData.description}}"
+          required
+          auto-validate
+          pattern="[a-zA-Z\s\.\d]*"
+          error-message="Please enter a description without special characters.">
+        </paper-input>
+
+      </span>
+
+      <div class="modal-button-container">
+        <paper-button class="cancel-button" on-tap="cancelNewGoal">cancel</paper-button>
+        <paper-button class="confirm-button" on-tap="saveNewGoal">save</paper-button>
+      </div>
+
+    </paper-dialog>
 
     <paper-card class="pageCard" elevation="3">
 
@@ -218,11 +266,14 @@
       is: 'su-goals',
 
       goEdit: function() {
+        this.animateEditViewFab();
         this.pageState = "edit-view";
       },
 
       goMulti: function() {
+        this.animateMultiViewFab();
         this.pageState = "multi-view";
+        this.$.goalDB.path = null;
       },
 
       ready: function() {
@@ -304,25 +355,48 @@
           type: Array,
         },
 
-        newGoal: {
-          type: Object,
-          value: null,
-          observer: "newGoalChanged"
+        waitForAutoValidate: {
+          type: Boolean,
+          value: true
         }
 
       },
-
-      observers: [
-        "requirementsMet(goalsData)"
-      ],
 
       behaviors: [
         Polymer.fabAnimationBehavior,
         Polymer.carePlanAnimation,
         Polymer.suPrintBehavior,
         Polymer.suResizeBehavior,
-        Polymer.guueyDialogResizeBehavior
+        Polymer.guueyDialogResizeBehavior,
+        Polymer.guueyFormValidationBehavior
       ],
+
+      saveNewGoal: function() {
+
+        var validation = this.validateInputs(this.$.formField);
+        if(validation.invalid) {
+          this.fire("openToast", {toastText: "The following items are missing or invalid: " + validation.invalidInputs});
+        } else {
+          var path = "/homes/" + this.home + "/patients/" + this.patient + "/personalGoals";
+          this.$.goalDB.save(path, null)
+            .then(function(val) {
+              var goalId = this.$.goalDB.path.split("/").pop();
+              this.$.addGoalModal.close();
+              this.goEdit();
+              this.fire("newGoalSaved", {goalId: goalId});
+              this.fire("openToast",{toastText: "New personal goal saved."});
+            }.bind(this))
+            .catch(function(error) {
+              this.$.addGoalModal.close();
+              this.fire("openToast",{toastText: "There was an error saving the new goal: " + error});
+            }.bind(this));
+        };
+      },
+
+      cancelNewGoal: function() {
+        this.$.addGoalModal.close();
+        this.$.goalDB.data = {};
+      },
 
       initNotify: function() {
         this.$.dateNotify.initialize();
@@ -333,8 +407,7 @@
       editGoal:function(e) {
          this.$.goalDB.path = "homes/" + this.home + "/patients/" + this.patient + "/personalGoals/" + this.goalId;
          this.$.stepsDB.path = "homes/" + this.home + "/patients/" + this.patient + "/personalGoals/" + this.goalId + "/steps";
-         this.animateEditViewFab();
-         this.pageState = "edit-view"
+         this.goEdit();
       },
 
       deleteGoal: function(e) {
@@ -405,29 +478,8 @@
         this.$.addGoalModal.open();
       },
 
-      newGoalChanged: function(data) {
-        if(data != null) {
-          var path = "homes/" + this.home + "/patients/" + this.patient + "/personalGoals/"
-          this.$.goalDB.data = data;
-          this.$.goalDB.save(path, null)
-            .then(function() {
-              var goalId = this.$.goalDB.path.split("/").pop();
-              this.fire("openToast",{toastText: "new goal saved."});
-              this.fire("newGoalSaved", {goalId: goalId});
-              this.$.goalDB.path = null;
-              this.$.goalDB.data = {};
-            }.bind(this))
-            .catch(function(error) {
-              this.fire("openToast",{toastText: "there was an error saving your new goal: " + error});
-              this.$.goalDB.path = null;
-              this.$.goalDB.data = {};
-            });
-        };
-      },
-
       finishGoal: function(e) {
-        this.animateMultiViewFab();
-        this.pageState = "multi-view"
+        this.goMulti();
       },
 
       checkboxChanged: function(e) {
@@ -435,33 +487,6 @@
         var checkBool = e.detail.checkBool;
         var path = "homes/" + this.home + "/patients/" + this.patient + "/personalGoals/" + this.goalId + "/steps/" + stepID + "/completed";
         this.$.stepDB.setStoredValue(path, checkBool);
-      },
-
-      requirementsMet: function(data) {
-        //change case
-        this.$.goalsDB.query.on("child_changed",function() {
-          var goalData = this.$.goalDB.data;
-          if(!goalData.category) {
-            this.fire("openToast", {toastText: "Goal category is required."});
-            return false;
-          } else if(!goalData.startDate) {
-            this.fire("openToast", {toastText: "Goal start date is required."});
-            return false;
-          } else if(!goalData.finishDate) {
-            this.fire("openToast", {toastText: "Goal finish date is required."});
-            return false;
-          } else if(!goalData.coordinator) {
-            this.fire("openToast", {toastText: "Goal cooridnator is required."});
-            return false;
-          } else if(!goalData.description) {
-            this.fire("openToast", {toastText: "Goal description is required."});
-            return false;
-          } else if(!goalData.steps) {
-            this.fire("openToast", {toastText: "Add steps to the goal."});
-          } else {
-            return true;
-          };
-        }.bind(this));
       }
 
     });

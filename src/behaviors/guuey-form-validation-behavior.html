@@ -13,6 +13,11 @@
 
       properties: {
 
+        pageAttached: {
+          type: Boolean,
+          value: false
+        },
+
         validateableInputs: {
           type: Array,
           value: []
@@ -37,7 +42,7 @@
       },
 
       observers: [
-        '_pageChanged(page, waitForAutoValidate)'
+        '_pageChanged(page, waitForAutoValidate, pageAttached)'
       ],
 
       attached: function() {
@@ -45,14 +50,11 @@
         forms.forEach(function(form) {
           var inputs = Polymer.dom(form).children;
           inputs.forEach(function(input) {
-            this.push('validateableInputs', input);
             this.setDefaultContent(input);
           }.bind(this));
         }.bind(this));
-        if(!this.waitForAutoValidate) {
-          this.startWatchingInputs();
-          this.autoValidateInputs();
-        };
+        
+        this.set("pageAttached", true);
       },
 
       startAutoValidate: function() {
@@ -76,15 +78,26 @@
 
       },
 
-      _pageChanged: function(page, waitForAutoValidate) {
-        if(page != this.localName || waitForAutoValidate) {
+      _pageChanged: function(page, waitForAutoValidate, pageAttached) {
+        if(pageAttached && this.localName === page) {
+          if(!waitForAutoValidate) {
+            this.set("validateableInputs", []);
+            var forms = Polymer.dom(this.root).querySelectorAll('.guuey-input-validation');
+            forms.forEach(function(form) {
+              var inputs = Polymer.dom(form).children;
+              inputs.forEach(function(input) {
+                this.push('validateableInputs', input);
+              }.bind(this));
+            }.bind(this));
+            this.startWatchingInputs();
+            this.autoValidateInputs();
+          }
+        } else if( (page !== this.localName || waitForAutoValidate) && pageAttached) {
           this.validateableInputs.forEach(function(input) {
+            this.set("validateableInputs", []);
             this.unsetInvalidListener(input);
             this.unsetValueListener(input);
           }.bind(this));
-        } else if(!waitForAutoValidate) {
-          this.startWatchingInputs();
-          this.autoValidateInputs();
         };
       },
 

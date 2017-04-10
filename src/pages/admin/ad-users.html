@@ -120,7 +120,7 @@
         border: 1px solid grey;
         border-radius:50%;
         margin-left:5px;
-        z-index:999;
+        z-index:10;
       }
       .userImage:hover{
         cursor: pointer;
@@ -131,7 +131,39 @@
         margin:0px;
         padding:0px;
       }
+
+      .suspended-row {
+        opacity: 0.3;
+        position:relative;
+      }
+
+      .suspended-row::after {
+        content: 'SUSPENDED';
+        left: 50%;
+        text-align: center;
+        position: absolute;
+        justify-content: center;
+        color: red;
+        font-size: 24px;
+      }
+
     </style>
+
+    <paper-dialog id="confirmArchiveUser" class="guuey-modal guuey-danger-modal">
+      <h2>Archive User</h2>
+      <p>
+        You are about to archive a user this is not easily undone. Are you sure that you want to do this?
+      </p>
+
+      <p>
+        If the user is going on temporary leave, such as vacation. Perhaps suspending the user is a better course of action?
+      </p>
+
+      <div class="modal-button-container">
+        <paper-button dialog-dismiss>Cancel</paper-button>
+        <paper-button on-tap="confirmArchive">Archive User</paper-button>
+      </div>
+    </paper-dialog>
 
     <paper-dialog id="addUserDialog" class="guuey-modal guuey-add-modal">
 
@@ -239,7 +271,8 @@
     <paper-dialog id="userDialog" no-overlap horizontal-align="left" vertical-align="bottom">
       <paper-button on-tap="editUser">edit</paper-button>
       <br />
-      <paper-button on-tap="suspendUser">suspend</paper-button>
+      <paper-button hidden$="[[!actionUserSuspended]]" on-tap="unsuspendUser">unsuspend</paper-button>
+      <paper-button hidden$="[[actionUserSuspended]]" on-tap="suspendUser">suspend</paper-button>
       <br />
       <paper-button on-tap="archiveUser">archive</paper-button>
     </paper-dialog>
@@ -284,9 +317,14 @@
               </tr>
             </thead>
             <tbody>
-              <template is="dom-repeat" items="{{usersData}}" as="user">
+              <template
+                is="dom-repeat"
+                items="{{usersData}}"
+                as="user"
+                filter="filterArchived"
+                observe="archived">
 
-                <tr>
+                <tr class$="[[_computeSuspendedClass(user.suspended)]]">
                   <td hidden="{{user.image}}">
                     <paper-icon-button
                       class="imageButton"
@@ -362,6 +400,12 @@
         //the user uid to toggle suspension or archived on...
         actionUserUID: {
           type: String,
+        },
+
+        //the currently selected user's status regarding suspension
+        actionUserSuspended: {
+          type: Boolean,
+          value: false
         }
 
       },
@@ -377,9 +421,19 @@
         Polymer.guueyFormValidationBehavior
       ],
 
+      _computeSuspendedClass: function(suspended) {
+        return suspended ? "suspended-row" : "";
+      },
+
+      //filter out archived users in dom-repeat
+      filterArchived: function(user) {
+        return !user.archived || user.archived != true;
+      },
+
       userOptions: function(e) {
         //this.$.userDB.path = "/homes/" + this.home + "/users/" + e.model.user.$key;
         this.actionUserUID = e.model.user.$key;
+        this.actionUserSuspended = e.model.user.suspended;
         this.$.userDialog.positionTarget = e.target;
         this.$.userDialog.toggle();
       },
@@ -418,6 +472,10 @@
       },
 
       archiveUser: function() {
+        this.$.confirmArchiveUser.open();
+      },
+
+      confirmArchive: function() {
         this.user.getToken()
           .then(function(token) {
             this.$.userUpdateCall.body = {
@@ -427,6 +485,7 @@
             this.$.userUpdateCall.url="http://localhost:3000/users/archive";
             this.$.userUpdateCall.generateRequest();
           }.bind(this));
+          this.$.confirmArchiveUser.close();
       },
 
       unarchiveUser: function() {
