@@ -1,7 +1,7 @@
 {
-  "name": "polymer-starter-kit",
+  "name": "mosaic-care",
   "authors": [
-    "The Polymer Authors"
+    "TovarishFin"
   ],
   "private": true,
   "dependencies": {
