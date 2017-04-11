@@ -373,13 +373,6 @@
 
     </paper-dialog>
 
-    <paper-dialog id="movedDialog" modal>
-      <h2>app has moved</h2>
-      <p>
-        please visit <a href="https://app.mosaic-care.com">app.mosaic-care.com</a> to use the app in it's new location. Thanks.
-      </p>
-    </paper-dialog>
-
     <paper-dialog id="appsDialog">
       <div class="flexRow">
         <div on-tap="openApp" data-name="carePlan" class="appBox">
@@ -1192,10 +1185,6 @@
         if(home != 'default'){
           this.home = this.homeData.home;
           this.$.settingsDB.path = "/homes/" + this.home + "/settings";
-        };
-        //lockout of dev server for beta tester
-        if(home === "-KRSjsbJCBdJM8et8BUe") {
-          this.$.movedDialog.open();
         };
       },
 
