@@ -174,7 +174,7 @@
     <firebase-document
       id="appInfoDB"
       app-name="main"
-      data="{{appInfoData}}"
+      data="{{appInfoDataLive}}"
       path="/appInfo">
     </firebase-document>
 
@@ -1048,7 +1048,7 @@
         this.$.overflowDialog.classList.add("dialogPointer");
         this.$.overflowDialog.horizontalOffset = (e.currentTarget.offsetWidth / 2) - beforeWidth;
         this.$.overflowDialog.style = "";
-        
+
         this.$.searchDialog.close();
         this.$.appsDialog.close();
         this.$.logoutDialog.close();
@@ -1386,7 +1386,7 @@
 
       _initializeAppVersion: function() {
         console.log('initializing app verion');
-        this.set('appVersion', 'uninitialized');
+        this.set('appVersion', 'new');
       },
 
       _computeUserPhoto:function(photo){

@@ -454,7 +454,7 @@
               token: token,
               uid: this.actionUserUID
             };
-            this.$.userUpdateCall.url="http://localhost:3000/users/suspend";
+            this.$.userUpdateCall.url="https://dev-mosaic.herokuapp.com/users/suspend";
             this.$.userUpdateCall.generateRequest();
           }.bind(this));
       },
@@ -466,7 +466,7 @@
               token: token,
               uid: this.actionUserUID
             };
-            this.$.userUpdateCall.url="http://localhost:3000/users/unsuspend";
+            this.$.userUpdateCall.url="https://dev-mosaic.herokuapp.com/users/unsuspend";
             this.$.userUpdateCall.generateRequest();
           }.bind(this));
       },
@@ -482,7 +482,7 @@
               token: token,
               uid: this.actionUserUID
             };
-            this.$.userUpdateCall.url="http://localhost:3000/users/archive";
+            this.$.userUpdateCall.url="https://dev-mosaic.herokuapp.com/users/archive";
             this.$.userUpdateCall.generateRequest();
           }.bind(this));
           this.$.confirmArchiveUser.close();
@@ -495,7 +495,7 @@
               token: token,
               uid: this.actionUserUID
             };
-            this.$.userUpdateCall.url="http://localhost:3000/users/unarchive";
+            this.$.userUpdateCall.url="https://dev-mosaic.herokuapp.com/users/unarchive";
             this.$.userUpdateCall.generateRequest();
           }.bind(this));
       },

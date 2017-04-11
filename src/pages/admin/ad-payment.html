@@ -529,11 +529,13 @@
           if (!!!this.Stripe)
             this.Stripe = Stripe;
           if (!!!this.Stripe.key)
-            this.Stripe.setPublishableKey('pk_test_HelqkF6yfrw7IvyTtgtOG7Sb');
+            this.Stripe.setPublishableKey('pk_test_1p3m5p4AeGCNe4vMqd26hKi0');
         },
+
         _stripeExists: function() {
           return typeof Stripe != 'undefined';
         },
+
         _loadStripe: function() {
           if(this._stripeExists()) {
             this._initStripe();
@@ -544,6 +546,7 @@
           document.body.appendChild(script);
           script.onload = this._initStripe.bind(this);
         },
+
         //utility functions
         splitDate:function(date){
           var dateArr=date.split("/");
@@ -568,6 +571,7 @@
           var moneyAmount = amount / 100;
           return unit + moneyAmount;
         },
+
         _computeSubMonthlyPrice:function(id, amount, currency, users){
           var unit = currency === "gbp" ? "£" : "€";
           var moneyAmount = (amount / 100) * users;
@@ -580,11 +584,13 @@
           return unit + moneyAmount;
 
         },
+
         _computeDate:function(created){
           var date = new Date(0);
           date.setUTCSeconds(created);
           return date.toLocaleDateString();
         },
+
         _computeCIDExists:function(cid){
           if(cid){
             return true;
@@ -592,6 +598,7 @@
             return false;
           };
         },
+
         _computeUserCount:function(users){
           var userCount=0;
           for(x in users){
@@ -601,9 +608,11 @@
           };
           this.set("userCount", userCount);
         },
+
         _computePlanStatus:function(plan){
           return plan.replace("_", " ");
         },
+
         _getCustomerInfo:function(){
           this.user.getToken()
             .then(function(token) {
@@ -612,21 +621,23 @@
                 token: token
               };
 
-              this.$.stripeCustomerCall.url = "http://localhost:3000/payments/customerinfo";
+              this.$.stripeCustomerCall.url = "https://dev-mosaic.herokuapp.com/payments/customerinfo";
               this.$.stripeCustomerCall.generateRequest();
             }.bind(this));
         },
-        _listPlans:function(){
+
+        _listPlans:function(user){
           this.user.getToken()
             .then(function(token) {
               this.$.listPlansCall.body = {
                 request: "listPlans",
                 token: token
               };
-              this.$.listPlansCall.url = "http://localhost:3000/payments/listplans"
+              this.$.listPlansCall.url = "https://dev-mosaic.herokuapp.com/payments/listplans"
               this.$.listPlansCall.generateRequest();
             }.bind(this));
         },
+
         _alreadyOwned:function(owned){
           return function(plan){
             return !owned.find(function(item) {
@@ -652,9 +663,11 @@
           };
           return valid;
         },
+
         addCard:function(){
           this.$.addCardDialog.open();
         },
+
         initialSub:function(){
           this.$.payButton.disabled = true;
           if(this.checkValid() && !this.customer.customerID){
@@ -671,8 +684,10 @@
             this.initialSubCall(params);
           } else {
             this.fire("openToast",{toastText:"Your payment could not be processed due to missing or bad information. Please check the information in the form and try again."});
+            this.$.payButton.disabled = false;
           };
         },
+
         confirmAddCard:function(){
           if(this.checkValid() && this.customer.customerID){
             var params={
@@ -701,14 +716,15 @@
             exp_year: dateObj.expYear,
           }, this.handleInitialSubCall.bind(this));
         },
+
         handleInitialSubCall:function(status, res){
           if(res.error){
             this.$.payButton.disabled = false;
             this.fire("openToast",{toastText:"Your payment could not be processed for the following reason: "+res.error.message});
           } else {
-            this.user.getToken()
+            this.user.getToken(true)
               .then(function(token) {
-                this.$.initSubCall.url = "http://localhost:3000/payments/initialsub";
+                this.$.initSubCall.url = "https://dev-mosaic.herokuapp.com/payments/initialsub";
                 this.$.initSubCall.body = {
                   stripeToken: res.id,
                   home: this.params.home,
@@ -727,7 +743,7 @@
           } else {
             this.user.getToken()
               .then(function(token) {
-                this.$.addCardCall.url = "http://localhost:3000/payments/addcard";
+                this.$.addCardCall.url = "https://dev-mosaic.herokuapp.com/payments/addcard";
                 this.$.addCardCall.body = {
                   stripeToken: res.id,
                   customerId: this.customer.customerID,
@@ -779,7 +795,7 @@
         confirmDeleteCard:function(cardId){
           this.user.getToken()
             .then(function(token){
-              this.$.deleteCardCall.url = "http://localhost:3000/payments/deletecard";
+              this.$.deleteCardCall.url = "https://dev-mosaic.herokuapp.com/payments/deletecard";
               this.$.deleteCardCall.body = {
                 customerId: this.customer.customerID,
                 cardId: cardId,
@@ -799,7 +815,7 @@
         confirmSetDefaultCard:function(cardId){
           this.user.getToken()
             .then(function(token){
-              this.$.defaultCardCall.url = "http://localhost:3000/payments/setdefaultcard";
+              this.$.defaultCardCall.url = "https://dev-mosaic.herokuapp.com/payments/setdefaultcard";
               this.$.defaultCardCall.body = {
                 customerId: this.customer.customerID,
                 cardId: cardId,
@@ -809,6 +825,7 @@
             }.bind(this));
 
         },
+
         addPlan:function(e){
           this.confirmAction = "addPlan"
           this.confirmTitle = "Add Subscription";
@@ -817,6 +834,7 @@
           Polymer.dom(this.$.confirmDialog.setAttribute("data-name", e.model.availablePlan.name));
           this.$.confirmDialog.open();
         },
+
         confirmAddPlan:function(planId, planName){
           this.user.getToken()
             .then(function(token){
@@ -828,11 +846,12 @@
                 users: this.userCount,
                 token: token
               };
-              this.$.addPlanCall.url = "http://localhost:3000/payments/addplan";
+              this.$.addPlanCall.url = "https://dev-mosaic.herokuapp.com/payments/addplan";
               this.$.addPlanCall.generateRequest();
             }.bind(this));
 
         },
+
         deletePlan:function(e){
           this.confirmAction = "deletePlan"
           this.confirmTitle = "Remove Subscription";
@@ -842,6 +861,7 @@
           Polymer.dom(this.$.confirmDialog.setAttribute("data-sub", e.model.plan.id));
           this.$.confirmDialog.open();
         },
+
         confirmDeletePlan:function(planId, planName, subId ){
           this.user.getToken()
             .then(function(token) {
@@ -853,10 +873,11 @@
                 subId: subId,
                 token: token
               };
-              this.$.deletePlanCall.url = "http://localhost:3000/payments/deleteplan";
+              this.$.deletePlanCall.url = "https://dev-mosaic.herokuapp.com/payments/deleteplan";
               this.$.deletePlanCall.generateRequest();
             }.bind(this));
         },
+
         _getCharges:function(){
           this.user.getToken()
             .then(function(token) {
@@ -864,16 +885,22 @@
                 customerId:this.customer.customerID,
                 token: token
               };
-              this.$.chargesCall.url="http://localhost:3000/payments/getcharges";
+              this.$.chargesCall.url="https://dev-mosaic.herokuapp.com/payments/getcharges";
               this.$.chargesCall.generateRequest();
             }.bind(this));
         },
+
         //handle api calls
         _handleInitialSubResponse:function(e){
-          this.clearCardInputs();
-          this._getCustomerInfo();
-          this.$.payButton.disabled = false;
+          if(e.detail.response.error) {
+            this.fire('openToast', {toastText: e.detail.response.message});
+          } else {
+            this.clearCardInputs();
+            this._getCustomerInfo();
+            this.$.payButton.disabled = false;
+          };
         },
+
         _handleAddCardCall:function(e){
           if(e.detail.response.statusCode === 402){
             this.fire("openToast", {toastText:e.detail.response.message});
@@ -884,33 +911,42 @@
             this.fire("openToast", {toastText:"Your"+e.detail.reponse.brand+" ending in "+e.detail.response.last4+" has been added."});
           };
         },
+
         _handleStripeCustomerCall:function(e){
+          console.log(e);
           this.set("activePlanList", e.detail.response.subscriptions.data);
           this.set("cardList", e.detail.response.sources.data);
         },
+
         _handleDeleteCardCall:function(e){
           if(e.detail.response.deleted === true){
             this._getCustomerInfo();
             this.fire("openToast", {toastText:"Your card has been removed."});
           };
         },
+
         _handleDefaultCardCall:function(e){
           this.fire("openToast", {toastText:"Your default card has been set."});
         },
+
         _handleListPlansCall:function(e){
           this.set("plansList", e.detail.response.data);
         },
+
         _handleAddPlanCall:function(e){
           this._getCustomerInfo();
           this.fire("openToast", {toastText:"You have successfully added the module named "+e.detail.response.planName+" to your supscription."});
         },
+
         _handleDeletePlanCall:function(e){
           this._getCustomerInfo();
           this.fire("openToast", {toastText:"Plan removed"});
         },
+
         _handleChargesCall:function(e){
           this.set("chargesList", e.detail.response.data);
         }
+        
       });
 
   </script>
