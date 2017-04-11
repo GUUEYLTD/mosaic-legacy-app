@@ -63,7 +63,7 @@
       },
 
       observers: [
-        '_processUserAccountTasks(mode, currentDevice, user, statusKnown, signedIn, agreeTerms.*, userInfoData.*, appInfoData)',
+        '_processUserAccountTasks(mode, currentDevice, user, statusKnown, signedIn, userInfoData.*, appInfoData)',
         '_userChanged(user)',
         '_setUserSettingsPath(user, home)',
         '_setHome(user)'
@@ -77,38 +77,78 @@
         this.checkForAccountFunctions();
       },
 
-      _processUserAccountTasks: function(mode, currentDevice, user, statusKnown, signedIn, agreeTermsDeep, userInfoDataDeep, appInfoData) {
+      _processUserAccountTasks: function(mode, currentDevice, user, statusKnown, signedIn, userInfoDataDeep, appInfoData) {
         var userInfoData = userInfoDataDeep.base;
-        var agreeTerms = this.$.userInfoDB.valueIsEmpty(userInfoData) ? agreeTermsDeep.base : {ready: true, agree: userInfoData.agreeTerms};
-        //temp workaround for the fucking agreeTerms db issue
-        if(agreeTerms.agree) {
-          this.$.termsDialog.close();
-        };
+        var agreeTerms = this.$.userInfoDB.valueIsEmpty(userInfoData.home) ? {ready: false, agree: false} : {ready: true, agree: userInfoData.agreeTerms};
         if(mode) {
           console.log('mode has been set.. running account functions...');
-          this.setDialogOverlay();
-          this.$.verifyDialog.open();
-        } else if(statusKnown && !signedIn && !mode) {
-            console.log('opening login');
+
+          if(!this.$.verifyDialog.opened){
             this.setDialogOverlay();
-            this.$.loginDialog.open();
-        } else if(user && user.uid && agreeTerms.ready && !agreeTerms.agree && signedIn) {
+            this.$.verifyDialog.open();
+          };
+        } else if(
+            statusKnown
+            && !signedIn
+            && !mode
+          ) {
+
+            if(!this.$.loginDialog.opened) {
+              console.log('opening login');
+              this.setDialogOverlay();
+              this.$.loginDialog.open();
+            };
+        } else if(
+            user
+            && user.uid
+            && agreeTerms.ready
+            && !agreeTerms.agree
+            && signedIn
+          ) {
             console.log('open termsDialog');
             this.setDialogOverlay();
             this.$.termsDialog.open();
-        } else if(user && user.uid && agreeTerms.agree && signedIn && !currentDevice) {
-            console.log(user.uid)
+        } else if(
+            user
+            && user.uid
+            && agreeTerms.agree
+            && signedIn
+            && !currentDevice
+          ) {
             console.log('setting device for notifications...');
-            this.setDialogOverlay();
-            this.$.requestNotificationModal.open();
-        } else if(user && user.uid && agreeTerms.agree && signedIn && currentDevice && !user.emailVerified) {
+            if(!this.$.requestNotificationModal.opened) {
+              this.setDialogOverlay();
+              this.$.requestNotificationModal.open();
+            };
+        } else if(
+            user
+            && user.uid
+            && agreeTerms.agree
+            && signedIn
+            && currentDevice
+            && !user.emailVerified
+          ) {
             console.log('verifying email');
-            this.setDialogOverlay();
-            this.$.verifyDialog.open();
-        } else if(user && user.uid && agreeTerms.agree && signedIn && currentDevice && user.emailVerified && appInfoData && appInfoData.version){
+            if(!this.$.verifyDialog.opened) {
+              this.setDialogOverlay();
+              this.$.verifyDialog.open();
+            };
+        } else if(
+            user
+            && user.uid
+            && agreeTerms.agree
+            && signedIn
+            && currentDevice
+            && user.emailVerified
+            && appInfoData
+            && appInfoData.version
+          ) {
             if(this.appVersion === 'new') {
               this.set('appVersion', appInfoData.version);
-            } else if(this.appVersion != 'new' && this.appVersion != appInfoData.version) {
+            } else if(
+              this.appVersion != 'new'
+              && this.appVersion != appInfoData.version
+            ) {
               this.notifyUpdate();
             };
         };
@@ -137,7 +177,12 @@
       },
 
       _setUserSettingsPath: function(user, home) {
-        if(user && user.uid && home && home !='default') {
+        if(
+            user
+            && user.uid
+            && home
+            && home !='default'
+          ) {
           this.$.userSettingsDB.path = "/homes/" + home + "/users/" + user.uid + "/settings";
           this.$.userSettingsDB.ref.once("value", function(snap) {
             var userSettingsData = snap.val();

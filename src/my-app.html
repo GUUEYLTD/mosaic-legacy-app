@@ -174,7 +174,7 @@
     <firebase-document
       id="appInfoDB"
       app-name="main"
-      data="{{appInfoData}}"
+      data="{{appInfoDataLive}}"
       path="/appInfo">
     </firebase-document>
 
@@ -1386,7 +1386,7 @@
 
       _initializeAppVersion: function() {
         console.log('initializing app verion');
-        this.set('appVersion', 'uninitialized');
+        this.set('appVersion', 'new');
       },
 
       _computeUserPhoto:function(photo){
