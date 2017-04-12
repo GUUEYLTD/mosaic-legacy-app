@@ -96,12 +96,12 @@
 
     <!--firebase app and auth config-->
     <firebase-app
-       name="main"
-       auth-domain="mosaic-care-5cea8.firebaseapp.com"
-       api-key="AIzaSyCQDIr1UXMVtl1n-6kYKv_VEPTGTk11QLI"
-       database-url="https://mosaic-care-5cea8.firebaseio.com"
-       storage-bucket="mosaic-care-5cea8.appspot.com"
-       messaging-sender-id="529017284153">
+      name="main"
+      auth-domain="mosaic-care-5cea8.firebaseio.com"
+      database-url="https://mosaic-care-5cea8.firebaseio.com"
+      api-key="AIzaSyCQDIr1UXMVtl1n-6kYKv_VEPTGTk11QLI"
+      storage-bucket="mosaic-care-5cea8.appspot.com"
+      messaging-sender-id="462773718811">
     </firebase-app>
 
     <firebase-auth
@@ -371,6 +371,13 @@
       <paper-input label="current device name" required value="{{newDevice}}"></paper-input>
       <paper-button on-tap="requestNotificationPermission">proceed</paper-button>
 
+    </paper-dialog>
+
+    <paper-dialog id="movedDialog" modal>
+      <h2>app has moved</h2>
+      <p>
+        please visit <a href="https://app.mosaic-care.com">app.mosaic-care.com</a> to use the app in it's new location. Thanks.
+      </p>
     </paper-dialog>
 
     <paper-dialog id="appsDialog">
@@ -1186,6 +1193,7 @@
           this.home = this.homeData.home;
           this.$.settingsDB.path = "/homes/" + this.home + "/settings";
         };
+        //lockout of dev server for beta tester
       },
 
       _catChanged:function(cat){
