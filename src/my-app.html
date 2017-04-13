@@ -97,11 +97,11 @@
     <!--firebase app and auth config-->
     <firebase-app
       name="main"
-      auth-domain="careplan-c2677.firebaseapp.com"
-      database-url="https://careplan-c2677.firebaseio.com"
-      api-key="AIzaSyBdtmHIV_7epC0OBiXkTNoqrGRspA58Epc"
-      storage-bucket="careplan-c2677.appspot.com"
-      messaging-sender-id="462773718811">
+      auth-domain="mosaic-dev-b7ffe.firebaseapp.com"
+      database-url="https://mosaic-dev-b7ffe.firebaseio.com"
+      api-key="AIzaSyDDsDCie-Fy_zDDMW7bCNF5alEOx-SxbrU"
+      storage-bucket="mosaic-dev-b7ffe.appspot.com"
+      messaging-sender-id="841971867726">
     </firebase-app>
 
     <firebase-auth
@@ -313,10 +313,17 @@
       route="[[pageRoute]]"
       pattern="/:page"
       data="{{pageData}}"
-      tail="{{paramRoute}}">
+      tail="{{patientRoute}}">
     </app-route>
 
     <!--final param for multi use (patientid, careworkerid etc...)-->
+    <app-route
+      route="[[patientRoute]]"
+      pattern="/:patient"
+      data="{{patientData}}"
+      tail="{{paramRoute}}">
+    </app-route>
+
     <app-route
       route="[[paramRoute]]"
       pattern="/:param"
@@ -359,7 +366,7 @@
         <a class="inherit" name="def-policies" style="text-decoration: none;" tabindex="-1" href="/[[home]]/default/def-terms"><paper-item>Policies</paper-item><a>
         <a class="inherit" name="su-incidents" style="text-decoration: none;" tabindex="-1" href="/[[home]]/default/def-terms"><paper-item>Incident Reporting</paper-item><a>
         <a class="inherit" name="ad-support" style="text-decoration: none;" tabindex="-1" href="/[[home]]/admin/ad-support"><paper-item>Support</paper-item><a>
-        <guuey-bug-report home="[[home]]" page="[[page]]" patient="[[param]]" user="[[user]]"></guuey-bug-report>
+        <guuey-bug-report home="[[home]]" page="[[page]]" patient="[[patient]]" user="[[user]]"></guuey-bug-report>
       </paper-listbox>
     </paper-dialog>
 
@@ -511,7 +518,7 @@
       exit-animation="fade-out-animation">
       <paper-listbox attr-for-selected="name" selected="[[page]]">
         <template is="dom-repeat" items="[[subMenuItems]]" as="subItem">
-          <paper-item on-tap="closeSubMenuDialog" class="nav-tabs sub-menu-item" link name="[[subItem.name]]"><a class="sub-menu-href" tabindex="-1" href="/[[home]]/care-plan/[[subItem.name]]/[[param]]">[[subItem.display]]<a></paper-item>
+          <paper-item on-tap="closeSubMenuDialog" class="nav-tabs sub-menu-item" link name="[[subItem.name]]"><a class="sub-menu-href" tabindex="-1" href="/[[home]]/care-plan/[[subItem.name]]/[[patient]]">[[subItem.display]]<a></paper-item>
         </template>
       </paper-listbox>
     </paper-dialog>
@@ -543,7 +550,6 @@
       <admin-drawer
         id="adminDrawer"
         home="[[home]]"
-        admin="[[param]]"
         image="[[user.photoURL]]"
         email="[[user.email]]"
         user-type="[[currentUserType]]"
@@ -577,7 +583,7 @@
             </paper-tabs>
 
           </app-toolbar>
-          <app-toolbar sticky id="bottomNav" class="bottom-nav bottom-nav-closed">
+          <app-toolbar id="bottomNav" class="bottom-nav bottom-nav-closed">
 
             <paper-tabs
               bottom-item
@@ -587,9 +593,9 @@
               <paper-tab class$="[[_computeSubSelected('profile', page)]]" id="profile" name="profile" on-tap="openProfileSub">PROFILE</paper-tab>
               <paper-tab class$="[[_computeSubSelected('care', page)]]" id="care" name="care" on-tap="openProfileSub">CARE</paper-tab>
               <paper-tab class$="[[_computeSubSelected('reports', page)]]" id="reports" name="reports" on-tap="openProfileSub">REPORTS</paper-tab>
-              <paper-tab on-tap="closeSubMenuDialog" class="nav-tabs" link name="su-medication"><a class="menu-link" tabindex="-1" href="/[[home]]/care-plan/su-medication/[[param]]">Medication Outline</a></paper-tab>
-              <paper-tab on-tap="closeSubMenuDialog" class="nav-tabs" link name="su-risk"><a class="menu-link" tabindex="-1" href="/[[home]]/care-plan/su-risk/[[param]]">Risk Assessment</a></paper-tab>
-              <paper-tab on-tap="closeSubMenuDialog" class="nav-tabs" link name="su-goals"><a class="menu-link" tabindex="-1" href="/[[home]]/care-plan/su-goals/[[param]]">Personal Goals</a></paper-tab>
+              <paper-tab on-tap="closeSubMenuDialog" class="nav-tabs" link name="su-medication"><a class="menu-link" tabindex="-1" href="/[[home]]/care-plan/su-medication/[[patient]]">Medication Outline</a></paper-tab>
+              <paper-tab on-tap="closeSubMenuDialog" class="nav-tabs" link name="su-risk"><a class="menu-link" tabindex="-1" href="/[[home]]/care-plan/su-risk/[[patient]]">Risk Assessment</a></paper-tab>
+              <paper-tab on-tap="closeSubMenuDialog" class="nav-tabs" link name="su-goals"><a class="menu-link" tabindex="-1" href="/[[home]]/care-plan/su-goals/[[patient]]">Personal Goals</a></paper-tab>
             </paper-tabs>
             <paper-progress class="mainProgress" indeterminate></paper-progress>
           </app-toolbar>
@@ -659,7 +665,7 @@
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            patient="[[param]]"
+            patient="[[patient]]"
             home="[[home]]"
             name="su-home">
           </su-home>
@@ -669,7 +675,7 @@
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            patient="[[param]]"
+            patient="[[patient]]"
             home="[[home]]"
             name="su-profile">
           </su-profile>
@@ -679,7 +685,7 @@
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            patient="[[param]]"
+            patient="[[patient]]"
             home="[[home]]"
             name="su-care">
           </su-care>
@@ -689,7 +695,7 @@
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            patient="[[param]]"
+            patient="[[patient]]"
             home="[[home]]"
             name="su-goals">
           </su-goals>
@@ -700,7 +706,7 @@
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            patient="[[param]]"
+            patient="[[patient]]"
             home="[[home]]"
             user="{{user}}"
             name="su-uploads">
@@ -712,7 +718,7 @@
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            patient="[[param]]"
+            patient="[[patient]]"
             home="[[home]]"
             user="{{user}}"
             name="su-medication"
@@ -724,7 +730,7 @@
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            patient="[[param]]"
+            patient="[[patient]]"
             home="[[home]]"
             name="su-pre">
           </su-pre>
@@ -735,7 +741,7 @@
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            patient="[[param]]"
+            patient="[[patient]]"
             home="[[home]]"
             user="{{user}}"
             name="su-risk">
@@ -746,7 +752,7 @@
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            patient="[[param]]"
+            patient="[[patient]]"
             home="[[home]]"
             name="su-create">
           </su-create>
@@ -756,7 +762,7 @@
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            patient="[[param]]"
+            patient="[[patient]]"
             home="[[home]]"
             name="su-care-review">
           </su-care-review>
@@ -766,7 +772,7 @@
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            patient="[[param]]"
+            patient="[[patient]]"
             home="[[home]]"
             name="su-reports">
           </su-reports>
@@ -776,7 +782,7 @@
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            patient="[[param]]"
+            patient="[[patient]]"
             home="[[home]]"
             name="su-monthly-reports">
           </su-monthly-reports>
@@ -786,7 +792,7 @@
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            patient="[[param]]"
+            patient="[[patient]]"
             home="[[home]]"
             name="su-view-reports">
           </su-view-reports>
@@ -797,7 +803,6 @@
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            admin-id="[[param]]"
             home="[[home]]"
             name="ad-dash">
           </ad-dash>
@@ -807,7 +812,6 @@
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            admin-id="[[param]]"
             home="[[home]]"
             name="ad-profile">
           </ad-profile>
@@ -818,7 +822,6 @@
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            admin-id="[[param]]"
             home="[[home]]"
             name="ad-payment">
           </ad-payment>
@@ -829,7 +832,6 @@
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            admin-id="[[param]]"
             user={{user}}
             home="[[home]]"
             name="ad-users">
@@ -840,7 +842,6 @@
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            admin-id="[[param]]"
             home="[[home]]"
             name="ad-settings">
           </ad-settings>
@@ -850,7 +851,6 @@
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            admin-id="[[param]]"
             home="[[home]]"
             name="ad-support">
           </ad-support>
@@ -860,7 +860,6 @@
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            admin-id="[[param]]"
             home="[[home]]"
             name="ad-reports">
           </ad-reports>
@@ -872,10 +871,37 @@
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            patient="[[param]]"
+            patient="[[patient]]"
             home="[[home]]"
             name="test-test">
           </test-test>
+
+          <test-main
+            user="[[user]]"
+            user-uid="[[userUid]]"
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="{{page}}"
+            patient="[[patient]]"
+            home="[[home]]"
+            name="test-main"
+            param="{{param}}">
+          </test-main>
+
+          <test-edit
+            user="[[user]]"
+            user-uid="[[userUid]]"
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="{{page}}"
+            patient="[[patient]]"
+            home="[[home]]"
+            name="test-edit"
+            param="{{param}}">
+          </test-edit>
+
         </neon-animated-pages>
 
       </app-header-layout>
@@ -941,10 +967,15 @@
           reflectToAttribute: true,
         },
 
-        param: {
+        patient: {
           type: String,
           reflectToAttribute: true,
-          observer: '_paramChanged'
+          observer: '_patientChanged'
+        },
+
+        param: {
+          type: String,
+          reflectToAttribute: true
         },
 
         login: {
@@ -1013,7 +1044,8 @@
         '_homeRouteChanged(homeData.home)',
         '_catRouteChanged(catData.category)',
         '_pageRouteChanged(pageData.page)',
-        '_paramRouteChanged(paramData.param)',
+        '_patientRouteChanged(patientData.patient)',
+        '_paramRouteChanged(paramData.param)'
       ],
 
       behaviors: [
@@ -1029,9 +1061,10 @@
       ready:function(){
         this.addEventListener('openToast', this.openToast);
         this.addEventListener('closeToast', this.closeToast);
-        this.addEventListener('openDrawer', this.openDrawer);
         this.addEventListener('app-drawer-transitioned', this.resizeDrawerImage);
         this.addEventListener("resize", this.resizeElements);
+        this.addEventListener("openBottomNav", this.openBottomNav);
+        this.addEventListener("closeBottomNav", this.closeBottomNav);
         //this.$.storage._downloadFile(this.$.storage.path);
       },
 
@@ -1172,16 +1205,15 @@
 
       _catRouteChanged:function(category){
         this.category = category || 'default';
-        if(category != 'default' && category != 'admin') {
-          this.$.bottomNav.classList.remove('bottom-nav-closed');
-        } else {
-          this.$.bottomNav.classList.add('bottom-nav-closed');
-        };
       },
 
       _pageRouteChanged:function(page) {
           this.currentPage = this.selected;
           this.page = page || 'def-home';
+      },
+
+      _patientRouteChanged: function(patient) {
+        this.patient = patient || '';
       },
 
       _paramRouteChanged:function(param){
@@ -1207,9 +1239,9 @@
         }
       },
 
-      _paramChanged:function(param){
-        this.param=this.paramData.param || '';
-        this.searchVal="";
+      _patientChanged: function() {
+        this.patient = this.patientData.patient || '';
+        this.searchVal = "";
       },
 
       toggleDrawer:function(){
@@ -1221,8 +1253,8 @@
 
       },
 
-      _patientSelected:function(category, param){
-        if((this.category==="care-plan" || "test") && this.param){
+      _patientSelected:function(category, patient){
+        if((this.category==="care-plan" || "test") && this.patient){
           return true;
         } else {
           return false;

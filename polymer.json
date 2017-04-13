@@ -26,7 +26,9 @@
     "src/pages/default/def-account.html",
     "src/pages/default/def-terms.html",
     "src/pages/default/def-error.html",
-    "src/pages/test/test-test.html"
+    "src/pages/test/test-test.html",
+    "src/pages/test/test-main.html",
+    "src/pages/test/test-edit.html"
   ],
   "sources": [
      "src/elements/**/*",

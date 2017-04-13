@@ -13,6 +13,7 @@
       observers:[
         "_middleware(page)",
         "_userTypeReady(home, user)",
+        "_checkBottomNav(catData.category, page)"
       ],
 
       properties:{
@@ -38,6 +39,25 @@
         this.addEventListener('dbLoading', this.enableDBLoading);
         this.addEventListener('dbLoaded', this.disableDBLoading);
         this.addEventListener('pageLoaded', this.pageFirstLoad);
+      },
+
+      closeBottomNav: function() {
+        this.$.bottomNav.classList.remove('bottom-nav-closed');
+      },
+
+      openBottomNav: function() {
+        this.$.bottomNav.classList.add('bottom-nav-closed');
+      },
+
+      _checkBottomNav: function(category, page) {
+        if(
+            category != 'default'
+            && category != 'admin'
+            && page != 'su-create') {
+          this.closeBottomNav();
+        } else {
+          this.openBottomNav();
+        };
       },
 
       //take in route as string and check against no auth routes

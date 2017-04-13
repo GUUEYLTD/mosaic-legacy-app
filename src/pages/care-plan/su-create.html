@@ -14,7 +14,9 @@
 
 <link rel="import" href="../../behaviors/animations/care-plan-animation.html" />
 <link rel="import" href="../../behaviors/su-resize-behavior.html" />
+<!--
 <link rel="import" href="../../behaviors/guuey-form-validation-behavior.html" />
+-->
 
 <link rel="import" href="../../styles/common-styles.html" />
 
@@ -502,14 +504,14 @@
       },
 
       observers: [
-        '_inputsAreValid(autoValidateValid)'
-        //"_requirementsMet(newPatientData)"
+        //'_inputsAreValid(autoValidateValid)'
+        "_requirementsMet(newPatientData)"
       ],
 
       behaviors: [
         Polymer.carePlanAnimation,
         Polymer.suResizeBehavior,
-        Polymer.guueyFormValidationBehavior
+        //Polymer.guueyFormValidationBehavior
       ],
 
       _inputsAreValid: function(autoValidateValid) {
@@ -535,7 +537,7 @@
             this.$.suIndexDB.save("/homes/" + this.home + "/patients/suIndex", this.patient)
               .then(function() {
                 this.fire("openToast", {toastText: "New service user has been saved. You can continue editing on this page or navigate to other pages for the service user."});
-                this.fire("openDrawer");
+                this.fire("openBottomNav");
               }.bind(this));
           }.bind(this));
       },
@@ -566,7 +568,7 @@
           } else if(!data.nationality) {
             this.fire("openToast", {toastText: "Nationality is required before saving the new service user."});
           } else {
-
+            this._createNewPatient()
           };
         };
       }

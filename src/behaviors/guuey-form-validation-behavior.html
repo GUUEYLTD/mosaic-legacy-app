@@ -53,7 +53,7 @@
             this.setDefaultContent(input);
           }.bind(this));
         }.bind(this));
-        
+
         this.set("pageAttached", true);
       },
 
@@ -187,7 +187,7 @@
             this.fire('openToast', {toastText: toastMessage});
           } else {
             this.fire('closeToast');
-            this.autoValidateValid = true;
+            this.set("autoValidateValid", true);
           };
         }
       },

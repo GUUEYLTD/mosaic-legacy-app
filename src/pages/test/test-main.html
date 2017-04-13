@@ -1,0 +1,319 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html" />
+<link rel="import" href="../../../bower_components/polymerfire/firebase-document.html" />
+<link rel="import" href="../../../bower_components/polymerfire/firebase-query.html" />
+<link rel="import" href="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror.html" />
+<link rel="import" href="../../../bower_components/paper-fab/paper-fab.html" />
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html" />
+<link rel="import" href="../../../bower_components/paper-dialog/paper-dialog.html" />
+<link rel="import" href="../../../bower_components/paper-card/paper-card.html" />
+<link rel="import" href="../../../bower_components/paper-progress/paper-progress.html" />
+<link rel="import" href="../../../bower_components/iron-icon/iron-icon.html" />
+<link rel="import" href="../../../bower_components/iron-icons/iron-icons.html" />
+<link rel="import" href="../../../bower_components/paper-input/paper-input.html" />
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html" />
+
+<link rel="import" href="../../elements/su-header/su-header.html" />
+<link rel="import" href="../../elements/media-queries/media-queries.html" />
+<link rel="import" href="../../elements/guuey-truncate/guuey-truncate.html" />
+
+<link rel="import" href="../../behaviors/animations/care-plan-animation.html" />
+<link rel="import" href="../../behaviors/su-print-behavior.html" />
+<link rel="import" href="../../behaviors/su-resize-behavior.html" />
+
+<link rel="import" href="../../styles/common-styles.html" />
+
+<dom-module id="test-main">
+
+  <template>
+
+    <media-queries
+      dimensions="{{dimensions}}">
+    </media-queries>
+
+    <app-indexeddb-mirror
+      id="goalsMirror"
+      session="[[userUid]]"
+      key="goalsDB|[[patient]]"
+      data="{{goalsDataLive}}"
+      persisted-data="{{goalsData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
+    <!-- db query to find all goals for a patient-->
+    <firebase-query
+      id="goalsDB"
+      app-name="main"
+      path="homes/[[home]]/patients/[[patient]]/personalGoals"
+      data="{{goalsDataLive}}">
+    </firebase-query>
+
+    <app-indexeddb-mirror
+      id="goalMirror"
+      session="[[userUid]]"
+      key="goalDB|[[goalId]]|[[patient]]"
+      data="{{goalDataLive}}"
+      persisted-data="{{goalData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
+    <!--db to create new goal for a patient-->
+    <firebase-document
+      id="goalDB"
+      app-name="main"
+      data="{{goalDataLive}}">
+    </firebase-document>
+
+    <style include="common-styles">
+      :host {
+        --app-grid-columns:3;
+        --app-grid-gutter:20px;
+      }
+
+      .goalProgress {
+        width:100%;
+      }
+
+      .stepsFab {
+        background-color:#F76363;
+      }
+
+      .stepsFab:hover {
+        cursor:default;
+      }
+
+      .goalStepsText {
+        padding-left:20px;
+      }
+
+      .flexRow {
+        display:flex;
+        flex-direction:row;
+        align-items:center;
+        height:75px;
+      }
+
+      flexRow * {
+        vertical-align:middle;
+      }
+
+    </style>
+
+    <paper-card class="pageCard" elevation="3">
+
+      <su-header
+        id="suHeader"
+        page="Personal Goals"
+        patient="[[patient]]"
+        home="[[home]]"
+        su-index-data="{{suBasicInfo}}">
+      </su-header>
+
+
+      <div class="pageInnerCont">
+
+        <paper-fab
+          id="mainFab"
+          icon="icons:add"
+          on-tap="addGoal">
+        </paper-fab>
+
+        <paper-dialog id="editModal">
+          <paper-button on-tap="editGoal">edit</paper-button>
+          <br />
+          <paper-button on-tap="deleteGoal">delete</paper-button>
+        </paper-dialog>
+
+        <paper-card class="multiViewCard app-grid">
+          <template
+            strip-whitespace
+            id="domRepeat"
+            is="dom-repeat"
+            items="[[goalsData]]"
+            as="goal">
+
+            <paper-card class="multiItem">
+              <div style="background-image:url(../../../../{{_computeGoalImage(goal.category)}})" class="multiCardHeading">
+                <p on-tap="directEditModal" class="multiCardLabel">
+                  <template is="dom-repeat" items="[[computeDisplayCat(goal.category)]]" as="goalEl">
+
+                    [[goalEl]]
+
+                  </template>
+                </p>
+              </div>
+              <div class="multiCardContainer">
+                <p class="multiCardMain">
+                  <guuey-truncate>[[goal.description]]</guuey-truncate>
+                </p>
+                <div class="multiCardSecondary">
+                    <paper-progress
+                      class="goalProgress"
+                      min="0"
+                      max="{{_computeSteps(goal.steps)}}"
+                      value="{{_computeCompleteSteps(goal.steps)}}">
+                    </paper-progress>
+
+                    <div class="flexRow">
+                      <paper-fab
+                        label="{{_computeSteps(goal.steps)}}"
+                        class="stepsFab">
+                      </paper-fab>
+
+                      <p class="goalStepsText">
+                        STEPS
+                      </p>
+                    </div>
+
+                </div>
+              </div>
+
+              <paper-icon-button
+                icon="icons:more-vert"
+                class="multiCardMore"
+                on-tap="toggleEditModal">
+              </paper-icon-button>
+
+            </paper-card>
+
+          </template>
+        </paper-card>
+
+      </div>
+
+    </paper-card>
+
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is: 'test-main',
+
+      ready: function() {
+        this.fire("pageLoaded", {page: this.page});
+        this.addEventListener("print", this.print);
+        this.addEventListener("truncate-read-more", this._readMore);
+      },
+
+      properties: {
+
+        page: {
+          type: String,
+          reflectToAttribute: true,
+          notify: true
+        },
+
+        param: {
+          type: String,
+          reflectToAttribute: true,
+          notify: true
+        }
+
+      },
+
+      observers: [
+        "_goalsDataChanged(goalsData.*)"
+      ],
+
+      behaviors: [
+        Polymer.carePlanAnimation,
+        Polymer.suPrintBehavior,
+        Polymer.suResizeBehavior,
+      ],
+
+      addGoal: function() {
+        var path = "/homes/" + this.home + "/patients/" + this.patient + "/personalGoals";
+        this.$.goalDB.save(path, null)
+          .then(function(val) {
+            var goalId = this.$.goalDB.path.split("/").pop();
+            console.log(goalId);
+            this.set("page", "test-edit");
+            this.set("param", goalId);
+          }.bind(this))
+          .catch(function(error) {
+            this.$.addGoalModal.close();
+            this.fire("openToast",{toastText: "There was an error creating a new goal: " + error});
+          }.bind(this));
+      },
+
+      _goalsDataChanged: function(goalsDataDeep) {
+        console.log(goalsDataDeep.base)
+      },
+
+      _computeGoalImage: function(cat) {
+        switch(cat) {
+          case "Accommodation":
+              return "images/goals/accommodation.png"
+              break;
+          case "Finance And Budget":
+              return "images/goals/financeAndBudget.png"
+              break;
+          case "Social Skills":
+              return "images/goals/socialSkills.png"
+              break;
+          case "Medical Treatment":
+              return "images/goals/medicalTreatment.png"
+              break;
+          case "Mental Health":
+              return "images/goals/mentalHealth.png"
+              break;
+          default:
+              return "images/goals/other.png"
+        };
+      },
+
+      computeDisplayCat: function(goal) {
+        if(goal.indexOf("&") != -1){
+          var arr = goal.split(" & ");
+          arr[0] += " & ";
+          return arr;
+        } else if(goal.indexOf("And") != -1) {
+          var arr = goal.split(" And ");
+          arr[0] += " & ";
+          return arr;
+        } else if(goal.indexOf("and") != -1) {
+          var arr = goal.split(" and ");
+          arr[0] += " & ";
+          return arr;
+        } else {
+          var arr = [];
+          arr.push(goal);
+          return arr;
+        };
+      },
+
+      _computeCompleteSteps: function(steps) {
+        var completeCount = 0;
+        for(x in steps) {
+          if(steps[x].completed) {
+            if(steps[x].completed === true) {
+              completeCount++;
+            };
+          };
+        };
+        return completeCount;
+      },
+
+      _computeSteps: function(steps) {
+        var stepCount = 0;
+        for(x in steps) {
+          stepCount++;
+        };
+        return stepCount;
+      },
+
+      toggleEditModal: function(e) {
+        console.log(e.target.offsetWidth);
+        this.$.editModal.positionTarget = e.target;
+        this.$.editModal.horizontalAlign = "right";
+        this.$.editModal.verticalAlign = "top";
+        this.goalId = e.model.goal.$key;
+        this.$.editModal.toggle();
+      },
+
+    });
+
+  </script>
+
+</dom-module>
