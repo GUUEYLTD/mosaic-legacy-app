@@ -228,8 +228,10 @@
           .then(function(val) {
             var goalId = this.$.goalDB.path.split("/").pop();
             console.log(goalId);
-            this.set("page", "test-edit");
-            this.set("param", goalId);
+            var url = '/' + this.home + '/test/test-edit/' + this.patient + '/' + goalId;
+            console.log(url);
+            window.history.pushState({}, null, url);
+            window.dispatchEvent(new CustomEvent('location-changed'));
           }.bind(this))
           .catch(function(error) {
             this.$.addGoalModal.close();
