@@ -239,6 +239,12 @@
           }.bind(this));
       },
 
+      editGoal: function() {
+        var url = '/' + this.home + '/test/test-edit/' + this.patient + '/' + this.goalId;
+        window.history.pushState({}, null, url);
+        window.dispatchEvent(new CustomEvent('location-changed'));
+      },
+
       _goalsDataChanged: function(goalsDataDeep) {
         console.log(goalsDataDeep.base)
       },

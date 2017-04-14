@@ -571,7 +571,8 @@
             </div>
 
             <paper-tabs attr-for-selected="name" selected="{{rightMenuSelect}}">
-              <paper-tab link name="home"><a class="menu-link" href="/[[home]]/default/def-home"><iron-icon icon="icons:home"></iron-icon></a></paper-tab>
+              <paper-tab name="home"><a class="menu-link" href="/[[home]]/default/def-home"><iron-icon icon="icons:home"></iron-icon></a></paper-tab>
+              <paper-tab class$="[[_computeBackButtonClass(page)]]" name="back" disabled="[[_atHome(page)]]" on-tap="goBack"><iron-icon icon="icons:arrow-back"></iron-icon></paper-tab>
               <paper-tab name="search" on-tap="openSearch"><iron-icon icon="icons:search"></iron-icon></paper-tab>
               <paper-tab id="appButton" name="apps" on-tap="openApps"><iron-icon icon="icons:apps"></iron-icon></paper-tab>
               <paper-tab  id="notifyButton" name="notify" on-tap="openNotifications">
@@ -1072,6 +1073,18 @@
         this.resizeElements();
       },
 
+      _atHome: function(page) {
+        return page === 'def-home';
+      },
+
+      _computeBackButtonClass: function(page) {
+        return page === 'def-home' ? 'back-button-disabled' : '';
+      },
+
+      goBack: function() {
+        window.history.back()
+      },
+
       openOverflow: function(e) {
         var beforeWidth = Math.sqrt(Math.pow(20, 2) + Math.pow(20, 2));
         this.$.overflowDialog.positionTarget = e.currentTarget;
@@ -1262,12 +1275,13 @@
       },
 
       goHome:function(){
-        this.set("catData.category", "default");
-        this.set("pageData.page", "def-home");
-        //window.location="/"+this.home+"/default/def-home";
+        var url = '/' + this.home + '/' + 'default/def-home';
+        window.history.pushState({}, null, url);
+        window.dispatchEvent(new CustomEvent('location-changed'));
       },
 
       goBack:function(){
+        this.page === 'def-error' ? window.history.go(-2) : window.history.back();
         window.history.back();
       },
 

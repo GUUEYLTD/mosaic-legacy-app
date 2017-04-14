@@ -170,7 +170,9 @@
         if(user && user.uid) {
           this.$.userIndexDB.getStoredValue("/userIndex/" + user.uid + "/home")
             .then(function(value) {
-              this.set('homeData.home', value);
+              var url = '/' + this.home + '/default/def-home';
+              window.history.pushState({}, null, url);
+              window.dispatchEvent(new CustomEvent('location-changed'));
               this.$.loginDialog.close();
             }.bind(this))
         };
@@ -225,7 +227,9 @@
           .then(function(user) {
             this.$.userIndexDB.getStoredValue("/userIndex/" + user.uid + "/home")
               .then(function(value) {
-                this.set("homeData.home", value);
+                var url = '/' + value + '/default/def-home';
+                window.history.pushState({}, null, url);
+                window.dispatchEvent(new CustomEvent('location-changed'));
                 this.setDeviceLoggedIn(true);
                 this.$.loginDialog.close();
                 this.resetDialogOverlay();

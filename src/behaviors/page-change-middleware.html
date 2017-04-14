@@ -92,8 +92,9 @@
             var userType = this.currentUserType;
             var cat = this.catData.category;
             var page = this.page;
-            this.set("catData.category", "default");
-            this.set("pageData.page", "def-home");
+            var url = '/' + this.home + '/default/def-home';
+            window.history.pushState({}, null, url);
+            window.dispatchEvent(new CustomEvent('location-changed'));
             this.fire("openToast", {toastText: "That page is for admins only. Returned to default page."});
           }
         };
@@ -179,8 +180,9 @@
       },
 
       errorRedirect: function() {
-        this.set("category", "default");
-        this.set("page", "def-error");
+        var url = '/' + this.home + '/default/def-error';
+        window.history.pushState({}, null, url);
+        window.dispatchEvent(new CustomEvent('location-changed'));
       },
 
       _middleware: function(page) {
