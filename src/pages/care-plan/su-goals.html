@@ -20,7 +20,6 @@
 <link rel="import" href="../../behaviors/animations/care-plan-animation.html" />
 <link rel="import" href="../../behaviors/su-print-behavior.html" />
 <link rel="import" href="../../behaviors/su-resize-behavior.html" />
-<link rel="import" href="../../behaviors/multi-view-resize-behavior.html" />
 <link rel="import" href="../../behaviors/multi-view-grid-behavior.html" />
 
 <link rel="import" href="../../styles/common-styles.html" />
@@ -230,7 +229,7 @@
         goalId: {
           type: String,
           observer: "initNotify"
-        }
+        },
 
         dimensions: {
           type: Object,
@@ -243,7 +242,8 @@
         Polymer.carePlanAnimation,
         Polymer.suPrintBehavior,
         Polymer.suResizeBehavior,
-        Polymer.multiViewGridBehavior
+        Polymer.multiViewGridBehavior,
+        Polymer.suResizeBehavior
       ],
 
       initNotify: function(param) {
@@ -257,9 +257,8 @@
         var path = "/homes/" + this.home + "/patients/" + this.patient + "/personalGoals";
         this.$.goalDB.save(path, null)
           .then(function(val) {
-            var goalId = this.$.goalDB.path.split("/").pop();
-            var url = '/' + this.home + '/test/test-edit/' + this.patient + '/' + goalId;
-            console.log(url);
+            this.goalId = this.$.goalDB.path.split("/").pop();
+            var url = '/' + this.home + '/care-plan/su-goals-edit/' + this.patient + '/' + this.goalId;
             window.history.pushState({}, null, url);
             window.dispatchEvent(new CustomEvent('location-changed'));
           }.bind(this))
@@ -270,7 +269,7 @@
       },
 
       editGoal: function() {
-        var url = '/' + this.home + '/test/test-edit/' + this.patient + '/' + this.goalId;
+        var url = '/' + this.home + '/care-plan/su-goals-edit/' + this.patient + '/' + this.goalId;
         window.history.pushState({}, null, url);
         window.dispatchEvent(new CustomEvent('location-changed'));
         this.$.editModal.close();
@@ -289,6 +288,8 @@
           .catch(function(err) {
             console.log(err);
           });
+
+        this.$.dateNotify.deNotify(this.home, this.goalId);
       },
 
       _computeGoalImage: function(cat) {

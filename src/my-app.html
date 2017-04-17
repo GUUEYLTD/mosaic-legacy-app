@@ -571,7 +571,6 @@
             </div>
 
             <paper-tabs attr-for-selected="name" selected="{{rightMenuSelect}}">
-              <paper-tab name="home"><a class="menu-link" href="/[[home]]/default/def-home"><iron-icon icon="icons:home"></iron-icon></a></paper-tab>
               <paper-tab class$="[[_computeBackButtonClass(page)]]" name="back" disabled="[[_atHome(page)]]" on-tap="goBack"><iron-icon icon="icons:arrow-back"></iron-icon></paper-tab>
               <paper-tab name="search" on-tap="openSearch"><iron-icon icon="icons:search"></iron-icon></paper-tab>
               <paper-tab id="appButton" name="apps" on-tap="openApps"><iron-icon icon="icons:apps"></iron-icon></paper-tab>
@@ -780,8 +779,21 @@
             page="[[page]]"
             patient="[[patient]]"
             home="[[home]]"
-            name="su-care-review">
+            name="su-care-review"
+            param="[[param]]">
           </su-care-review>
+          <su-care-review-edit
+            user="[[user]]"
+            user-uid="[[userUid]]"
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="{{page}}"
+            patient="[[patient]]"
+            home="[[home]]"
+            name="su-care-review-edit"
+            param="{{param}}">
+          </su-care-review-edit>
           <su-reports
             user-uid="[[userUid]]"
             current-page="[[currentPage]]"
@@ -1283,12 +1295,6 @@
         } else {
           return false;
         };
-      },
-
-      goHome:function(){
-        var url = '/' + this.home + '/' + 'default/def-home';
-        window.history.pushState({}, null, url);
-        window.dispatchEvent(new CustomEvent('location-changed'));
       },
 
       goBack:function(){

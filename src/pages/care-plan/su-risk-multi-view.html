@@ -16,7 +16,6 @@
 <link rel="import" href="../../elements/guuey-truncate/guuey-truncate.html" />
 
 <link rel="import" href="../../behaviors/multi-edit-animation-behavior.html" />
-<link rel="import" href="../../behaviors/multi-view-resize-behavior.html" />
 <link rel="import" href="../../behaviors/multi-view-grid-behavior.html" />
 <link rel="import" href="../../behaviors/guuey-dialog-resize-behavior.html" />
 
@@ -175,10 +174,7 @@
       },
 
       behaviors: [
-        Polymer.multiViewResizeBehavior,
-        Polymer.multiViewGridBehavior,
-        //Polymer.multiEditAnimationBehavior,
-        Polymer.guueyDialogResizeBehavior
+        Polymer.multiViewGridBehavior
       ],
 
       _computeQueryCount: function(risk) {

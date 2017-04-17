@@ -1,0 +1,390 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html" />
+<link rel="import" href="../../../bower_components/neon-animation/animations/scale-up-animation.html" />
+<link rel="import" href="../../../bower_components/neon-animation/animations/scale-down-animation.html" />
+<link rel="import" href="../../../bower_components/paper-input/paper-input.html" />
+<link rel="import" href="../../../bower_components/paper-card/paper-card.html" />
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html" />
+<link rel="import" href="../../../bower_components/paper-input/paper-input.html" />
+
+<link rel="import" href="../../elements/media-queries/media-queries.html" />
+<link rel="import" href="../../elements/guuey-signature/guuey-signature.html" />
+<link rel="import" href="../../elements/guuey-date-input/guuey-date-input.html" />
+<link rel="import" href="../../elements/su-header/su-header.html" />
+<link rel="import" href="../../elements/paper-list-input/paper-list-input.html" />
+
+<link rel="import" href="../../behaviors/animations/care-plan-animation.html" />
+<link rel="import" href="../../behaviors/su-print-behavior.html" />
+<link rel="import" href="../../behaviors/su-resize-behavior.html" />
+<link rel="import" href="../../behaviors/guuey-form-validation-behavior.html" />
+
+<link rel="import" href="../../styles/common-styles.html" />
+
+<dom-module id="su-care-review-edit">
+
+  <template>
+
+    <media-queries
+      dimensions="{{dimensions}}">
+    </media-queries>
+
+    <app-indexeddb-mirror
+      id="reviewMirror"
+      session="[[userUid]]"
+      key="reviewDB|[[[[reviewId]]]|][[patient]]|[[param]]"
+      data="{{reviewDataLive}}"
+      persisted-data="{{reviewData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
+    <!--db for agreement section-->
+    <firebase-document
+      id="reviewDB"
+      app-name="main"
+      data="{{reviewDataLive}}"
+      path="/homes/[[home]]/patients/[[patient]]/carePlanReviews/[[param]]">
+    </firebase-document>
+
+    <style include="common-styles">
+
+      :host {
+        --app-grid-columns:2;
+        --app-grid-item-height:100px;
+        --app-grid-expandible-item-columns:2;
+      }
+
+      .sectionHeading {
+        background-color:#42c6ff;
+        width:100%;
+      }
+
+      .sectionHeadingText {
+        font-size: 24px;
+        color:#FFFFFF;
+      }
+
+      .subHeadingText {
+        color:#FFFFFF;
+      }
+
+      .container {
+        padding:20px;
+      }
+
+      .container paper-input, guuey-date-input, paper-button {
+        padding:20px;
+      }
+
+      .container .buttonContainer {
+        @apply(--app-grid-expandible-item);
+        text-align:right;
+      }
+
+      paper-card .agreement {
+        width:50%;
+        display:flex;
+        flex-direction:column;
+      }
+
+      .agreementRow {
+        display:flex;
+        flex-direction:row;
+      }
+
+      .halfSizeLeft {
+        --guuey-list-width:var(--list-width-half);
+        --guuey-list-float:var(--guuey-list-float-left);
+      }
+
+      .halfSizeRight {
+        --guuey-list-width:var(--list-width-half);
+        --guuey-list-float:var(--guuey-list-float-right);
+      }
+
+      .inputLeft {
+        float:left;
+        width:40%;
+        min-height:100px;
+      }
+
+      .inputRight {
+        float:right;
+        width:40%;
+        min-height:100px;
+      }
+
+    </style>
+    <paper-card id="mainCard" class="pageCard" elevation="3">
+
+      <su-header
+        id="suHeader"
+        page="Care Plan Review (Edit)"
+        patient="[[patient]]"
+        home="[[home]]"
+        su-index-data="{{suBasicInfo}}">
+      </su-header>
+
+      <div class="innerCont padded">
+
+        <paper-input
+          label="Review Name"
+          value="{{reviewData.name}}">
+        </paper-input>
+
+        <paper-input
+          label="Review Description"
+          value="{{reviewData.description}}">
+        </paper-input>
+
+        <paper-list-input
+          value="{{reviewData.careAndSuppProp}}"
+          label="Proposed Care & Support">
+        </paper-list-input>
+
+        <paper-list-input
+          label="Areas of concern"
+          label2="Areas of concern are issues that are on-going or that staff and/or the service user have identified as problems that need to be worked on in order to achieve either short term, medium term, or long term goals."
+          value="{{reviewData.areasOfConcern}}">
+        </paper-list-input>
+
+        <paper-list-input
+          label="Short term goals"
+          value="{{reviewData.shortTermGoals}}">
+        </paper-list-input>
+
+        <paper-list-input
+          label="Medium term goals"
+          value="{{reviewData.mediumTermGoals}}">
+        </paper-list-input>
+
+        <paper-list-input
+          label="Long term goals"
+          value="{{reviewData.longTermGoals}}">
+        </paper-list-input>
+
+        <paper-list-input
+          class="halfSizeLeft"
+          label="What service will the service user do?"
+          label2="i.e. agree to the following"
+          value="{{reviewData.whatWillTheServiceUserDo}}">
+        </paper-list-input>
+
+        <paper-list-input
+          class="halfSizeRight"
+          label="Intervention by staff"
+          label2="what will the staff do?"
+          value="{{reviewData.interventionByStaff}}">
+        </paper-list-input>
+
+        <paper-input
+          label="Review Summary"
+          value="{{reviewData.reviewSummary}}">
+        </paper-input>
+
+        <div class="container app-grid guuey-input-validation">
+
+          <paper-input
+            required
+            class="agreement"
+            label="Service User's Name"
+            value="{{suBasicInfo.fName}} {{suBasicInfo.lName}}"
+            disabled>
+          </paper-input>
+
+          <guuey-date-input
+            required
+            value="{{reviewData.suDate}}"
+            label="Service User Agreement Date">
+          </guuey-date-input>
+
+          <div class="buttonContainer guuey-input-validation">
+
+            <guuey-signature value="{{reviewData.suAgree}}" label="tap for service user agreement"></guuey-signature>
+
+          </div>
+
+          <!--need to create a file input for this???-->
+          <paper-input
+            label="staff or key worker's agreement (if necessary)"
+            value="{{reviewData.staffAgreement}}"
+            required
+            auto-validate
+            pattern="[a-zA-z\s\.]*"
+            error-message="need to upload file">
+          </paper-input>
+
+          <guuey-date-input
+            required
+            value="{{reviewData.swDate}}"
+            label="Service Worker Agreement Date">
+          </guuey-date-input>
+
+          <paper-input
+            label="Copy of agreement given to the service user?"
+            value="{{reviewData.agreementGiven}}"
+            required
+            auto-validate
+            pattern="[a-zA-Z\s\.]*"
+            error-message="Enter yes/no or comments. No special characters.">
+          </paper-input>
+
+          <guuey-date-input
+            required
+            value="{{reviewData.agreementGivenDate}}"
+            label="Date Agreement Given">
+          </guuey-date-input>
+
+          <paper-input
+            label="Reason(s) why agreement not given to the service user"
+            value="{{reviewData.reasonAgreementNotGiven}}"
+            auto-validate
+            pattern="[a-zA-Z\s\.]*"
+            error-message="Please explain with letters and periods only.">
+          </paper-input>
+
+          <guuey-date-input
+            required
+            value="{{reviewData.nextReviewDate}}"
+            label="Next Review Date">
+          </guuey-date-input>
+
+          <div class="buttonContainer guuey-input-validation">
+
+            <guuey-signature value="{{reviewData.swAgree}}" label="tap for service worker agreement"></guuey-signature>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </paper-card>
+
+
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is:"su-care-review-edit",
+
+      ready: function() {
+        this.fire("pageLoaded",{page: this.page});
+      },
+
+      properties: {
+
+        dimensions: {
+          type: Object
+        },
+
+        viewType: {
+          type: String,
+          value: "edit-view"
+        },
+
+        reviewData: {
+          type: Object,
+          notify: true,
+        },
+
+        reviewId: {
+          type: String
+        },
+
+        //table inputs need to be declared here
+        wellBeingQuestionnaireInputs: {
+          type: Array,
+          value: [
+            'Bathing',
+            'Body Spray',
+            'Haircut',
+            'Beard shave',
+            'Public shave',
+            'Fingernails',
+            'Toenails',
+            'Changing clothes',
+            'Skin care'
+          ]
+        },
+
+        myHealthQuestionnaireInputs: {
+          type: Array,
+          value: [
+            'Dental',
+            'Weight',
+            'Skin care',
+            'Exercise',
+            'Diet',
+            'Blood Pressure',
+            'Open bowels',
+            'Emotions & Mood Changes'
+          ]
+        },
+
+        myRoomQuestionnaireInputs: {
+          type: Array,
+          value: [
+            'Laundry',
+            'Change bed sheets',
+            'Dust room',
+            'Hoovering or vaccuming',
+            'Cleaning sink',
+            'Ironing clothes',
+            'Changing socks',
+            'Cleaning shoes',
+            'Air freshening room'
+          ]
+        },
+
+      },
+
+      observers: [
+        //"requirementsMet(reviewData)"
+      ],
+
+      behaviors: [
+        Polymer.carePlanAnimation,
+        Polymer.suPrintBehavior,
+        Polymer.suResizeBehavior,
+        Polymer.guueyFormValidationBehavior
+      ],
+
+      suConfirm:function() {
+        this.set("reviewData.suAgree", "true");
+      },
+
+      swConfirm:function() {
+        this.set("reviewData.swAgree", "true");
+      },
+
+      requirementsMet: function(data) {
+        if(Object.keys(data).length === 0 && data.constructor === Object) {
+          //do nothing and wait for change
+        } else {
+          if(!data.suDate) {
+            this.fire("openToast", {toastText: "Service user date of agreement is required."});
+            return false;
+          } else if(!data.swDate) {
+            this.fire("openToast", {toastText: "Staff worker date of agreement is required."});
+            return false;
+          } else if(!data.suAgree) {
+            this.fire("openToast", {toastText: "The service user needs to agree to the agreement."});
+            return false;
+          } else if(!data.swAgree) {
+            this.fire("openToast", {toastText: "The staff worker needs to agree to the agreement."});
+            return false;
+          } else if(!data.swName) {
+            this.fire("openToast",{toastText: "A service worker must be selected for this agreement."});
+            return false;
+          } else {
+            return true;
+          };
+        };
+      }
+
+    });
+
+  </script>
+
+</dom-module>
