@@ -20,13 +20,13 @@
     "src/pages/care-plan/su-pre.html",
     "src/pages/care-plan/su-profile.html",
     "src/pages/care-plan/su-risk.html",
+    "src/pages/care-plan/su-risk-edit.html",
     "src/pages/care-plan/su-reports.html",
     "src/pages/care-plan/su-monthly-reports.html",
     "src/pages/care-plan/su-view-reports.html",
     "src/pages/default/def-home.html",
     "src/pages/default/def-account.html",
     "src/pages/default/def-terms.html",
-    "src/pages/default/def-error.html",
     "src/pages/test/test-test.html",
     "src/pages/test/test-main.html",
     "src/pages/test/test-edit.html"
@@ -58,6 +58,7 @@
     "bower_components/gold-cc-input/images/jcb.png",
     "bower_components/gold-cc-input/images/mastercard.png",
     "bower_components/gold-cc-input/images/visa.png",
+    "src/pages/default/def-error.html",
     "firebase-messaging-sw.js"
   ]
 }
