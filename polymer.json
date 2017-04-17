@@ -14,6 +14,7 @@
     "src/pages/care-plan/su-care-review.html",
     "src/pages/care-plan/su-create.html",
     "src/pages/care-plan/su-goals.html",
+    "src/pages/care-plan/su-goals-edit.html",
     "src/pages/care-plan/su-uploads.html",
     "src/pages/care-plan/su-medication.html",
     "src/pages/care-plan/su-pre.html",

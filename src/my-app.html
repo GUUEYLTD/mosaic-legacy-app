@@ -691,15 +691,30 @@
             name="su-care">
           </su-care>
           <su-goals
+            user="[[user]]"
             user-uid="[[userUid]]"
             current-page="[[currentPage]]"
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
-            page="[[page]]"
+            page="{{page}}"
             patient="[[patient]]"
             home="[[home]]"
-            name="su-goals">
+            name="su-goals"
+            param="{{param}}">
           </su-goals>
+
+          <su-goals-edit
+            user="[[user]]"
+            user-uid="[[userUid]]"
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="{{page}}"
+            patient="[[patient]]"
+            home="[[home]]"
+            name="su-goals-edit"
+            param="{{param}}">
+          </su-goals-edit>
           <!--add in user in order to log the uid for version control and logging-->
           <su-uploads
             user-uid="[[userUid]]"
@@ -1081,10 +1096,6 @@
         return page === 'def-home' ? 'back-button-disabled' : '';
       },
 
-      goBack: function() {
-        window.history.back()
-      },
-
       openOverflow: function(e) {
         var beforeWidth = Math.sqrt(Math.pow(20, 2) + Math.pow(20, 2));
         this.$.overflowDialog.positionTarget = e.currentTarget;
@@ -1281,8 +1292,19 @@
       },
 
       goBack:function(){
-        this.page === 'def-error' ? window.history.go(-2) : window.history.back();
-        window.history.back();
+        var isEdit = this.page.split('-').pop() === 'edit';
+        var homeUrl = '/' + this.home + '/default/' + 'def-home';
+        if(this.page === 'def-error') {
+          window.history.go(-2);
+        } else if(isEdit){
+          window.history.back();
+        } else {
+          window.history.pushState({}, null, homeUrl);
+          window.dispatchEvent(new CustomEvent('location-changed'));
+        };
+
+        window.history.pushState({}, null, window.location.href);
+        window.dispatchEvent(new CustomEvent('location-changed'));
       },
 
       _computeDrawerHidden:function(page){

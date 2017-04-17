@@ -1,37 +1,30 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html" />
 <link rel="import" href="../../../bower_components/polymerfire/firebase-document.html" />
 <link rel="import" href="../../../bower_components/polymerfire/firebase-query.html" />
-<link rel="import" href="../../../bower_components/paper-button/paper-button.html" />
+<link rel="import" href="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror.html" />
 <link rel="import" href="../../../bower_components/paper-fab/paper-fab.html" />
-<link rel="import" href="../../../bower_components/paper-input/paper-input.html" />
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html" />
+<link rel="import" href="../../../bower_components/paper-dialog/paper-dialog.html" />
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html" />
-<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html" />
-<link rel="import" href="../../../bower_components/vaadin-combo-box/vaadin-combo-box.html" />
-<link rel="import" href="../../../bower_components/paper-checkbox/paper-checkbox.html" />
+<link rel="import" href="../../../bower_components/paper-progress/paper-progress.html" />
 <link rel="import" href="../../../bower_components/iron-icon/iron-icon.html" />
 <link rel="import" href="../../../bower_components/iron-icons/iron-icons.html" />
-<link rel="import" href="../../../bower_components/iron-icons/editor-icons.html" />
-<link rel="import" href="../../../bower_components/iron-media-query/iron-media-query.html" />
-<link rel="import" href="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror.html" />
-<link rel="import" href="../../../bower_components/paper-progress/paper-progress.html" />
-<link rel="import" href="../../../bower_components/neon-animation/neon-animated-pages.html" />
+<link rel="import" href="../../../bower_components/paper-input/paper-input.html" />
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html" />
 
-<link rel="import" href="../../elements/guuey-date-input/guuey-date-input.html" />
-<link rel="import" href="../../elements/guuey-notify/guuey-notify.html" />
 <link rel="import" href="../../elements/su-header/su-header.html" />
 <link rel="import" href="../../elements/media-queries/media-queries.html" />
+<link rel="import" href="../../elements/guuey-truncate/guuey-truncate.html" />
+<link rel="import" href="../../elements/guuey-notify/guuey-notify.html" />
 
-<link rel="import" href="../../behaviors/fab-animation-behavior.html" />
 <link rel="import" href="../../behaviors/animations/care-plan-animation.html" />
 <link rel="import" href="../../behaviors/su-print-behavior.html" />
 <link rel="import" href="../../behaviors/su-resize-behavior.html" />
-<link rel="import" href="../../behaviors/guuey-dialog-resize-behavior.html" />
-<link rel="import" href="../../behaviors/guuey-form-validation-behavior.html" />
+<link rel="import" href="../../behaviors/multi-view-resize-behavior.html" />
+<link rel="import" href="../../behaviors/multi-view-grid-behavior.html" />
 
 <link rel="import" href="../../styles/common-styles.html" />
 
-<link rel="import" href="su-goals-edit-view.html" />
-<link rel="import" href="su-goals-multi-view.html" />
 <dom-module id="su-goals">
 
   <template>
@@ -73,121 +66,54 @@
       data="{{goalDataLive}}">
     </firebase-document>
 
-    <app-indexeddb-mirror
-      id="stepsMirror"
-      session="[[userUid]]"
-      key="stepsDB|[[patient]]"
-      data="{{stepsDataLive}}"
-      persisted-data="{{stepsData}}"
-      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
-    </app-indexeddb-mirror>
-
-    <firebase-query
-      id="stepsDB"
-      app-name="main"
-      data="{{stepsDataLive}}">
-    </firebase-query>
-
-    <app-indexeddb-mirror
-      id="stepMirror"
-      session="[[userUid]]"
-      key="stepDB|new|[[patient]]"
-      data="{{stepDataLive}}"
-      persisted-data="{{stepData}}"
-      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
-    </app-indexeddb-mirror>
-
-    <firebase-document
-      id="stepDB"
-      app-name="main"
-      data="{{stepDataLive}}">
-    </firebase-document>
-
-    <app-indexeddb-mirror
-      id="usersMirror"
-      session="[[userUid]]"
-      key="usersDB"
-      data="{{usersDataLive}}"
-      persisted-data="{{usersData}}"
-      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
-    </app-indexeddb-mirror>
-
-    <firebase-query
-      id="usersDB"
-      app-name="main"
-      path="homes/[[home]]/users"
-      data="{{usersDataLive}}">
-    </firebase-query>
-
     <guuey-notify
       id="dateNotify"
       f-name="[[suBasicInfo.fName]]"
       l-name="[[suBasicInfo.lName]]"
       image="[[suBasicInfo.image]]"
       home="[[home]]"
-      notify-route="homes/[[home]]/patients/[[patient]]/personalGoals/[[goalId]]/finishDate"
-      notify-target="[[goalId]]"
+      notify-route="homes/[[home]]/patients/[[patient]]/personalGoals/[[param]]/finishDate"
+      notify-target="[[param]]"
       condition-type="guuey-date"
       notify-condition="true"
       notify-message="[[suBasicInfo.fName]] [[suBasicInfo.lName]]'s [[goalData.category]] goal completion date is soon."
       notify-url="/[[home]]/care-plan/su-goals/[[patient]]">
     </guuey-notify>
 
-    <style include="common-styles"></style>
+    <style include="common-styles">
+      :host {
+        --app-grid-columns:3;
+        --app-grid-gutter:20px;
+      }
 
-    <paper-dialog id="addGoalModal" class="guuey-modal guuey-add-modal">
+      .goalProgress {
+        width:100%;
+      }
 
-      <h2>Add New Goal</h2>
+      .stepsFab {
+        background-color:#F76363;
+      }
 
-      <span id="formField">
+      .stepsFab:hover {
+        cursor:default;
+      }
 
-        <vaadin-combo-box
-          allow-custom-value
-          label="Category"
-          items="[[goalTypes]]"
-          value="{{goalData.category}}"
-          class="detailBarInput"
-          required
-          error-message="Please select a category for this goal.">
-        </vaadin-combo-box>
+      .goalStepsText {
+        padding-left:20px;
+      }
 
-        <guuey-date-input
-          value="{{goalData.startDate}}"
-          label="Start Date"
-          required>
-        </guuey-date-input>
+      .flexRow {
+        display:flex;
+        flex-direction:row;
+        align-items:center;
+        height:75px;
+      }
 
-        <guuey-date-input
-          value="{{goalData.finishDate}}"
-          label="Estimated Finish Date"
-          required>
-        </guuey-date-input>
+      flexRow * {
+        vertical-align:middle;
+      }
 
-        <vaadin-combo-box
-          label="Coordinator"
-          items="[[userList]]"
-          value="{{goalData.coordinator}}"
-          required
-          error-message="Please select a coordinator for this goal.">
-        </vaadin-combo-box>
-
-        <paper-input
-          label="Goal Description"
-          value="{{goalData.description}}"
-          required
-          auto-validate
-          pattern="[a-zA-Z\s\.\d]*"
-          error-message="Please enter a description without special characters.">
-        </paper-input>
-
-      </span>
-
-      <div class="modal-button-container">
-        <paper-button class="cancel-button" on-tap="cancelNewGoal">cancel</paper-button>
-        <paper-button class="confirm-button" on-tap="saveNewGoal">save</paper-button>
-      </div>
-
-    </paper-dialog>
+    </style>
 
     <paper-card class="pageCard" elevation="3">
 
@@ -199,59 +125,75 @@
         su-index-data="{{suBasicInfo}}">
       </su-header>
 
-      <!--repeat each goal that currently is set-->
+
       <div class="pageInnerCont">
 
-        <!--absolute positioned button to finsh adding a new goal and close the add view-->
         <paper-fab
-          id="editFab"
-          icon="icons:check"
-          on-tap="finishGoal">
-        </paper-fab>
-
-        <!--absolute positioned button to add a new goal-->
-        <paper-fab
-          id="regFab"
+          id="mainFab"
           icon="icons:add"
           on-tap="addGoal">
         </paper-fab>
 
-        <!--default placeholder if user has not put any goals in yet...-->
-        <!--
-        <div hidden="{{queryCount}}">
+        <paper-dialog id="editModal">
+          <paper-button on-tap="editGoal">edit</paper-button>
+          <br />
+          <paper-button on-tap="deleteGoal">delete</paper-button>
+        </paper-dialog>
 
+        <paper-card class="multiViewCard app-grid">
+          <template
+            strip-whitespace
+            id="domRepeat"
+            is="dom-repeat"
+            items="[[goalsData]]"
+            as="goal">
 
-        </div>
-        -->
-        <neon-animated-pages
-          attr-for-selected="name"
-          selected="[[pageState]]"
-          entry-animation="scale-up-animation"
-          exit-animation="scale-down-animation">
+            <paper-card class="multiItem">
+              <div style="background-image:url(../../../../{{_computeGoalImage(goal.category)}})" class="multiCardHeading">
+                <p on-tap="directEditModal" class="multiCardLabel">
+                  <template is="dom-repeat" items="[[computeDisplayCat(goal.category)]]" as="goalEl">
 
-          <su-goals-multi-view
-            name="multi-view"
-            goals-data="{{goalsData}}"
-            goal-id="{{goalId}}">
-          </su-goals-multi-view>
+                    [[goalEl]]
 
-          <su-goals-edit-view
-            su-basic-info="[[suBasicInfo]]"
-            name="edit-view"
-            goal-data="{{goalData}}"
-            goal-id="[[goalId]]"
-            home="[[home]]"
-            page="[[page]]"
-            patient="[[patient]]"
-            user-list="[[userList]]"
-            step-id="{{stepId}}"
-            step-modal-open="{{stepModalOpen}}"
-            steps-data="{{stepsData}}"
-            step-data="{{stepData}}">
-          </su-goals-edit-view>
+                  </template>
+                </p>
+              </div>
+              <div class="multiCardContainer">
+                <p class="multiCardMain">
+                  <guuey-truncate>[[goal.description]]</guuey-truncate>
+                </p>
+                <div class="multiCardSecondary">
+                    <paper-progress
+                      class="goalProgress"
+                      min="0"
+                      max="{{_computeSteps(goal.steps)}}"
+                      value="{{_computeCompleteSteps(goal.steps)}}">
+                    </paper-progress>
 
-        </neon-animated-pages>
+                    <div class="flexRow">
+                      <paper-fab
+                        label="{{_computeSteps(goal.steps)}}"
+                        class="stepsFab">
+                      </paper-fab>
 
+                      <p class="goalStepsText">
+                        STEPS
+                      </p>
+                    </div>
+
+                </div>
+              </div>
+
+              <paper-icon-button
+                icon="icons:more-vert"
+                class="multiCardMore"
+                on-tap="toggleEditModal">
+              </paper-icon-button>
+
+            </paper-card>
+
+          </template>
+        </paper-card>
 
       </div>
 
@@ -265,228 +207,168 @@
 
       is: 'su-goals',
 
-      goEdit: function() {
-        this.animateEditViewFab();
-        this.pageState = "edit-view";
-      },
-
-      goMulti: function() {
-        this.animateMultiViewFab();
-        this.pageState = "multi-view";
-        this.$.goalDB.path = null;
-      },
-
       ready: function() {
         this.fire("pageLoaded", {page: this.page});
-        //print listener
         this.addEventListener("print", this.print);
-
-        //multi-view page listeners
-        this.addEventListener("editGoal", this.editGoal);
-        this.addEventListener("deleteGoal", this.deleteGoal);
-
-        //edit-view page listeners
-        this.addEventListener("addStep", this.addStep);
-        this.addEventListener("editStep", this.editStep);
-        this.addEventListener("saveStep", this.saveStep);
-        this.addEventListener("deleteStep", this.deleteStep);
-        this.addEventListener("checkboxChanged", this.checkboxChanged);
-
-        this.$.usersDB.query.on("value", function(snapshot) {
-          this.updateUsers(snapshot);
-        }.bind(this));
+        this.addEventListener("truncate-read-more", this._readMore);
       },
 
       properties: {
 
-        dimensions: {
-          type: Object
-        },
-
         page: {
-          type: String
-        },
-
-        patient: {
-          type :String
-        },
-
-        home: {
-          type: String
-        },
-
-        goalSelected: {
-          type: Boolean,
-          value: false
-        },
-
-        pageState: {
           type: String,
-          value: "multi-view"
+          reflectToAttribute: true,
+          notify: true
+        },
+
+        param: {
+          type: String,
+          reflectToAttribute: true,
+          notify: true
         },
 
         goalId: {
           type: String,
           observer: "initNotify"
-        },
-
-        stepId: {
-          type: String
-        },
-
-        stepModalOpen: {
-          type: String,
-          value: "close"
-        },
-
-        goalTypes: {
-          type: Array,
-          value: [
-            "Accommodation",
-            "Finance And Budget",
-            "Social Skills",
-            "Medical Treatment",
-            "Mental Health",
-            "Other"
-          ]
-        },
-
-        userList: {
-          type: Array,
-        },
-
-        waitForAutoValidate: {
-          type: Boolean,
-          value: true
         }
+
+        dimensions: {
+          type: Object,
+          value: {}
+        },
 
       },
 
       behaviors: [
-        Polymer.fabAnimationBehavior,
         Polymer.carePlanAnimation,
         Polymer.suPrintBehavior,
         Polymer.suResizeBehavior,
-        Polymer.guueyDialogResizeBehavior,
-        Polymer.guueyFormValidationBehavior
+        Polymer.multiViewGridBehavior
       ],
 
-      saveNewGoal: function() {
-
-        var validation = this.validateInputs(this.$.formField);
-        if(validation.invalid) {
-          this.fire("openToast", {toastText: "The following items are missing or invalid: " + validation.invalidInputs});
-        } else {
-          var path = "/homes/" + this.home + "/patients/" + this.patient + "/personalGoals";
-          this.$.goalDB.save(path, null)
-            .then(function(val) {
-              var goalId = this.$.goalDB.path.split("/").pop();
-              this.$.addGoalModal.close();
-              this.goEdit();
-              this.fire("newGoalSaved", {goalId: goalId});
-              this.fire("openToast",{toastText: "New personal goal saved."});
-            }.bind(this))
-            .catch(function(error) {
-              this.$.addGoalModal.close();
-              this.fire("openToast",{toastText: "There was an error saving the new goal: " + error});
-            }.bind(this));
-        };
-      },
-
-      cancelNewGoal: function() {
-        this.$.addGoalModal.close();
-        this.$.goalDB.data = {};
-      },
-
-      initNotify: function() {
+      initNotify: function(param) {
         this.$.dateNotify.initialize();
       },
 
-      //activated from child events
-      //multi-view event functions
-      editGoal:function(e) {
-         this.$.goalDB.path = "homes/" + this.home + "/patients/" + this.patient + "/personalGoals/" + this.goalId;
-         this.$.stepsDB.path = "homes/" + this.home + "/patients/" + this.patient + "/personalGoals/" + this.goalId + "/steps";
-         this.goEdit();
+      addGoal: function() {
+        this.$.goalDB.path = null;
+        this.$.goalDB.data = {};
+        this.goalId = null;
+        var path = "/homes/" + this.home + "/patients/" + this.patient + "/personalGoals";
+        this.$.goalDB.save(path, null)
+          .then(function(val) {
+            var goalId = this.$.goalDB.path.split("/").pop();
+            var url = '/' + this.home + '/test/test-edit/' + this.patient + '/' + goalId;
+            console.log(url);
+            window.history.pushState({}, null, url);
+            window.dispatchEvent(new CustomEvent('location-changed'));
+          }.bind(this))
+          .catch(function(error) {
+            this.$.addGoalModal.close();
+            this.fire("openToast",{toastText: "There was an error creating a new goal: " + error});
+          }.bind(this));
       },
 
-      deleteGoal: function(e) {
+      editGoal: function() {
+        var url = '/' + this.home + '/test/test-edit/' + this.patient + '/' + this.goalId;
+        window.history.pushState({}, null, url);
+        window.dispatchEvent(new CustomEvent('location-changed'));
+        this.$.editModal.close();
+      },
+
+      deleteGoal: function() {
+        this.$.goalDB.path = null;
+        this.$.goalDB.data = {};
+
         var path = "homes/" + this.home + "/patients/" + this.patient + "/personalGoals/" + this.goalId;
         this.$.goalDB.setStoredValue(path, null)
           .then(function() {
-            this.fire("goalDeleted")
+            this.fire("openToast", {toastText: "Goal Deleted."});
+            this.$.editModal.close();
           }.bind(this))
           .catch(function(err) {
             console.log(err);
           });
-        this.$.dateNotify.deNotify(this.home, this.goalId);
-        this.stepModalOpen = "close";
       },
 
-      //edit-view functions
-      addStep: function() {
-        this.$.stepDB.path = null;
-        this.$.stepDB.data = {};
-        var path = "homes/" + this.home + "/patients/" + this.patient + "/personalGoals/" + this.goalId + "/steps";
-        this.$.stepDB.save(path, null)
-          .then(function() {
-            this.stepId = this.$.stepDB.path.slice(path.length + 2);
-            this.stepModalOpen = "open";
-            //reset the db path and save the path for later
-            this.$.stepDB.path = null;
-          }.bind(this));
+      _computeGoalImage: function(cat) {
+        switch(cat) {
+          case "Accommodation":
+              return "images/goals/accommodation.png"
+              break;
+          case "Finance And Budget":
+              return "images/goals/financeAndBudget.png"
+              break;
+          case "Social Skills":
+              return "images/goals/socialSkills.png"
+              break;
+          case "Medical Treatment":
+              return "images/goals/medicalTreatment.png"
+              break;
+          case "Mental Health":
+              return "images/goals/mentalHealth.png"
+              break;
+          default:
+              return "images/goals/other.png"
+        };
       },
 
-      editStep: function() {
-        this.$.stepDB.path = "homes/" + this.home + "/patients/" + this.patient + "/personalGoals/" + this.goalId + "/steps/" + this.stepId;
-        this.stepModalOpen = "open";
-      },
-      saveStep:function() {
-        var path = "homes/" + this.home + "/patients/" + this.patient + "/personalGoals/" + this.goalId + "/steps";
-        this.$.stepDB.save(path, this.stepId)
-          .then(function() {
-            this.fire("openToast", {toastText: "new step saved."});
-            this.stepModalOpen = "close";
-            this.$.stepDB.path = null;
-            this.$.stepDB.data = {};
-          }.bind(this))
-          .catch(function(error) {
-            this.fire("openToast",{toastText: "there was an error saving your new step: " + error});
-            this.stepModalOpen = "close";
-            this.$.stepDB.path = null;
-            this.$.stepDB.data = {};
-          });
+      computeDisplayCat: function(goal) {
+        if(goal) {
+          if(goal.indexOf("&") != -1){
+            var arr = goal.split(" & ");
+            arr[0] += " & ";
+            return arr;
+          } else if(goal.indexOf("And") != -1) {
+            var arr = goal.split(" And ");
+            arr[0] += " & ";
+            return arr;
+          } else if(goal.indexOf("and") != -1) {
+            var arr = goal.split(" and ");
+            arr[0] += " & ";
+            return arr;
+          } else {
+            var arr = [];
+            arr.push(goal);
+            return arr;
+          };
+        } else {
+          return ['Category', 'Not Set'];
+        }
+
       },
 
-      //reg functions
-      updateUsers: function(snapshot) {
-        var tempList = [];
-        if(snapshot.val()) {
-          var data = snapshot.val();
-          for(x in data) {
-            if(data[x].displayName) {
-              tempList.push(data[x].displayName);
-            } else {
-              tempList.push(data[x].email);
+      _computeCompleteSteps: function(steps) {
+        var completeCount = 0;
+        for(x in steps) {
+          if(steps[x].completed) {
+            if(steps[x].completed === true) {
+              completeCount++;
             };
           };
         };
-        this.userList = tempList;
+        return completeCount;
       },
 
-      addGoal: function() {
-        this.$.addGoalModal.open();
+      _computeSteps: function(steps) {
+        var stepCount = 0;
+        for(x in steps) {
+          stepCount++;
+        };
+        return stepCount;
       },
 
-      finishGoal: function(e) {
-        this.goMulti();
+      toggleEditModal: function(e) {
+        this.$.editModal.positionTarget = e.target;
+        this.$.editModal.horizontalAlign = "right";
+        this.$.editModal.verticalAlign = "top";
+        this.goalId = e.model.goal.$key;
+        this.$.editModal.toggle();
       },
 
-      checkboxChanged: function(e) {
-        var stepID = e.detail.stepID;
-        var checkBool = e.detail.checkBool;
-        var path = "homes/" + this.home + "/patients/" + this.patient + "/personalGoals/" + this.goalId + "/steps/" + stepID + "/completed";
-        this.$.stepDB.setStoredValue(path, checkBool);
+      _readMore: function(e) {
+        this.goalId = this.$.domRepeat.modelForElement(e.path[5]).goal.$key;
+        this.editGoal();
       }
 
     });

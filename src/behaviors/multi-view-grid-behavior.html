@@ -38,7 +38,9 @@
         columns = parseInt(columns);
         this._removeFillers();
         var items = this.itemCount;
-        var remainders = itemCount <= columns ? columns - itemCount : columns - (columns % itemCount);
+        var remainders = columns - (itemCount % columns);
+        //var remainders = itemCount <= columns ? columns - itemCount : columns - (columns % itemCount);
+        console.log(itemCount, remainders, columns);
         if(itemCount > 0 && remainders != 0) {
           this._fillInColumns(remainders);
         };

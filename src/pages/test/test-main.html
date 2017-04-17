@@ -19,6 +19,8 @@
 <link rel="import" href="../../behaviors/animations/care-plan-animation.html" />
 <link rel="import" href="../../behaviors/su-print-behavior.html" />
 <link rel="import" href="../../behaviors/su-resize-behavior.html" />
+<link rel="import" href="../../behaviors/multi-view-resize-behavior.html" />
+<link rel="import" href="../../behaviors/multi-view-grid-behavior.html" />
 
 <link rel="import" href="../../styles/common-styles.html" />
 
@@ -208,26 +210,30 @@
           type: String,
           reflectToAttribute: true,
           notify: true
+        },
+
+        dimension: {
+          type: Object,
+          value: {}
         }
 
       },
-
-      observers: [
-        "_goalsDataChanged(goalsData.*)"
-      ],
 
       behaviors: [
         Polymer.carePlanAnimation,
         Polymer.suPrintBehavior,
         Polymer.suResizeBehavior,
+        Polymer.multiViewGridBehavior
       ],
 
       addGoal: function() {
+        this.$.goalDB.path = null;
+        this.$.goalDB.data = {};
+        this.goalId = null;
         var path = "/homes/" + this.home + "/patients/" + this.patient + "/personalGoals";
         this.$.goalDB.save(path, null)
           .then(function(val) {
             var goalId = this.$.goalDB.path.split("/").pop();
-            console.log(goalId);
             var url = '/' + this.home + '/test/test-edit/' + this.patient + '/' + goalId;
             console.log(url);
             window.history.pushState({}, null, url);
@@ -243,10 +249,22 @@
         var url = '/' + this.home + '/test/test-edit/' + this.patient + '/' + this.goalId;
         window.history.pushState({}, null, url);
         window.dispatchEvent(new CustomEvent('location-changed'));
+        this.$.editModal.close();
       },
 
-      _goalsDataChanged: function(goalsDataDeep) {
-        console.log(goalsDataDeep.base)
+      deleteGoal: function() {
+        this.$.goalDB.path = null;
+        this.$.goalDB.data = {};
+
+        var path = "homes/" + this.home + "/patients/" + this.patient + "/personalGoals/" + this.goalId;
+        this.$.goalDB.setStoredValue(path, null)
+          .then(function() {
+            this.fire("openToast", {toastText: "Goal Deleted."});
+            this.$.editModal.close();
+          }.bind(this))
+          .catch(function(err) {
+            console.log(err);
+          });
       },
 
       _computeGoalImage: function(cat) {
@@ -272,23 +290,28 @@
       },
 
       computeDisplayCat: function(goal) {
-        if(goal.indexOf("&") != -1){
-          var arr = goal.split(" & ");
-          arr[0] += " & ";
-          return arr;
-        } else if(goal.indexOf("And") != -1) {
-          var arr = goal.split(" And ");
-          arr[0] += " & ";
-          return arr;
-        } else if(goal.indexOf("and") != -1) {
-          var arr = goal.split(" and ");
-          arr[0] += " & ";
-          return arr;
+        if(goal) {
+          if(goal.indexOf("&") != -1){
+            var arr = goal.split(" & ");
+            arr[0] += " & ";
+            return arr;
+          } else if(goal.indexOf("And") != -1) {
+            var arr = goal.split(" And ");
+            arr[0] += " & ";
+            return arr;
+          } else if(goal.indexOf("and") != -1) {
+            var arr = goal.split(" and ");
+            arr[0] += " & ";
+            return arr;
+          } else {
+            var arr = [];
+            arr.push(goal);
+            return arr;
+          };
         } else {
-          var arr = [];
-          arr.push(goal);
-          return arr;
-        };
+          return ['Category', 'Not Set'];
+        }
+
       },
 
       _computeCompleteSteps: function(steps) {
@@ -312,13 +335,17 @@
       },
 
       toggleEditModal: function(e) {
-        console.log(e.target.offsetWidth);
         this.$.editModal.positionTarget = e.target;
         this.$.editModal.horizontalAlign = "right";
         this.$.editModal.verticalAlign = "top";
         this.goalId = e.model.goal.$key;
         this.$.editModal.toggle();
       },
+
+      _readMore: function(e) {
+        this.goalId = this.$.domRepeat.modelForElement(e.path[5]).goal.$key;
+        this.editGoal();
+      }
 
     });
 

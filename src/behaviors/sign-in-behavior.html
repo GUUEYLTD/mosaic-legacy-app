@@ -75,6 +75,16 @@
         this.addEventListener('cancelLogout', this.closeLogout);
         this.addEventListener('resetDialogOverlay', this.resetDialogOverlay);
         this.checkForAccountFunctions();
+        this._ensureHomeSettingsSet();
+      },
+
+      _ensureHomeSettingsSet: function() {
+        this.$.settingsDB.ref.once('value', function(settingsData) {
+          var settings = settingsData.val();
+          if(this.currentUserType != 'careWorker') {
+            this.set('settingsData.privacyNameEnabled', false);
+          };
+        }.bind(this));
       },
 
       _processUserAccountTasks: function(mode, currentDevice, user, statusKnown, signedIn, userInfoDataDeep, appInfoData) {
@@ -170,7 +180,7 @@
         if(user && user.uid) {
           this.$.userIndexDB.getStoredValue("/userIndex/" + user.uid + "/home")
             .then(function(value) {
-              var url = '/' + this.home + '/default/def-home';
+              var url = '/' + value + '/' + this.category + '/' + this.page + '/' + this.patient + '/' + this.param;
               window.history.pushState({}, null, url);
               window.dispatchEvent(new CustomEvent('location-changed'));
               this.$.loginDialog.close();
@@ -228,6 +238,7 @@
             this.$.userIndexDB.getStoredValue("/userIndex/" + user.uid + "/home")
               .then(function(value) {
                 var url = '/' + value + '/default/def-home';
+                this.set("home", value);
                 window.history.pushState({}, null, url);
                 window.dispatchEvent(new CustomEvent('location-changed'));
                 this.setDeviceLoggedIn(true);
