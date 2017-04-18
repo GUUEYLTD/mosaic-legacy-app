@@ -18,7 +18,6 @@
 <link rel="import" href="../../../bower_components/paper-item/paper-item.html" />
 <link rel="import" href="../../../bower_components/iron-icons/communication-icons.html" />
 
-<link rel="import" href="../../elements/guuey-custom-text-input/guuey-custom-text-input.html" />
 <link rel="import" href="../../elements/guuey-time-chunk-selector/guuey-time-chunk-selector.html" />
 <link rel="import" href="../../elements/guuey-weekday-selector/guuey-weekday-selector.html" />
 <link rel="import" href="../../elements/su-header/su-header.html" />
@@ -43,11 +42,11 @@
     </media-queries>
 
     <app-indexeddb-mirror
-      id="assmtMirror"
+      id="usersMirror"
       session="[[userUid]]"
-      key="assmtDB|[[patient]]"
-      data="{{assmtDataLive}}"
-      persisted-data="{{assmtData}}"
+      key="usersDB|[[home]]"
+      data="{{usersDataLive}}"
+      persisted-data="{{usersData}}"
       worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
     </app-indexeddb-mirror>
 
@@ -55,7 +54,7 @@
       id="usersDB"
       app-name="main"
       path="/homes/[[home]]/users"
-      data="{{usersData}}">
+      data="{{usersDataLive}}">
     </firebase-document>
 
     <app-indexeddb-mirror
@@ -582,7 +581,7 @@
                   is="dom-repeat"
                   items="{{_computeMedList(medsData, userSettingsData.vcActive)}}"
                   as="med"
-                  filter="_filterMorning"
+                  filter="_filterAfternoon"
                   observe="timeChunk"
                   sort="_sortMeds">
                   <tr class$="[[_computeRowClass(med, userSettingsData.vcActive)]]">
@@ -684,7 +683,7 @@
                   is="dom-repeat"
                   items="{{_computeMedList(medsData, userSettingsData.vcActive)}}"
                   as="med"
-                  filter="_filterMorning"
+                  filter="_filterEvening"
                   observe="timeChunk"
                   sort="_sortMeds">
                   <tr class$="[[_computeRowClass(med, userSettingsData.vcActive)]]">
@@ -786,7 +785,7 @@
                   is="dom-repeat"
                   items="{{_computeMedList(medsData, userSettingsData.vcActive)}}"
                   as="med"
-                  filter="_filterMorning"
+                  filter="_filterNight"
                   observe="timeChunk"
                   sort="_sortMeds">
                   <tr class$="[[_computeRowClass(med, userSettingsData.vcActive)]]">
@@ -952,7 +951,6 @@
         Polymer.carePlanAnimation,
         Polymer.suPrintBehavior,
         Polymer.suResizeBehavior,
-        Polymer.guueyDialogResizeBehavior,
         Polymer.guueyFormValidationBehavior
       ],
 
@@ -962,7 +960,21 @@
       },
 
       startNewMed: function() {
-        this.$.medModal.toggle();
+        this.$.medDB.path = null;
+        this.$.medDB.data = {};
+        var path = "homes/" + this.home + "/patients/" + this.patient + "/medicationOutline/medications";
+        this.$.medDB.save(path, null)
+          .then(function() {
+            var medHistoryId = this.$.medDB.path.split('/').pop();
+
+            this.$.medDB.save(this.$.medDB.path, null)
+              .then(function() {
+                var medItemId = this.$.medDB.path.split('/').pop();
+                var url = '/' + this.home + '/care-plan/su-medication-edit/' + this.patient + '/' + medHistoryId + '$' + medItemId;
+                window.history.pushState({}, null, url);
+                window.dispatchEvent(new CustomEvent('location-changed'));
+              }.bind(this));
+          }.bind(this));
       },
 
       saveMed: function() {
@@ -1093,7 +1105,7 @@
         if(item.archived && !this.userSettingsData.vcActive) {
           return false;
         } else {
-          return item.timeChunk.indexOf("morning") != -1;
+          return item.timeChunk.includes("morning");
         };
       },
 
@@ -1101,7 +1113,7 @@
         if(item.archived && !this.userSettingsData.vcActive) {
           return false;
         } else {
-          return item.timeChunk.indexOf("afternoon") != -1;
+          return item.timeChunk.includes("afternoon");
         };
       },
 
@@ -1109,7 +1121,7 @@
         if(item.archived && !this.userSettingsData.vcActive) {
           return false;
         } else {
-          return item.timeChunk.indexOf("evening") != -1;
+          return item.timeChunk.includes("evening");
         };
       },
 
@@ -1117,7 +1129,7 @@
         if(item.archived && !this.userSettingsData.vcActive){
           return false;
         } else {
-          return item.timeChunk.indexOf("night") != -1;
+          return item.timeChunk.includes("night");
         };
       },
 

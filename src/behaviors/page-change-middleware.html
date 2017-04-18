@@ -42,11 +42,37 @@
       },
 
       closeBottomNav: function() {
-        this.$.bottomNav.classList.remove('bottom-nav-closed');
+        this.$.bottomNav.classList.add('bottom-nav-toggling');
+        setTimeout(function() {
+          this.$.bottomNav.classList.add('bottom-nav-closed');
+          this.$.bottomNav.classList.remove('bottom-nav-toggling');
+
+          this.$.bottomNavTitle.classList.add('bottom-nav-title-toggling');
+          this.$.bottomNavTitle.classList.remove('bottom-nav-title-closed');
+        }.bind(this), 250);
+
+        setTimeout(function() {
+          this.$.bottomNavTitle.classList.remove('bottom-nav-title-toggling');
+        }.bind(this), 500);
+
       },
 
       openBottomNav: function() {
-        this.$.bottomNav.classList.add('bottom-nav-closed');
+
+        this.$.bottomNavTitle.classList.remove('bottom-nav-title-toggling');
+        setTimeout(function() {
+          this.$.bottomNavTitle.classList.add('bottom-nav-title-closed');
+          this.$.bottomNavTitle.classList.remove('bottom-nav-title-toggling');
+
+          this.$.bottomNav.classList.add('bottom-nav-toggling');
+          this.$.bottomNav.classList.remove('bottom-nav-closed');
+
+        }.bind(this), 250);
+
+        setTimeout(function() {
+          this.$.bottomNav.classList.remove('bottom-nav-toggling');
+        }.bind(this), 500);
+
       },
 
       _checkBottomNav: function(category, page) {
@@ -54,9 +80,9 @@
             category != 'default'
             && category != 'admin'
             && page != 'su-create') {
-          this.closeBottomNav();
-        } else {
           this.openBottomNav();
+        } else {
+          this.closeBottomNav();
         };
       },
 

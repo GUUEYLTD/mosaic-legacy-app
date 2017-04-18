@@ -194,9 +194,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       display:var(--login-overlay-display);
     }
     .mainProgress{
-      position:fixed;
-      top:0;
-      left:0;
       width:100%;
       --paper-progress-indeterminate-cycle-duration: 15s;
       --paper-progress-container-color: transparent;
@@ -385,10 +382,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       position:relative;
       max-height:80%;
     }
+    #appsDialog:focus {
+      outline: none;
+    }
     #notifyDialog{
       max-width:100%;
       max-height:80%;
       margin-top:20px;
+    }
+    #notifyDialog:focus {
+      outline: none;
     }
     #notifyDialogScroll{
       margin:0;
@@ -397,6 +400,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
     #logoutDialog{
       max-height:80%;
+    }
+    #logoutDialog:focus {
+      outline: none;
     }
     #lockedDialog{
       width:300px;
@@ -460,20 +466,46 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
     }
 
-    .top-nav {
-      z-index: 999;
+    .bottom-nav-container {
+      width: 100%;
     }
 
     .bottom-nav {
-      transition: all 0.5s ease;
-      z-index: 999;
+      transition: all .25s ease;
+    }
+
+    .bottom-nav-toggling {
+      opacity:0;
     }
 
     .bottom-nav-closed {
-      opacity:0;
-      height:0px;
-      z-index:-1;
+      display: none;
     }
+
+    .bottom-nav-title {
+      height: 48px;
+      transition: all .25s ease;
+      position:relative;
+      width: 100%;
+    }
+
+    .bottom-nav-title > p {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      text-align: center;
+      font-size: 3vh;
+      text-transform: uppercase;
+    }
+
+    .bottom-nav-title-toggling {
+      opacity:0;
+    }
+
+    .bottom-nav-title-closed {
+      display: none;
+    }
+
 
     #subMenuDialog {
       margin: 0px;

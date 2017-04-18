@@ -20,6 +20,7 @@
 <link rel="import" href="../../elements/su-header/su-header.html" />
 <link rel="import" href="../../elements/media-queries/media-queries.html" />
 <link rel="import" href="../../elements/guuey-truncate/guuey-truncate.html" />
+<link rel="import" href="../../elements/guuey-notify/guuey-notify.html" />
 
 <link rel="import" href="../../behaviors/animations/care-plan-animation.html" />
 <link rel="import" href="../../behaviors/su-resize-behavior.html" />
@@ -68,6 +69,20 @@
       data="{{riskDataLive}}"
       app-name="main">
     </firebase-document>
+
+    <guuey-notify
+      id="dateNotify"
+      f-name="[[suBasicInfo.fName]]"
+      l-name="[[suBasicInfo.lName]]"
+      image="[[suBasicInfo.image]]"
+      home="[[home]]"
+      notify-route="homes/[[home]]/patients/[[patient]]/riskAssessment/[[param]]/evaluation"
+      notify-target="[[param]]"
+      condition-type="guuey-date"
+      notify-condition="true"
+      notify-message="[[suBasicInfo.fName]] [[suBasicInfo.lName]]'s [[riskData.category]] risk evaluation is soon."
+      notify-url="/[[home]]/care-plan/su-risk/[[patient]]">
+    </guuey-notify>
 
     <style include="common-styles">
 
@@ -129,7 +144,8 @@
       <su-header
         page="Risk Assessment"
         home="[[home]]"
-        patient="[[patient]]">
+        patient="[[patient]]"
+        su-index-data="{{suBasicInfo}}">
       </su-header>
 
       <div class="pageInnerCont">
@@ -240,7 +256,6 @@
 
         riskId: {
           type: String,
-          value: null
         },
 
         evalFreq: {
@@ -269,16 +284,12 @@
           ]
         },
 
-        waitForAutoValidate: {
-          type: Boolean,
-          value: true
+        param: {
+          type: String,
+          observer: "initNotify"
         }
 
       },
-
-      observers: [
-        //"requirementsMet(risksData)"
-      ],
 
       behaviors: [
         Polymer.carePlanAnimation,
@@ -292,6 +303,11 @@
       ready: function() {
         this.fire("pageLoaded", {page: this.page});
         this.addEventListener("print", this.print);
+      },
+
+      initNotify: function() {
+        console.log(this.$.dateNotify.notifyRoute);
+        this.$.dateNotify.initialize();
       },
 
       addRisk: function() {
@@ -328,6 +344,7 @@
         .then(function() {
           this.fire("openToast", {toastText: "Risk Assessment deleted."});
           this.$.editModal.close();
+          this.$.dateNotify.deNotify(this.home, this.riskId);
         }.bind(this));
       },
 

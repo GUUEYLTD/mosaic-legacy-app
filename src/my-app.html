@@ -544,7 +544,7 @@
     </div>
     <div class="loginOverlay"></div>
 
-    <app-drawer-layout responsive-width="1023px" fullbleed id="appDrawerLayout">
+    <app-drawer-layout fullbleed id="appDrawerLayout">
 
       <!--admin drawer that contains admin account info and functions-->
       <admin-drawer
@@ -560,15 +560,13 @@
 
       <app-header-layout fullbleed>
 
-        <app-header id="appHeader" fixed condenses reveals effects="waterfall">
+        <app-header id="appHeader" fixed condenses>
 
           <app-toolbar id="topNav" class="top-nav">
 
             <paper-icon-button class="nav-icon-button" icon="menu" on-tap="toggleDrawer"></paper-icon-button>
 
-            <div main-title>
-
-            </div>
+            <div main-title></div>
 
             <paper-tabs attr-for-selected="name" selected="{{rightMenuSelect}}">
               <paper-tab class$="[[_computeBackButtonClass(page)]]" name="back" disabled="[[_atHome(page)]]" on-tap="goBack"><iron-icon icon="icons:arrow-back"></iron-icon></paper-tab>
@@ -583,21 +581,29 @@
             </paper-tabs>
 
           </app-toolbar>
-          <app-toolbar id="bottomNav" class="bottom-nav bottom-nav-closed">
 
+          <app-toolbar sticky class="bottom-nav-container">
             <paper-tabs
-              bottom-item
+              style="width:100%;"
+              id="bottomNav"
+              class="bottom-nav bottom-nav-closed"
               attr-for-selected="name"
               selected="[[page]]"
               scrollable>
               <paper-tab class$="[[_computeSubSelected('profile', page)]]" id="profile" name="profile" on-tap="openProfileSub">PROFILE</paper-tab>
               <paper-tab class$="[[_computeSubSelected('care', page)]]" id="care" name="care" on-tap="openProfileSub">CARE</paper-tab>
               <paper-tab class$="[[_computeSubSelected('reports', page)]]" id="reports" name="reports" on-tap="openProfileSub">REPORTS</paper-tab>
-              <paper-tab on-tap="closeSubMenuDialog" class="nav-tabs" link name="su-medication"><a class="menu-link" tabindex="-1" href="/[[home]]/care-plan/su-medication/[[patient]]">Medication Outline</a></paper-tab>
+              <paper-tab on-tap="closeSubMenuDialog" class="nav-tabs" link name="su-medication"><a class="menu-link" tabindex="-1" href="/[[home]]/care-plan/su-medication/[[patient]]">Medication</a></paper-tab>
               <paper-tab on-tap="closeSubMenuDialog" class="nav-tabs" link name="su-risk"><a class="menu-link" tabindex="-1" href="/[[home]]/care-plan/su-risk/[[patient]]">Risk Assessment</a></paper-tab>
               <paper-tab on-tap="closeSubMenuDialog" class="nav-tabs" link name="su-goals"><a class="menu-link" tabindex="-1" href="/[[home]]/care-plan/su-goals/[[patient]]">Personal Goals</a></paper-tab>
             </paper-tabs>
-            <paper-progress class="mainProgress" indeterminate></paper-progress>
+
+            <div id="bottomNavTitle" class="bottom-nav-title">
+              <p>
+                Mosaic Care
+              </p>
+            </div>
+            <paper-progress bottom-item class="mainProgress" indeterminate></paper-progress>
           </app-toolbar>
         </app-header>
 
@@ -737,8 +743,21 @@
             home="[[home]]"
             user="{{user}}"
             name="su-medication"
-            user-settings-data="[[userSettingsData]]">
+            user-settings-data="[[userSettingsData]]"
+            param="[[param]]">
           </su-medication>
+          <su-medication-edit
+            user-uid="[[userUid]]"
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            patient="[[patient]]"
+            home="[[home]]"
+            user="{{user}}"
+            name="su-medication-edit"
+            param="[[param]]">
+          </su-medication-edit>
           <su-pre
             user-uid="[[userUid]]"
             current-page="[[currentPage]]"
