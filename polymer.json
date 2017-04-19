@@ -8,6 +8,7 @@
     "src/pages/admin/ad-settings.html",
     "src/pages/admin/ad-support.html",
     "src/pages/admin/ad-users.html",
+    "src/pages/admin/ad-users-edit.html",
     "src/pages/admin/ad-reports.html",
     "src/pages/admin/ad-payment.html",
   	"src/pages/care-plan/su-care.html",
