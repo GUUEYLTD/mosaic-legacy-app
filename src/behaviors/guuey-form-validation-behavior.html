@@ -50,6 +50,7 @@
         forms.forEach(function(form) {
           var inputs = Polymer.dom(form).children;
           inputs.forEach(function(input) {
+            console.log(input);
             this.setDefaultContent(input);
           }.bind(this));
         }.bind(this));
@@ -131,7 +132,10 @@
       },
 
       setDefaultContent: function(input) {
-          input.value = input.name || input.label;
+          if(input.tagName.toLowerCase() != 'guuey-weekday-selector' && input.tagName.toLowerCase() != 'guuey-time-chunk-selector') {
+            input.value = input.name || input.label;
+          };
+
       },
 
       setValueListener: function(input) {

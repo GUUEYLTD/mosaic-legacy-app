@@ -18,6 +18,7 @@
     "src/pages/care-plan/su-uploads.html",
     "src/pages/care-plan/su-medication.html",
     "src/pages/care-plan/su-medication-edit.html",
+    "src/pages/care-plan/su-medication-history-edit.html",
     "src/pages/care-plan/su-pre.html",
     "src/pages/care-plan/su-profile.html",
     "src/pages/care-plan/su-risk.html",

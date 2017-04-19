@@ -1,6 +1,7 @@
 <link rel="import" href="/bower_components/polymer/polymer.html" />
 <link rel="import" href="/bower_components/polymerfire/firebase-document.html" />
 <link rel="import" href="/bower_components/paper-card/paper-card.html" />
+<link rel="import" href="/bower_components/paper-icon-button/paper-icon-button.html" />
 <link rel="import" href="/bower_components/paper-input/paper-input.html" />
 <link rel="import" href="/bower_components/vaadin-combo-box/vaadin-combo-box.html" />
 <link rel="import" href="/bower_components/paper-time-picker/paper-time-picker-dialog-style.html" />
@@ -29,15 +30,16 @@
       id="medMirror"
       session="[[userUid]]"
       key="medDB|[[home]]|[[patient]]|[[param]]"
-      data="{{usersDataLive}}"
-      persisted-data="{{usersData}}"
+      data="{{medData}}"
+      persisted-data="{{medDataLive}}"
       worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
     </app-indexeddb-mirror>
 
     <firebase-document
       id="medDB"
       app-name="main"
-      path="/homes/[[home]]/patients/[[patient]]/medicationOutline/medications/[[medHistoryParam]]/[[medHistoryItemParam]]/med">
+      path="/homes/[[home]]/patients/[[patient]]/medicationOutline/medications/[[medHistoryParam]]/[[medHistoryItemParam]]/med"
+      data="{{medDataLive}}">
     </firebase-document>
 
     <firebase-document
@@ -85,52 +87,58 @@
 
         <paper-tooltip id="mainFabTip" for="mainFab" position="bottom">click here to save medication</paper-tooltip>
 
-        <paper-input
-          label="Medication Name"
-          value="{{newMedEdit.medicine}}"
-          required
-          auto-validate
-          pattern="[a-zA-Z\s]*"
-          error-message="Please enter a valid medicine name.">
-        </paper-input>
+        <span class="guuey-input-validation">
 
-        <vaadin-combo-box
-          class="dialogHalf"
-          allow-custom-status
-          label="Method"
-          value="{{newMedEdit.method}}"
-          items="[[medMethods]]"
-          required
-          auto-validate
-          error-message="Please select a method.">
-        </vaadin-combo-box>
-        <!--need units of meds-->
-        <paper-input
-          class="dialogHalf"
-          label="dosage"
-          value="{{newMedEdit.dosage}}"
-          required
-          auto-validate
-          pattern="\d{1,4}[a-zA-Z\s]*"
-          error-message="Please enter in the following format: (number) (units).">
-        </paper-input>
+          <paper-input
+            label="Medication Name"
+            value="{{newMedEdit.medicine}}"
+            required
+            auto-validate
+            pattern="[a-zA-Z\s]*"
+            error-message="Please enter a valid medicine name.">
+          </paper-input>
 
-        <paper-textarea
-          label="Comments"
-          value="{{newMedEdit.comment}}">
-        </paper-textarea>
+          <vaadin-combo-box
+            class="dialogHalf"
+            allow-custom-status
+            label="Method"
+            value="{{newMedEdit.method}}"
+            items="[[medMethods]]"
+            required
+            auto-validate
+            error-message="Please select a method.">
+          </vaadin-combo-box>
+          <!--need units of meds-->
+          <paper-input
+            class="dialogHalf"
+            label="dosage"
+            value="{{newMedEdit.dosage}}"
+            required
+            auto-validate
+            pattern="\d{1,4}[a-zA-Z\s]*"
+            error-message="Please enter in the following format: (number) (units).">
+          </paper-input>
 
-        <guuey-time-chunk-selector
-          required
-          name="Time of Day"
-          value="{{newMedEdit.timeChunk}}">
-        </guuey-time-chunk-selector>
+          <paper-textarea
+            label="Comments"
+            value="{{newMedEdit.comment}}">
+          </paper-textarea>
 
-        <guuey-weekday-selector
-          required
-          name="Weedays Taken"
-          value="{{newMedEdit.weekdays}}">
-        </guuey-weekday-selector>
+          <guuey-time-chunk-selector
+            required
+            name="Time of Day"
+            value="{{newMedEdit.timeChunk}}">
+          </guuey-time-chunk-selector>
+
+          <guuey-weekday-selector
+            required
+            name="Weedays Taken"
+            value="{{newMedEdit.weekdays}}">
+          </guuey-weekday-selector>
+
+        </span>
+
+        <paper-icon-button icon="icons:delete" on-tap="deleteMed"></paper-icon-button>
       </div>
 
     </paper-card>
@@ -211,9 +219,7 @@
       ready: function() {
         this.fire("pageLoaded",{page: this.page});
         this.$.medDB.ref.on('value', function(medData) {
-          console.log(medData.val());
           var med = this.$.medDB.valueIsEmpty(medData.val()) ? {} : medData.val();
-          console.log(med);
           this.set("newMedEdit", med);
         }.bind(this));
       },
@@ -262,6 +268,30 @@
               window.dispatchEvent(new CustomEvent('location-changed'));
             }.bind(this));
         };
+      },
+
+      deleteMed: function() {
+        this.$.medEditDB.path = null;
+        this.newMedEdit.parent = null;
+        this.$.medEditDB.data.med = this.newMedEdit;
+        this.$.medEditDB.data.med.archived = true;
+        this.$.medEditDB.data.log = {};
+        this.$.medEditDB.data.log.user = this.user.uid;
+        this.$.medEditDB.data.log.time = Date.now();
+        var path = "homes/" + this.home + "/patients/" + this.patient + "/medicationOutline/medications/" + this.medHistoryParam;
+        this.$.medEditDB.save(path, null)
+          .then(function(med) {
+            var medItemId = this.$.medDB.path.split("/").pop();
+            this.fire("openToast", {toastText: 'Medication archived'});
+
+            var suffixes = ["morning","afternoon","evening","night"];
+            this.$.dailyMedNotify.deNotify(this.home, this.medHistoryParam, suffixes);
+            this.newMedEdit = {};
+
+            var url = '/' + this.home + '/care-plan/su-medication/' + this.patient;
+            window.history.pushState({}, null, url);
+            window.dispatchEvent(new CustomEvent('location-changed'));
+          }.bind(this));
       },
 
     });
