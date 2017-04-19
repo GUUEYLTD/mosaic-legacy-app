@@ -104,9 +104,9 @@
 
       <div class="pageInnerCont padded">
         <paper-tabs
+          class="green-tabs"
           attr-for-selected="label"
-          selected="{{selectedChunk}}"
-          scrollable>
+          selected="{{selectedChunk}}">
           <template is="dom-repeat" items="[[chunkList]]" as="chunk">
             <paper-tab label="[[chunk]]">[[chunk]] Report</paper-tab>
           </template>

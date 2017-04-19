@@ -107,7 +107,7 @@
         <paper-tabs
           attr-for-selected="date-string"
           selected="{{selectedMonth}}"
-          scrollable>
+          class="green-tabs">
           <template is="dom-repeat" items="[[altMonths]]" as="month">
 
             <paper-tab date-string="[[_computeLabel(month)]]" label="[[month]]">[[month]] Report</paper-tab>

@@ -485,17 +485,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     .bottom-nav-title {
       height: 48px;
       transition: all .25s ease;
-      position:relative;
-      width: 100%;
-    }
-
-    .bottom-nav-title > p {
-      margin: 0;
-      padding: 0;
       width: 100%;
       text-align: center;
-      font-size: 3vh;
-      text-transform: uppercase;
+    }
+
+    .bottom-nav-title > img {
+      margin: auto;
+      padding: 0;
+      height:48px;
+
     }
 
     .bottom-nav-title-toggling {
@@ -509,38 +507,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     #subMenuDialog {
       margin: 0px;
-      background-color: #3d4ba8;
+
     }
 
     #subMenuDialog paper-listbox {
-      background-color: #3d4ba8;
+      padding-left: 0;
+      padding-right: 0;
+      margin-top: 0px;
+      margin-bottom: 0px;
     }
 
     .sub-menu-item {
       transition: all 0.5s ease;
-      background-color: #3d4ba8;
-      color: rgb(255, 255, 255);
       text-transform: capitalize;
-    }
-
-    .sub-menu-item.iron-selected {
-      border-bottom: 2px solid #e51561;
-      color: #fff;
     }
 
     .sub-header-menu {
       border-bottom: none;
-    }
-
-    .sub-header-menu-selected::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      right: 0;
-      left: 0;
-      height: 2px;
-      width: 100%;
-      background-color: #e51561;
     }
 
     .overflow-selected {
@@ -556,6 +539,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       bottom: 0;
       left: 0;
       z-index: 3;
+    }
+
+    paper-tabs {
+      --paper-tabs-selection-bar: {
+        height: 3px;
+      };
+    }
+
+    paper-tab {
+      --paper-tab-content: {
+        font-weight: 900;
+        font-size: 15px;
+      };
+
+      --paper-tab-content-unselected: {
+        font-weight: 500;
+        font-size: 14px;
+      };
     }
 
     </style>

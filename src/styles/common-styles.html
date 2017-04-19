@@ -326,6 +326,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         background-color: #673AB7;
         color: #FFFFFF;
       }
+
+      .green-tabs {
+        margin-left: 20px;
+        margin-right: 20px;
+        --paper-tabs:{
+          font-size:var(--report-tabs-font-size);
+        };
+        --paper-tabs-selection-bar-color:#009688;
+        --paper-tabs-container:{
+          border-bottom:2px solid #979797;
+        };
+      }
+
+      .green-tabs > paper-tab {
+        --paper-tab-ink:#009688;
+        --paper-tab-content-unselected:{
+        color:#cecece;
+        }
+      }
+
+      .green-tabs > paper-tab.iron-selected {
+        color:#009688;
+      }
     </style>
   </template>
 </dom-module>

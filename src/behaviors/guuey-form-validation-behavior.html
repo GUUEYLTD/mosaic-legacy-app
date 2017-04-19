@@ -50,7 +50,6 @@
         forms.forEach(function(form) {
           var inputs = Polymer.dom(form).children;
           inputs.forEach(function(input) {
-            console.log(input);
             this.setDefaultContent(input);
           }.bind(this));
         }.bind(this));
