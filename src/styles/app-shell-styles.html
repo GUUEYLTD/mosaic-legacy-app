@@ -484,16 +484,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     .bottom-nav-title {
       height: 48px;
-      transition: all .25s ease;
       width: 100%;
-      text-align: center;
+      transition: all .25s ease;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
     }
 
-    .bottom-nav-title > img {
-      margin: auto;
-      padding: 0;
-      height:48px;
+    .bottom-nav-title iron-icon {
+      height: 40px;
+      width: 40px;
+      padding: 4px;
+    }
 
+    .bottom-nav-title p {
+      margin: 0;
+      font-size: 36px;
     }
 
     .bottom-nav-title-toggling {
