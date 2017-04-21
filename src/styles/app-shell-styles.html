@@ -178,7 +178,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       justify-content: center;
       display:none;
       display:var(--db-loading-display);
-      z-index:6;
+      z-index:999;
       color:#FFF;
       font-style:italic;
 
@@ -194,13 +194,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       display:var(--login-overlay-display);
     }
     .mainProgress{
+      position: fixed;
+      top: 0;
+      left: 0;
       width:100%;
       --paper-progress-indeterminate-cycle-duration: 15s;
       --paper-progress-container-color: transparent;
       --paper-progress-active-color: transparent;
       --paper-progress-active-color:var(--page-loading-active-color);
-
-      display:inherit;
+      z-index: 999;
     }
     .searchInput{
       border-radius:20px;
@@ -492,14 +494,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
     .bottom-nav-title iron-icon {
-      height: 40px;
-      width: 40px;
+      height: 25px;
+      width: 25px;
       padding: 4px;
     }
 
     .bottom-nav-title p {
       margin: 0;
-      font-size: 36px;
+      font-size: 18px;
+      font-weight: 600;
+      text-transform: uppercase;
     }
 
     .bottom-nav-title-toggling {
@@ -547,6 +551,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       z-index: 3;
     }
 
+    app-toolbar {
+      height: 48px;
+    }
+
     paper-tabs {
       --paper-tabs-selection-bar: {
         height: 3px;
@@ -557,11 +565,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       --paper-tab-content: {
         font-weight: 900;
         font-size: 15px;
-      };
-
-      --paper-tab-content-unselected: {
-        font-weight: 500;
-        font-size: 14px;
       };
     }
 

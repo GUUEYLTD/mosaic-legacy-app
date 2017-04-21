@@ -544,6 +544,8 @@
     </div>
     <div class="loginOverlay"></div>
 
+    <paper-progress class="mainProgress" indeterminate></paper-progress>
+
     <app-drawer-layout fullbleed id="appDrawerLayout">
 
       <!--admin drawer that contains admin account info and functions-->
@@ -602,7 +604,6 @@
               <iron-icon icon="custom:logo"></iron-icon>
               <p>Mosaic Care</p>
             </div>
-            <paper-progress bottom-item class="mainProgress" indeterminate></paper-progress>
           </app-toolbar>
         </app-header>
 
@@ -1315,10 +1316,7 @@
         if(home != 'default'){
           this.home = this.homeData.home;
           this.$.settingsDB.path = "/homes/" + this.home + "/settings";
-        };
-        //lockout of dev server for beta tester
-        if(home === "-KRSjsbJCBdJM8et8BUe") {
-          this.$.movedDialog.open();
+          this._ensureHomeSettingsSet();
         };
       },
 
