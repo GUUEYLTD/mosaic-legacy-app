@@ -3,23 +3,23 @@
 <link rel="import" href="../../../bower_components/polymerfire/firebase-query.html" />
 <link rel="import" href="../../../bower_components/paper-fab/paper-fab.html" />
 <link rel="import" href="../../../bower_components/paper-dialog/paper-dialog.html" />
-<link rel="import" href="../../../bower_components/neon-animation/neon-animated-pages.html" />
+<link rel="import" href="../../../bower_components/paper-card/paper-card.html" />
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html" />
+<link rel="import" href="../../../bower_components/iron-icons/iron-icons.html" />
+<link rel="import" href="../../../bower_components/iron-icon/iron-icon.html" />
 
 <link rel="import" href="../../elements/su-header/su-header.html" />
 <link rel="import" href="../../elements/guuey-notify/guuey-notify.html" />
 <link rel="import" href="../../elements/media-queries/media-queries.html" />
+<link rel="import" href="../../elements/guuey-truncate/guuey-truncate.html" />
 
 <link rel="import" href="../../behaviors/animations/care-plan-animation.html" />
-<link rel="import" href="../../behaviors/fab-animation-behavior.html" />
 <link rel="import" href="../../behaviors/su-print-behavior.html" />
 <link rel="import" href="../../behaviors/su-resize-behavior.html" />
-<link rel="import" href="../../behaviors/guuey-dialog-resize-behavior.html" />
-<link rel="import" href="../../behaviors/guuey-form-validation-behavior.html" />
+<link rel="import" href="../../behaviors/multi-view-grid-behavior.html" />
 
 <link rel="import" href="../../styles/common-styles.html" />
 
-<link rel="import" href="su-care-review-edit-view.html" />
-<link rel="import" href="su-care-review-multi-view.html" />
 <dom-module id="su-care-review">
 
   <template>
@@ -48,7 +48,7 @@
     <app-indexeddb-mirror
       id="reviewMirror"
       session="[[userUid]]"
-      key="reviewDB|[[[[reviewId]]]|][[patient]]"
+      key="reviewDB|[[[reviewId]]|][[patient]]|[[param]]"
       data="{{reviewDataLive}}"
       persisted-data="{{reviewData}}"
       worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
@@ -75,78 +75,78 @@
       notify-url="/[[home]]/care-plan/su-care-review/[[patient]]">
     </guuey-notify>
 
+    <paper-dialog horizontal-align="left" vertical-align="top" id="editModal">
+      <paper-button on-tap="editReview">edit</paper-button>
+      <br />
+      <paper-button on-tap="deleteReview">delete</paper-button>
+    </paper-dialog>
+
     <style include="common-styles">
+
+      :host {
+        --app-grid-gutter:20px;
+      }
 
     </style>
 
-        <paper-dialog id="addReviewDialog" class="guuey-modal guuey-add-modal">
+    <paper-card class="pageCard">
 
-          <h2>Add Review</h2>
-          <span id="formField">
-            <paper-input required value="{{reviewData.name}}" label="name of the review"></paper-input>
-            <paper-input required value="{{reviewData.description}}" label="short description"></paper-input>
-          </span>
+      <su-header
+        page="Care Plan Review"
+        home="[[home]]"
+        patient="[[patient]]"
+        su-index-data="{{suBasicInfo}}">
+      </su-header>
 
-          <div class="modal-button-container">
-            <paper-button class="cancel-button" on-tap="cancelNewReview">cancel</paper-button>
-            <paper-button class="confirm-button" on-tap="saveNewReview">continue to new review</paper-button>
-          </div>
+      <div class="pageInnerCont">
 
-        </paper-dialog>
+        <!--absolute position button to add a new risk-->
 
-        <paper-card class="pageCard">
+        <paper-fab
+          id="regFab"
+          icon="icons:add"
+          on-tap="addReview">
+        </paper-fab>
 
-          <su-header
-            page="Care Plan Review"
-            home="[[home]]"
-            patient="[[patient]]"
-            su-index-data="{{suBasicInfo}}">
-          </su-header>
+        <paper-card class="multiViewCard app-grid">
+          <template
+            strip-whitespace
+            id="domRepeat"
+            is="dom-repeat"
+            items="{{reviewsData}}"
+            as="review"
+            sort="_sortReviewDate"
+            observe="nextReviewDate">
 
-          <div class="pageInnerCont">
+            <paper-card class="multiItem">
+              <div style="background-image:url(../../../../{{_computeReviewImage(review.nextReviewDate)}})" class="multiCardHeading">
+                <p on-tap="directEditModal" class="multiCardLabel">
+                  [[review.name]]
+                </p>
+              </div>
+              <div class="multiCardContainer">
+                <p class="multiCardMain">
+                  <guuey-truncate>[[review.description]]</guuey-truncate>
+                </p>
+                <div class="multiCardSecondary">
+                  <iron-icon icon="icons:update"></iron-icon>{{_computeDate(review.nextReviewDate)}}
+                </div>
+              </div>
 
-            <!--absolute position button to add a new risk-->
+              <paper-icon-button
+                icon="icons:more-vert"
+                class="multiCardMore"
+                on-tap="toggleEditModal">
+              </paper-icon-button>
 
-            <paper-fab
-              id="regFab"
-              icon="icons:add"
-              on-tap="addReview">
-            </paper-fab>
+            </paper-card>
 
-            <!--fixed position button to finsh adding a new risk assessment and close the add view-->
-
-            <paper-fab
-              id="editFab"
-              icon="icons:check"
-              on-tap="finishReview">
-            </paper-fab>
-
-            <neon-animated-pages
-              entry-animation="scale-up-animation"
-              exit-animation="scale-down-animation"
-              attr-for-selected="name"
-              selected="[[pageState]]">
-
-              <su-care-review-multi-view
-                name="multi-view"
-                reviews-data="{{reviewsData}}"
-                su-basic-info="[[suBasicInfo]]">
-              </su-care-review-multi-view>
-
-              <su-care-review-edit-view
-                id="editView"
-                wait-for-auto-validate
-                name="edit-view"
-                review-data="{{reviewData}}"
-                su-basic-info="[[suBasicInfo]]"
-                review-id="[[reviewId]]"
-                home="[[home]]"
-                patient="[[patient]]">
-              </su-care-review-edit-view>
-            </neon-animated-pages>
-          </div>
-
+          </template>
         </paper-card>
+
+      </div>
+
+    </paper-card>
 
   </template>
 
@@ -187,25 +187,34 @@
         waitForAutoValidate: {
           type: Boolean,
           value: true
+        },
+
+        dimensions: {
+          type: Object
+        },
+
+        viewType: {
+          type: String,
+          value: "multi-view"
+        },
+
+        reviewsData: {
+          type: Object,
+          notify: true,
         }
 
       },
 
       behaviors: [
         Polymer.carePlanAnimation,
-        Polymer.fabAnimationBehavior,
         Polymer.suPrintBehavior,
         Polymer.suResizeBehavior,
-        Polymer.guueyDialogResizeBehavior,
-        Polymer.guueyFormValidationBehavior
+        Polymer.multiViewGridBehavior
       ],
 
       ready: function() {
         this.fire("pageLoaded", {page: this.page});
         this.addEventListener("print", this.print);
-        this.addEventListener("editReview", this.editReview);
-        this.addEventListener("deleteReview", this.deleteReview);
-
       },
 
       initNotify: function(reviewId) {
@@ -222,56 +231,36 @@
 
       addReview: function() {
         this.$.reviewDB.path = null;
-        this.reviewData = {};
-        this.$.addReviewDialog.open();
+        this.$.reviewDB.data = {};
+        var path = "/homes/" + this.home + "/patients/" + this.patient + "/carePlanReviews";
+        this.$.reviewDB.save(path, null)
+          .then(function(val) {
+            this.reviewId = this.$.reviewDB.path.split("/").pop();
+            var url = '/' + this.home + '/care-plan/su-care-review-edit/' + this.patient + '/' + this.reviewId;
+            window.history.pushState({}, null, url);
+            window.dispatchEvent(new CustomEvent('location-changed'));
+          }.bind(this))
+          .catch(function(error) {
+            this.fire("openToast",{toastText: "There was an error saving the care plan review: " + error});
+          }.bind(this));
       },
 
-      saveNewReview: function() {
-        var validation = this.validateInputs(this.$.formField);
-        if(validation.invalid) {
-          this.fire("openToast", {toastText: "The following items are missing or invalid: " + validation.invalidInputs});
-        } else {
-          var path = "/homes/" + this.home + "/patients/" + this.patient + "/carePlanReviews";
-          this.$.reviewDB.save(path, null)
-            .then(function(val) {
-              this.reviewId = this.$.reviewDB.path.split("/").pop();
-              this.$.addReviewDialog.close();
-              this.pageState = "edit-view"
-              this.animateEditViewFab();
-              this.$.editView.startAutoValidate();
-              this.fire("openToast", {toastText: "New care plan review saved."});
-              this.$.reviewDB.transactionsComplete = this._checkServiceUser(this.suBasicInfo);
-              this.clearValidation(this.$.formField);
-              this.fire("newCareReviewSaved", {reviewId: this.reviewId});
-            }.bind(this))
-            .catch(function(error) {
-              this.$.addReviewDialog.close();
-              this.fire("openToast",{toastText: "There was an error saving the care plan review: " + error});
-            }.bind(this));
-        };
-      },
-
-      cancelNewReview: function() {
-        this.$.addReviewDialog.close();
-        this.$.reviewDB.path = null;
-        this.reviewData = {};
-      },
-
-      editReview:function(e) {
-        this.reviewId = e.detail.reviewId;
-        this.$.reviewDB.path = "/homes/" + this.home + "/patients/" + this.patient + "/carePlanReviews/" + this.reviewId;
-        this.$.reviewDB.transactionsComplete = this._checkServiceUser(this.suBasicInfo);
-        this.set('pageState', 'edit-view');
-        this.animateEditViewFab();
-        this.$.editView.startAutoValidate();
+      editReview:function() {
+        var url = '/' + this.home + '/care-plan/su-care-review-edit/' + this.patient + '/' + this.reviewId;
+        window.history.pushState({}, null, url);
+        window.dispatchEvent(new CustomEvent('location-changed'));
+        this.$.editModal.close();
       },
 
       deleteReview: function(e) {
-        this.reviewId = e.detail.reviewId;
-        var path = "/homes/" + this.home + "/patients/" + this.patient + "/carePlanReviews/" + this.reviewId;
+        this.$.reviewDB.path = null;
+        this.$.reviewDB.data = {};
+
+        var path = "homes/" + this.home + "/patients/" + this.patient + "/carePlanReviews/" + this.reviewId;
         this.$.reviewDB.setStoredValue(path, null)
-          .then(function(snap) {
-            this.fire("careReviewDeleted");
+          .then(function() {
+            this.fire("openToast", {toastText: "Review Deleted."});
+            this.$.editModal.close();
           }.bind(this))
           .catch(function(err) {
             console.log(err);
@@ -279,12 +268,80 @@
         this.$.dateNotify.deNotify(this.home, this.reviewId);
       },
 
-      finishReview: function() {
-        this.$.editView.stopAutoValidate();
-        this.pageState = "multi-view";
-        this.animateMultiViewFab();
-        this.$.reviewDB.path = null;
-        this.$.reviewDB.data = {};
+      //edit view code
+      toggleEditModal: function(e) {
+        this.$.editModal.positionTarget = e.target;
+        this.reviewId = e.model.review.$key;
+        this.$.editModal.toggle();
+      },
+
+      _sortReviewDate: function(review1, review2) {
+        var date1 = new Date(review1.nextReviewDate).getTime();
+        var date2 = new Date(review2.nextReviewDate).getTime();
+        return date1 > date2;
+      },
+
+      _computeReviewImage: function(date) {
+        var date = new Date(date).getMonth();
+        switch(date) {
+          case 0:
+              return "images/reviews/01jan.png";
+              break;
+          case 1:
+              return "images/reviews/02feb.png";
+              break;
+          case 2:
+              return "images/reviews/03mar.png";
+              break;
+          case 3:
+              return "images/reviews/04apr.png";
+              break;
+          case 4:
+              return "images/reviews/05may.png";
+              break;
+          case 5:
+              return "images/reviews/06jun.png";
+              break;
+          case 6:
+              return "images/reviews/07jul.png";
+              break;
+          case 7:
+              return "images/reviews/08aug.png";
+              break;
+          case 8:
+              return "images/reviews/09sep.png";
+              break;
+          case 9:
+              return "images/reviews/10oct.png";
+              break;
+          case 10:
+              return "images/reviews/11nov.png";
+              break;
+          case 11:
+              return "images/reviews/12dec.png";
+              break;
+          default:
+              return "images/reviews/other.png";
+              break;
+        };
+      },
+
+      _computeDate: function(date) {
+        if(typeof date === "string") {
+          return date.slice(3,15);
+        } else {
+          return "Date not set";
+        };
+      },
+
+      directEditModal: function(e) {
+        this.reviewId = e.model.review.$key;
+        this.editReview();
+      },
+
+      _readMore: function(e) {
+        this.reviewId = this.$.domRepeat.modelForElement(e.path[5]).review.$key;
+        this.editReview();
       }
 
     });

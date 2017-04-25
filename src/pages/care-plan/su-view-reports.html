@@ -109,24 +109,6 @@
 
       #reportSelector {
         width:75%;
-        --paper-tabs:{
-          font-size:var(--report-tabs-font-size);
-        };
-        --paper-tabs-selection-bar-color:#009688;
-        --paper-tabs-container:{
-          border-bottom:2px solid #979797;
-        };
-      }
-
-      paper-tab {
-        --paper-tab-ink:#009688;
-        --paper-tab-content-unselected:{
-        color:#cecece;
-        }
-      }
-
-      paper-tab.iron-selected {
-        color:#009688;
       }
 
       .morning {
@@ -197,7 +179,7 @@
       <div class="pageInnerCont">
         <paper-card elevation="3" class="subCard">
 
-          <paper-tabs attr-for-selected="name" id="reportSelector" selected="{{reportSelect}}">
+          <paper-tabs class="green-tabs" attr-for-selected="name" id="reportSelector" selected="{{reportSelect}}">
             <paper-tab name="today" on-tap="viewThisDay">TODAY</paper-tab>
             <paper-tab name="week" on-tap="viewThisWeek">THIS WEEK</paper-tab>
             <paper-tab name="month" on-tap="viewThisMonth">THIS MONTH</paper-tab>

@@ -10,23 +10,22 @@
 <link rel="import" href="../../../bower_components/vaadin-combo-box/vaadin-combo-box.html" />
 <link rel="import" href="../../../bower_components/iron-icons/iron-icons.html" />
 <link rel="import" href="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror.html" />
-<link rel="import" href="../../../bower_components/neon-animation/neon-animated-pages.html" />
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html" />
+<link rel="import" href="../../../bower_components/iron-icon/iron-icon.html" />
+<link rel="import" href="../../../bower_components/iron-icons/editor-icons.html" />
 
 <link rel="import" href="../../elements/guuey-text-input/guuey-text-input.html" />
 <link rel="import" href="../../elements/guuey-date-input/guuey-date-input.html" />
 <link rel="import" href="../../elements/guuey-slider/guuey-slider.html" />
 <link rel="import" href="../../elements/su-header/su-header.html" />
 <link rel="import" href="../../elements/media-queries/media-queries.html" />
+<link rel="import" href="../../elements/guuey-truncate/guuey-truncate.html" />
+<link rel="import" href="../../elements/guuey-notify/guuey-notify.html" />
 
-<link rel="import" href="su-risk-edit-view.html" />
-<link rel="import" href="su-risk-multi-view.html" />
-
-<link rel="import" href="../../behaviors/fab-animation-behavior.html" />
 <link rel="import" href="../../behaviors/animations/care-plan-animation.html" />
 <link rel="import" href="../../behaviors/su-resize-behavior.html" />
 <link rel="import" href="../../behaviors/su-print-behavior.html" />
-<link rel="import" href="../../behaviors/guuey-dialog-resize-behavior.html" />
-<link rel="import" href="../../behaviors/guuey-form-validation-behavior.html" />
+<link rel="import" href="../../behaviors/multi-view-grid-behavior.html" />
 
 <link rel="import" href="../../styles/common-styles.html" />
 
@@ -58,7 +57,7 @@
     <app-indexeddb-mirror
       id="riskMirror"
       session="[[userUid]]"
-      key="riskDB|[[riskId]]|[[patient]]"
+      key="riskDB|[[riskId]]|[[patient]]|[[param]]"
       data="{{riskDataLive}}"
       persisted-data="{{riskData}}"
       worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
@@ -71,82 +70,82 @@
       app-name="main">
     </firebase-document>
 
-    <style include="common-styles"></style>
+    <guuey-notify
+      id="dateNotify"
+      f-name="[[suBasicInfo.fName]]"
+      l-name="[[suBasicInfo.lName]]"
+      image="[[suBasicInfo.image]]"
+      home="[[home]]"
+      notify-route="homes/[[home]]/patients/[[patient]]/riskAssessment/[[param]]/evaluation"
+      notify-target="[[param]]"
+      condition-type="guuey-date"
+      notify-condition="true"
+      notify-message="[[suBasicInfo.fName]] [[suBasicInfo.lName]]'s [[riskData.category]] risk evaluation is soon."
+      notify-url="/[[home]]/care-plan/su-risk/[[patient]]">
+    </guuey-notify>
 
-    <paper-dialog id="addRiskDialog" class="guuey-modal guuey-add-modal">
+    <style include="common-styles">
 
-      <h2>Add New Risk Assessment</h2>
+    :host {
+      --app-grid-columns:3;
+      --app-grid-gutter:20px;
+    }
 
-      <span id="formField">
+    guuey-slider {
+      width:100%;
+      height:60px;
+      margin:0;
+      padding:0;
+    }
 
-        <vaadin-combo-box
-          required
-          class="dialogHalf"
-          label="Category"
-          items="[[riskTypes]]"
-          value="{{riskData.category}}">
-        </vaadin-combo-box>
+    .multiCardMain {
+      margin:0;
+      padding:0;
+      height:90px;
+    }
 
-        <guuey-date-input
-          required
-          class="dialogHalf"
-          value="{{riskData.date}}"
-          label="Date of risk assessment">
-        </guuey-date-input>
+    .cardDivider {
+      border-bottom:1px solid #e0e0e0;
+      height:1px;
+      width:100%;
+      display:inline-block;
+    }
 
-        <paper-textarea
-          required
-          label="Background of Risk"
-          value="{{riskData.backgroundOfRisk}}">
-        </paper-textarea>
+    .dateContainer {
+      flex-grow:1;
+      display:flex;
+      flex-direction:column;
+    }
 
-        <paper-textarea
-          required
-          label="Risk Identified"
-          value="{{riskData.riskIdentified}}">
-        </paper-textarea>
+    .dateHeader {
+      width:100%;
+      text-align:left;
+      font-weight:bold;
+      margin:0;
+    }
 
-        <paper-textarea
-          required
-          label="Crisis Plan"
-          value="{{riskData.crisisPlan}}">
-        </paper-textarea>
+    .riskDate {
+      flex-grow:1;
+      text-align:left;
+      margin-left:10px;
+      opacity:.8;
+    }
 
-        <vaadin-combo-box
-          required
-          class="dialogHalf"
-          label="Agreed Frequencey of Evaluation"
-          items="[[evalFreq]]"
-          value="{{riskData.agreedFrequencyOfEvaluation}}">
-        </vaadin-combo-box>
+    </style>
 
-        <guuey-date-input
-          required
-          class="dialogHalf"
-          value="{{riskData.evaluation}}"
-          label="Date of risk evaluation">
-        </guuey-date-input>
-
-        <guuey-slider
-          required
-          class="dialogHalf"
-          value="{{riskData.riskLevel}}">
-        </guuey-slider>
-
-      </span>
-
-      <div class="modal-button-container">
-        <paper-button class="cancel-button" on-tap="cancelNewRisk">cancel</paper-button>
-        <paper-button class="confirm-button" on-tap="saveNewRisk">save</paper-button>
-      </div>
-
+    <paper-dialog horizontal-align="left" vertical-align="top" id="editModal">
+      <paper-button on-tap="editRisk">edit</paper-button>
+      <br />
+      <paper-button on-tap="deleteRisk">delete</paper-button>
     </paper-dialog>
+
 
     <paper-card class="pageCard" elevation="3">
       <su-header
         page="Risk Assessment"
         home="[[home]]"
-        patient="[[patient]]">
+        patient="[[patient]]"
+        su-index-data="{{suBasicInfo}}">
       </su-header>
 
       <div class="pageInnerCont">
@@ -159,34 +158,56 @@
           on-tap="addRisk">
         </paper-fab>
 
-        <!--fixed position button to finsh adding a new risk assessment and close the add view-->
+        <paper-card class="multiViewCard app-grid">
+          <template
+            strip-whitespace
+            id="domRepeat"
+            is="dom-repeat"
+            items="{{risksData}}"
+            as="risk">
 
-        <paper-fab
-          id="editFab"
-          icon="icons:check"
-          on-tap="finishRisk">
-        </paper-fab>
+            <paper-card class="multiItem">
+              <div style="background-image:url(../../../../{{_computeRiskImage(risk.category)}})" class="multiCardHeading">
+                <p on-tap="directEditModal" class="multiCardLabel">
+                  <template is="dom-repeat" items="[[computeDisplayCat(risk.category)]]" as="riskEl">
 
-        <neon-animated-pages
-          entry-animation="scale-up-animation"
-          exit-animation="scale-down-animation"
-          attr-for-selected="name"
-          selected="[[pageState]]">
+                      [[riskEl]]
 
-          <su-risk-multi-view
-            name="multi-view"
-            risks-data="{{risksData}}">
-          </su-risk-multi-view>
+                  </template>
+                </p>
+              </div>
+              <div class="multiCardContainer">
+                <guuey-slider hide-value value="{{risk.riskLevel}}"></guuey-slider>
+                <div class="multiCardMain">
+                  <guuey-truncate>[[risk.riskIdentified]]</guuey-truncate>
+                </div>
+                <div class="multiCardSecondary">
+                  <div class="dateContainer">
+                    <div class="cardDivider"></div>
+                    <p class="dateHeader">
+                      Date of Assessment
+                    </p>
+                    <div class="riskDate">
+                      <iron-icon icon="editor:insert-invitation"></iron-icon>{{_computeDate(risk.date)}}
+                    </div>
 
-          <su-risk-edit-view
-            id="editView"
-            wait-for-auto-validate
-            db-loaded="[[dbLoaded]]"
-            name="edit-view"
-            risk-data="{{riskData}}">
-          </su-risk-edit-view>
+                    <div class="riskDate">
+                      <iron-icon icon="icons:update"></iron-icon>{{_computeDate(risk.evaluation)}}
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-        </neon-animated-pages>
+              <paper-icon-button
+                icon="icons:more-vert"
+                class="multiCardMore"
+                on-tap="toggleEditModal">
+              </paper-icon-button>
+
+            </paper-card>
+
+          </template>
+        </paper-card>
 
       </div>
 
@@ -199,13 +220,6 @@
     Polymer({
 
       is: 'su-risk',
-
-      ready: function() {
-        this.fire("pageLoaded", {page: this.page});
-        this.addEventListener("print", this.print);
-        this.addEventListener("editRisk", this.editRisk);
-        this.addEventListener("deleteRisk", this.deleteRisk);
-      },
 
       properties: {
 
@@ -242,7 +256,6 @@
 
         riskId: {
           type: String,
-          value: null
         },
 
         evalFreq: {
@@ -271,105 +284,157 @@
           ]
         },
 
-        waitForAutoValidate: {
-          type: Boolean,
-          value: true
+        param: {
+          type: String,
+          observer: "initNotify"
         }
 
       },
 
-      observers: [
-        //"requirementsMet(risksData)"
-      ],
-
       behaviors: [
-        Polymer.fabAnimationBehavior,
         Polymer.carePlanAnimation,
         Polymer.suPrintBehavior,
         Polymer.suResizeBehavior,
-        Polymer.guueyDialogResizeBehavior,
-        Polymer.guueyFormValidationBehavior
+        Polymer.multiViewGridBehavior
       ],
 
-      editRisk: function(e) {
-        var riskId = e.detail.riskId;
-        this.$.riskDB.path = "/homes/" + this.home + "/patients/" + this.patient + "/riskAssessment/" + riskId;
-        this.goEdit();
+      //base code
+
+      ready: function() {
+        this.fire("pageLoaded", {page: this.page});
+        this.addEventListener("print", this.print);
       },
 
-      deleteRisk: function(e) {
-        var riskId = e.detail.riskId;
-        var path = "/homes/" + this.home + "/patients/" + this.patient + "/riskAssessment/" + riskId;
+      initNotify: function() {
+        console.log(this.$.dateNotify.notifyRoute);
+        this.$.dateNotify.initialize();
+      },
+
+      addRisk: function() {
+        this.$.riskDB.path = null;
+        this.$.riskDB.data = {};
+
+        var path = "/homes/" + this.home + "/patients/" + this.patient + "/riskAssessment";
+        this.$.riskDB.save(path, null)
+          .then(function(val) {
+            this.riskId = this.$.riskDB.path.split("/").pop();
+            var url = '/' + this.home + '/care-plan/su-risk-edit/' + this.patient + '/' + this.riskId;
+            window.history.pushState({}, null, url);
+            window.dispatchEvent(new CustomEvent('location-changed'));
+          }.bind(this))
+          .catch(function(error) {
+            this.fire("openToast",{toastText: "There was an error saving the new risk: " + error});
+          }.bind(this));
+      },
+
+      editRisk: function() {
+        this.$.riskDB.path = null;
+        this.$.riskDB.data = {};
+        var url = '/' + this.home + '/care-plan/su-risk-edit/' + this.patient + '/' + this.riskId;
+        window.history.pushState({}, null, url);
+        window.dispatchEvent(new CustomEvent('location-changed'));
+        this.$.editModal.close();
+      },
+
+      deleteRisk: function() {
+        this.$.riskDB.path = null;
+        this.$.riskDB.data = {};
+        var path = "/homes/" + this.home + "/patients/" + this.patient + "/riskAssessment/" + this.riskId;
         this.$.riskDB.setStoredValue(path, null)
         .then(function() {
-          this.fire("riskAssessmentDeleted");
+          this.fire("openToast", {toastText: "Risk Assessment deleted."});
+          this.$.editModal.close();
+          this.$.dateNotify.deNotify(this.home, this.riskId);
         }.bind(this));
-      },
-
-      goEdit: function() {
-        this.animateEditViewFab();
-        this.pageState = "edit-view";
-        this.$.editView.startAutoValidate();
-      },
-
-      goMulti: function() {
-        this.animateMultiViewFab();
-        this.pageState="multi-view";
-        this.$.editView.stopAutoValidate();
       },
 
       toggleEdit: function() {
         this.inputDisabled = !this.inputDisabled;
       },
 
-      addRisk: function() {
-        this.$.riskDB.path = null;
-        this.$.riskDB.data = {};
-        this.$.addRiskDialog.open();
+      //multi view code
+      _computeQueryCount: function(risk) {
+        if(!this.queryCount) {
+          this.queryCount = 0;
+        };
+        this.queryCount++;
       },
 
-      saveNewRisk: function() {
-
-        var validation = this.validateInputs(this.$.formField);
-        if(validation.invalid) {
-          this.fire("openToast", {toastText: "The following items are missing or invalid: " + validation.invalidInputs});
-        } else {
-          var path = "/homes/" + this.home + "/patients/" + this.patient + "/riskAssessment";
-          this.$.riskDB.save(path, null)
-            .then(function(val) {
-              var riskId = this.$.riskDB.path.split("/").pop();
-              this.$.addRiskDialog.close();
-              this.goEdit();
-              this.fire("newRiskAssessmentSaved", {riskId: riskId});
-              this.fire("openToast",{toastText: "New risk assessment saved."});
-            }.bind(this))
-            .catch(function(error) {
-              this.$.addRiskDialog.close();
-              this.fire("openToast",{toastText: "There was an error saving the new risk: " + error});
-            }.bind(this));
+      _computeRiskImage: function(cat) {
+        switch(cat) {
+          case "Moving & Handling":
+              return "images/risks/movingHandling.png";
+              break;
+          case "Slips & Trips":
+              return "images/risks/slipsTrips.png";
+              break;
+          case "Violence & Agression":
+              return "images/risks/violenceAgression.png";
+              break;
+          case "Falls From Windows & Balconies":
+              return "images/risks/falls.png";
+              break;
+          case "Scalding & Burning":
+              return "images/risks/scaldingBurning.png";
+              break;
+          case "Bedrail Entrapment":
+              return "images/risks/bedrailEntrapment.png";
+              break;
+          case "Legionella":
+              return "images/risks/legionella.png";
+              break;
+          default:
+              return "images/risks/other.png";
+              break;
         };
       },
 
-      cancelNewRisk: function() {
-        this.$.addRiskDialog.close();
-        this.$.riskDB.data = {};
+      _computeDate: function(date) {
+        if(typeof date === "string") {
+          return date.slice(3,15);
+        } else {
+          return "Date not set";
+        };
       },
 
-      finishRisk: function(e) {
-        this.pageState = "multi-view";
-        this.$.riskDB.path = null;
-        this.goMulti();
-
+      toggleEditModal: function(e) {
+        this.$.editModal.positionTarget = e.target;
+        this.riskId = e.model.risk.$key;
+        this.$.editModal.toggle();
       },
 
-      requirementsMet: function(data) {
-        //change case
-        this.$.risksDB.query.on("child_changed", function() {
-          var riskData = this.$.riskDB.data;
-          if(!riskData.date) {
-            this.fire("openToast", {toastText: "Date of risk assessment is reqiured."});
+      directEditModal: function(e) {
+        this.riskId = e.model.risk.$key;
+        this.editRisk();
+      },
+
+      computeDisplayCat: function(risk) {
+        if(risk) {
+          if(risk.indexOf("&") != -1){
+            var arr = risk.split(" & ");
+            arr[0] += " &";
+            return arr;
+          } else if(risk.indexOf("And") != -1){
+            var arr = risk.split(" And ");
+            arr[0] += " &";
+            return arr;
+          } else if(risk.indexOf("and") != -1){
+            var arr = risk.split(" and ");
+            arr[0] += " &";
+            return arr;
+          } else {
+            var arr = [];
+            arr.push(risk);
+            return arr;
           };
-        }.bind(this));
+        } else {
+          return ["No Category", "Set"];
+        };
+      },
+
+      _readMore: function(e) {
+        this.riskId = this.$.domRepeat.modelForElement(e.path[5]).risk.$key;
+        this.fire("editRisk", {riskId:this.riskId});
       }
 
     });

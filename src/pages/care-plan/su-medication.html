@@ -18,7 +18,6 @@
 <link rel="import" href="../../../bower_components/paper-item/paper-item.html" />
 <link rel="import" href="../../../bower_components/iron-icons/communication-icons.html" />
 
-<link rel="import" href="../../elements/guuey-custom-text-input/guuey-custom-text-input.html" />
 <link rel="import" href="../../elements/guuey-time-chunk-selector/guuey-time-chunk-selector.html" />
 <link rel="import" href="../../elements/guuey-weekday-selector/guuey-weekday-selector.html" />
 <link rel="import" href="../../elements/su-header/su-header.html" />
@@ -43,11 +42,11 @@
     </media-queries>
 
     <app-indexeddb-mirror
-      id="assmtMirror"
+      id="usersMirror"
       session="[[userUid]]"
-      key="assmtDB|[[patient]]"
-      data="{{assmtDataLive}}"
-      persisted-data="{{assmtData}}"
+      key="usersDB|[[home]]"
+      data="{{usersDataLive}}"
+      persisted-data="{{usersData}}"
       worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
     </app-indexeddb-mirror>
 
@@ -55,7 +54,7 @@
       id="usersDB"
       app-name="main"
       path="/homes/[[home]]/users"
-      data="{{usersData}}">
+      data="{{usersDataLive}}">
     </firebase-document>
 
     <app-indexeddb-mirror
@@ -238,128 +237,6 @@
 
     </paper-dialog>
 
-    <paper-dialog id="medModal" class="guuey-modal guuey-add-modal">
-
-      <h2>Add Medication</h2>
-
-      <span id="formField">
-        <paper-input
-          class="left-partial"
-          label="Medication Name"
-          value="{{newMed.medicine}}"
-          required
-          auto-validate
-          pattern="[a-zA-Z\s]*"
-          error-message="Please enter a valid medicine name.">
-        </paper-input>
-
-        <vaadin-combo-box
-          class="dialogHalf"
-          allow-custom-status
-          label="Method"
-          value="{{newMed.method}}"
-          items="[[medMethods]]"
-          required
-          auto-validate
-          error-message="Please select a method.">
-        </vaadin-combo-box>
-        <!--need units of meds-->
-        <paper-input
-          class="dialogHalf"
-          label="Dosage"
-          value="{{newMed.dosage}}"
-          required
-          auto-validate
-          pattern="\d{1,4}[a-zA-Z\s]*"
-          error-message="Please enter in the following format: (number) (units).">
-        </paper-input>
-
-        <paper-textarea
-          label="Comments"
-          value="{{newMed.comment}}">
-        </paper-textarea>
-
-        <guuey-time-chunk-selector
-          required
-          name="Time of Day"
-          value="{{newMed.timeChunk}}">
-        </guuey-time-chunk-selector>
-
-        <guuey-weekday-selector
-          required
-          name="Weedays Taken"
-          value="{{newMed.weekdays}}">
-        </guuey-weekday-selector>
-      </span>
-
-      <div class="modal-button-container">
-        <paper-button class="cancel-button" dialog-dismiss>Cancel</paper-button>
-        <paper-button class="confirm-button" on-tap="saveMed">Save</paper-button>
-      </div>
-
-    </paper-dialog>
-
-    <paper-dialog id="editMedModal" class="guuey-modal guuey-view-modal">
-
-      <h2>Edit/View Medication</h2>
-
-      <span id="formField2">
-        <paper-input
-          label="Medication Name"
-          value="{{newMedEdit.medicine}}"
-          required
-          auto-validate
-          pattern="[a-zA-Z\s]*"
-          error-message="Please enter a valid medicine name.">
-        </paper-input>
-
-        <vaadin-combo-box
-          class="dialogHalf"
-          allow-custom-status
-          label="Method"
-          value="{{newMedEdit.method}}"
-          items="[[medMethods]]"
-          required
-          auto-validate
-          error-message="Please select a method.">
-        </vaadin-combo-box>
-        <!--need units of meds-->
-        <paper-input
-          class="dialogHalf"
-          label="dosage"
-          value="{{newMedEdit.dosage}}"
-          required
-          auto-validate
-          pattern="\d{1,4}[a-zA-Z\s]*"
-          error-message="Please enter in the following format: (number) (units).">
-        </paper-input>
-
-        <paper-textarea
-          label="Comments"
-          value="{{newMedEdit.comment}}">
-        </paper-textarea>
-
-        <guuey-time-chunk-selector
-          required
-          name="Time of Day"
-          value="{{newMedEdit.timeChunk}}">
-        </guuey-time-chunk-selector>
-
-        <guuey-weekday-selector
-          required
-          name="Weedays Taken"
-          value="{{newMedEdit.weekdays}}">
-        </guuey-weekday-selector>
-      </span>
-
-      <div class="modal-button-container">
-        <paper-icon-button class="delete-button" icon="icons:delete-forever" on-tap="deleteMed"></paper-icon-button>
-        <paper-button class="cancel-button" dialog-dismiss>Cancel</paper-button>
-        <paper-button class="confirm-button" on-tap="saveEditMed">Save</paper-button>
-      </div>
-
-    </paper-dialog>
-
     <paper-dialog id="editTimeDialog" class="paper-time-picker-dialog">
 
       <paper-time-picker
@@ -371,42 +248,6 @@
         <paper-button dialog-dismiss>Cancel</paper-button>
         <paper-button on-tap="saveEditTime">Save Changes</paper-button>
       </div>
-
-    </paper-dialog>
-
-    <paper-dialog id="medPointModal">
-      <h2>Entry as of [[_computeTimeOfChange(newMedHistory.log.time)]]</h2>
-      <h3>Change Details</h3>
-      <p>
-        Changed by [[_computeUserDisplay(newMedHistory.log, usersData)]] on [[_computeTimeOfChange(newMedHistory.log.time)]]
-      </p>
-
-      <h3>Medication Details</h3>
-      <p>
-        [[newMedHistory.medicine]]
-        <br />
-        [[newMedHistory.method]]
-        <br />
-        [[newMedHistory.dosage]]
-        <br />
-        [[newMedHistory.comments]]
-      </p>
-
-      <p>
-        Times of Day to Take:
-        <template is="dom-repeat" items="[[newMedHistory.timeChunk]]" as="chunk">
-          <br />
-          [[chunk]]
-        </template>
-      </p>
-
-      <p>
-        Weekdays to Take:
-        <template is="dom-repeat" items="[[newMedHistory.weekdays]]" as="day">
-          <br />
-          [[day]]
-        </template>
-      </p>
 
     </paper-dialog>
 
@@ -582,7 +423,7 @@
                   is="dom-repeat"
                   items="{{_computeMedList(medsData, userSettingsData.vcActive)}}"
                   as="med"
-                  filter="_filterMorning"
+                  filter="_filterAfternoon"
                   observe="timeChunk"
                   sort="_sortMeds">
                   <tr class$="[[_computeRowClass(med, userSettingsData.vcActive)]]">
@@ -684,7 +525,7 @@
                   is="dom-repeat"
                   items="{{_computeMedList(medsData, userSettingsData.vcActive)}}"
                   as="med"
-                  filter="_filterMorning"
+                  filter="_filterEvening"
                   observe="timeChunk"
                   sort="_sortMeds">
                   <tr class$="[[_computeRowClass(med, userSettingsData.vcActive)]]">
@@ -786,7 +627,7 @@
                   is="dom-repeat"
                   items="{{_computeMedList(medsData, userSettingsData.vcActive)}}"
                   as="med"
-                  filter="_filterMorning"
+                  filter="_filterNight"
                   observe="timeChunk"
                   sort="_sortMeds">
                   <tr class$="[[_computeRowClass(med, userSettingsData.vcActive)]]">
@@ -952,117 +793,57 @@
         Polymer.carePlanAnimation,
         Polymer.suPrintBehavior,
         Polymer.suResizeBehavior,
-        Polymer.guueyDialogResizeBehavior,
         Polymer.guueyFormValidationBehavior
       ],
 
-      _returnThis: function() {
-        console.log(this.offsetHeight);
-        return this;
-      },
-
       startNewMed: function() {
-        this.$.medModal.toggle();
-      },
+        this.$.medDB.path = null;
+        this.$.medDB.data = {};
+        var path = "homes/" + this.home + "/patients/" + this.patient + "/medicationOutline/medications";
+        this.$.medDB.save(path, null)
+          .then(function() {
+            var medHistoryId = this.$.medDB.path.split('/').pop();
 
-      saveMed: function() {
-        var validation = this.validateInputs(this.$.formField);
-        if(validation.invalid) {
-          this.fire("openToast", {toastText: "The following items are missing or invalid: " + validation.invalidInputs});
-        } else {
-          this.$.medDB.path = null;
-          this.$.medDB.data = {};
-          if(this.newMed.timeChunk && this.newMed.medicine) {
-            var medPath = "homes/" + this.home + "/patients/" + this.patient + "/medicationOutline/medications";
-            this.$.medDB.save(medPath, null)
+            this.$.medDB.save(this.$.medDB.path, null)
               .then(function() {
-                var medId = this.$.medDB.path.split("/").pop();
-                var notifyTarget = this.$.medDB.path.slice(medPath.length + 1);
-                this.$.medDB.data.med = this.newMed;
-                this.$.medDB.data.log = {};
-                this.$.medDB.data.log.user = this.user.uid;
-                this.$.medDB.data.log.time = Date.now();
-                this.$.medDB.save(this.$.medDB.path, null)
-                  .then(function() {
-                    var medItemId = this.$.medDB.path.split("/").pop();
-                    this.fire("newMedSaved", {medId: medId, medItemId: medItemId});
-                    this.newMed = {};
-                    //guuey-notify goes here
-                    this.$.dailyMedNotify.notifyRoute = this.$.medDB.path;
-                    this.$.dailyMedNotify.notifyMessage = this.suBasicInfo.fName + " has medication that is ready to be taken within the hour.";
-                    this.$.dailyMedNotify.notifyTarget = notifyTarget;
-                    this.$.dailyMedNotify.initialize();
-                  }.bind(this));
+                var medItemId = this.$.medDB.path.split('/').pop();
+                var url = '/' + this.home + '/care-plan/su-medication-edit/' + this.patient + '/' + medHistoryId + '$' + medItemId;
+                window.history.pushState({}, null, url);
+                window.dispatchEvent(new CustomEvent('location-changed'));
               }.bind(this));
-            this.$.medModal.toggle();
-          } else {
-            this.fire("openToast",{toastText: "Please make sure that you have set a name and a time of day (morning, afternoon etc) for this new medication."});
-          };
-        };
+          }.bind(this));
       },
 
       viewChanges: function(e) {
         this.newMedHistory = e.model.med;
-        this.$.medPointModal.toggle();
+        this.$.medDB.path = null;
+        this.$.medDB.data = {};
+        var medHistoryId = this.newMedHistory.parent;
+        var medItemId = this.newMedHistory.key;
+        var url = '/' + this.home + '/care-plan/su-medication-history-edit/' + this.patient + '/' + medHistoryId + '$' + medItemId;
+        window.history.pushState({}, null, url);
+        window.dispatchEvent(new CustomEvent('location-changed'));
       },
 
       editMed: function(e) {
         this.newMedEdit = e.model.med;
-        this.$.editMedModal.toggle();
+        this.$.medDB.path = null;
+        this.$.medDB.data = {};
+        var medHistoryId = this.newMedEdit.parent;
+        var medItemId = this.newMedEdit.key;
+        var url = '/' + this.home + '/care-plan/su-medication-edit/' + this.patient + '/' + medHistoryId + '$' + medItemId;
+        window.history.pushState({}, null, url);
+        window.dispatchEvent(new CustomEvent('location-changed'));
       },
 
       saveEditMed: function() {
-
-        var validation = this.validateInputs(this.$.formField2);
-        if(validation.invalid) {
-          this.fire("openToast", {toastText: "The following items are missing or invalid: " + validation.invalidInputs});
-        } else {
-          this.$.medDB.path = null;
-          var editPath = this.newMedEdit.parent;
-          console.log(editPath);
-          console.log(this.newMedEdit);
-          this.newMedEdit.parent = null;
-          this.newMedEdit.newest = null;
-          this.newMedEdit.differences = null;
-          this.$.medDB.data.med = this.newMedEdit;
-          this.$.medDB.data.log = {};
-          this.$.medDB.data.log.user = this.user.uid;
-          this.$.medDB.data.log.time = Date.now();
-          this.$.medDB.save("homes/" + this.home + "/patients/" + this.patient + "/medicationOutline/medications/" + editPath, null)
-            .then(function(med) {
-              var medItemId = this.$.medDB.path.split("/").pop();
-              this.fire("medEditSaved", {medId: editPath, medItemId: medItemId});
-              //guuey notify goes here
-              this.$.dailyMedNotify.notifyRoute = this.$.medDB.path;
-              this.$.dailyMedNotify.notifyMessage = this.suBasicInfo.fName+" has medication that is ready to be taken within the hour.";
-              this.$.dailyMedNotify.notifyTarget = editPath;
-              this.$.dailyMedNotify.initialize();
-            }.bind(this));
-          this.$.editMedModal.toggle();
-          this.newMedEdit = {};
-          this.clearValidation(this.$.formField2);
-        };
-      },
-
-      deleteMed: function() {
         this.$.medDB.path = null;
-        var editPath = this.newMedEdit.parent;
-        this.newMedEdit.parent = null;
-        this.$.medDB.data.med = this.newMedEdit;
-        this.$.medDB.data.med.archived = true;
-        this.$.medDB.data.log = {};
-        this.$.medDB.data.log.user = this.user.uid;
-        this.$.medDB.data.log.time = Date.now();
-        this.$.medDB.save("homes/" + this.home + "/patients/" + this.patient + "/medicationOutline/medications/" + editPath, null)
-          .then(function(med) {
-            var medItemId = this.$.medDB.path.split("/").pop();
-            this.fire("medDeleted", {medId: editPath, medItemId: medItemId});
-            //guuey notify goes here
-            var suffixes = ["morning","afternoon","evening","night"];
-            this.$.dailyMedNotify.deNotify(this.home, editPath, suffixes);
-          }.bind(this));
-        this.$.editMedModal.toggle();
-        this.newMedEdit = {};
+        this.$.medDB.data = {};
+        var medHistoryId = this.newMedEdit.parent;
+        var medItemId = this.newMedEdit.key;
+        var url = '/' + this.home + '/care-plan/su-medication-edit/' + this.patient + '/' + medHistoryId + '$' + medItemId;
+        window.history.pushState({}, null, url);
+        window.dispatchEvent(new CustomEvent('location-changed'));
       },
 
       openTimeChunkOptions: function(e) {
@@ -1093,7 +874,7 @@
         if(item.archived && !this.userSettingsData.vcActive) {
           return false;
         } else {
-          return item.timeChunk.indexOf("morning") != -1;
+          return item.timeChunk.includes("morning");
         };
       },
 
@@ -1101,7 +882,7 @@
         if(item.archived && !this.userSettingsData.vcActive) {
           return false;
         } else {
-          return item.timeChunk.indexOf("afternoon") != -1;
+          return item.timeChunk.includes("afternoon");
         };
       },
 
@@ -1109,7 +890,7 @@
         if(item.archived && !this.userSettingsData.vcActive) {
           return false;
         } else {
-          return item.timeChunk.indexOf("evening") != -1;
+          return item.timeChunk.includes("evening");
         };
       },
 
@@ -1117,7 +898,7 @@
         if(item.archived && !this.userSettingsData.vcActive){
           return false;
         } else {
-          return item.timeChunk.indexOf("night") != -1;
+          return item.timeChunk.includes("night");
         };
       },
 
@@ -1156,6 +937,7 @@
             };
             medCandidate = medCandidate.med;
             medCandidate.parent = x;
+            medCandidate.key = y;
             currentMedList.push(medCandidate);
           };
         };

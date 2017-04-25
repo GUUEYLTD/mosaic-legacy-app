@@ -13,6 +13,7 @@
       observers:[
         "_middleware(page)",
         "_userTypeReady(home, user)",
+        "_checkBottomNav(catData.category, page)"
       ],
 
       properties:{
@@ -38,6 +39,51 @@
         this.addEventListener('dbLoading', this.enableDBLoading);
         this.addEventListener('dbLoaded', this.disableDBLoading);
         this.addEventListener('pageLoaded', this.pageFirstLoad);
+      },
+
+      closeBottomNav: function() {
+        this.$.bottomNav.classList.add('bottom-nav-toggling');
+        setTimeout(function() {
+          this.$.bottomNav.classList.add('bottom-nav-closed');
+          this.$.bottomNav.classList.remove('bottom-nav-toggling');
+
+          this.$.bottomNavTitle.classList.add('bottom-nav-title-toggling');
+          this.$.bottomNavTitle.classList.remove('bottom-nav-title-closed');
+        }.bind(this), 250);
+
+        setTimeout(function() {
+          this.$.bottomNavTitle.classList.remove('bottom-nav-title-toggling');
+        }.bind(this), 500);
+
+      },
+
+      openBottomNav: function() {
+
+        this.$.bottomNavTitle.classList.remove('bottom-nav-title-toggling');
+        setTimeout(function() {
+          this.$.bottomNavTitle.classList.add('bottom-nav-title-closed');
+          this.$.bottomNavTitle.classList.remove('bottom-nav-title-toggling');
+
+          this.$.bottomNav.classList.add('bottom-nav-toggling');
+          this.$.bottomNav.classList.remove('bottom-nav-closed');
+
+        }.bind(this), 250);
+
+        setTimeout(function() {
+          this.$.bottomNav.classList.remove('bottom-nav-toggling');
+        }.bind(this), 500);
+
+      },
+
+      _checkBottomNav: function(category, page) {
+        if(
+            category != 'default'
+            && category != 'admin'
+            && page != 'su-create') {
+          this.openBottomNav();
+        } else {
+          this.closeBottomNav();
+        };
       },
 
       //take in route as string and check against no auth routes
@@ -72,8 +118,9 @@
             var userType = this.currentUserType;
             var cat = this.catData.category;
             var page = this.page;
-            this.set("catData.category", "default");
-            this.set("pageData.page", "def-home");
+            var url = '/' + this.home + '/default/def-home';
+            window.history.pushState({}, null, url);
+            window.dispatchEvent(new CustomEvent('location-changed'));
             this.fire("openToast", {toastText: "That page is for admins only. Returned to default page."});
           }
         };
@@ -159,8 +206,9 @@
       },
 
       errorRedirect: function() {
-        this.set("category", "default");
-        this.set("page", "def-error");
+        var url = '/' + this.home + '/default/def-error';
+        window.history.pushState({}, null, url);
+        window.dispatchEvent(new CustomEvent('location-changed'));
       },
 
       _middleware: function(page) {
@@ -169,7 +217,7 @@
         };
         this.enablePageLoading();
         this.setRightMenuSelect();
-        //this.toggleLoadingDisplay(this.page);
+        this.toggleLoadingDisplay(this.page);
         this.lazyLoadPage(this.page);
         //this.resizeElements();
       },

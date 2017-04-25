@@ -135,6 +135,13 @@ elements contents can also be deleted through the delete button
           type:String,
           notify:true
         },
+        //property used as a way to know whether or not to start the element in edit mode
+        isNew: {
+          type: Boolean,
+          value: false,
+          observer: "_isNewChanged",
+          notify: true
+        },
         //the property that dictates whether or not the label editing fields are shown and the regular label displays are hidden
         editDisabled: {
           type:Boolean,
@@ -151,15 +158,25 @@ elements contents can also be deleted through the delete button
       observers:[
         "_editQuery(query1400)"
       ],
+
+      _isNewChanged: function(isNew) {
+        if(isNew) {
+          this.editDisabled = false;
+        };
+      },
+
       //toggles hiding and revealing of input elements for labels
       toggleEdit:function() {
         this.editDisabled = !this.editDisabled;
+        this.isNew = false;
       },
       //sets the label, label2 and value to null which in turn will set the firebase entry to null, deleting it
       deleteCustom:function() {
         this.value = null;
         this.label = null;
         this.label2 = null;
+        this.isNew = null;
+        console.log(this.isNew);
       },
       //runs when query1400 changes. changes styles.
       _editQuery:function(query1400) {

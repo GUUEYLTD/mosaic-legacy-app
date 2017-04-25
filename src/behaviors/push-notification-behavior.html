@@ -12,7 +12,7 @@
       is:"push-notification-behavior",
 
       properties: {
-        
+
         messagingToken: {
           type: String
         },
@@ -57,11 +57,12 @@
         this.set("deviceNames." + this.user.uid, this.newDevice);
         this.$.messaging.requestPermission()
           .then(function(token) {
-            that.$.messagingTokenDB.setStoredValue(that.$.messagingTokenDB.path, that.$.messaging.token);
-            that.fire("openToast", {toastText: "Push notifications have been setup! You will now receive push notifications."})
-            var path = "/homes/" + that.home + "/users/" + that.user.uid + "/settings/notificationSources/" + that.currentDevice;
-            that.$.userSettingsDB.setStoredValue(path, {deviceLoggedIn: true, active: true});
+            var tokenPath = "/homes/" + that.home + "/users/" + that.user.uid + "/messagingTokens/" + that.newDevice;
+            that.$.messagingTokenDB.setStoredValue(tokenPath, that.$.messaging.token);
+            var sourcesPath = "/homes/" + that.home + "/users/" + that.user.uid + "/settings/notificationSources/" + that.newDevice;
+            that.$.userSettingsDB.setStoredValue(sourcesPath, {deviceLoggedIn: true, active: true});
             that.$.requestNotificationModal.close();
+            that.fire("openToast", {toastText: "Push notifications have been setup! You will now receive push notifications."})
             that.fire('resetDialogOverlay');
           })
           .catch(function(err) {

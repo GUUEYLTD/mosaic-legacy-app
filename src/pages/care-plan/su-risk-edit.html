@@ -1,29 +1,45 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html" />
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html" />
 <link rel="import" href="../../../bower_components/vaadin-combo-box/vaadin-combo-box.html" />
+<link rel="import" href="../../../bower_components/paper-input/paper-input.html" />
+<link rel="import" href="../../../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror.html" />
 
-<!--temp animations till hero animations work-->
-<link rel="import" href="../../../bower_components/neon-animation/animations/scale-up-animation.html" />
-<link rel="import" href="../../../bower_components/neon-animation/animations/scale-down-animation.html" />
-
-<link rel="import" href="../../elements/guuey-text-input/guuey-text-input.html" />
 <link rel="import" href="../../elements/guuey-slider/guuey-slider.html" />
 <link rel="import" href="../../elements/guuey-date-input/guuey-date-input.html" />
 <link rel="import" href="../../elements/media-queries/media-queries.html" />
+<link rel="import" href="../../elements/su-header/su-header.html" />
 
-<link rel="import" href="../../behaviors/multi-edit-animation-behavior.html" />
-<link rel="import" href="../../behaviors/edit-view-resize-behavior.html" />
+<link rel="import" href="../../behaviors/animations/care-plan-animation.html" />
+<link rel="import" href="../../behaviors/su-print-behavior.html" />
+<link rel="import" href="../../behaviors/su-resize-behavior.html" />
 <link rel="import" href="../../behaviors/guuey-form-validation-behavior.html" />
 
 <link rel="import" href="../../styles/common-styles.html" />
 
-<dom-module id="su-risk-edit-view">
+<dom-module id="su-risk-edit">
 
   <template>
 
     <media-queries
       dimensions="{{dimensions}}">
     </media-queries>
+
+    <app-indexeddb-mirror
+      id="riskMirror"
+      session="[[userUid]]"
+      key="riskDB|[[riskId]]|[[patient]]|[[param]]"
+      data="{{riskDataLive}}"
+      persisted-data="{{riskData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
+    <!--db to edit single document that has been selected-->
+    <firebase-document
+      id="riskDB"
+      data="{{riskDataLive}}"
+      app-name="main"
+      path="/homes/[[home]]/patients/[[patient]]/riskAssessment/[[param]]">
+    </firebase-document>
 
     <style include="common-styles">
 
@@ -82,55 +98,66 @@
       }
 
     </style>
-    <paper-card class="editViewCard padded">
+    <paper-card class="pageCard">
 
-      <paper-card image="[[_computeGoalImage(riskData.category)]]" heading="[[riskData.category]]" elevation="3" class="topEditCard">
-        <div class="flexRow guuey-input-validation">
-          <guuey-date-input
-            required
-            auto-validate
-            value="{{riskData.date}}"
-            label="Date of risk assessment">
-          </guuey-date-input>
+      <su-header
+        id="suHeader"
+        page="Risk Assessment (edit)"
+        patient="[[patient]]"
+        home="[[home]]"
+        su-index-data="{{suBasicInfo}}">
+      </su-header>
 
-          <guuey-slider
-            auto-validate
-            required
-            hide-value
-            label="Risk Level"
-            value="{{riskData.riskLevel}}">
-          </guuey-slider>
-        </div>
-      </paper-card>
+      <div class="innerCont padded guuey-input-validation">
 
-      <span class="guuey-input-validation">
+        <vaadin-combo-box
+          auto-validate
+          required
+          label="Category of Risk"
+          items="[[riskTypes]]"
+          value="{{riskData.category}}">
+        </vaadin-combo-box>
 
-        <guuey-text-input
+        <guuey-date-input
+          required
+          auto-validate
+          value="{{riskData.date}}"
+          label="Date of risk assessment">
+        </guuey-date-input>
+
+        <guuey-slider
+          auto-validate
+          required
+          hide-value
+          label="Risk Level"
+          value="{{riskData.riskLevel}}">
+        </guuey-slider>
+
+        <paper-input
           auto-validate
           required
           value="{{riskData.backgroundOfRisk}}"
           label="Background of Risk">
-        </guuey-text-input>
+        </paper-input>
 
-        <guuey-text-input
+        <paper-input
           auto-validate
           required
           value="{{riskData.riskIdentified}}"
           label="Risk Identified">
-        </guuey-text-input>
+        </paper-input>
 
-        <guuey-text-input
+        <paper-input
           auto-validate
           required
           value="{{riskData.crisisPlan}}"
           label="crisis Plan"
           label2="How to Address">
-        </guuey-text-input>
+        </paper-input>
 
         <vaadin-combo-box
           auto-validate
           required
-          class="guttered"
           label="Agreed Frequencey of Evaluation"
           items="[[evalFreq]]"
           value="{{riskData.agreedFrequencyOfEvaluation}}">
@@ -139,7 +166,6 @@
         <guuey-date-input
           auto-validate
           required
-          class="guttered"
           value="{{riskData.evaluation}}"
           label="Date of risk evaluation">
         </guuey-date-input>
@@ -155,7 +181,7 @@
 
     Polymer({
 
-      is:"su-risk-edit-view",
+      is:"su-risk-edit",
 
       properties: {
 
@@ -206,14 +232,19 @@
       },
 
       behaviors: [
-        Polymer.editViewResizeBehavior,
-        //Polymer.multiEditAnimationBehavior
+        Polymer.carePlanAnimation,
+        Polymer.suPrintBehavior,
+        Polymer.suResizeBehavior,
         Polymer.guueyFormValidationBehavior
       ],
 
       observers: [
         "_riskDataChanged(riskData.*)"
       ],
+
+      ready: function() {
+        this.fire('pageLoaded', {page: this.page});
+      },
 
       _computeGoalImage: function(cat) {
         switch(cat) {

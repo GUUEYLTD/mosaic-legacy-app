@@ -1,0 +1,196 @@
+<link rel="import" href="/bower_components/polymer/polymer.html" />
+<link rel="import" href="/bower_components/polymerfire/firebase-document.html" />
+<link rel="import" href="/bower_components/paper-card/paper-card.html" />
+<link rel="import" href="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror.html" />
+
+<link rel="import" href="../../elements/su-header/su-header.html" />
+<link rel="import" href="../../elements/media-queries/media-queries.html" />
+
+<link rel="import" href="../../behaviors/animations/care-plan-animation.html" />
+<link rel="import" href="../../behaviors/su-print-behavior.html" />
+<link rel="import" href="../../behaviors/su-resize-behavior.html" />
+<link rel="import" href="../../behaviors/guuey-form-validation-behavior.html" />
+
+<link rel="import" href="../../styles/common-styles.html" />
+
+<dom-module is="su-medication-history-edit">
+
+  <template>
+
+    <media-queries dimensions="{{dimensions}}"></media-queries>
+
+    <app-indexeddb-mirror
+      id="usersMirror"
+      session="[[userUid]]"
+      key="usersDB|[[home]]"
+      data="{{usersDataLive}}"
+      persisted-data="{{usersData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
+    <firebase-document
+      id="usersDB"
+      app-name="main"
+      path="/homes/[[home]]/users"
+      data="{{usersDataLive}}">
+    </firebase-document>
+
+    <app-indexeddb-mirror
+      id="medHistoryMirror"
+      session="[[userUid]]"
+      key="medHistoryDB|[[home]]|[[patient]]|[[param]]"
+      data="{{medHistoryDataLive}}"
+      persisted-data="{{medHistoryData}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
+    <firebase-document
+      id="medHistoryDB"
+      app-name="main"
+      path="/homes/[[home]]/patients/[[patient]]/medicationOutline/medications/[[medHistoryParam]]/[[medHistoryItemParam]]"
+      data="{{medHistoryDataLive}}">
+    </firebase-document>
+
+    <style include="common-styles">
+
+
+
+    </style>
+
+    <paper-card id="mainCard" class="pageCard" elevation="3">
+      <su-header
+        id="suHeader"
+        page="Personal Profile"
+        patient="[[patient]]"
+        home="[[home]]"
+        setimage
+        su-index-data={{suIndexData}}>
+      </su-header>
+
+      <div class="pageInnerCont padded">
+        <h2>Entry as of [[_computeTimeOfChange(medHistoryData.log.time)]]</h2>
+        <h3>Change Details</h3>
+        <p>
+          Changed by [[_computeUserDisplay(medHistoryData.log, usersData)]] on [[_computeTimeOfChange(medHistoryData.log.time)]]
+        </p>
+
+        <h3>Medication Details</h3>
+        <p>
+          Medication Name: [[medHistoryData.med.medicine]]
+          <br />
+          Medication Method: [[medHistoryData.med.method]]
+          <br />
+          Medication Dosage: [[medHistoryData.med.dosage]]
+          <br />
+          Medication Comments: [[medHistoryData.med.comments]]
+        </p>
+
+        <p>
+          Times of Day to Take:
+          <template is="dom-repeat" items="[[medHistoryData.med.timeChunk]]" as="chunk">
+            <br />
+            [[chunk]]
+          </template>
+        </p>
+
+        <p>
+          Weekdays to Take:
+          <template is="dom-repeat" items="[[medHistoryData.med.weekdays]]" as="day">
+            <br />
+            [[day]]
+          </template>
+        </p>
+      </div>
+
+    </paper-card>
+
+  </template>
+
+  <script>
+
+    Polymer({
+      is: 'su-medication-history-edit',
+
+      properties: {
+        home: {
+          type: String
+        },
+
+        patient: {
+          type: String
+        },
+
+        page: {
+          type: String
+        },
+
+        userUid: {
+          type: String
+        },
+
+        user: {
+          type: Object
+        },
+
+        param: {
+          type: String,
+          observer: '_paramChanged',
+          value: null
+        },
+
+        //taken from 1st after splitting param string into two by '|'
+        medHistoryParam: {
+          type: String,
+          value: null
+        },
+
+        //taken from 2nd after splitting param string into two by '|'
+        medHistoryItemParam: {
+          type: String,
+          value: null
+        }
+      },
+
+      observers: [
+
+      ],
+
+      behaviors: [
+        Polymer.carePlanAnimation,
+        Polymer.suPrintBehavior,
+        Polymer.suResizeBehavior
+      ],
+
+      ready: function() {
+        this.fire('pageLoaded', {page: this.page});
+        console.log('here');
+      },
+
+      _paramChanged: function(param) {
+        if(!param.includes('$') || param.split('$').length > 2) {
+          return;
+        };
+        var subParams = param.split('$');
+        this.set("medHistoryParam", subParams[0]);
+        this.set("medHistoryItemParam", subParams[1]);
+      },
+
+      _computeTimeOfChange: function(time) {
+        var date = new Date(time);
+        return date.toString();
+      },
+
+      _computeUserDisplay: function(log, usersData) {
+        var userObj = usersData[log.user];
+        if(userObj.displayName && userObj.displayName != "undefined undefined") {
+          return userObj.displayName;
+        } else {
+          return userObj.email ? userObj.email : userObj.user;
+        };
+      }
+
+    });
+
+  </script>
+
+</dom-module>

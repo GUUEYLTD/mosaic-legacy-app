@@ -27,6 +27,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       padding:0;
       margin:0;
     }
+
+    .back-button-disabled {
+      opacity: .3;
+      transition: all .5s;
+    }
+
     .drawer-list a {
       display: block;
       line-height: 40px;
@@ -172,7 +178,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       justify-content: center;
       display:none;
       display:var(--db-loading-display);
-      z-index:6;
+      z-index:999;
       color:#FFF;
       font-style:italic;
 
@@ -188,16 +194,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       display:var(--login-overlay-display);
     }
     .mainProgress{
-      position:fixed;
-      top:0;
-      left:0;
+      position: fixed;
+      top: 0;
+      left: 0;
       width:100%;
       --paper-progress-indeterminate-cycle-duration: 15s;
       --paper-progress-container-color: transparent;
       --paper-progress-active-color: transparent;
       --paper-progress-active-color:var(--page-loading-active-color);
-
-      display:inherit;
+      z-index: 999;
     }
     .searchInput{
       border-radius:20px;
@@ -379,10 +384,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       position:relative;
       max-height:80%;
     }
+    #appsDialog:focus {
+      outline: none;
+    }
     #notifyDialog{
       max-width:100%;
       max-height:80%;
       margin-top:20px;
+    }
+    #notifyDialog:focus {
+      outline: none;
     }
     #notifyDialogScroll{
       margin:0;
@@ -391,6 +402,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
     #logoutDialog{
       max-height:80%;
+    }
+    #logoutDialog:focus {
+      outline: none;
     }
     #lockedDialog{
       width:300px;
@@ -454,55 +468,72 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
     }
 
-    .top-nav {
-      z-index: 999;
+    .bottom-nav-container {
+      width: 100%;
     }
 
     .bottom-nav {
-      transition: all 0.5s ease;
-      z-index: 999;
+      transition: all .25s ease;
+    }
+
+    .bottom-nav-toggling {
+      opacity:0;
     }
 
     .bottom-nav-closed {
-      opacity:0;
-      height:0px;
-      z-index:0;
+      display: none;
     }
+
+    .bottom-nav-title {
+      height: 48px;
+      width: 100%;
+      transition: all .25s ease;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+
+    .bottom-nav-title iron-icon {
+      height: 25px;
+      width: 25px;
+      padding: 4px;
+    }
+
+    .bottom-nav-title p {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .bottom-nav-title-toggling {
+      opacity:0;
+    }
+
+    .bottom-nav-title-closed {
+      display: none;
+    }
+
 
     #subMenuDialog {
       margin: 0px;
-      background-color: #3d4ba8;
+
     }
 
     #subMenuDialog paper-listbox {
-      background-color: #3d4ba8;
+      padding-left: 0;
+      padding-right: 0;
+      margin-top: 0px;
+      margin-bottom: 0px;
     }
 
     .sub-menu-item {
       transition: all 0.5s ease;
-      background-color: #3d4ba8;
-      color: rgb(255, 255, 255);
       text-transform: capitalize;
-    }
-
-    .sub-menu-item.iron-selected {
-      border-bottom: 2px solid #e51561;
-      color: #fff;
     }
 
     .sub-header-menu {
       border-bottom: none;
-    }
-
-    .sub-header-menu-selected::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      right: 0;
-      left: 0;
-      height: 2px;
-      width: 100%;
-      background-color: #e51561;
     }
 
     .overflow-selected {
@@ -518,6 +549,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       bottom: 0;
       left: 0;
       z-index: 3;
+    }
+
+    app-toolbar > paper-tabs{
+      height: 64px;
+    }
+
+    paper-tabs {
+      --paper-tabs-selection-bar: {
+        height: 3px;
+      };
+    }
+
+    paper-tab {
+      --paper-tab-content: {
+        font-weight: 900;
+        font-size: 15px;
+      };
     }
 
     </style>

@@ -53,7 +53,7 @@
             this.setDefaultContent(input);
           }.bind(this));
         }.bind(this));
-        
+
         this.set("pageAttached", true);
       },
 
@@ -131,7 +131,10 @@
       },
 
       setDefaultContent: function(input) {
-          input.value = input.name || input.label;
+          if(input.tagName.toLowerCase() != 'guuey-weekday-selector' && input.tagName.toLowerCase() != 'guuey-time-chunk-selector') {
+            input.value = input.name || input.label;
+          };
+
       },
 
       setValueListener: function(input) {
@@ -187,7 +190,7 @@
             this.fire('openToast', {toastText: toastMessage});
           } else {
             this.fire('closeToast');
-            this.autoValidateValid = true;
+            this.set("autoValidateValid", true);
           };
         }
       },

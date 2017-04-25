@@ -313,10 +313,17 @@
       route="[[pageRoute]]"
       pattern="/:page"
       data="{{pageData}}"
-      tail="{{paramRoute}}">
+      tail="{{patientRoute}}">
     </app-route>
 
     <!--final param for multi use (patientid, careworkerid etc...)-->
+    <app-route
+      route="[[patientRoute]]"
+      pattern="/:patient"
+      data="{{patientData}}"
+      tail="{{paramRoute}}">
+    </app-route>
+
     <app-route
       route="[[paramRoute]]"
       pattern="/:param"
@@ -359,7 +366,7 @@
         <a class="inherit" name="def-policies" style="text-decoration: none;" tabindex="-1" href="/[[home]]/default/def-terms"><paper-item>Policies</paper-item><a>
         <a class="inherit" name="su-incidents" style="text-decoration: none;" tabindex="-1" href="/[[home]]/default/def-terms"><paper-item>Incident Reporting</paper-item><a>
         <a class="inherit" name="ad-support" style="text-decoration: none;" tabindex="-1" href="/[[home]]/admin/ad-support"><paper-item>Support</paper-item><a>
-        <guuey-bug-report home="[[home]]" page="[[page]]" patient="[[param]]" user="[[user]]"></guuey-bug-report>
+        <guuey-bug-report home="[[home]]" page="[[page]]" patient="[[patient]]" user="[[user]]"></guuey-bug-report>
       </paper-listbox>
     </paper-dialog>
 
@@ -511,7 +518,7 @@
       exit-animation="fade-out-animation">
       <paper-listbox attr-for-selected="name" selected="[[page]]">
         <template is="dom-repeat" items="[[subMenuItems]]" as="subItem">
-          <paper-item on-tap="closeSubMenuDialog" class="nav-tabs sub-menu-item" link name="[[subItem.name]]"><a class="sub-menu-href" tabindex="-1" href="/[[home]]/care-plan/[[subItem.name]]/[[param]]">[[subItem.display]]<a></paper-item>
+          <paper-item on-tap="closeSubMenuDialog" class="nav-tabs sub-menu-item" link name="[[subItem.name]]"><a class="sub-menu-href" tabindex="-1" href="/[[home]]/care-plan/[[subItem.name]]/[[patient]]">[[subItem.display]]<a></paper-item>
         </template>
       </paper-listbox>
     </paper-dialog>
@@ -537,13 +544,14 @@
     </div>
     <div class="loginOverlay"></div>
 
-    <app-drawer-layout responsive-width="1023px" fullbleed id="appDrawerLayout">
+    <paper-progress class="mainProgress" indeterminate></paper-progress>
+
+    <app-drawer-layout fullbleed id="appDrawerLayout">
 
       <!--admin drawer that contains admin account info and functions-->
       <admin-drawer
         id="adminDrawer"
         home="[[home]]"
-        admin="[[param]]"
         image="[[user.photoURL]]"
         email="[[user.email]]"
         user-type="[[currentUserType]]"
@@ -554,18 +562,16 @@
 
       <app-header-layout fullbleed>
 
-        <app-header id="appHeader" fixed condenses reveals effects="waterfall">
+        <app-header id="appHeader" fixed condenses>
 
           <app-toolbar id="topNav" class="top-nav">
 
             <paper-icon-button class="nav-icon-button" icon="menu" on-tap="toggleDrawer"></paper-icon-button>
 
-            <div main-title>
-
-            </div>
+            <div main-title></div>
 
             <paper-tabs attr-for-selected="name" selected="{{rightMenuSelect}}">
-              <paper-tab link name="home"><a class="menu-link" href="/[[home]]/default/def-home"><iron-icon icon="icons:home"></iron-icon></a></paper-tab>
+              <paper-tab class$="[[_computeBackButtonClass(page)]]" name="back" disabled="[[_atHome(page)]]" on-tap="goBack"><iron-icon icon="icons:arrow-back"></iron-icon></paper-tab>
               <paper-tab name="search" on-tap="openSearch"><iron-icon icon="icons:search"></iron-icon></paper-tab>
               <paper-tab id="appButton" name="apps" on-tap="openApps"><iron-icon icon="icons:apps"></iron-icon></paper-tab>
               <paper-tab  id="notifyButton" name="notify" on-tap="openNotifications">
@@ -577,21 +583,27 @@
             </paper-tabs>
 
           </app-toolbar>
-          <app-toolbar sticky id="bottomNav" class="bottom-nav bottom-nav-closed">
 
+          <app-toolbar sticky class="bottom-nav-container">
             <paper-tabs
-              bottom-item
+              style="width:100%;"
+              id="bottomNav"
+              class="bottom-nav bottom-nav-closed"
               attr-for-selected="name"
               selected="[[page]]"
               scrollable>
               <paper-tab class$="[[_computeSubSelected('profile', page)]]" id="profile" name="profile" on-tap="openProfileSub">PROFILE</paper-tab>
               <paper-tab class$="[[_computeSubSelected('care', page)]]" id="care" name="care" on-tap="openProfileSub">CARE</paper-tab>
               <paper-tab class$="[[_computeSubSelected('reports', page)]]" id="reports" name="reports" on-tap="openProfileSub">REPORTS</paper-tab>
-              <paper-tab on-tap="closeSubMenuDialog" class="nav-tabs" link name="su-medication"><a class="menu-link" tabindex="-1" href="/[[home]]/care-plan/su-medication/[[param]]">Medication Outline</a></paper-tab>
-              <paper-tab on-tap="closeSubMenuDialog" class="nav-tabs" link name="su-risk"><a class="menu-link" tabindex="-1" href="/[[home]]/care-plan/su-risk/[[param]]">Risk Assessment</a></paper-tab>
-              <paper-tab on-tap="closeSubMenuDialog" class="nav-tabs" link name="su-goals"><a class="menu-link" tabindex="-1" href="/[[home]]/care-plan/su-goals/[[param]]">Personal Goals</a></paper-tab>
+              <paper-tab on-tap="closeSubMenuDialog" class="nav-tabs" link name="su-medication"><a class="menu-link" tabindex="-1" href="/[[home]]/care-plan/su-medication/[[patient]]">Medication</a></paper-tab>
+              <paper-tab on-tap="closeSubMenuDialog" class="nav-tabs" link name="su-risk"><a class="menu-link" tabindex="-1" href="/[[home]]/care-plan/su-risk/[[patient]]">Risk Assessment</a></paper-tab>
+              <paper-tab on-tap="closeSubMenuDialog" class="nav-tabs" link name="su-goals"><a class="menu-link" tabindex="-1" href="/[[home]]/care-plan/su-goals/[[patient]]">Personal Goals</a></paper-tab>
             </paper-tabs>
-            <paper-progress class="mainProgress" indeterminate></paper-progress>
+
+            <div id="bottomNavTitle" class="bottom-nav-title">
+              <iron-icon icon="custom:logo"></iron-icon>
+              <p>Mosaic Care</p>
+            </div>
           </app-toolbar>
         </app-header>
 
@@ -659,7 +671,7 @@
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            patient="[[param]]"
+            patient="[[patient]]"
             home="[[home]]"
             name="su-home">
           </su-home>
@@ -669,7 +681,7 @@
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            patient="[[param]]"
+            patient="[[patient]]"
             home="[[home]]"
             name="su-profile">
           </su-profile>
@@ -679,20 +691,35 @@
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            patient="[[param]]"
+            patient="[[patient]]"
             home="[[home]]"
             name="su-care">
           </su-care>
           <su-goals
+            user="[[user]]"
             user-uid="[[userUid]]"
             current-page="[[currentPage]]"
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
-            page="[[page]]"
-            patient="[[param]]"
+            page="{{page}}"
+            patient="[[patient]]"
             home="[[home]]"
-            name="su-goals">
+            name="su-goals"
+            param="{{param}}">
           </su-goals>
+
+          <su-goals-edit
+            user="[[user]]"
+            user-uid="[[userUid]]"
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="{{page}}"
+            patient="[[patient]]"
+            home="[[home]]"
+            name="su-goals-edit"
+            param="{{param}}">
+          </su-goals-edit>
           <!--add in user in order to log the uid for version control and logging-->
           <su-uploads
             user-uid="[[userUid]]"
@@ -700,7 +727,7 @@
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            patient="[[param]]"
+            patient="[[patient]]"
             home="[[home]]"
             user="{{user}}"
             name="su-uploads">
@@ -712,19 +739,46 @@
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            patient="[[param]]"
+            patient="[[patient]]"
             home="[[home]]"
             user="{{user}}"
             name="su-medication"
-            user-settings-data="[[userSettingsData]]">
+            user-settings-data="[[userSettingsData]]"
+            param="[[param]]">
           </su-medication>
+          <su-medication-edit
+            user-uid="[[userUid]]"
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            patient="[[patient]]"
+            home="[[home]]"
+            user="{{user}}"
+            name="su-medication-edit"
+            param="[[param]]">
+          </su-medication-edit>
+
+          <su-medication-history-edit
+            user-uid="[[userUid]]"
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            patient="[[patient]]"
+            home="[[home]]"
+            user="{{user}}"
+            name="su-medication-history-edit"
+            param="[[param]]">
+          </su-medication-history-edit>
+
           <su-pre
             user-uid="[[userUid]]"
             current-page="[[currentPage]]"
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            patient="[[param]]"
+            patient="[[patient]]"
             home="[[home]]"
             name="su-pre">
           </su-pre>
@@ -735,18 +789,29 @@
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            patient="[[param]]"
+            patient="[[patient]]"
             home="[[home]]"
-            user="{{user}}"
-            name="su-risk">
+            name="su-risk"
+            param="[[param]]">
           </su-risk>
+          <su-risk-edit
+            user-uid="[[userUid]]"
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            patient="[[patient]]"
+            home="[[home]]"
+            name="su-risk-edit"
+            param="[[param]]">
+          </su-risk-edit>
           <su-create
             user-uid="[[userUid]]"
             current-page="[[currentPage]]"
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            patient="[[param]]"
+            patient="[[patient]]"
             home="[[home]]"
             name="su-create">
           </su-create>
@@ -756,17 +821,30 @@
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            patient="[[param]]"
+            patient="[[patient]]"
             home="[[home]]"
-            name="su-care-review">
+            name="su-care-review"
+            param="[[param]]">
           </su-care-review>
+          <su-care-review-edit
+            user="[[user]]"
+            user-uid="[[userUid]]"
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="{{page}}"
+            patient="[[patient]]"
+            home="[[home]]"
+            name="su-care-review-edit"
+            param="{{param}}">
+          </su-care-review-edit>
           <su-reports
             user-uid="[[userUid]]"
             current-page="[[currentPage]]"
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            patient="[[param]]"
+            patient="[[patient]]"
             home="[[home]]"
             name="su-reports">
           </su-reports>
@@ -776,7 +854,7 @@
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            patient="[[param]]"
+            patient="[[patient]]"
             home="[[home]]"
             name="su-monthly-reports">
           </su-monthly-reports>
@@ -786,7 +864,7 @@
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            patient="[[param]]"
+            patient="[[patient]]"
             home="[[home]]"
             name="su-view-reports">
           </su-view-reports>
@@ -797,7 +875,6 @@
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            admin-id="[[param]]"
             home="[[home]]"
             name="ad-dash">
           </ad-dash>
@@ -807,7 +884,6 @@
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            admin-id="[[param]]"
             home="[[home]]"
             name="ad-profile">
           </ad-profile>
@@ -818,7 +894,6 @@
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            admin-id="[[param]]"
             home="[[home]]"
             name="ad-payment">
           </ad-payment>
@@ -829,18 +904,28 @@
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            admin-id="[[param]]"
             user={{user}}
             home="[[home]]"
             name="ad-users">
           </ad-users>
+          <ad-users-edit
+            user="[[user]]"
+            user-uid="[[userUid]]"
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="[[page]]"
+            user={{user}}
+            home="[[home]]"
+            name="ad-users-edit"
+            param="[[param]]">
+          </ad-users-edit>
           <ad-settings
             user-uid="[[userUid]]"
             current-page="[[currentPage]]"
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            admin-id="[[param]]"
             home="[[home]]"
             name="ad-settings">
           </ad-settings>
@@ -850,7 +935,6 @@
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            admin-id="[[param]]"
             home="[[home]]"
             name="ad-support">
           </ad-support>
@@ -860,7 +944,6 @@
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            admin-id="[[param]]"
             home="[[home]]"
             name="ad-reports">
           </ad-reports>
@@ -872,10 +955,37 @@
             current-cat="[[currentCat]]"
             intended-cat="[[intendedCat]]"
             page="[[page]]"
-            patient="[[param]]"
+            patient="[[patient]]"
             home="[[home]]"
             name="test-test">
           </test-test>
+
+          <test-main
+            user="[[user]]"
+            user-uid="[[userUid]]"
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="{{page}}"
+            patient="[[patient]]"
+            home="[[home]]"
+            name="test-main"
+            param="{{param}}">
+          </test-main>
+
+          <test-edit
+            user="[[user]]"
+            user-uid="[[userUid]]"
+            current-page="[[currentPage]]"
+            current-cat="[[currentCat]]"
+            intended-cat="[[intendedCat]]"
+            page="{{page}}"
+            patient="[[patient]]"
+            home="[[home]]"
+            name="test-edit"
+            param="{{param}}">
+          </test-edit>
+
         </neon-animated-pages>
 
       </app-header-layout>
@@ -941,10 +1051,15 @@
           reflectToAttribute: true,
         },
 
-        param: {
+        patient: {
           type: String,
           reflectToAttribute: true,
-          observer: '_paramChanged'
+          observer: '_patientChanged'
+        },
+
+        param: {
+          type: String,
+          reflectToAttribute: true
         },
 
         login: {
@@ -1013,7 +1128,8 @@
         '_homeRouteChanged(homeData.home)',
         '_catRouteChanged(catData.category)',
         '_pageRouteChanged(pageData.page)',
-        '_paramRouteChanged(paramData.param)',
+        '_patientRouteChanged(patientData.patient)',
+        '_paramRouteChanged(paramData.param)'
       ],
 
       behaviors: [
@@ -1029,14 +1145,23 @@
       ready:function(){
         this.addEventListener('openToast', this.openToast);
         this.addEventListener('closeToast', this.closeToast);
-        this.addEventListener('openDrawer', this.openDrawer);
         this.addEventListener('app-drawer-transitioned', this.resizeDrawerImage);
         this.addEventListener("resize", this.resizeElements);
+        this.addEventListener("openBottomNav", this.openBottomNav);
+        this.addEventListener("closeBottomNav", this.closeBottomNav);
         //this.$.storage._downloadFile(this.$.storage.path);
       },
 
       attached:function(){
         this.resizeElements();
+      },
+
+      _atHome: function(page) {
+        return page === 'def-home';
+      },
+
+      _computeBackButtonClass: function(page) {
+        return page === 'def-home' ? 'back-button-disabled' : '';
       },
 
       openOverflow: function(e) {
@@ -1172,16 +1297,15 @@
 
       _catRouteChanged:function(category){
         this.category = category || 'default';
-        if(category != 'default' && category != 'admin') {
-          this.$.bottomNav.classList.remove('bottom-nav-closed');
-        } else {
-          this.$.bottomNav.classList.add('bottom-nav-closed');
-        };
       },
 
       _pageRouteChanged:function(page) {
           this.currentPage = this.selected;
           this.page = page || 'def-home';
+      },
+
+      _patientRouteChanged: function(patient) {
+        this.patient = patient || '';
       },
 
       _paramRouteChanged:function(param){
@@ -1192,8 +1316,8 @@
         if(home != 'default'){
           this.home = this.homeData.home;
           this.$.settingsDB.path = "/homes/" + this.home + "/settings";
+          this._ensureHomeSettingsSet();
         };
-        //lockout of dev server for beta tester
       },
 
       _catChanged:function(cat){
@@ -1204,9 +1328,9 @@
         }
       },
 
-      _paramChanged:function(param){
-        this.param=this.paramData.param || '';
-        this.searchVal="";
+      _patientChanged: function() {
+        this.patient = this.patientData.patient || '';
+        this.searchVal = "";
       },
 
       toggleDrawer:function(){
@@ -1218,22 +1342,28 @@
 
       },
 
-      _patientSelected:function(category, param){
-        if((this.category==="care-plan" || "test") && this.param){
+      _patientSelected:function(category, patient){
+        if((this.category==="care-plan" || "test") && this.patient){
           return true;
         } else {
           return false;
         };
       },
 
-      goHome:function(){
-        this.set("catData.category", "default");
-        this.set("pageData.page", "def-home");
-        //window.location="/"+this.home+"/default/def-home";
-      },
-
       goBack:function(){
-        window.history.back();
+        var isEdit = this.page.split('-').pop() === 'edit';
+        var homeUrl = '/' + this.home + '/default/' + 'def-home';
+        if(this.page === 'def-error') {
+          window.history.go(-2);
+        } else if(isEdit){
+          window.history.back();
+        } else {
+          window.history.pushState({}, null, homeUrl);
+          window.dispatchEvent(new CustomEvent('location-changed'));
+        };
+
+        window.history.pushState({}, null, window.location.href);
+        window.dispatchEvent(new CustomEvent('location-changed'));
       },
 
       _computeDrawerHidden:function(page){

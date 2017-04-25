@@ -207,7 +207,8 @@
           <guuey-custom-text-input
             value="{{custom.info}}"
             label="{{custom.label}}"
-            label2="{{custom.label2}}">
+            label2="{{custom.label2}}"
+            is-new="{{custom.isNew}}">
           </guuey-custom-text-input>
         </template>
 
@@ -540,34 +541,9 @@
       createNewSection: function() {
         this.$.customInput.path = null;
         this.$.customInput.data = {};
-        this.$.customSectionModal.open();
-      },
-
-      saveNewSection: function() {
-        var validation = this.validateInputs(this.$.formField);
-        if(validation.invalid) {
-          this.fire("openToast", {toastText: "The following items are missing or invalid: " + validation.invalidInputs});
-        } else {
-          var path = "/homes/" + this.home + "/patients/" + this.patient + "/carePlan/custom"
-          this.$.customInput.save(path, null)
-            .then(function() {
-              this.$.customSectionModal.close();
-              this.fire("openToast", {toastText: "New custom section saved."});
-              var key = this.$.customInput.path.split("/").pop();
-              this.clearValidation(this.$.formField);
-              this.fire("customSectionCreated", {key: key});
-            }.bind(this))
-            .catch(function(error) {
-              this.$.customSectionModal.close();
-              this.fire("openToast", {toastText :"There was an error saving your custom section: " + error});
-            });
-        };
-      },
-
-      cancelNewSection: function() {
-        this.$.customInput.path = null;
-        this.$.customInput.data = {};
-        this.$.customSectionModal.close();
+        var path = "/homes/" + this.home + "/patients/" + this.patient + "/carePlan/custom";
+        this.$.customInput.data = {isNew: true};
+        this.$.customInput.save(path, null);
       },
 
       _requirementsMet: function(data) {

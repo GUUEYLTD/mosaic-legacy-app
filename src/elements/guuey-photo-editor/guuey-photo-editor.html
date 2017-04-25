@@ -50,6 +50,10 @@ optional cropHeight and cropWidth properties to set the crop dimensions
         80px 80px,
         80px 80px;
       }
+
+      :host:focus {
+        outline: none;
+      }
       #imageContainer {
         margin:0;
         padding:0;
@@ -310,7 +314,7 @@ optional cropHeight and cropWidth properties to set the crop dimensions
         Polymer.PaperDialogBehavior
       ],
 
-      ready:function() {
+      attached: function() {
         //update display for images with min/max values
         this.setMinMax();
 
@@ -390,27 +394,26 @@ optional cropHeight and cropWidth properties to set the crop dimensions
       _inputChanged:function(e) {
         var reader = new FileReader();
         var file = e.target.files[0];
-        reader.readAsDataURL(file);
         reader.addEventListener("load", function () {
-          this.$.image.src = reader.result;
-          var width = this.$.image.naturalWidth;
-          var height = this.$.image.naturalHeight;
-          //check dimensions of image. if too large then scale down to max dimension settings
-          if(width > this.maxWidth || height > this.maxHeight){
-            var scaleTarget = width > height ? width : height;
-            var scaleDimension = width > height ? "maxWidth" : "maxHeight";
-            var scaleAmount = this[scaleDimension] / scaleTarget;
-            this.canvas.width = width * scaleAmount;
-            this.canvas.height = height * scaleAmount;
+          var img =  new Image;
+          img.addEventListener("load", function() {
+            this.canvas.width = img.naturalWidth;
+            this.canvas.height = img.naturalHeight;
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            this.ctx.drawImage(this.$.image, 0, 0, width, height, 0, 0, width * scaleAmount, height * scaleAmount);
+            this.ctx.drawImage(img, 0, 0);
             this.$.image.src = this.canvas.toDataURL("image/png");
-          };
-          this.orig.src = this.$.image.src;
-          this.alt.src = "";
-          this.rotated = false;
-          this.cropped = false;
+            this.alt.src = "";
+            this.rotated = false;
+            this.cropped = false;
+            this.orig.src = img.src;
+            URL.revokeObjectURL(img.src);
+          }.bind(this));
+
+          img.src = reader.result;
+
         }.bind(this), false);
+
+        reader.readAsDataURL(file);
       },
       //create rotate configs based on this.$.imageContainer x:translateX y:translateY r: rotate 90 degrees right
       rotateRight:function() {

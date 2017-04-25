@@ -1,0 +1,328 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html" />
+<link rel="import" href="../../../bower_components/polymerfire/firebase-document.html" />
+<link rel="import" href="../../../bower_components/polymerfire/firebase-query.html" />
+<link rel="import" href="../../../bower_components/polymerfire/firebase-app.html" />
+<link rel="import" href="../../../bower_components/polymerfire/firebase-auth.html" />
+<link rel="import" href="../../../bower_components/paper-card/paper-card.html" />
+<link rel="import" href="../../../bower_components/paper-fab/paper-fab.html" />
+<link rel="import" href="../../../bower_components/paper-dialog/paper-dialog.html" />
+<link rel="import" href="../../../bower_components/paper-input/paper-input.html" />
+<link rel="import" href="../../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html" />
+<link rel="import" href="../../../bower_components/paper-listbox/paper-listbox.html" />
+<link rel="import" href="../../../bower_components/paper-item/paper-item.html" />
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html" />
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html" />
+<link rel="import" href="../../../bower_components/iron-image/iron-image.html" />
+<link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html" />
+
+<link rel="import" href="../../elements/admin-header/admin-header.html" />
+<link rel="import" href="../../elements/media-queries/media-queries.html" />
+
+<link rel="import" href="../../behaviors/animations/admin-pages-animation.html" />
+<link rel="import" href="../../behaviors/admin-resize-behavior.html" />
+<link rel="import" href="../../behaviors/guuey-form-validation-behavior.html" />
+
+<link rel="import" href="../../styles/common-styles.html" />
+
+<dom-module id="ad-users-edit">
+
+<template>
+
+  <media-queries
+    dimensions="{{dimensions}}">
+  </media-queries>
+
+  <firebase-app
+    name="user2"
+    auth-domain="mosaic-care-5cea8.firebaseapp.com"
+    database-url="https://mosaic-care-5cea8.firebaseio.com"
+    api-key="AIzaSyCQDIr1UXMVtl1n-6kYKv_VEPTGTk11QLI">
+  </firebase-app>
+
+  <firebase-auth
+    id="createUser"
+    app-name="user2"
+    user="{{newUser}}">
+  </firebase-auth>
+
+  <firebase-document
+    id="userDB"
+    app-name="main"
+    path="/homes/[[home]]/users/[[param]]"
+    data="{{userData}}">
+  </firebase-document>
+
+  <app-indexeddb-mirror
+    id="suIndexMirror"
+    session="[[userUid]]"
+    key="suIndexDB"
+    data="{{susDataLive}}"
+    persisted-data="{{susData}}"
+    worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+  </app-indexeddb-mirror>
+
+  <firebase-query
+    id="suIndexDB"
+    path="/homes/[[home]]/patients/suIndex"
+    data="{{susDataLive}}"
+    app-name="main">
+  </firebase-query>
+
+  <firebase-document
+    id="userIndexDB"
+    app-name="main">
+  </firebase-document>
+
+  <style include="common-styles">
+
+  </style>
+
+  <paper-card class="pageCard" elevation="3">
+    <admin-header
+      page="Users"
+      icon="social:group">
+    </admin-header>
+
+    <div class="pageInnerCont padded">
+
+      <paper-fab
+        id="mainFab"
+        class="save-fab"
+        icon="icons:save"
+        on-tap="createNewUser">
+      </paper-fab>
+
+      <h2>Add A Care Worker or Manager</h2>
+
+        <paper-input
+          disabled$="{{!isNewUser}}"
+          label="Display Name"
+          value="{{newAccount.fName}}"
+          required
+          pattern="[a-zA-Z\s]*"
+          error-message="Please enter a valid name with no special characters.">
+        </paper-input>
+
+        <paper-input
+          disabled$="{{!isNewUser}}"
+          label="Surname"
+          value="{{newAccount.lName}}"
+          required
+          pattern="[a-zA-Z\s]*"
+          error-message="Please enter a valid surname with no special characters.">
+        </paper-input>
+
+        <paper-input
+          disabled$="{{!isNewUser}}"
+          label="Username/Email"
+          value="{{newAccount.username}}"
+          required
+          type="email"
+          error-message="Please enter a valid email address as the username.">
+        </paper-input>
+
+        <paper-dropdown-menu
+          label="Role"
+          class="dialogHalf"
+          required>
+          <paper-listbox attr-for-selected="value" selected="{{newAccount.role}}" class="dropdown-content">
+            <paper-item value="manager">Manager</paper-item>
+            <paper-item value="careWorker">Care Worker</paper-item>
+          </paper-listbox>
+        </paper-dropdown-menu>
+
+        <paper-dropdown-menu
+          label="Service Users Supervised">
+          <paper-listbox multi attr-for-selected="value" selected-values="{{newAccount.patients}}" class="dropdown-content">
+            <template is="dom-repeat" items="{{susData}}">
+              <paper-item value="{{item.$key}}">{{item.lName}}, {{item.fName}}</paper-item>
+            </template>
+          </paper-listbox>
+        </paper-dropdown-menu>
+
+    </div>
+
+  </paper-card>
+
+</template>
+
+<script>
+
+  Polymer({
+    is: 'ad-users-edit',
+
+    properties: {
+
+      user: {
+        type: Object
+      },
+
+      home: {
+        type: String
+      },
+
+      param: {
+        type: String
+      },
+
+      newAccount: {
+        type: Object,
+        value: {
+          username: "",
+          password: "",
+          role: "",
+        }
+      },
+
+      isNewUser: {
+        type: Boolean,
+        value: false
+      },
+
+      readySet: {
+        type: Boolean,
+        value: false
+      }
+    },
+
+    observers: [
+      '_toggleDataListeners(param, readySet)'
+    ],
+
+    behaviors: [
+      Polymer.adminPagesAnimation,
+      Polymer.adminResizeBehavior,
+      Polymer.guueyFormValidationBehavior
+    ],
+
+    _toggleDataListeners: function(param, readySet) {
+      if(param && readySet) {
+        this.$.userDB.ref.on('value', this.initUserCase.bind(this));
+      } else {
+        this.isNewUser = true;
+      };
+    },
+
+    ready: function() {
+      this.fire('pageLoaded', {page: this.page});
+      //this.readySet = true;
+    },
+
+    attached: function() {
+      this.readySet = true;
+    },
+
+    goBackToParent: function() {
+      var url = '/' + this.home + '/admin/ad-users';
+      window.history.pushState({}, null, url);
+      window.dispatchEvent(new CustomEvent('location-changed'));
+    },
+
+    initUserCase: function(userData) {
+      this.isNewUser = this.$.userDB.valueIsEmpty(userData.val()) ? true : false;
+      var user = this.$.userDB.valueIsEmpty(userData.val()) ? {} : userData.val();
+      console.log(user);
+      this.set("newAccount", user);
+      this.set("newAccount.username", user.email);
+      this.set("newAccount.fName", user.displayName.split(" ")[0]);
+      this.set("newAccount.lName", user.displayName.split(" ")[1]);
+    },
+
+    //from main file
+    createNewUser: function() {
+      if(!this.isNewUser) {
+        return this.goBackToParent();
+      };
+      var validation = this.validateInputs(this.$.formField);
+      if(validation.invalid) {
+        this.fire("openToast", {toastText: "The following items are missing or invalid: " + validation.invalidInputs})
+      } else {
+        var password = this.makePass();
+        var that = this;
+        this.$.createUser.createUserWithEmailAndPassword(that.newAccount.username, password)
+          .then(function(user) {
+            user.updateProfile({
+              displayName: that.newAccount.fName + " " + that.newAccount.lName
+            }).then(function() {
+              that.fire("openToast",{toastText: "New User display name updated."});
+            }, function(error) {
+              that.fire("openToast",{toastText: error});
+            });
+            var userEntry = {
+              userUID: user.uid,
+              username: user.email,
+              displayName: that.newAccount.fName + " " + that.newAccount.lName,
+              role: that.newAccount.role,
+              home: that.home,
+            };
+            //patients and role
+            if(that.newAccount.patients){
+              userEntry.patients = that.newAccount.patients;
+            };
+            that.saveNewUser(userEntry).bind(that);
+          })
+          .catch(function(error) {
+            that.fire("openToast", {toastText: error});
+          });
+      };
+    },
+
+    saveNewUser: function(userEntry) {
+      this.$.userDB.path = null;
+      this.$.userDB.data = {
+        email: userEntry.username,
+        role: userEntry.role,
+        home: userEntry.home,
+        displayName:userEntry.displayName
+      };
+      if(userEntry.patients) {
+        this.$.userDB.data.patients = userEntry.patients;
+      };
+      var that = this;
+      this.$.userDB.save('/homes/' + this.home + '/users', userEntry.userUID)
+        .then(function() {
+          var indexData = {
+            home: userEntry.home,
+            userUID: userEntry.userUID
+          };
+          that.addUserToIndex(indexData).bind(that);
+        })
+        .catch(function(error) {
+          that.fire("openToast" ,{toastText: error});
+        });
+    },
+
+    addUserToIndex: function(indexData) {
+      this.$.userIndexDB.path = null;
+      this.$.userIndexDB.data.home = indexData.home;
+      this.$.userIndexDB.save('/userIndex', indexData.userUID);
+      var userEmail = this.$.userDB.data.email;
+      var that = this;
+      this.$.createUser.auth.sendPasswordResetEmail(userEmail)
+        .then(function() {
+        that.fire("openToast", {toastText: "Verification email sent to new user with email address: " + userEmail + "."});
+        }, function(error) {
+        that.fire("openToast", {toastText: error});
+        console.log(error);
+        });
+      this.$.createUser.signOut();
+      this.$.userDB.path = null;
+      this.$.userDB.data = {};
+      this.goBackToParent();
+    },
+
+    makePass: function(){
+        var text = "";
+        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@$?%^&*()";
+
+        for( var i=0; i < 10; i++ )
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+        return text;
+    }
+
+  });
+
+</script>
+
+</dom-module>

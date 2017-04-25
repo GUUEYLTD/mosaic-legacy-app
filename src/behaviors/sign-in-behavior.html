@@ -77,6 +77,15 @@
         this.checkForAccountFunctions();
       },
 
+      _ensureHomeSettingsSet: function() {
+        this.$.settingsDB.ref.once('value', function(settingsData) {
+          var settings = settingsData.val();
+          if(this.currentUserType != 'careWorker') {
+            this.set('settingsData.privacyNameEnabled', false);
+          };
+        }.bind(this));
+      },
+
       _processUserAccountTasks: function(mode, currentDevice, user, statusKnown, signedIn, userInfoDataDeep, appInfoData) {
         var userInfoData = userInfoDataDeep.base;
         var agreeTerms = this.$.userInfoDB.valueIsEmpty(userInfoData.home) ? {ready: false, agree: false} : {ready: true, agree: userInfoData.agreeTerms};
@@ -170,7 +179,9 @@
         if(user && user.uid) {
           this.$.userIndexDB.getStoredValue("/userIndex/" + user.uid + "/home")
             .then(function(value) {
-              this.set('homeData.home', value);
+              var url = '/' + value + '/' + this.category + '/' + this.page + '/' + this.patient + '/' + this.param;
+              window.history.pushState({}, null, url);
+              window.dispatchEvent(new CustomEvent('location-changed'));
               this.$.loginDialog.close();
             }.bind(this))
         };
@@ -225,7 +236,10 @@
           .then(function(user) {
             this.$.userIndexDB.getStoredValue("/userIndex/" + user.uid + "/home")
               .then(function(value) {
-                this.set("homeData.home", value);
+                var url = '/' + value + '/default/def-home';
+                this.set("home", value);
+                window.history.pushState({}, null, url);
+                window.dispatchEvent(new CustomEvent('location-changed'));
                 this.setDeviceLoggedIn(true);
                 this.$.loginDialog.close();
                 this.resetDialogOverlay();

@@ -83,6 +83,7 @@
 
           //column styles
           this.customStyle["--app-grid-columns"]=appGridColumns;
+          this.appGridColumns = appGridColumns;
 
           //fab styles
           this.customStyle["--main-fab-position"]=mainFabPosition;
@@ -93,6 +94,89 @@
           this.updateStyles();
 
         };
+
+
+
+        if(dimensions.base.query767){
+
+          this.appGridColumns="1";
+
+        } else if(dimensions.base.query1023){
+
+          this.appGridColumns="2";
+
+        } else if(dimensions.base.query1365){
+
+          this.appGridColumns="3";
+
+        } else if(dimensions.base.query1919){
+
+          this.appGridColumns="4";
+
+        };
+
+        //temp for testing pages
+        if(
+            this.page === "su-goals"
+            || this.page === "su-care-review"
+            || this.page === "su-risk"
+            || this.page === "test-main"
+          ){
+          //orig width 640px
+          //fab styles
+
+          var regFabRight="60px";
+          var regFabTop="-25px";
+          var regFabBottom="unset";
+          var regFabPosition="absolute";
+          var editFabBottom="25px";
+          var editFabRight="0";
+          this.appGridColumns="5";
+
+          if(dimensions.base.query767){
+            //fab styles
+            editFabBottom="5%";
+            editFabRight="5%";
+            regFabRight="5%";
+            regFabTop="unset";
+            regFabBottom="5%";
+            regFabPosition="fixed";
+            this.appGridColumns="1";
+          } else if(dimensions.base.query1023){
+            editFabBottom="5%";
+            editFabRight="5%";
+            regFabRight="5%";
+            regFabTop="unset";
+            regFabBottom="5%";
+            regFabPosition="fixed";
+            this.appGridColumns="2";
+          } else if(dimensions.base.query1365){
+            regFabRight="60px";
+            regFabTop="-25px";
+            regFabBottom="unset";
+            regFabPosition="absolute";
+            editFabBottom="25px";
+            editFabRight="0";
+            this.appGridColumns="3";
+          } else if(dimensions.base.query1919){
+            regFabRight="60px";
+            regFabTop="-25px";
+            regFabBottom="unset";
+            regFabPosition="absolute";
+            editFabBottom="25px";
+            editFabRight="0";
+            this.appGridColumns="4";
+          }
+          //fab styles
+          this.customStyle["--reg-fab-top"]=regFabTop;
+          this.customStyle["--reg-fab-bottom"]=regFabBottom;
+          this.customStyle["--reg-fab-right"]=regFabRight;
+          this.customStyle["--reg-fab-position"]=regFabPosition;
+          this.customStyle["--edit-fab-bottom"]=editFabBottom;
+          this.customStyle["--edit-fab-right"]=editFabRight;
+          this.updateStyles();
+        };
+
         if(this.page==="su-care-review"){
           //orig width 640px
           //fab styles
@@ -151,7 +235,11 @@
           this.customStyle["--app-grid-columns"]=appGridColumns;
           this.updateStyles();
         };
-        if(this.page==="su-goals"){
+        if(this.page==="test-main"){
+
+          console.log('running test-main code');
+          //orig width 640px
+          //fab styles
 
           var regFabRight="60px";
           var regFabTop="-25px";
@@ -159,6 +247,7 @@
           var regFabPosition="absolute";
           var editFabBottom="25px";
           var editFabRight="0";
+          this.appGridColumns="5";
 
           if(dimensions.base.query767){
             //fab styles
@@ -168,6 +257,7 @@
             regFabTop="unset";
             regFabBottom="5%";
             regFabPosition="fixed";
+            this.appGridColumns="1";
           } else if(dimensions.base.query1023){
             editFabBottom="5%";
             editFabRight="5%";
@@ -175,6 +265,7 @@
             regFabTop="unset";
             regFabBottom="5%";
             regFabPosition="fixed";
+            this.appGridColumns="2";
           } else if(dimensions.base.query1365){
             regFabRight="60px";
             regFabTop="-25px";
@@ -182,6 +273,7 @@
             regFabPosition="absolute";
             editFabBottom="25px";
             editFabRight="0";
+            this.appGridColumns="3";
           } else if(dimensions.base.query1919){
             regFabRight="60px";
             regFabTop="-25px";
@@ -189,6 +281,7 @@
             regFabPosition="absolute";
             editFabBottom="25px";
             editFabRight="0";
+            this.appGridColumns="4";
           }
           //fab styles
           this.customStyle["--reg-fab-top"]=regFabTop;
@@ -198,7 +291,6 @@
           this.customStyle["--edit-fab-bottom"]=editFabBottom;
           this.customStyle["--edit-fab-right"]=editFabRight;
           this.updateStyles();
-
         };
         if(this.page==="su-uploads"){
 

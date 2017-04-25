@@ -1,0 +1,194 @@
+<link rel="import" href="/bower_components/polymer/polymer.html" />
+<link rel="import" href="/bower_components/paper-input/paper-textarea.html" />
+<link rel="import" href="/bower_components/paper-button/paper-button.html" />
+<link rel="import" href="/bower_components/vaadin-combo-box/vaadin-combo-box.html" />
+<link rel="import" href="/bower_components/paper-card/paper-card.html" />
+<link rel="import" href="/bower_components/iron-media-query/iron-media-query.html" />
+
+<!--
+`paper-list-input` is an editable list element where the user can add or remove list items. this list is saved to firebase
+@demo demo/index.html
+-->
+
+<dom-module id="paper-list-input">
+
+  <style>
+
+    .editLeft{
+      display:inline-block;
+      width:50%;
+      margin:0;
+    }
+
+    .editRight{
+      display:inline-block;
+      width:50%;
+      margin:0;
+    }
+    .editArea{
+      background-color:rgba(106, 73, 178, 0.2);
+      padding:16px;
+    }
+
+  </style>
+
+  <template>
+
+      <div class="customContainer">
+        <template
+          is="dom-repeat"
+          items="{{_computeArray(value)}}"
+          sort="sortByOrder"
+          observe="order entry">
+
+          <paper-textarea on-input="entryChanged" label="[[label]]" value="{{item.entry}}"></paper-textarea>
+
+          <div class="editArea" hidden="[[!editing]]">
+
+            <vaadin-combo-box
+              class="editLeft"
+              on-change="orderChanged"
+              label="Order"
+              items="{{_computeOrderRange(arrayCount)}}"
+              value="{{item.order}}">
+            </vaadin-combo-box>
+
+            <paper-button class="editRight" on-tap="delete">delete</paper-button>
+
+          </div>
+
+        </template>
+
+        <paper-textarea label="[[label]]" value="{{newEntry}}"></paper-textarea>
+        <paper-button hidden$="[[!editing]]" on-tap="stopEdit">stop editing</paper-button>
+        <paper-button hidden$="[[editing]]" on-tap="edit">edit</paper-button>
+        <paper-button on-tap="saveNewEntry">add</paper-button>
+
+      </div>
+
+    </template>
+
+
+
+  <script>
+
+    Polymer({
+      is:"paper-list-input",
+
+      properties: {
+
+        //the value to be returned to firebase includes all list items
+        value: {
+          type: Object,
+          notify: true
+        },
+
+        //the label for the input area set from outside the element
+        label: {
+          type: String,
+          value: ""
+        },
+
+        //the new text to be added to the list
+        newEntry: {
+          type: String,
+          value: ""
+        },
+
+        //the length of the list items
+        arrayCount: {
+          type: Number,
+          value: 0
+        },
+
+        //property that dictates whether or not the editing functions are shown and regular display hidden
+        editing: {
+          type: Boolean,
+          value: false
+        }
+
+      },
+
+      //convert the value which is an object into an array
+      _computeArray: function(value) {
+        var computedArray = [];
+        var arrayCount = 0;
+        for(x in value) {
+          var entryObj = {
+            entry: value[x].entry,
+            order: value[x].order
+          };
+          computedArray.push(value[x]);
+          arrayCount++;
+        };
+        this.arrayCount = arrayCount;
+        return computedArray;
+      },
+
+      //save new entry by date string in object and return to firebase
+      saveNewEntry: function() {
+        if(!this.value){
+          var initVal = {};
+          this.set("value", initVal);
+        };
+        var uid = new Date().valueOf();
+        var entryCount = this.arrayCount + 1;
+        var newEntryObj = {
+          entry: this.newEntry,
+          order: this.arrayCount + 1,
+          uid: uid
+        };
+        this.set("value." + "entry" + uid, newEntryObj);
+        this.newEntry = null;
+      },
+
+      //update the value object for specific item by key which should be "entry" + uid as date in ms
+      entryChanged: function(e) {
+        if(e.model.item) {
+          this.set("value." + "entry" + e.model.item.uid + ".entry", e.model.item.entry);
+        };
+      },
+
+      //if order changed set order in value object
+      orderChanged: function(e) {
+        if(e.model.item) {
+          this.set("value." + "entry" + e.model.item.uid + ".order", e.model.item.order);
+        };
+      },
+
+      //set element to editing mode
+      edit: function() {
+        this.editing = true;
+      },
+
+      //return to regular mode from editing mode
+      stopEdit: function() {
+        this.editing = false;
+      },
+
+      //remove a specific list item
+      delete: function(e) {
+        var key = "entry" + e.model.item.uid;
+        this.set("value." + key, null);
+      },
+
+      //compute the length of items array and return the possible values for order.
+      _computeOrderRange: function(count) {
+        var orderArray = [];
+        for(i = 1; i <= count + 1; i++) {
+          var order = i.toString();
+          orderArray.push(order);
+        };
+        return orderArray;
+      },
+
+      //sorting function by date
+      sortByOrder: function(a, b) {
+        return a.order > b.order;
+      }
+
+    });
+
+  </script>
+
+</dom-module>

@@ -1,0 +1,363 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html" />
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html" />
+<link rel="import" href="../../../bower_components/polymerfire/firebase-document.html" />
+<link rel="import" href="../../../bower_components/polymerfire/firebase-query.html" />
+<link rel="import" href="../../../bower_components/paper-input/paper-textarea.html" />
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html" />
+<link rel="import" href="../../../bower_components/paper-fab/paper-fab.html" />
+<link rel="import" href="../../../bower_components/paper-checkbox/paper-checkbox.html" />
+<link rel="import" href="../../../bower_components/vaadin-combo-box/vaadin-combo-box.html" />
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html" />
+<link rel="import" href="../../../bower_components/iron-icons/iron-icons.html" />
+
+<link rel="import" href="../../elements/media-queries/media-queries.html" />
+<link rel="import" href="../../elements/guuey-date-input/guuey-date-input.html" />
+<link rel="import" href="../../elements/su-header/su-header.html" />
+
+<link rel="import" href="../../behaviors/animations/care-plan-animation.html" />
+<link rel="import" href="../../behaviors/su-print-behavior.html" />
+<link rel="import" href="../../behaviors/su-resize-behavior.html" />
+<link rel="import" href="../../behaviors/guuey-form-validation-behavior.html" />
+
+<link rel="import" href="../../styles/common-styles.html" />
+
+<dom-module id="test-edit">
+  <template>
+
+    <media-queries
+      dimensions="{{dimensions}}">
+    </media-queries>
+
+  <app-indexeddb-mirror
+    id="goalMirror"
+    session="[[userUid]]"
+    key="goalDB|[[goalId]]|[[patient]]|[[param]]"
+    data="{{goalDataLive}}"
+    persisted-data="{{goalData}}"
+    worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+  </app-indexeddb-mirror>
+
+  <firebase-document
+    id="goalDB"
+    path="/homes/[[home]]/patients/[[patient]]/personalGoals/[[param]]"
+    data="{{goalDataLive}}"
+    app-name="main">
+  </firebase-document>
+
+  <app-indexeddb-mirror
+    id="stepsMirror"
+    session="[[userUid]]"
+    key="stepsDB|[[goalId]]|[[patient]]|[[param]]|steps"
+    data="{{stepsDataLive}}"
+    persisted-data="{{stepsData}}"
+    worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+  </app-indexeddb-mirror>
+
+  <firebase-query
+    id="stepsDB"
+    app-name="main"
+    path="/homes/[[home]]/patients/[[patient]]/personalGoals/[[param]]/steps"
+    data="{{stepsDataLive}}"
+    app-name="main">
+  </firebase-query>
+
+  <app-indexeddb-mirror
+    id="stepMirror"
+    session="[[userUid]]"
+    key="stepDB|[[param]]"
+    data="{{stepDataLive}}"
+    persisted-data="{{stepData}}"
+    worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+  </app-indexeddb-mirror>
+
+  <firebase-document
+    id="stepDB"
+    path="/homes/[[home]]/patients/[[patient]]/personalGoals/[[param]]/steps"
+    data="{{stepDataLive}}"
+    app-name="main">
+  </firebase-document>
+
+  <app-indexeddb-mirror
+    id="usersMirror"
+    session="[[userUid]]"
+    key="usersDB"
+    data="{{usersDataLive}}"
+    persisted-data="{{usersData}}"
+    worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+  </app-indexeddb-mirror>
+
+  <firebase-query
+    id="usersDB"
+    app-name="main"
+    path="homes/[[home]]/users"
+    data="{{usersDataLive}}">
+  </firebase-query>
+
+  <paper-dialog id="confirmDeleteDialog">
+    <h2>Delete Step?</h2>
+    <p>
+      You are about to delete a step in this current goal. Are you sure you want to do this?
+    </p>
+    <div class="buttons">
+      <paper-button dialog-dismiss>Cancel</paper-button>
+      <paper-button on-tap="deleteStep">Confirm</paper-button>
+    </div>
+  </paper-dialog>
+
+    <style include="common-styles">
+
+    </style>
+
+    <paper-card id="mainCard" class="pageCard" elevation="3">
+
+      <su-header
+        id="suHeader"
+        page="Personal Goals"
+        patient="[[patient]]"
+        home="[[home]]"
+        su-index-data="{{suBasicInfo}}">
+      </su-header>
+
+      <div class="innerCont padded">
+        <div class="sectionContainer guuey-input-validation">
+
+          <vaadin-combo-box
+            auto-validate
+            allow-custom-value
+            label="Category"
+            items="[[goalTypes]]"
+            value="{{goalData.category}}"
+            required
+            error-message="Please select a category for this goal.">
+          </vaadin-combo-box>
+
+          <paper-textarea
+            auto-validate
+            required
+            label="description"
+            value="{{goalData.description}}"
+            error-message="Please add a description for this goal">
+          </paper-textarea>
+
+          <vaadin-combo-box
+            auto-validate
+            required
+            error-message="Please select a coordinator for this goal."
+            label="coordinator"
+            items="[[userList]]"
+            value="{{goalData.coordinator}}">
+          </vaadin-combo-box>
+
+          <guuey-date-input
+            auto-validate
+            required
+            error-message="Please select a start date for this goal."
+            value="{{goalData.startDate}}"
+            label="Start Date"
+            required>
+          </guuey-date-input>
+
+          <guuey-date-input
+            auto-validate
+            required
+            error-message="Please select a finish date for this goal."
+            value="{{goalData.finishDate}}"
+            label="Estimated Finish Date"
+            required>
+          </guuey-date-input>
+
+          <div class="guuey-table">
+
+            <table>
+              <thead>
+                <tr>
+                  <th>
+                    Step
+                  </th>
+                  <th>
+                    Description
+                  </th>
+                  <th>
+                    Completed?
+                  </th>
+                  <th>
+                    Delete Step
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <template
+                  is="dom-repeat"
+                  items="{{stepsData}}"
+                  as="step"
+                  sort="_sortSteps"
+                  observe="order">
+                  <tr>
+                    <td>
+                      <vaadin-combo-box
+                        label="Step #"
+                        items="[[oneThroughNine]]"
+                        required
+                        value="{{step.order}}"
+                        error-message="Please select an order for this step.">
+                      </vaadin-combo-box>
+                    </td>
+                    <td>
+                      <paper-textarea
+                        label="description"
+                        auto-validate
+                        required
+                        value="{{step.description}}"
+                        error-message="Please add a description for this goal">
+                      </paper-textarea>
+                    </td>
+                    <td>
+                      <paper-checkbox
+                        checked="{{step.completed}}">
+                      </paper-checkbox>
+                    </td>
+                    <td>
+                      <paper-icon-button
+                        icon="icons:delete"
+                        on-tap="confirmDeleteStep">
+                      </paper-icon-button>
+                    </td>
+                  </tr>
+                </template>
+                <tr>
+                  <td>
+                    <center>
+                      <paper-fab icon="icons:add" on-tap="addStep"></paper-fab>
+                    </center>
+                  </td>
+                  <td>
+                    Add a new step.
+                  </td>
+                  <td>
+                    <paper-checkbox disabled checked></paper-checkbox>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+          </div>
+
+        </div>
+      </div>
+
+    </paper-card>
+
+  </template>
+
+  <script>
+
+      Polymer({
+        is: 'test-edit',
+
+        properties: {
+
+          goalTypes: {
+            type: Array,
+            value: [
+              "Accommodation",
+              "Finance And Budget",
+              "Social Skills",
+              "Medical Treatment",
+              "Mental Health",
+              "Other"
+            ]
+          },
+
+          oneThroughNine: {
+            type: Array,
+            value: [
+              '1',
+              '2',
+              '3',
+              '4',
+              '5',
+              '6',
+              '7',
+              '8',
+              '9'
+            ]
+          },
+
+          userList: {
+            type: Array,
+            value: []
+          },
+
+          selectedStep: {
+            type: String
+          }
+        },
+
+        behaviors: [
+          Polymer.carePlanAnimation,
+          Polymer.suPrintBehavior,
+          Polymer.suResizeBehavior,
+          Polymer.guueyFormValidationBehavior
+        ],
+
+        ready:function(){
+          this.fire("pageLoaded",{page: this.page});
+          this.$.usersDB.query.on("value", function(snapshot) {
+            this.updateUsers(snapshot);
+          }.bind(this));
+        },
+
+        updateUsers: function(snapshot) {
+          var tempList = [];
+          if(snapshot.val()) {
+            var data = snapshot.val();
+            for(x in data) {
+              if(data[x].displayName) {
+                tempList.push(data[x].displayName);
+              } else {
+                tempList.push(data[x].email);
+              };
+            };
+          };
+          this.userList = tempList;
+        },
+
+        _sortSteps: function(a, b) {
+          if (parseInt(a.order) === parseInt(b.order)) return 0;
+          return parseInt(a.order) < parseInt(b.order) ? -1 : 1;
+        },
+
+        addStep: function() {
+          this.$.stepDB.path = null;
+          this.$.stepDB.data = null;
+
+          var order = this.stepsData.reduce(function(order, step) {
+            return order < parseInt(step.order) ? parseInt(step.order) : order;
+          }, 0);
+
+          var path = 'homes/' + this.home + '/patients/' + this.patient + '/personalGoals/' + this.param + '/steps/';
+          this.$.stepDB.data = {
+            order: order + 1
+          };
+          this.$.stepDB.save(path, null);
+        },
+
+        confirmDeleteStep: function(e) {
+          console.log(e.model.step);
+          this.selectedStep = e.model.step.$key;
+          this.$.confirmDeleteDialog.open();
+        },
+
+        deleteStep: function() {
+          this.$.stepDB.path = null;
+          this.$.stepDB.data = {};
+          var path = '/homes/' + this.home + '/patients/' + this.patient + '/personalGoals/' + this.param + '/steps/' + this.selectedStep;
+          this.$.stepDB.setStoredValue(path, null);
+          this.$.confirmDeleteDialog.close();
+        }
+
+      });
+
+  </script>
+
+</dom-module>

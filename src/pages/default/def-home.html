@@ -419,8 +419,8 @@
           this.$.fireDoc.save('/homes/'+this.home+'/patients', null)
             .then(function() {
               var patientPath = '/homes/' + this.home + '/patients';
-              this.patient = this.$.fireDoc.path.slice(patientPath.length + 1);
-              this.fire("newPatientCreated", {uid: this.patient});
+              this.set("patient", this.$.fireDoc.path.split("/").pop());
+              console.log(this.patient);
               window.location.href = "/" + this.home + "/care-plan/su-create/" + this.patient;
             }.bind(this));
         } else {

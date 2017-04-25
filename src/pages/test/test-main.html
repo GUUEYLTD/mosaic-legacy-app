@@ -15,7 +15,6 @@
 <link rel="import" href="../../elements/su-header/su-header.html" />
 <link rel="import" href="../../elements/media-queries/media-queries.html" />
 <link rel="import" href="../../elements/guuey-truncate/guuey-truncate.html" />
-<link rel="import" href="../../elements/guuey-notify/guuey-notify.html" />
 
 <link rel="import" href="../../behaviors/animations/care-plan-animation.html" />
 <link rel="import" href="../../behaviors/su-print-behavior.html" />
@@ -24,7 +23,7 @@
 
 <link rel="import" href="../../styles/common-styles.html" />
 
-<dom-module id="su-goals">
+<dom-module id="test-main">
 
   <template>
 
@@ -64,20 +63,6 @@
       app-name="main"
       data="{{goalDataLive}}">
     </firebase-document>
-
-    <guuey-notify
-      id="dateNotify"
-      f-name="[[suBasicInfo.fName]]"
-      l-name="[[suBasicInfo.lName]]"
-      image="[[suBasicInfo.image]]"
-      home="[[home]]"
-      notify-route="homes/[[home]]/patients/[[patient]]/personalGoals/[[param]]/finishDate"
-      notify-target="[[param]]"
-      condition-type="guuey-date"
-      notify-condition="true"
-      notify-message="[[suBasicInfo.fName]] [[suBasicInfo.lName]]'s [[goalData.category]] goal completion date is soon."
-      notify-url="/[[home]]/care-plan/su-goals/[[patient]]">
-    </guuey-notify>
 
     <style include="common-styles">
       :host {
@@ -204,7 +189,7 @@
 
     Polymer({
 
-      is: 'su-goals',
+      is: 'test-main',
 
       ready: function() {
         this.fire("pageLoaded", {page: this.page});
@@ -226,15 +211,10 @@
           notify: true
         },
 
-        goalId: {
-          type: String,
-          observer: "initNotify"
-        },
-
-        dimensions: {
+        dimension: {
           type: Object,
           value: {}
-        },
+        }
 
       },
 
@@ -242,13 +222,8 @@
         Polymer.carePlanAnimation,
         Polymer.suPrintBehavior,
         Polymer.suResizeBehavior,
-        Polymer.multiViewGridBehavior,
-        Polymer.suResizeBehavior
+        Polymer.multiViewGridBehavior
       ],
-
-      initNotify: function(param) {
-        this.$.dateNotify.initialize();
-      },
 
       addGoal: function() {
         this.$.goalDB.path = null;
@@ -257,8 +232,9 @@
         var path = "/homes/" + this.home + "/patients/" + this.patient + "/personalGoals";
         this.$.goalDB.save(path, null)
           .then(function(val) {
-            this.goalId = this.$.goalDB.path.split("/").pop();
-            var url = '/' + this.home + '/care-plan/su-goals-edit/' + this.patient + '/' + this.goalId;
+            var goalId = this.$.goalDB.path.split("/").pop();
+            var url = '/' + this.home + '/test/test-edit/' + this.patient + '/' + goalId;
+            console.log(url);
             window.history.pushState({}, null, url);
             window.dispatchEvent(new CustomEvent('location-changed'));
           }.bind(this))
@@ -269,7 +245,7 @@
       },
 
       editGoal: function() {
-        var url = '/' + this.home + '/care-plan/su-goals-edit/' + this.patient + '/' + this.goalId;
+        var url = '/' + this.home + '/test/test-edit/' + this.patient + '/' + this.goalId;
         window.history.pushState({}, null, url);
         window.dispatchEvent(new CustomEvent('location-changed'));
         this.$.editModal.close();
@@ -288,8 +264,6 @@
           .catch(function(err) {
             console.log(err);
           });
-
-        this.$.dateNotify.deNotify(this.home, this.goalId);
       },
 
       _computeGoalImage: function(cat) {

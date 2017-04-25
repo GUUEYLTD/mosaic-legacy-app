@@ -1,0 +1,301 @@
+<link rel="import" href="/bower_components/polymer/polymer.html" />
+<link rel="import" href="/bower_components/polymerfire/firebase-document.html" />
+<link rel="import" href="/bower_components/paper-card/paper-card.html" />
+<link rel="import" href="/bower_components/paper-icon-button/paper-icon-button.html" />
+<link rel="import" href="/bower_components/paper-input/paper-input.html" />
+<link rel="import" href="/bower_components/vaadin-combo-box/vaadin-combo-box.html" />
+<link rel="import" href="/bower_components/paper-time-picker/paper-time-picker-dialog-style.html" />
+<link rel="import" href="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror.html" />
+<link rel="import" href="/bower_components/paper-fab/paper-fab.html" />
+<link rel="import" href="/bower_components/paper-tooltip/paper-tooltip.html" />
+
+<link rel="import" href="../../elements/guuey-time-chunk-selector/guuey-time-chunk-selector.html" />
+<link rel="import" href="../../elements/guuey-weekday-selector/guuey-weekday-selector.html" />
+<link rel="import" href="../../elements/su-header/su-header.html" />
+<link rel="import" href="../../elements/media-queries/media-queries.html" />
+<link rel="import" href="../../elements/guuey-notify/guuey-notify.html" />
+
+<link rel="import" href="../../behaviors/animations/care-plan-animation.html" />
+<link rel="import" href="../../behaviors/su-print-behavior.html" />
+<link rel="import" href="../../behaviors/su-resize-behavior.html" />
+<link rel="import" href="../../behaviors/guuey-form-validation-behavior.html" />
+
+<link rel="import" href="../../styles/common-styles.html" />
+
+<dom-module id="su-medication-edit">
+
+  <template>
+
+    <app-indexeddb-mirror
+      id="medMirror"
+      session="[[userUid]]"
+      key="medDB|[[home]]|[[patient]]|[[param]]"
+      data="{{medData}}"
+      persisted-data="{{medDataLive}}"
+      worker-url="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-worker.js">
+    </app-indexeddb-mirror>
+
+    <firebase-document
+      id="medDB"
+      app-name="main"
+      path="/homes/[[home]]/patients/[[patient]]/medicationOutline/medications/[[medHistoryParam]]/[[medHistoryItemParam]]/med"
+      data="{{medDataLive}}">
+    </firebase-document>
+
+    <firebase-document
+      id="medEditDB"
+      app-name="main">
+    </firebase-document>
+
+    <media-queries
+      dimensions="{{dimensions}}">
+    </media-queries>
+
+    <guuey-notify
+      id="dailyMedNotify"
+      f-name="[[suIndexData.fName]]"
+      l-name="[[suIndexData.lName]]"
+      image="[[suIndexData.image]]"
+      home="[[home]]"
+      times-route="homes/[[home]]/patients/[[patient]]/medicationOutline/timeChunks"
+      condition-type="dailyMeds"
+      notify-url="/[[home]]/care-plan/su-medication/[[patient]]">
+    </guuey-notify>
+
+    <style include="common-styles">
+
+    </style>
+
+    <paper-card id="mainCard" class="pageCard" elevation="3">
+      <su-header
+        id="suHeader"
+        page="Personal Profile"
+        patient="[[patient]]"
+        home="[[home]]"
+        setimage
+        su-index-data={{suIndexData}}>
+      </su-header>
+
+      <div class="pageInnerCont padded">
+
+        <paper-fab
+          id="mainFab"
+          class="save-fab"
+          icon="icons:save"
+          on-tap="saveEditMed">
+        </paper-fab>
+
+        <paper-tooltip id="mainFabTip" for="mainFab" position="bottom">click here to save medication</paper-tooltip>
+
+        <span class="guuey-input-validation">
+
+          <paper-input
+            label="Medication Name"
+            value="{{newMedEdit.medicine}}"
+            required
+            auto-validate
+            pattern="[a-zA-Z\s]*"
+            error-message="Please enter a valid medicine name.">
+          </paper-input>
+
+          <vaadin-combo-box
+            class="dialogHalf"
+            allow-custom-status
+            label="Method"
+            value="{{newMedEdit.method}}"
+            items="[[medMethods]]"
+            required
+            auto-validate
+            error-message="Please select a method.">
+          </vaadin-combo-box>
+          <!--need units of meds-->
+          <paper-input
+            class="dialogHalf"
+            label="dosage"
+            value="{{newMedEdit.dosage}}"
+            required
+            auto-validate
+            pattern="\d{1,4}[a-zA-Z\s]*"
+            error-message="Please enter in the following format: (number) (units).">
+          </paper-input>
+
+          <paper-textarea
+            label="Comments"
+            value="{{newMedEdit.comment}}">
+          </paper-textarea>
+
+          <guuey-time-chunk-selector
+            required
+            name="Time of Day"
+            value="{{newMedEdit.timeChunk}}">
+          </guuey-time-chunk-selector>
+
+          <guuey-weekday-selector
+            required
+            name="Weedays Taken"
+            value="{{newMedEdit.weekdays}}">
+          </guuey-weekday-selector>
+
+        </span>
+
+        <paper-icon-button icon="icons:delete" on-tap="deleteMed"></paper-icon-button>
+      </div>
+
+    </paper-card>
+
+  </template>
+
+  <script>
+
+    Polymer({
+      is: 'su-medication-edit',
+
+      properties: {
+        home: {
+          type: String
+        },
+
+        patient: {
+          type: String
+        },
+
+        page: {
+          type: String
+        },
+
+        userUid: {
+          type: String
+        },
+
+        user: {
+          type: Object
+        },
+
+        param: {
+          type: String,
+          observer: '_paramChanged',
+          value: null
+        },
+
+        //taken from 1st after splitting param string into two by '|'
+        medHistoryParam: {
+          type: String,
+          value: null
+        },
+
+        //taken from 2nd after splitting param string into two by '|'
+        medHistoryItemParam: {
+          type: String,
+          value: null
+        },
+
+        medMethods: {
+          type: String,
+          value: [
+            "Oral",
+            "Topic",
+            "Injection",
+            "Nasal"
+          ]
+        },
+
+        newMedEdit: {
+          type: Object,
+          value: {}
+        }
+      },
+
+      observers: [
+
+      ],
+
+      behaviors: [
+        Polymer.carePlanAnimation,
+        Polymer.suPrintBehavior,
+        Polymer.suResizeBehavior,
+        Polymer.guueyFormValidationBehavior
+      ],
+
+      ready: function() {
+        this.fire("pageLoaded",{page: this.page});
+        this.$.medDB.ref.on('value', function(medData) {
+          var med = this.$.medDB.valueIsEmpty(medData.val()) ? {} : medData.val();
+          this.set("newMedEdit", med);
+        }.bind(this));
+      },
+
+      attached: function() {
+        this.showTip();
+      },
+
+      showTip: function() {
+        this.$.mainFabTip.show();
+        setTimeout(function() {
+          this.$.mainFabTip.hide();
+        }.bind(this), 5000);
+      },
+
+      _paramChanged: function(param) {
+        if(!param.includes('$') || param.split('$').length > 2) {
+          return;
+        };
+        var subParams = param.split('$');
+        this.set("medHistoryParam", subParams[0]);
+        this.set("medHistoryItemParam", subParams[1]);
+      },
+
+      saveEditMed: function() {
+
+        var validation = this.validateInputs(this.$.formField2);
+        if(validation.invalid) {
+          this.fire("openToast", {toastText: "The following items are missing or invalid: " + validation.invalidInputs});
+        } else {
+          this.$.medEditDB.path = null;
+          this.$.medEditDB.data.med = this.newMedEdit;
+          this.$.medEditDB.data.log = {};
+          this.$.medEditDB.data.log.user = this.user.uid;
+          this.$.medEditDB.data.log.time = Date.now();
+          this.$.medEditDB.save("homes/" + this.home + "/patients/" + this.patient + "/medicationOutline/medications/" + this.medHistoryParam, null)
+            .then(function(med) {
+              var medItemId = this.$.medEditDB.path.split("/").pop();
+              //guuey notify goes here
+              this.$.dailyMedNotify.notifyRoute = this.$.medEditDB.path;
+              this.$.dailyMedNotify.notifyMessage = this.suIndexData.fName + " has medication that is ready to be taken within the hour.";
+              this.$.dailyMedNotify.notifyTarget = this.medHistoryParam;
+              this.$.dailyMedNotify.initialize();
+              var url = '/' + this.home + '/care-plan/su-medication/' + this.patient;
+              window.history.pushState({}, null, url);
+              window.dispatchEvent(new CustomEvent('location-changed'));
+            }.bind(this));
+        };
+      },
+
+      deleteMed: function() {
+        this.$.medEditDB.path = null;
+        this.newMedEdit.parent = null;
+        this.$.medEditDB.data.med = this.newMedEdit;
+        this.$.medEditDB.data.med.archived = true;
+        this.$.medEditDB.data.log = {};
+        this.$.medEditDB.data.log.user = this.user.uid;
+        this.$.medEditDB.data.log.time = Date.now();
+        var path = "homes/" + this.home + "/patients/" + this.patient + "/medicationOutline/medications/" + this.medHistoryParam;
+        this.$.medEditDB.save(path, null)
+          .then(function(med) {
+            var medItemId = this.$.medDB.path.split("/").pop();
+            this.fire("openToast", {toastText: 'Medication archived'});
+
+            var suffixes = ["morning","afternoon","evening","night"];
+            this.$.dailyMedNotify.deNotify(this.home, this.medHistoryParam, suffixes);
+            this.newMedEdit = {};
+
+            var url = '/' + this.home + '/care-plan/su-medication/' + this.patient;
+            window.history.pushState({}, null, url);
+            window.dispatchEvent(new CustomEvent('location-changed'));
+          }.bind(this));
+      },
+
+    });
+
+  </script>
+
+</dom-module>

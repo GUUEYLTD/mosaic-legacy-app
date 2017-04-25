@@ -8,25 +8,31 @@
     "src/pages/admin/ad-settings.html",
     "src/pages/admin/ad-support.html",
     "src/pages/admin/ad-users.html",
+    "src/pages/admin/ad-users-edit.html",
     "src/pages/admin/ad-reports.html",
     "src/pages/admin/ad-payment.html",
   	"src/pages/care-plan/su-care.html",
     "src/pages/care-plan/su-care-review.html",
     "src/pages/care-plan/su-create.html",
     "src/pages/care-plan/su-goals.html",
+    "src/pages/care-plan/su-goals-edit.html",
     "src/pages/care-plan/su-uploads.html",
     "src/pages/care-plan/su-medication.html",
+    "src/pages/care-plan/su-medication-edit.html",
+    "src/pages/care-plan/su-medication-history-edit.html",
     "src/pages/care-plan/su-pre.html",
     "src/pages/care-plan/su-profile.html",
     "src/pages/care-plan/su-risk.html",
+    "src/pages/care-plan/su-risk-edit.html",
     "src/pages/care-plan/su-reports.html",
     "src/pages/care-plan/su-monthly-reports.html",
     "src/pages/care-plan/su-view-reports.html",
     "src/pages/default/def-home.html",
     "src/pages/default/def-account.html",
     "src/pages/default/def-terms.html",
-    "src/pages/default/def-error.html",
-    "src/pages/test/test-test.html"
+    "src/pages/test/test-test.html",
+    "src/pages/test/test-main.html",
+    "src/pages/test/test-edit.html"
   ],
   "sources": [
      "src/elements/**/*",
@@ -55,6 +61,7 @@
     "bower_components/gold-cc-input/images/jcb.png",
     "bower_components/gold-cc-input/images/mastercard.png",
     "bower_components/gold-cc-input/images/visa.png",
+    "src/pages/default/def-error.html",
     "firebase-messaging-sw.js"
   ]
 }
